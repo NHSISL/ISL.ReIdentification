@@ -9,9 +9,13 @@ namespace ISL.ReIdentification.Core.Models.Foundations.UserAccesses
     public class UserAccess
     {
         public Guid Id { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string UserEmail { get; set; }
+        public Guid EntraUserId { get; set; }
+        public string GivenName { get; set; }
+        public string Surname { get; set; }
+        public string DisplayName { get; set; }
+        public string JobTitle { get; set; }
+        public string Email { get; set; }
+        public string UserPrincipalName { get; set; }
         public string OrgCode { get; set; }
         public DateTimeOffset ActiveFrom { get; set; }
         public DateTimeOffset? ActiveTo { get; set; }

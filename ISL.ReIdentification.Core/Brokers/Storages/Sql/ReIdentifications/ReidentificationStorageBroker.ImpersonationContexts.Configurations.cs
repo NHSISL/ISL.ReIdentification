@@ -11,39 +11,36 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications
     {
         private void AddImpersonationContextConfigurations(EntityTypeBuilder<ImpersonationContext> builder)
         {
-            builder.Property(csvIdentificationRequest => csvIdentificationRequest.RequesterFirstName)
-                .HasMaxLength(255)
+            builder.Property(impersonationContext => impersonationContext.RequesterEntraUserId)
                 .IsRequired();
 
-            builder.Property(csvIdentificationRequest => csvIdentificationRequest.RequesterLastName)
-                .HasMaxLength(255)
-                .IsRequired();
-
-            builder.Property(csvIdentificationRequest => csvIdentificationRequest.RequesterEmail)
+            builder.Property(impersonationContext => impersonationContext.RequesterEmail)
                 .HasMaxLength(320)
                 .IsRequired();
 
-            builder.Property(csvIdentificationRequest => csvIdentificationRequest.RecipientFirstName)
-                .HasMaxLength(255)
+            builder.Property(impersonationContext => impersonationContext.RecipientEntraUserId)
                 .IsRequired();
 
-            builder.Property(csvIdentificationRequest => csvIdentificationRequest.RecipientLastName)
-                .HasMaxLength(255)
-                .IsRequired();
-
-            builder.Property(csvIdentificationRequest => csvIdentificationRequest.RecipientEmail)
+            builder.Property(impersonationContext => impersonationContext.RecipientEmail)
                 .HasMaxLength(320)
                 .IsRequired();
 
-            builder.Property(csvIdentificationRequest => csvIdentificationRequest.Reason)
+            builder.Property(impersonationContext => impersonationContext.Reason)
                 .IsRequired();
 
-            builder.Property(csvIdentificationRequest => csvIdentificationRequest.Purpose)
+            builder.Property(impersonationContext => impersonationContext.Purpose)
                 .IsRequired();
 
-            builder.Property(csvIdentificationRequest => csvIdentificationRequest.Organisation)
+            builder.Property(impersonationContext => impersonationContext.Organisation)
                 .HasMaxLength(255)
                 .IsRequired();
+
+            builder.Property(impersonationContext => impersonationContext.PipelineName)
+                .HasMaxLength(255)
+                .IsRequired();
+
+            builder.HasIndex(impersonationContext => impersonationContext.PipelineName)
+                .IsUnique();
 
             builder.Property(impersonationContext => impersonationContext.IsApproved)
                 .IsRequired();

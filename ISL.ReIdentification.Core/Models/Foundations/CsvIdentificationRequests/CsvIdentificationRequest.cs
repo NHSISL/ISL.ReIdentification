@@ -9,12 +9,18 @@ namespace ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests
     public class CsvIdentificationRequest : IKey, IAudit
     {
         public Guid Id { get; set; }
+        public Guid RequesterEntraUserId { get; set; } = Guid.Empty;
         public string RequesterFirstName { get; set; } = string.Empty;
         public string RequesterLastName { get; set; } = string.Empty;
+        public string RequesterDisplayName { get; set; } = string.Empty;
         public string RequesterEmail { get; set; } = string.Empty;
+        public string RequesterJobTitle { get; set; } = string.Empty;
+        public Guid RecipientEntraUserId { get; set; } = Guid.Empty;
         public string RecipientFirstName { get; set; } = string.Empty;
         public string RecipientLastName { get; set; } = string.Empty;
+        public string RecipientDisplayName { get; set; } = string.Empty;
         public string RecipientEmail { get; set; } = string.Empty;
+        public string RecipientJobTitle { get; set; } = string.Empty;
         public string Reason { get; set; } = string.Empty;
         public string Purpose { get; set; } = string.Empty;
         public string Organisation { get; set; } = string.Empty;

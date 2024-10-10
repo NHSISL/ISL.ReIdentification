@@ -11,24 +11,14 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications
     {
         private void AddCsvIdentificationRequestConfigurations(EntityTypeBuilder<CsvIdentificationRequest> builder)
         {
-            builder.Property(csvIdentificationRequest => csvIdentificationRequest.RequesterFirstName)
-                .HasMaxLength(255)
-                .IsRequired();
-
-            builder.Property(csvIdentificationRequest => csvIdentificationRequest.RequesterLastName)
-                .HasMaxLength(255)
+            builder.Property(csvIdentificationRequest => csvIdentificationRequest.RequesterEntraUserId)
                 .IsRequired();
 
             builder.Property(csvIdentificationRequest => csvIdentificationRequest.RequesterEmail)
                 .HasMaxLength(320)
                 .IsRequired();
 
-            builder.Property(csvIdentificationRequest => csvIdentificationRequest.RecipientFirstName)
-                .HasMaxLength(255)
-                .IsRequired();
-
-            builder.Property(csvIdentificationRequest => csvIdentificationRequest.RecipientLastName)
-                .HasMaxLength(255)
+            builder.Property(csvIdentificationRequest => csvIdentificationRequest.RecipientEntraUserId)
                 .IsRequired();
 
             builder.Property(csvIdentificationRequest => csvIdentificationRequest.RecipientEmail)

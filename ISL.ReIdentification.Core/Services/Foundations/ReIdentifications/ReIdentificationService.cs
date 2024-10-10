@@ -38,7 +38,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ReIdentifications
             IdentificationRequest identificationRequests) =>
             TryCatch(async () =>
             {
-                await ValidateIdentificationRequestOnProcessAsync(identificationRequests);
+                ValidateIdentificationRequestOnProcess(identificationRequests);
 
                 IdentificationRequest processedItems =
                     await BulkProcessRequestsAsync(identificationRequests, necsConfiguration.ApiMaxBatchSize);

@@ -11,81 +11,73 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts
 {
     public partial class ImpersonationContextService
     {
-        private async ValueTask ValidateImpersonationContextOnAdd(ImpersonationContext impersonationContext)
+        private async ValueTask ValidateImpersonationContextOnAddAsync(ImpersonationContext impersonationContext)
         {
             ValidateImpersonationContextIsNotNull(impersonationContext);
 
             Validate(
-                (Rule: await IsInvalidAsync(impersonationContext.Id), Parameter: nameof(ImpersonationContext.Id)),
+                (Rule: IsInvalid(impersonationContext.Id),
+                Parameter: nameof(ImpersonationContext.Id)),
 
-                (Rule: await IsInvalidAsync(impersonationContext.RequesterFirstName),
-                Parameter: nameof(ImpersonationContext.RequesterFirstName)),
+                (Rule: IsInvalid(impersonationContext.RequesterEntraUserId),
+                Parameter: nameof(ImpersonationContext.RequesterEntraUserId)),
 
-                (Rule: await IsInvalidAsync(impersonationContext.RequesterLastName),
-                Parameter: nameof(ImpersonationContext.RequesterLastName)),
-
-                (Rule: await IsInvalidAsync(impersonationContext.RequesterEmail),
+                (Rule: IsInvalid(impersonationContext.RequesterEmail),
                 Parameter: nameof(ImpersonationContext.RequesterEmail)),
 
-                (Rule: await IsInvalidAsync(impersonationContext.RecipientFirstName),
-                Parameter: nameof(ImpersonationContext.RecipientFirstName)),
+                (Rule: IsInvalid(impersonationContext.RecipientEntraUserId),
+                Parameter: nameof(ImpersonationContext.RecipientEntraUserId)),
 
-                (Rule: await IsInvalidAsync(impersonationContext.RecipientLastName),
-                Parameter: nameof(ImpersonationContext.RecipientLastName)),
-
-                (Rule: await IsInvalidAsync(impersonationContext.RecipientEmail),
+                (Rule: IsInvalid(impersonationContext.RecipientEmail),
                 Parameter: nameof(ImpersonationContext.RecipientEmail)),
 
-                (Rule: await IsInvalidAsync(impersonationContext.IdentifierColumn),
+                (Rule: IsInvalid(impersonationContext.IdentifierColumn),
                 Parameter: nameof(ImpersonationContext.IdentifierColumn)),
 
-                (Rule: await IsInvalidAsync(impersonationContext.CreatedBy),
+                (Rule: IsInvalid(impersonationContext.PipelineName),
+                Parameter: nameof(ImpersonationContext.PipelineName)),
+
+                (Rule: IsInvalid(impersonationContext.ManagedIdentityName),
+                Parameter: nameof(ImpersonationContext.ManagedIdentityName)),
+
+                (Rule: IsInvalid(impersonationContext.CreatedBy),
                 Parameter: nameof(ImpersonationContext.CreatedBy)),
 
-                (Rule: await IsInvalidAsync(impersonationContext.UpdatedBy),
+                (Rule: IsInvalid(impersonationContext.UpdatedBy),
                 Parameter: nameof(ImpersonationContext.UpdatedBy)),
 
-                (Rule: await IsInvalidAsync(impersonationContext.CreatedDate),
+                (Rule: IsInvalid(impersonationContext.CreatedDate),
                 Parameter: nameof(ImpersonationContext.CreatedDate)),
 
-                (Rule: await IsInvalidAsync(impersonationContext.UpdatedDate),
+                (Rule: IsInvalid(impersonationContext.UpdatedDate),
                 Parameter: nameof(ImpersonationContext.UpdatedDate)),
 
-                (Rule: await IsInvalidLengthAsync(impersonationContext.RequesterFirstName, 255),
-                Parameter: nameof(ImpersonationContext.RequesterFirstName)),
+                (Rule: IsInvalidLength(impersonationContext.PipelineName, 255),
+                Parameter: nameof(ImpersonationContext.PipelineName)),
 
-                (Rule: await IsInvalidLengthAsync(impersonationContext.RequesterLastName, 255),
-                Parameter: nameof(ImpersonationContext.RequesterLastName)),
-
-                (Rule: await IsInvalidLengthAsync(impersonationContext.RequesterEmail, 320),
+                (Rule: IsInvalidLength(impersonationContext.RequesterEmail, 320),
                 Parameter: nameof(ImpersonationContext.RequesterEmail)),
 
-                (Rule: await IsInvalidLengthAsync(impersonationContext.RecipientFirstName, 255),
-                Parameter: nameof(ImpersonationContext.RecipientFirstName)),
-
-                (Rule: await IsInvalidLengthAsync(impersonationContext.RecipientLastName, 255),
-                Parameter: nameof(ImpersonationContext.RecipientLastName)),
-
-                (Rule: await IsInvalidLengthAsync(impersonationContext.RecipientEmail, 320),
+                (Rule: IsInvalidLength(impersonationContext.RecipientEmail, 320),
                 Parameter: nameof(ImpersonationContext.RecipientEmail)),
 
-                (Rule: await IsInvalidLengthAsync(impersonationContext.IdentifierColumn, 10),
+                (Rule: IsInvalidLength(impersonationContext.IdentifierColumn, 10),
                 Parameter: nameof(ImpersonationContext.IdentifierColumn)),
 
-                (Rule: await IsInvalidLengthAsync(impersonationContext.CreatedBy, 255),
+                (Rule: IsInvalidLength(impersonationContext.CreatedBy, 255),
                 Parameter: nameof(ImpersonationContext.CreatedBy)),
 
-                (Rule: await IsInvalidLengthAsync(impersonationContext.UpdatedBy, 255),
+                (Rule: IsInvalidLength(impersonationContext.UpdatedBy, 255),
                 Parameter: nameof(ImpersonationContext.UpdatedBy)),
 
-                (Rule: await IsNotSameAsync(
+                (Rule: IsNotSame(
                     first: impersonationContext.UpdatedBy,
                     second: impersonationContext.CreatedBy,
                     secondName: nameof(ImpersonationContext.CreatedBy)),
 
                 Parameter: nameof(ImpersonationContext.UpdatedBy)),
 
-                (Rule: await IsNotSameAsync(
+                (Rule: IsNotSame(
                     first: impersonationContext.CreatedDate,
                     second: impersonationContext.UpdatedDate,
                     secondName: nameof(ImpersonationContext.CreatedDate)),
@@ -96,86 +88,65 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts
                 Parameter: nameof(ImpersonationContext.CreatedDate)));
         }
 
-        private async ValueTask ValidateImpersonationContextOnModify(ImpersonationContext impersonationContext)
+        private async ValueTask ValidateImpersonationContextOnModifyAsync(ImpersonationContext impersonationContext)
         {
             ValidateImpersonationContextIsNotNull(impersonationContext);
 
             Validate(
-                (Rule: await IsInvalidAsync(impersonationContext.Id), Parameter: nameof(ImpersonationContext.Id)),
+                (Rule: IsInvalid(impersonationContext.Id), Parameter: nameof(ImpersonationContext.Id)),
 
-                (Rule: await IsInvalidAsync(impersonationContext.RequesterFirstName),
-                Parameter: nameof(ImpersonationContext.RequesterFirstName)),
+                (Rule: IsInvalid(impersonationContext.RequesterEntraUserId),
+                Parameter: nameof(ImpersonationContext.RequesterEntraUserId)),
 
-                (Rule: await IsInvalidAsync(impersonationContext.RequesterLastName),
-                Parameter: nameof(ImpersonationContext.RequesterLastName)),
-
-                (Rule: await IsInvalidAsync(impersonationContext.RequesterEmail),
+                (Rule: IsInvalid(impersonationContext.RequesterEmail),
                 Parameter: nameof(ImpersonationContext.RequesterEmail)),
 
-                (Rule: await IsInvalidAsync(impersonationContext.RecipientFirstName),
-                Parameter: nameof(ImpersonationContext.RecipientFirstName)),
+                (Rule: IsInvalid(impersonationContext.RecipientEntraUserId),
+                Parameter: nameof(ImpersonationContext.RecipientEntraUserId)),
 
-                (Rule: await IsInvalidAsync(impersonationContext.RecipientLastName),
-                Parameter: nameof(ImpersonationContext.RecipientLastName)),
-
-                (Rule: await IsInvalidAsync(impersonationContext.RecipientEmail),
+                (Rule: IsInvalid(impersonationContext.RecipientEmail),
                 Parameter: nameof(ImpersonationContext.RecipientEmail)),
 
-                (Rule: await IsInvalidAsync(
-                    impersonationContext.IdentifierColumn),
-
+                (Rule: IsInvalid(impersonationContext.IdentifierColumn),
                 Parameter: nameof(ImpersonationContext.IdentifierColumn)),
 
-                (Rule: await IsInvalidAsync(impersonationContext.CreatedBy),
+                (Rule: IsInvalid(impersonationContext.PipelineName),
+                Parameter: nameof(ImpersonationContext.PipelineName)),
+
+                (Rule: IsInvalid(impersonationContext.ManagedIdentityName),
+                Parameter: nameof(ImpersonationContext.ManagedIdentityName)),
+
+                (Rule: IsInvalid(impersonationContext.CreatedBy),
                 Parameter: nameof(ImpersonationContext.CreatedBy)),
 
-                (Rule: await IsInvalidAsync(impersonationContext.UpdatedBy),
+                (Rule: IsInvalid(impersonationContext.UpdatedBy),
                 Parameter: nameof(ImpersonationContext.UpdatedBy)),
 
-                (Rule: await IsInvalidAsync(
-                    impersonationContext.CreatedDate),
-
+                (Rule: IsInvalid(impersonationContext.CreatedDate),
                 Parameter: nameof(ImpersonationContext.CreatedDate)),
 
-                (Rule: await IsInvalidAsync(
-                    impersonationContext.UpdatedDate),
-
+                (Rule: IsInvalid(impersonationContext.UpdatedDate),
                 Parameter: nameof(ImpersonationContext.UpdatedDate)),
 
-                (Rule: await IsInvalidLengthAsync(impersonationContext.RequesterFirstName, 255),
-                Parameter: nameof(ImpersonationContext.RequesterFirstName)),
+                (Rule: IsInvalidLength(impersonationContext.PipelineName, 255),
+                Parameter: nameof(ImpersonationContext.PipelineName)),
 
-                (Rule: await IsInvalidLengthAsync(impersonationContext.RequesterLastName, 255),
-                Parameter: nameof(ImpersonationContext.RequesterLastName)),
-
-                (Rule: await IsInvalidLengthAsync(impersonationContext.RequesterEmail, 320),
+                (Rule: IsInvalidLength(impersonationContext.RequesterEmail, 320),
                 Parameter: nameof(ImpersonationContext.RequesterEmail)),
 
-                (Rule: await IsInvalidLengthAsync(impersonationContext.RecipientFirstName, 255),
-                Parameter: nameof(ImpersonationContext.RecipientFirstName)),
-
-                (Rule: await IsInvalidLengthAsync(impersonationContext.RecipientLastName, 255),
-                Parameter: nameof(ImpersonationContext.RecipientLastName)),
-
-                (Rule: await IsInvalidLengthAsync(impersonationContext.RecipientEmail, 320),
+                (Rule: IsInvalidLength(impersonationContext.RecipientEmail, 320),
                 Parameter: nameof(ImpersonationContext.RecipientEmail)),
 
-                (Rule: await IsInvalidLengthAsync(
-                    impersonationContext.IdentifierColumn, 10),
-
+                (Rule: IsInvalidLength(impersonationContext.IdentifierColumn, 10),
                 Parameter: nameof(ImpersonationContext.IdentifierColumn)),
 
-                (Rule: await IsInvalidLengthAsync(
-                    impersonationContext.CreatedBy, 255),
-
+                (Rule: IsInvalidLength(impersonationContext.CreatedBy, 255),
                 Parameter: nameof(ImpersonationContext.CreatedBy)),
 
-                (Rule: await IsInvalidLengthAsync(
-                    impersonationContext.UpdatedBy, 255),
-
+                (Rule: IsInvalidLength(impersonationContext.UpdatedBy, 255),
                 Parameter: nameof(ImpersonationContext.UpdatedBy)),
 
-                (Rule: await IsSameAsync(
+                (Rule: IsSame(
                     firstDate: impersonationContext.UpdatedDate,
                     secondDate: impersonationContext.CreatedDate,
                     nameof(ImpersonationContext.CreatedDate)),
@@ -186,8 +157,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts
                     Parameter: nameof(ImpersonationContext.UpdatedDate)));
         }
 
-        private static async ValueTask ValidateImpersonationContextIdAsync(Guid impersonationContextId) =>
-            Validate((Rule: await IsInvalidAsync(impersonationContextId), Parameter: nameof(ImpersonationContext.Id)));
+        private static void ValidateImpersonationContextId(Guid impersonationContextId) =>
+            Validate((Rule: IsInvalid(impersonationContextId), Parameter: nameof(ImpersonationContext.Id)));
 
         private static void ValidateImpersonationContextIsNotNull(ImpersonationContext impersonationContext)
         {
@@ -197,7 +168,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts
             }
         }
 
-        private static async ValueTask ValidateStorageImpersonationContextAsync(ImpersonationContext maybeImpersonationContext,
+        private static void ValidateStorageImpersonationContext(ImpersonationContext maybeImpersonationContext,
             Guid id)
         {
             if (maybeImpersonationContext is null)
@@ -207,25 +178,25 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts
             }
         }
 
-        private static async ValueTask ValidateAgainstStorageImpersonationContextOnModifyAsync(
+        private static void ValidateAgainstStorageImpersonationContextOnModify(
             ImpersonationContext inputImpersonationContext, ImpersonationContext storageImpersonationContext)
         {
             Validate(
-                (Rule: await IsNotSameAsync(
+                (Rule: IsNotSame(
                     first: inputImpersonationContext.CreatedBy,
                     second: storageImpersonationContext.CreatedBy,
                     secondName: nameof(ImpersonationContext.CreatedBy)),
 
                 Parameter: nameof(ImpersonationContext.CreatedBy)),
 
-                (Rule: await IsNotSameAsync(
+                (Rule: IsNotSame(
                     first: inputImpersonationContext.CreatedDate,
                     second: storageImpersonationContext.CreatedDate,
                     secondName: nameof(ImpersonationContext.CreatedDate)),
 
                 Parameter: nameof(ImpersonationContext.CreatedDate)),
 
-                (Rule: await IsSameAsync(
+                (Rule: IsSame(
                     firstDate: inputImpersonationContext.UpdatedDate,
                     secondDate: storageImpersonationContext.UpdatedDate,
                     secondDateName: nameof(ImpersonationContext.UpdatedDate)),
@@ -233,34 +204,34 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts
                 Parameter: nameof(ImpersonationContext.UpdatedDate)));
         }
 
-        private static async ValueTask<dynamic> IsInvalidAsync(Guid id) => new
+        private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,
             Message = "Id is invalid"
         };
 
-        private static async ValueTask<dynamic> IsInvalidAsync(string name) => new
+        private static dynamic IsInvalid(string name) => new
         {
             Condition = String.IsNullOrWhiteSpace(name),
             Message = "Text is invalid"
         };
 
-        private static async ValueTask<dynamic> IsInvalidAsync(DateTimeOffset date) => new
+        private static dynamic IsInvalid(DateTimeOffset date) => new
         {
             Condition = date == default,
             Message = "Date is invalid"
         };
 
-        private static async ValueTask<dynamic> IsInvalidLengthAsync(string text, int maxLength) => new
+        private static dynamic IsInvalidLength(string text, int maxLength) => new
         {
-            Condition = await IsExceedingLengthAsync(text, maxLength),
+            Condition = IsExceedingLength(text, maxLength),
             Message = $"Text exceed max length of {maxLength} characters"
         };
 
-        private static async ValueTask<bool> IsExceedingLengthAsync(string text, int maxLength) =>
+        private static bool IsExceedingLength(string text, int maxLength) =>
             (text ?? string.Empty).Length > maxLength;
 
-        private static async ValueTask<dynamic> IsSameAsync(
+        private static dynamic IsSame(
             DateTimeOffset firstDate,
             DateTimeOffset secondDate,
             string secondDateName) => new
@@ -269,7 +240,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts
                 Message = $"Date is the same as {secondDateName}"
             };
 
-        private static async ValueTask<dynamic> IsNotSameAsync(
+        private static dynamic IsNotSame(
             DateTimeOffset first,
             DateTimeOffset second,
             string secondName) => new
@@ -278,7 +249,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts
                 Message = $"Date is not the same as {secondName}"
             };
 
-        private static async ValueTask<dynamic> IsNotSameAsync(
+        private static dynamic IsNotSame(
             string first,
             string second,
             string secondName) => new

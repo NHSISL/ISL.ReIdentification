@@ -31,7 +31,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Lookups
         public ValueTask<Lookup> AddLookupAsync(Lookup lookup) =>
             TryCatch(async () =>
             {
-                await ValidateLookupOnAdd(lookup);
+                await ValidateLookupOnAddAsync(lookup);
 
                 return await this.reIdentificationStorageBroker.InsertLookupAsync(lookup);
             });
@@ -42,12 +42,12 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Lookups
         public ValueTask<Lookup> RetrieveLookupByIdAsync(Guid lookupId) =>
             TryCatch(async () =>
             {
-                await ValidateLookupId(lookupId);
+                ValidateLookupId(lookupId);
 
                 Lookup maybeLookup = await this.reIdentificationStorageBroker
                     .SelectLookupByIdAsync(lookupId);
 
-                await ValidateStorageLookup(maybeLookup, lookupId);
+                ValidateStorageLookup(maybeLookup, lookupId);
 
                 return maybeLookup;
             });
@@ -55,13 +55,13 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Lookups
         public ValueTask<Lookup> ModifyLookupAsync(Lookup lookup) =>
             TryCatch(async () =>
             {
-                await ValidateLookupOnModify(lookup);
+                await ValidateLookupOnModifyAsync(lookup);
 
                 Lookup maybeLookup =
                     await this.reIdentificationStorageBroker.SelectLookupByIdAsync(lookup.Id);
 
-                await ValidateStorageLookup(maybeLookup, lookup.Id);
-                await ValidateAgainstStorageLookupOnModify(inputLookup: lookup, storageLookup: maybeLookup);
+                ValidateStorageLookup(maybeLookup, lookup.Id);
+                ValidateAgainstStorageLookupOnModify(inputLookup: lookup, storageLookup: maybeLookup);
 
                 return await this.reIdentificationStorageBroker.UpdateLookupAsync(lookup);
             });
@@ -69,12 +69,12 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Lookups
         public ValueTask<Lookup> RemoveLookupByIdAsync(Guid lookupId) =>
             TryCatch(async () =>
             {
-                await ValidateLookupId(lookupId);
+                ValidateLookupId(lookupId);
 
                 Lookup maybeLookup = await this.reIdentificationStorageBroker
                     .SelectLookupByIdAsync(lookupId);
 
-                await ValidateStorageLookup(maybeLookup, lookupId);
+                ValidateStorageLookup(maybeLookup, lookupId);
 
                 return await this.reIdentificationStorageBroker.DeleteLookupAsync(maybeLookup);
             });

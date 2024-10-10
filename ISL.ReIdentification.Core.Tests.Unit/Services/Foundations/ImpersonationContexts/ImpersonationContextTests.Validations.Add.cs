@@ -57,13 +57,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
             // given
             var invalidImpersonationContext = new ImpersonationContext
             {
-                RequesterFirstName = invalidText,
-                RequesterLastName = invalidText,
                 RequesterEmail = invalidText,
-                RecipientFirstName = invalidText,
-                RecipientLastName = invalidText,
                 RecipientEmail = invalidText,
-                IdentifierColumn = invalidText
+                IdentifierColumn = invalidText,
+                PipelineName = invalidText,
+                ManagedIdentityName = invalidText,
             };
 
             var invalidImpersonationContextException =
@@ -75,24 +73,16 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
                 values: "Id is invalid");
 
             invalidImpersonationContextException.AddData(
-                key: nameof(ImpersonationContext.RequesterFirstName),
-                values: "Text is invalid");
-
-            invalidImpersonationContextException.AddData(
-                key: nameof(ImpersonationContext.RequesterLastName),
-                values: "Text is invalid");
+                key: nameof(ImpersonationContext.RequesterEntraUserId),
+                values: "Id is invalid");
 
             invalidImpersonationContextException.AddData(
                 key: nameof(ImpersonationContext.RequesterEmail),
                 values: "Text is invalid");
 
             invalidImpersonationContextException.AddData(
-                key: nameof(ImpersonationContext.RecipientFirstName),
-                values: "Text is invalid");
-
-            invalidImpersonationContextException.AddData(
-                key: nameof(ImpersonationContext.RecipientLastName),
-                values: "Text is invalid");
+                key: nameof(ImpersonationContext.RecipientEntraUserId),
+                values: "Id is invalid");
 
             invalidImpersonationContextException.AddData(
                 key: nameof(ImpersonationContext.RecipientEmail),
@@ -100,6 +90,14 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
 
             invalidImpersonationContextException.AddData(
                 key: nameof(ImpersonationContext.IdentifierColumn),
+                values: "Text is invalid");
+
+            invalidImpersonationContextException.AddData(
+                key: nameof(ImpersonationContext.PipelineName),
+                values: "Text is invalid");
+
+            invalidImpersonationContextException.AddData(
+                key: nameof(ImpersonationContext.ManagedIdentityName),
                 values: "Text is invalid");
 
             invalidImpersonationContextException.AddData(
@@ -159,12 +157,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             var invalidImpersonationContext = CreateRandomImpersonationContext(dateTimeOffset: randomDateTimeOffset);
             var username = GetRandomStringWithLengthOf(256);
-            invalidImpersonationContext.RequesterFirstName = GetRandomStringWithLengthOf(256);
-            invalidImpersonationContext.RequesterLastName = GetRandomStringWithLengthOf(256);
             invalidImpersonationContext.RequesterEmail = GetRandomStringWithLengthOf(321);
-            invalidImpersonationContext.RecipientFirstName = GetRandomStringWithLengthOf(256);
-            invalidImpersonationContext.RecipientLastName = GetRandomStringWithLengthOf(256);
             invalidImpersonationContext.RecipientEmail = GetRandomStringWithLengthOf(321);
+            invalidImpersonationContext.PipelineName = GetRandomStringWithLengthOf(256);
             invalidImpersonationContext.IdentifierColumn = GetRandomStringWithLengthOf(11);
             invalidImpersonationContext.CreatedBy = username;
             invalidImpersonationContext.UpdatedBy = username;
@@ -174,40 +169,34 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
                     message: "Invalid impersonation context. Please correct the errors and try again.");
 
             invalidImpersonationContextException.AddData(
-                key: nameof(ImpersonationContext.RequesterFirstName),
-                values: $"Text exceed max length of {invalidImpersonationContext.RequesterFirstName.Length - 1} characters");
-
-            invalidImpersonationContextException.AddData(
-                key: nameof(ImpersonationContext.RequesterLastName),
-                values: $"Text exceed max length of {invalidImpersonationContext.RequesterLastName.Length - 1} characters");
-
-            invalidImpersonationContextException.AddData(
                 key: nameof(ImpersonationContext.RequesterEmail),
-                values: $"Text exceed max length of {invalidImpersonationContext.RequesterEmail.Length - 1} characters");
-
-            invalidImpersonationContextException.AddData(
-                key: nameof(ImpersonationContext.RecipientFirstName),
-                values: $"Text exceed max length of {invalidImpersonationContext.RecipientFirstName.Length - 1} characters");
-
-            invalidImpersonationContextException.AddData(
-                key: nameof(ImpersonationContext.RecipientLastName),
-                values: $"Text exceed max length of {invalidImpersonationContext.RecipientLastName.Length - 1} characters");
+                values: $"Text exceed max length of " +
+                    $"{invalidImpersonationContext.RequesterEmail.Length - 1} characters");
 
             invalidImpersonationContextException.AddData(
                 key: nameof(ImpersonationContext.RecipientEmail),
-                values: $"Text exceed max length of {invalidImpersonationContext.RecipientEmail.Length - 1} characters");
+                values: $"Text exceed max length of " +
+                    $"{invalidImpersonationContext.RecipientEmail.Length - 1} characters");
 
             invalidImpersonationContextException.AddData(
                 key: nameof(ImpersonationContext.IdentifierColumn),
-                values: $"Text exceed max length of {invalidImpersonationContext.IdentifierColumn.Length - 1} characters");
+                values: $"Text exceed max length of " +
+                    $"{invalidImpersonationContext.IdentifierColumn.Length - 1} characters");
+
+            invalidImpersonationContextException.AddData(
+                key: nameof(ImpersonationContext.PipelineName),
+                values: $"Text exceed max length of " +
+                    $"{invalidImpersonationContext.PipelineName.Length - 1} characters");
 
             invalidImpersonationContextException.AddData(
                 key: nameof(ImpersonationContext.CreatedBy),
-                values: $"Text exceed max length of {invalidImpersonationContext.CreatedBy.Length - 1} characters");
+                values: $"Text exceed max length of " +
+                    $"{invalidImpersonationContext.CreatedBy.Length - 1} characters");
 
             invalidImpersonationContextException.AddData(
                 key: nameof(ImpersonationContext.UpdatedBy),
-                values: $"Text exceed max length of {invalidImpersonationContext.UpdatedBy.Length - 1} characters");
+                values: $"Text exceed max length of " +
+                    $"{invalidImpersonationContext.UpdatedBy.Length - 1} characters");
 
             var expectedImpersonationContextValidationException =
                 new ImpersonationContextValidationException(

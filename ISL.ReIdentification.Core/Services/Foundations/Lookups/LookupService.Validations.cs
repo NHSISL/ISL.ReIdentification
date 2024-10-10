@@ -11,29 +11,29 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Lookups
 {
     public partial class LookupService
     {
-        private async ValueTask ValidateLookupOnAdd(Lookup lookup)
+        private async ValueTask ValidateLookupOnAddAsync(Lookup lookup)
         {
-            await ValidateLookupIsNotNull(lookup);
+            ValidateLookupIsNotNull(lookup);
 
             Validate(
-                (Rule: await IsInvalidAsync(lookup.Id), Parameter: nameof(Lookup.Id)),
-                (Rule: await IsInvalidAsync(lookup.Name), Parameter: nameof(Lookup.Name)),
-                (Rule: await IsInvalidAsync(lookup.CreatedDate), Parameter: nameof(Lookup.CreatedDate)),
-                (Rule: await IsInvalidAsync(lookup.CreatedBy), Parameter: nameof(Lookup.CreatedBy)),
-                (Rule: await IsInvalidAsync(lookup.UpdatedDate), Parameter: nameof(Lookup.UpdatedDate)),
-                (Rule: await IsInvalidAsync(lookup.UpdatedBy), Parameter: nameof(Lookup.UpdatedBy)),
-                (Rule: await IsInvalidLengthAsync(lookup.Name, 450), Parameter: nameof(Lookup.Name)),
-                (Rule: await IsInvalidLengthAsync(lookup.CreatedBy, 255), Parameter: nameof(Lookup.CreatedBy)),
-                (Rule: await IsInvalidLengthAsync(lookup.UpdatedBy, 255), Parameter: nameof(Lookup.UpdatedBy)),
+                (Rule: IsInvalid(lookup.Id), Parameter: nameof(Lookup.Id)),
+                (Rule: IsInvalid(lookup.Name), Parameter: nameof(Lookup.Name)),
+                (Rule: IsInvalid(lookup.CreatedDate), Parameter: nameof(Lookup.CreatedDate)),
+                (Rule: IsInvalid(lookup.CreatedBy), Parameter: nameof(Lookup.CreatedBy)),
+                (Rule: IsInvalid(lookup.UpdatedDate), Parameter: nameof(Lookup.UpdatedDate)),
+                (Rule: IsInvalid(lookup.UpdatedBy), Parameter: nameof(Lookup.UpdatedBy)),
+                (Rule: IsInvalidLength(lookup.Name, 450), Parameter: nameof(Lookup.Name)),
+                (Rule: IsInvalidLength(lookup.CreatedBy, 255), Parameter: nameof(Lookup.CreatedBy)),
+                (Rule: IsInvalidLength(lookup.UpdatedBy, 255), Parameter: nameof(Lookup.UpdatedBy)),
 
-                (Rule: await IsNotSameAsync(
+                (Rule: IsNotSame(
                     first: lookup.UpdatedBy,
                     second: lookup.CreatedBy,
                     secondName: nameof(Lookup.CreatedBy)),
 
                 Parameter: nameof(Lookup.UpdatedBy)),
 
-                (Rule: await IsNotSameAsync(
+                (Rule: IsNotSame(
                     first: lookup.UpdatedDate,
                     second: lookup.CreatedDate,
                     secondName: nameof(Lookup.CreatedDate)),
@@ -43,22 +43,22 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Lookups
                 (Rule: await IsNotRecentAsync(lookup.CreatedDate), Parameter: nameof(Lookup.CreatedDate)));
         }
 
-        private async ValueTask ValidateLookupOnModify(Lookup lookup)
+        private async ValueTask ValidateLookupOnModifyAsync(Lookup lookup)
         {
-            await ValidateLookupIsNotNull(lookup);
+            ValidateLookupIsNotNull(lookup);
 
             Validate(
-                (Rule: await IsInvalidAsync(lookup.Id), Parameter: nameof(Lookup.Id)),
-                (Rule: await IsInvalidAsync(lookup.Name), Parameter: nameof(Lookup.Name)),
-                (Rule: await IsInvalidAsync(lookup.CreatedDate), Parameter: nameof(Lookup.CreatedDate)),
-                (Rule: await IsInvalidAsync(lookup.CreatedBy), Parameter: nameof(Lookup.CreatedBy)),
-                (Rule: await IsInvalidAsync(lookup.UpdatedDate), Parameter: nameof(Lookup.UpdatedDate)),
-                (Rule: await IsInvalidAsync(lookup.UpdatedBy), Parameter: nameof(Lookup.UpdatedBy)),
-                (Rule: await IsInvalidLengthAsync(lookup.Name, 450), Parameter: nameof(Lookup.Name)),
-                (Rule: await IsInvalidLengthAsync(lookup.CreatedBy, 255), Parameter: nameof(Lookup.CreatedBy)),
-                (Rule: await IsInvalidLengthAsync(lookup.UpdatedBy, 255), Parameter: nameof(Lookup.UpdatedBy)),
+                (Rule: IsInvalid(lookup.Id), Parameter: nameof(Lookup.Id)),
+                (Rule: IsInvalid(lookup.Name), Parameter: nameof(Lookup.Name)),
+                (Rule: IsInvalid(lookup.CreatedDate), Parameter: nameof(Lookup.CreatedDate)),
+                (Rule: IsInvalid(lookup.CreatedBy), Parameter: nameof(Lookup.CreatedBy)),
+                (Rule: IsInvalid(lookup.UpdatedDate), Parameter: nameof(Lookup.UpdatedDate)),
+                (Rule: IsInvalid(lookup.UpdatedBy), Parameter: nameof(Lookup.UpdatedBy)),
+                (Rule: IsInvalidLength(lookup.Name, 450), Parameter: nameof(Lookup.Name)),
+                (Rule: IsInvalidLength(lookup.CreatedBy, 255), Parameter: nameof(Lookup.CreatedBy)),
+                (Rule: IsInvalidLength(lookup.UpdatedBy, 255), Parameter: nameof(Lookup.UpdatedBy)),
 
-                (Rule: await IsSameAsAsync(
+                (Rule: IsSameAs(
                     firstDate: lookup.UpdatedDate,
                     secondDate: lookup.CreatedDate,
                     secondDateName: nameof(Lookup.CreatedDate)),
@@ -67,10 +67,10 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Lookups
                 (Rule: await IsNotRecentAsync(lookup.UpdatedDate), Parameter: nameof(lookup.UpdatedDate)));
         }
 
-        public async ValueTask ValidateLookupId(Guid lookupId) =>
-            Validate((Rule: await IsInvalidAsync(lookupId), Parameter: nameof(Lookup.Id)));
+        public static void ValidateLookupId(Guid lookupId) =>
+            Validate((Rule: IsInvalid(lookupId), Parameter: nameof(Lookup.Id)));
 
-        private async static ValueTask ValidateStorageLookup(Lookup maybeLookup, Guid lookupId)
+        private static void ValidateStorageLookup(Lookup maybeLookup, Guid lookupId)
         {
             if (maybeLookup is null)
             {
@@ -78,7 +78,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Lookups
             }
         }
 
-        private async static ValueTask ValidateLookupIsNotNull(Lookup lookup)
+        private static void ValidateLookupIsNotNull(Lookup lookup)
         {
             if (lookup is null)
             {
@@ -86,56 +86,56 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Lookups
             }
         }
 
-        private async ValueTask ValidateAgainstStorageLookupOnModify(Lookup inputLookup, Lookup storageLookup)
+        private static void ValidateAgainstStorageLookupOnModify(Lookup inputLookup, Lookup storageLookup)
         {
             Validate(
-                (Rule: await IsNotSameAsync(
+                (Rule: IsNotSame(
                     first: inputLookup.CreatedBy,
                     second: storageLookup.CreatedBy,
                     secondName: nameof(Lookup.CreatedBy)),
                 Parameter: nameof(Lookup.CreatedBy)),
 
-                (Rule: await IsNotSameAsync(
+                (Rule: IsNotSame(
                     first: inputLookup.CreatedDate,
                     second: storageLookup.CreatedDate,
                     secondName: nameof(Lookup.CreatedDate)),
                 Parameter: nameof(Lookup.CreatedDate)),
 
-                (Rule: await IsSameAsAsync(
+                (Rule: IsSameAs(
                     firstDate: inputLookup.UpdatedDate,
                     secondDate: storageLookup.UpdatedDate,
                     secondDateName: nameof(Lookup.UpdatedDate)),
                 Parameter: nameof(Lookup.UpdatedDate)));
         }
 
-        private static async ValueTask<dynamic> IsInvalidAsync(Guid id) => new
+        private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,
             Message = "Id is invalid"
         };
 
-        private static async ValueTask<dynamic> IsInvalidAsync(string name) => new
+        private static dynamic IsInvalid(string name) => new
         {
             Condition = String.IsNullOrWhiteSpace(name),
             Message = "Text is invalid"
         };
 
-        private static async ValueTask<dynamic> IsInvalidLengthAsync(string text, int maxLength) => new
+        private static dynamic IsInvalidLength(string text, int maxLength) => new
         {
-            Condition = await IsExceedingLengthAsync(text, maxLength),
+            Condition = IsExceedingLength(text, maxLength),
             Message = $"Text exceed max length of {maxLength} characters"
         };
 
-        private static async ValueTask<bool> IsExceedingLengthAsync(string text, int maxLength) =>
+        private static bool IsExceedingLength(string text, int maxLength) =>
             (text ?? string.Empty).Length > maxLength;
 
-        private static async ValueTask<dynamic> IsInvalidAsync(DateTimeOffset date) => new
+        private static dynamic IsInvalid(DateTimeOffset date) => new
         {
             Condition = date == default,
             Message = "Date is invalid"
         };
 
-        private static async ValueTask<dynamic> IsSameAsAsync(
+        private static dynamic IsSameAs(
             DateTimeOffset firstDate,
             DateTimeOffset secondDate,
             string secondDateName) => new
@@ -144,7 +144,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Lookups
                 Message = $"Date is the same as {secondDateName}"
             };
 
-        private static async ValueTask<dynamic> IsNotSameAsync(
+        private static dynamic IsNotSame(
             string first,
             string second,
             string secondName) => new
@@ -153,7 +153,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Lookups
                 Message = $"Text is not the same as {secondName}"
             };
 
-        private static async ValueTask<dynamic> IsNotSameAsync(
+        private static dynamic IsNotSame(
             DateTimeOffset first,
             DateTimeOffset second,
             string secondName) => new
