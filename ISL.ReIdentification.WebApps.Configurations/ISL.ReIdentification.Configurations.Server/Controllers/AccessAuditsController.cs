@@ -5,7 +5,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using ISL.Reidentification.Core.Models.Foundations.AccessAudits.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits.Exceptions;
 using ISL.ReIdentification.Core.Services.Foundations.AccessAudits;
@@ -24,7 +23,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             this.accessAuditService = accessAuditService;
 
         [HttpPost]
-        public async ValueTask<ActionResult<AccessAudit>> PostAccessAuditAsync(AccessAudit accessAudit)
+        public async ValueTask<ActionResult<AccessAudit>> PostAccessAuditAsync([FromBody] AccessAudit accessAudit)
         {
             try
             {
@@ -109,7 +108,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
         }
 
         [HttpPut]
-        public async ValueTask<ActionResult<AccessAudit>> PutAccessAuditAsync(AccessAudit accessAudit)
+        public async ValueTask<ActionResult<AccessAudit>> PutAccessAuditAsync([FromBody] AccessAudit accessAudit)
         {
             try
             {

@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
@@ -18,24 +18,25 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
             // given
             OdsData randomOdsData = CreateRandomOdsData();
             OdsData inputOdsData = randomOdsData;
-            OdsData storageOdsData = inputOdsData;
+            OdsData storageOdsData = randomOdsData;
             OdsData expectedOdsData = storageOdsData.DeepClone();
 
-            this.reIdentificationStorageBrokerMock.Setup(broker =>
+            this.reIdentificationStorageBroker.Setup(broker =>
                 broker.SelectOdsDataByIdAsync(inputOdsData.Id))
                     .ReturnsAsync(storageOdsData);
 
             // when
-            OdsData actualOdsData = await this.odsDataService.RetrieveOdsDataByIdAsync(inputOdsData.Id);
+            OdsData actualOdsData =
+                await this.odsDataService.RetrieveOdsDataByIdAsync(inputOdsData.Id);
 
             // then
             actualOdsData.Should().BeEquivalentTo(expectedOdsData);
 
-            this.reIdentificationStorageBrokerMock.Verify(broker =>
+            this.reIdentificationStorageBroker.Verify(broker =>
                 broker.SelectOdsDataByIdAsync(inputOdsData.Id),
-                    Times.Once());
+                    Times.Once);
 
-            this.reIdentificationStorageBrokerMock.VerifyNoOtherCalls();
+            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

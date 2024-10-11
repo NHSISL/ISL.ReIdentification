@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
@@ -24,20 +24,55 @@ namespace ISL.ReIdentification.Core.Services.Foundations.OdsDatas
             this.loggingBroker = loggingBroker;
         }
 
+        public ValueTask<OdsData> AddOdsDataAsync(OdsData odsData) =>
+            TryCatch(async () =>
+            {
+                await ValidateOdsDataOnAddAsync(odsData);
+
+                return await this.reIdentificationStorageBroker.InsertOdsDataAsync(odsData);
+            });
+
         public ValueTask<IQueryable<OdsData>> RetrieveAllOdsDatasAsync() =>
-        TryCatch(async () =>
-        {
-            return await this.reIdentificationStorageBroker.SelectAllOdsDatasAsync();
-        });
+            TryCatch(this.reIdentificationStorageBroker.SelectAllOdsDatasAsync);
 
-        public ValueTask<OdsData> RetrieveOdsDataByIdAsync(Guid odsId) =>
-        TryCatch(async () =>
-        {
-            await ValidateOdsDataId(odsId);
-            OdsData maybeOdsData = await this.reIdentificationStorageBroker.SelectOdsDataByIdAsync(odsId);
-            await ValidateStorageOdsData(maybeOdsData, odsId);
+        public ValueTask<OdsData> RetrieveOdsDataByIdAsync(Guid odsDataId) =>
+            TryCatch(async () =>
+            {
+                ValidateOdsDataId(odsDataId);
 
-            return maybeOdsData;
-        });
+                OdsData maybeOdsData = await this.reIdentificationStorageBroker
+                    .SelectOdsDataByIdAsync(odsDataId);
+
+                ValidateStorageOdsData(maybeOdsData, odsDataId);
+
+                return maybeOdsData;
+            });
+
+        public ValueTask<OdsData> ModifyOdsDataAsync(OdsData odsData) =>
+            TryCatch(async () =>
+            {
+                await ValidateOdsDataOnModifyAsync(odsData);
+
+                OdsData maybeOdsData =
+                    await this.reIdentificationStorageBroker.SelectOdsDataByIdAsync(odsData.Id);
+
+                ValidateStorageOdsData(maybeOdsData, odsData.Id);
+                ValidateAgainstStorageOdsDataOnModify(inputOdsData: odsData, storageOdsData: maybeOdsData);
+
+                return await this.reIdentificationStorageBroker.UpdateOdsDataAsync(odsData);
+            });
+
+        public ValueTask<OdsData> RemoveOdsDataByIdAsync(Guid odsDataId) =>
+            TryCatch(async () =>
+            {
+                ValidateOdsDataId(odsDataId);
+
+                OdsData maybeOdsData = await this.reIdentificationStorageBroker
+                    .SelectOdsDataByIdAsync(odsDataId);
+
+                ValidateStorageOdsData(maybeOdsData, odsDataId);
+
+                return await this.reIdentificationStorageBroker.DeleteOdsDataAsync(maybeOdsData);
+            });
     }
 }

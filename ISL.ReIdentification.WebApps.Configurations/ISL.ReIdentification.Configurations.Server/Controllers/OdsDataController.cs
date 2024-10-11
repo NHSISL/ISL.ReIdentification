@@ -27,9 +27,9 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
         {
             try
             {
-                IQueryable<OdsData> odsData = await this.odsDataService.RetrieveAllOdsDatasAsync();
+                IQueryable<OdsData> retrievedOdsDatas = await this.odsDataService.RetrieveAllOdsDatasAsync();
 
-                return Ok(odsData);
+                return Ok(retrievedOdsDatas);
             }
             catch (OdsDataDependencyException odsDataDependencyException)
             {
@@ -46,9 +46,9 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
         {
             try
             {
-                OdsData odsData = await this.odsDataService.RetrieveOdsDataByIdAsync(odsDataId);
+                OdsData retrievedOdsData = await this.odsDataService.RetrieveOdsDataByIdAsync(odsDataId);
 
-                return Ok(odsData);
+                return Ok(retrievedOdsData);
             }
             catch (OdsDataValidationException odsDataValidationException)
                 when (odsDataValidationException.InnerException is NotFoundOdsDataException)

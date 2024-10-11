@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
@@ -19,60 +19,72 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
 {
     public partial class PdsDataServiceTests
     {
-        private readonly Mock<IReIdentificationStorageBroker> reIdentificationStorageBrokerMock;
+        private readonly Mock<IReIdentificationStorageBroker> reIdentificationStorageBroker;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly PdsDataService pdsDataService;
 
         public PdsDataServiceTests()
         {
-            this.reIdentificationStorageBrokerMock = new Mock<IReIdentificationStorageBroker>();
+            this.reIdentificationStorageBroker = new Mock<IReIdentificationStorageBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
             this.pdsDataService = new PdsDataService(
-                reIdentificationStorageBrokerMock.Object,
-                loggingBrokerMock.Object);
+                reIdentificationStorageBroker: this.reIdentificationStorageBroker.Object,
+                loggingBroker: this.loggingBrokerMock.Object);
         }
 
-        private static DateTimeOffset GetRandomDateTimeOffset() =>
-            new DateTimeRange(earliestDate: new DateTime()).GetValue();
-
-        private static PdsData CreateRandomPdsData() =>
-            CreateRandomPdsData(dateTimeOffset: GetRandomDateTimeOffset());
-
-        private static PdsData CreateRandomPdsData(DateTimeOffset dateTimeOffset) =>
-            CreatePdsDataFiller(dateTimeOffset).Create();
-
-        private static IQueryable<PdsData> CreateRandomPdsDatas()
-        {
-            return CreatePdsDataFiller(GetRandomDateTimeOffset())
-                .Create(GetRandomNumber())
-                .AsQueryable();
-        }
-
-        private static int GetRandomNumber() =>
-            new IntRange(max: 15, min: 2).GetValue();
+        private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
+            actualException => actualException.SameExceptionAs(expectedException);
 
         private static string GetRandomString() =>
             new MnemonicString(wordCount: GetRandomNumber()).GetValue();
 
-        private static Filler<PdsData> CreatePdsDataFiller(DateTimeOffset dateTimeOffset)
-        {
-            var filler = new Filler<PdsData>();
-
-            filler.Setup()
-                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
-                .OnProperty(pdsData => pdsData.OdsDatas).IgnoreIt();
-
-            return filler;
-        }
+        private static string GetRandomStringWithLengthOf(int length) =>
+            new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
 
         private SqlException CreateSqlException() =>
             (SqlException)RuntimeHelpers.GetUninitializedObject(type: typeof(SqlException));
 
-        private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException)
+        private static int GetRandomNumber() =>
+            new IntRange(min: 2, max: 10).GetValue();
+
+        private static int GetRandomNegativeNumber() =>
+            -1 * new IntRange(min: 2, max: 10).GetValue();
+
+        private static DateTimeOffset GetRandomDateTimeOffset() =>
+            new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static PdsData CreateRandomModifyPdsData(DateTimeOffset dateTimeOffset)
         {
-            return actualException =>
-                actualException.SameExceptionAs(expectedException);
+            int randomDaysInPast = GetRandomNegativeNumber();
+            PdsData PandomPdsData = CreateRandomPdsData(dateTimeOffset);
+
+            return PandomPdsData;
+        }
+
+        private static IQueryable<PdsData> CreateRandomPdsDatas()
+        {
+            return CreatePdsDataFiller(dateTimeOffset: GetRandomDateTimeOffset())
+                .Create(count: GetRandomNumber())
+                    .AsQueryable();
+        }
+
+        private static PdsData CreateRandomPdsData() =>
+            CreatePdsDataFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
+
+        private static PdsData CreateRandomPdsData(DateTimeOffset dateTimeOffset) =>
+            CreatePdsDataFiller(dateTimeOffset).Create();
+
+        private static Filler<PdsData> CreatePdsDataFiller(DateTimeOffset dateTimeOffset)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<PdsData>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use((DateTimeOffset?)default);
+
+            return filler;
         }
     }
 }

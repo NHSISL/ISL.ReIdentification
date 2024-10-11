@@ -5,7 +5,7 @@
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 
-namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
+namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
 {
     public interface IIdentificationCoordinationService
     {
