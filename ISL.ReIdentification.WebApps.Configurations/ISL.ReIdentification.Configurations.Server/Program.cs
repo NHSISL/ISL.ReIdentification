@@ -6,7 +6,6 @@ using System.Text.Json;
 using ISL.Providers.Notifications.Abstractions;
 using ISL.Providers.Notifications.GovukNotify.Models;
 using ISL.Providers.Notifications.GovukNotify.Providers.Notifications;
-using FluentAssertions.Common;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Identifiers;
 using ISL.ReIdentification.Core.Brokers.Loggings;
@@ -14,7 +13,6 @@ using ISL.ReIdentification.Core.Brokers.Notifications;
 using ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Brokers.Notifications;
 using ISL.ReIdentification.Core.Models.Foundations.Lookups;
-using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Services.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Services.Foundations.Lookups;
@@ -66,7 +64,6 @@ namespace ISL.ReIdentification.Configurations.Server
             builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
             JsonNamingPolicy jsonNamingPolicy = JsonNamingPolicy.CamelCase;
 
-            builder.Services.AddODataQueryFilter();
             builder.Services.AddControllers()
                .AddOData(options =>
                {
@@ -81,23 +78,15 @@ namespace ISL.ReIdentification.Configurations.Server
                    options.JsonSerializerOptions.WriteIndented = true;
                });
 
-            builder.Services.AddSingleton(new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = jsonNamingPolicy,
-                DictionaryKeyPolicy = jsonNamingPolicy,
-            });
-
             static IEdmModel GetEdmModel()
             {
                 ODataConventionModelBuilder builder =
                    new ODataConventionModelBuilder();
 
                 builder.EntitySet<Lookup>("Lookups");
-                builder.EntitySet<UserAccess>("UserAccesses");
-                builder.EnableLowerCamelCase();
-
                 return builder.GetEdmModel();
             }
+
 
             var app = builder.Build();
             app.UseDefaultFiles();

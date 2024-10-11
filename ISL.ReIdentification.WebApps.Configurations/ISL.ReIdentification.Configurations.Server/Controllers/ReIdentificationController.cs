@@ -5,7 +5,7 @@
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
-using ISL.ReIdentification.Core.Services.Orchestrations.Identifications;
+using ISL.ReIdentification.Core.Services.Coordinations.Identifications;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
 

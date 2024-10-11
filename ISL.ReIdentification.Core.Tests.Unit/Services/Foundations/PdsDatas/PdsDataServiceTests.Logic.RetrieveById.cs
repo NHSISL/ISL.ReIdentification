@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
@@ -21,7 +21,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
             PdsData storagePdsData = randomPdsData;
             PdsData expectedPdsData = storagePdsData.DeepClone();
 
-            this.reIdentificationStorageBrokerMock.Setup(broker =>
+            this.reIdentificationStorageBroker.Setup(broker =>
                 broker.SelectPdsDataByIdAsync(inputPdsData.RowId))
                     .ReturnsAsync(storagePdsData);
 
@@ -32,11 +32,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
             // then
             actualPdsData.Should().BeEquivalentTo(expectedPdsData);
 
-            this.reIdentificationStorageBrokerMock.Verify(broker =>
+            this.reIdentificationStorageBroker.Verify(broker =>
                 broker.SelectPdsDataByIdAsync(inputPdsData.RowId),
                     Times.Once);
 
-            this.reIdentificationStorageBrokerMock.VerifyNoOtherCalls();
+            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
 using ISL.ReIdentification.Core.Models.Brokers.NECS.Requests;
+using ISL.ReIdentification.Core.Models.Brokers.NECS.Responses;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
 using ISL.ReIdentification.Core.Services.Foundations.ReIdentifications;
 using Moq;
