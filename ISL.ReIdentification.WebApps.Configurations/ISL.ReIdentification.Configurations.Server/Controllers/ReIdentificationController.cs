@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
@@ -50,5 +51,10 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
                 return InternalServerError(identificationCoordinationServiceException);
             }
         }
+
+        [HttpPost("csv")]
+        public async ValueTask<ActionResult<AccessRequest>>
+            PostCsvIdentificationRequestAsync(AccessRequest accessRequest) =>
+                throw new NotImplementedException();
     }
 }
