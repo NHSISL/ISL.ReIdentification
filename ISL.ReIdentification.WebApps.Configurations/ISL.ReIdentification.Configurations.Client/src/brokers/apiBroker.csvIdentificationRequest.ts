@@ -4,8 +4,8 @@ import ApiBroker from "./apiBroker";
 import { CsvIdentificationRequest } from "../models/csvIdentificationRequest/csvIdentificationRequest";
 
 class CsvIdentificationRequestBroker {
-    relativeCsvIdentificationRequestUrl = '/api/csvIdentificationRequest';
-    relativeCsvIdentificationRequestOdataUrl = '/odata/csvIdentificationRequest'
+    relativeCsvIdentificationRequestUrl = '/api/csvIdentificationRequests';
+    relativeCsvIdentificationRequestOdataUrl = '/odata/csvIdentificationRequests'
 
     private apiBroker: ApiBroker = new ApiBroker();
 

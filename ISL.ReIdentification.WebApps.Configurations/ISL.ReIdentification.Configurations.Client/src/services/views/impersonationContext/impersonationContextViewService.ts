@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Guid } from "guid-typescript";
 import { impersonationContextService } from "../../foundations/impersonationContextService";
-import { ImpersonationContextView } from "../../../models/views/components/impersonationContext/ImpersonationContextView";
+import { ImpersonationContextView } from "../../../models/views/components/impersonationContext/impersonationContextView";
 
 type ImpersonationContextViewServiceResponse = {
     mappedImpersonationContexts: ImpersonationContextView[] | undefined;
@@ -23,7 +23,13 @@ export const impersonationContextViewService = {
         let query = `?$orderby=createdDate desc`;
 
         if (searchTerm) {
-            query = query + `&$filter=contains(Name,'${searchTerm}')`;
+            query = query + `&$filter=contains(Reason,'${searchTerm}') or ` +
+                `contains(RequesterFirstName,'${searchTerm}') or ` +
+                `contains(RequesterLastName,'${searchTerm}') or ` +
+                `contains(RequesterEmail,'${searchTerm}') or ` +
+                `contains(RecipientFirstName,'${searchTerm}') or ` +
+                `contains(RecipientLastName,'${searchTerm}') or ` +
+                `contains(RecipientEmail,'${searchTerm}')`;
         }
 
         const response = impersonationContextService.useRetrieveAllImpersonationContextPages(query);

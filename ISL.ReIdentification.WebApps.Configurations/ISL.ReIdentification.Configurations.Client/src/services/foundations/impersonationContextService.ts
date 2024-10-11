@@ -1,8 +1,8 @@
 import { useMsal } from "@azure/msal-react";
 import { Guid } from "guid-typescript";
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "react-query";
 import ImpersonationContextBroker from "../../brokers/apiBroker.ImpersonationContext";
-import { ImpersonationContext } from "../../models/impersonationContext.ts/impersonationContext";
+import { useQueryClient, useMutation, useQuery, useInfiniteQuery } from "@tanstack/react-query";
+import { ImpersonationContext } from "../../models/impersonationContext/impersonationContext";
 
 
 export const impersonationContextService = {
@@ -11,45 +11,47 @@ export const impersonationContextService = {
         const queryClient = useQueryClient();
         const msal = useMsal();
 
-        return useMutation((impersonationContext: ImpersonationContext) => {
-            const date = new Date();
-            impersonationContext.createdDate = impersonationContext.updatedDate = date;
-            impersonationContext.createdBy = impersonationContext.updatedBy = msal.accounts[0].username;
+        return useMutation({
+            mutationFn: (impersonationContext: ImpersonationContext) => {
+                const date = new Date();
+                impersonationContext.createdDate = impersonationContext.updatedDate = date;
+                impersonationContext.createdBy = impersonationContext.updatedBy = msal.accounts[0].username;
 
-            return broker.PostImpersonationContextAsync(impersonationContext);
-        },
-            {
-                onSuccess: (variables: ImpersonationContext) => {
-                    queryClient.invalidateQueries("ImpersonationContextGetAll");
-                    queryClient.invalidateQueries(["ImpersonationContextById", { id: variables.id }]);
-                }
-            });
+                return broker.PostImpersonationContextAsync(impersonationContext);
+            },
+
+            onSuccess: (variables: ImpersonationContext) => {
+                queryClient.invalidateQueries({ queryKey: ["ImpersonationContextGetAll"] });
+                queryClient.invalidateQueries({ queryKey: ["ImpersonationContextById", { id: variables.id }] });
+            }
+        });
     },
 
     useRetrieveAllImpersonationContext: (query: string) => {
         const broker = new ImpersonationContextBroker();
 
-        return useQuery(
-            ["ImpersonationContextGetAll", { query: query }],
-            () => broker.GetAllImpersonationContextAsync(query),
-            { staleTime: Infinity });
+        return useQuery({
+            queryKey: ["ImpersonationContextGetAll", { query: query }],
+            queryFn: () => broker.GetAllImpersonationContextAsync(query),
+            staleTime: Infinity
+        });
     },
 
     useRetrieveAllImpersonationContextPages: (query: string) => {
         const broker = new ImpersonationContextBroker();
 
-        return useInfiniteQuery(
-            ["ImpersonationContextGetAll", { query: query }],
-            ({ pageParam }: { pageParam?: string }) => {
+        return useInfiniteQuery({
+            queryKey: ["ImpersonationContextGetAll", { query: query }],
+            queryFn: ({ pageParam }: { pageParam?: string }) => {
                 if (!pageParam) {
                     return broker.GetImpersonationContextFirstPagesAsync(query)
                 }
                 return broker.GetImpersonationContextSubsequentPagesAsync(pageParam)
             },
-            {
-                getNextPageParam: (lastPage: { nextPage?: string }) => lastPage.nextPage,
-                staleTime: Infinity
-            });
+            initialPageParam: 0,
+            staleTime: Infinity,
+            getNextPageParam: (lastPage: any) => lastPage.nextPage ?? null,
+        });
     },
 
     useModifyImpersonationContext: () => {
@@ -57,33 +59,35 @@ export const impersonationContextService = {
         const queryClient = useQueryClient();
         const msal = useMsal();
 
-        return useMutation((impersonationContext: ImpersonationContext) => {
-            const date = new Date();
-            impersonationContext.updatedDate = date;
-            impersonationContext.updatedBy = msal.accounts[0].username;
+        return useMutation({
+            mutationFn: (impersonationContext: ImpersonationContext) => {
+                const date = new Date();
+                impersonationContext.updatedDate = date;
+                impersonationContext.updatedBy = msal.accounts[0].username;
 
-            return broker.PutImpersonationContextAsync(impersonationContext);
-        },
-            {
-                onSuccess: (data: ImpersonationContext) => {
-                    queryClient.invalidateQueries("ImpersonationContextGetAll");
-                    queryClient.invalidateQueries(["ImpersonationContextGetById", { id: data.id }]);
-                }
-            });
+                return broker.PutImpersonationContextAsync(impersonationContext);
+            },
+
+            onSuccess: (data: ImpersonationContext) => {
+                queryClient.invalidateQueries({ queryKey: ["ImpersonationContextGetAll"] });
+                queryClient.invalidateQueries({ queryKey: ["ImpersonationContextGetById", { id: data.id }] });
+            }
+        });
     },
 
     useRemoveImpersonationContext: () => {
         const broker = new ImpersonationContextBroker();
         const queryClient = useQueryClient();
 
-        return useMutation((id: Guid) => {
-            return broker.DeleteImpersonationContextByIdAsync(id);
-        },
-            {
-                onSuccess: (data: { id: Guid }) => {
-                    queryClient.invalidateQueries("ImpersonationContextGetAll");
-                    queryClient.invalidateQueries(["ImpersonationContextGetById", { id: data.id }]);
-                }
-            });
+        return useMutation({
+            mutationFn: (id: Guid) => {
+                return broker.DeleteImpersonationContextByIdAsync(id);
+            },
+
+            onSuccess: (data: { id: Guid }) => {
+                queryClient.invalidateQueries({ queryKey: ["ImpersonationContextGetAll"] });
+                queryClient.invalidateQueries({ queryKey: ["ImpersonationContextGetById", { id: data.id }] });
+            }
+        });
     },
 }

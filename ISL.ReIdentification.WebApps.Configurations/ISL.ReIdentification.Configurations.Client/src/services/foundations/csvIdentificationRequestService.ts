@@ -1,8 +1,8 @@
 import { useMsal } from "@azure/msal-react";
 import { Guid } from "guid-typescript";
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "react-query";
 import CsvIdentificationRequestBroker from "../../brokers/apiBroker.csvIdentificationRequest";
 import { CsvIdentificationRequest } from "../../models/csvIdentificationRequest/csvIdentificationRequest";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 
 export const csvIdentificationRequestService = {
@@ -11,45 +11,47 @@ export const csvIdentificationRequestService = {
         const queryClient = useQueryClient();
         const msal = useMsal();
 
-        return useMutation((csvIdentificationRequest: CsvIdentificationRequest) => {
-            const date = new Date();
-            csvIdentificationRequest.createdDate = csvIdentificationRequest.updatedDate = date;
-            csvIdentificationRequest.createdBy = csvIdentificationRequest.updatedBy = msal.accounts[0].username;
+        return useMutation({
+            mutationFn: (csvIdentificationRequest: CsvIdentificationRequest) => {
+                const date = new Date();
+                csvIdentificationRequest.createdDate = csvIdentificationRequest.updatedDate = date;
+                csvIdentificationRequest.createdBy = csvIdentificationRequest.updatedBy = msal.accounts[0].username;
 
-            return broker.PostCsvIdentificationRequestAsync(csvIdentificationRequest);
-        },
-            {
-                onSuccess: (variables: CsvIdentificationRequest) => {
-                    queryClient.invalidateQueries("CsvIdentificationRequestGetAll");
-                    queryClient.invalidateQueries(["CsvIdentificationRequestById", { id: variables.id }]);
-                }
-            });
+                return broker.PostCsvIdentificationRequestAsync(csvIdentificationRequest);
+            },
+
+            onSuccess: (variables: CsvIdentificationRequest) => {
+                queryClient.invalidateQueries({ queryKey: ["CsvIdentificationRequestGetAll"] });
+                queryClient.invalidateQueries({ queryKey: ["CsvIdentificationRequestById", { id: variables.id }] });
+            }
+        });
     },
 
     useRetrieveAllCsvIdentificationRequest: (query: string) => {
         const broker = new CsvIdentificationRequestBroker();
 
-        return useQuery(
-            ["CsvIdentificationRequestGetAll", { query: query }],
-            () => broker.GetAllCsvIdentificationRequestAsync(query),
-            { staleTime: Infinity });
+        return useQuery({
+            queryKey: ["CsvIdentificationRequestGetAll", { query: query }],
+            queryFn: () => broker.GetAllCsvIdentificationRequestAsync(query),
+            staleTime: Infinity
+        });
     },
 
     useRetrieveAllCsvIdentificationRequestPages: (query: string) => {
         const broker = new CsvIdentificationRequestBroker();
 
-        return useInfiniteQuery(
-            ["CsvIdentificationRequestGetAll", { query: query }],
-            ({ pageParam }: { pageParam?: string }) => {
+        return useInfiniteQuery({
+            queryKey: ["CsvIdentificationRequestGetAll", { query: query }],
+            queryFn: ({ pageParam }: { pageParam?: string }) => {
                 if (!pageParam) {
                     return broker.GetCsvIdentificationRequestFirstPagesAsync(query)
                 }
                 return broker.GetCsvIdentificationRequestSubsequentPagesAsync(pageParam)
             },
-            {
-                getNextPageParam: (lastPage: { nextPage?: string }) => lastPage.nextPage,
-                staleTime: Infinity
-            });
+            initialPageParam: 0,
+            staleTime: Infinity,
+            getNextPageParam: (lastPage: { nextPage?: string }) => lastPage.nextPage,
+        });
     },
 
     useModifyCsvIdentificationRequest: () => {
@@ -57,33 +59,33 @@ export const csvIdentificationRequestService = {
         const queryClient = useQueryClient();
         const msal = useMsal();
 
-        return useMutation((csvIdentificationRequest: CsvIdentificationRequest) => {
-            const date = new Date();
-            csvIdentificationRequest.updatedDate = date;
-            csvIdentificationRequest.updatedBy = msal.accounts[0].username;
+        return useMutation({
+            mutationFn: (csvIdentificationRequest: CsvIdentificationRequest) => {
+                const date = new Date();
+                csvIdentificationRequest.updatedDate = date;
+                csvIdentificationRequest.updatedBy = msal.accounts[0].username;
 
-            return broker.PutCsvIdentificationRequestAsync(csvIdentificationRequest);
-        },
-            {
-                onSuccess: (data: CsvIdentificationRequest) => {
-                    queryClient.invalidateQueries("CsvIdentificationRequestGetAll");
-                    queryClient.invalidateQueries(["CsvIdentificationRequestGetById", { id: data.id }]);
-                }
-            });
+                return broker.PutCsvIdentificationRequestAsync(csvIdentificationRequest);
+            },
+            onSuccess: (data: CsvIdentificationRequest) => {
+                queryClient.invalidateQueries({ queryKey: ["CsvIdentificationRequestGetAll"] });
+                queryClient.invalidateQueries({ queryKey: ["CsvIdentificationRequestGetById", { id: data.id }] });
+            }
+        });
     },
 
     useRemoveCsvIdentificationRequest: () => {
         const broker = new CsvIdentificationRequestBroker();
         const queryClient = useQueryClient();
 
-        return useMutation((id: Guid) => {
-            return broker.DeleteCsvIdentificationRequestByIdAsync(id);
-        },
-            {
-                onSuccess: (data: { id: Guid }) => {
-                    queryClient.invalidateQueries("CsvIdentificationRequestGetAll");
-                    queryClient.invalidateQueries(["CsvIdentificationRequestGetById", { id: data.id }]);
-                }
-            });
+        return useMutation({
+            mutationFn: (id: Guid) => {
+                return broker.DeleteCsvIdentificationRequestByIdAsync(id);
+            },
+            onSuccess: (data: { id: Guid }) => {
+                queryClient.invalidateQueries({ queryKey: ["CsvIdentificationRequestGetAll"] });
+                queryClient.invalidateQueries({ queryKey: ["CsvIdentificationRequestGetById", { id: data.id }] });
+            }
+        });
     },
 }
