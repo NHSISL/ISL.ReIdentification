@@ -7,6 +7,7 @@ using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using RESTFulSense.Clients.Extensions;
+using RESTFulSense.Models;
 using Xeptions;
 
 namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.ReIdentification
@@ -23,6 +24,38 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.ReId
 
             BadRequestObjectResult expectedBadRequestObjectResult =
                 BadRequest(validationException.InnerException);
+
+            var expectedActionResult =
+                new ActionResult<AccessRequest>(expectedBadRequestObjectResult);
+
+            this.identificationCoordinationServiceMock.Setup(service =>
+                service.ProcessImpersonationContextRequestAsync(It.IsAny<AccessRequest>()))
+                    .ThrowsAsync(validationException);
+
+            // when
+            ActionResult<AccessRequest> actualActionResult =
+                await this.reIdentificationController.PostImpersonationContextRequestAsync(someAccessRequest);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.identificationCoordinationServiceMock.Verify(service =>
+                service.ProcessImpersonationContextRequestAsync(It.IsAny<AccessRequest>()),
+                    Times.Once);
+
+            this.identificationCoordinationServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(ServerExceptions))]
+        public async Task ShouldReturnInternalServerErrorOnPostImpersonationContextIfServerErrorOccurredAsync(
+            Xeption validationException)
+        {
+            // given
+            AccessRequest someAccessRequest = CreateRandomAccessRequest();
+
+            InternalServerErrorObjectResult expectedBadRequestObjectResult =
+                InternalServerError(validationException);
 
             var expectedActionResult =
                 new ActionResult<AccessRequest>(expectedBadRequestObjectResult);
