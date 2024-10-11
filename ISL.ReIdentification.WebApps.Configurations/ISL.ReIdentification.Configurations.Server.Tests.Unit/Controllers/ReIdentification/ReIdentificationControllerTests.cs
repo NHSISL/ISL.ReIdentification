@@ -8,6 +8,7 @@ using System.Linq;
 using Force.DeepCloner;
 using ISL.ReIdentification.Configurations.Server.Controllers;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications.Exceptions;
+using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
@@ -80,6 +81,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.ReId
 
             filler.Setup()
                 .OnProperty(request => request.ImpersonationContextRequest).Use(CreateRandomImpersonationContext)
+                .OnProperty(request => request.CsvIdentificationRequest).Use(CreateRandomCsvIdentificationRequest)
 
                 .OnProperty(request => request.IdentificationRequest)
                     .Use(CreateRandomIdentificationRequest());
@@ -115,8 +117,23 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.ReId
             var filler = new Filler<ImpersonationContext>();
 
             filler.Setup()
-                .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnType<DateTimeOffset?>().Use(dateTimeOffset);
+                .OnType<DateTimeOffset>().Use(dateTimeOffset);
+
+            return filler;
+        }
+
+        private static CsvIdentificationRequest CreateRandomCsvIdentificationRequest() =>
+            CreateRandomCsvIdentificationRequest(dateTimeOffset: GetRandomDateTimeOffset());
+
+        private static CsvIdentificationRequest CreateRandomCsvIdentificationRequest(DateTimeOffset dateTimeOffset) =>
+            CreateCsvIdentificationRequestFiller(dateTimeOffset).Create();
+
+        private static Filler<CsvIdentificationRequest> CreateCsvIdentificationRequestFiller(DateTimeOffset dateTimeOffset)
+        {
+            var filler = new Filler<CsvIdentificationRequest>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset);
 
             return filler;
         }
