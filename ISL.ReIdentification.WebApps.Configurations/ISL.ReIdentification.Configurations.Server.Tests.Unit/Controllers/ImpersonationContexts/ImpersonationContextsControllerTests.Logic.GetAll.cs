@@ -34,7 +34,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.Impe
 
             // when
             ActionResult<IQueryable<ImpersonationContext>> actualActionResult =
-                await impersonationContextsController.GetAsync();
+                await impersonationContextsController.Get();
 
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
