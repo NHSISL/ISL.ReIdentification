@@ -11,6 +11,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
     {
         ValueTask<AccessRequest> ProcessImpersonationContextRequestAsync(AccessRequest accessRequest);
         ValueTask<AccessRequest> ProcessCsvIdentificationRequestAsync(AccessRequest accessRequest);
+        ValueTask<AccessRequest> ReIdentifyCsvIdentificationRequestAsync(AccessRequest accessRequest);
         ValueTask<AccessRequest> ProcessIdentificationRequestsAsync(AccessRequest accessRequest);
     }
 }

@@ -47,5 +47,8 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
 
         public ValueTask<AccessRequest> ProcessCsvIdentificationRequestAsync(AccessRequest accessRequest) =>
             throw new System.NotImplementedException();
+
+        public ValueTask<AccessRequest> ReIdentifyCsvIdentificationRequestAsync(AccessRequest accessRequest) =>
+            throw new System.NotImplementedException();
     }
 }
