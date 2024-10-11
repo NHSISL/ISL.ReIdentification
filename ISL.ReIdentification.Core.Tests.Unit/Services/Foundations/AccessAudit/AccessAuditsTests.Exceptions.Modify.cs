@@ -43,7 +43,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
 
             AccessAuditDependencyException actualAccessAuditDependencyException =
                 await Assert.ThrowsAsync<AccessAuditDependencyException>(
-                    modifyAccessAuditTask.AsTask);
+                    testCode: modifyAccessAuditTask.AsTask);
 
             // then
             actualAccessAuditDependencyException.Should().BeEquivalentTo(
@@ -148,7 +148,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
                 this.accessAuditService.ModifyAccessAuditAsync(randomAccessAudit);
 
             AccessAuditDependencyValidationException actualAccessAuditDependencyValidationException =
-                await Assert.ThrowsAsync<AccessAuditDependencyValidationException>(modifyAccessAuditTask.AsTask);
+                await Assert.ThrowsAsync<AccessAuditDependencyValidationException>(
+                    testCode: modifyAccessAuditTask.AsTask);
 
             // then
             actualAccessAuditDependencyValidationException.Should()

@@ -39,7 +39,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
 
             OdsDataDependencyException actualOdsDataDependencyException =
                 await Assert.ThrowsAsync<OdsDataDependencyException>(
-                    retrieveAllOdsDatasTask.AsTask);
+                    testCode: retrieveAllOdsDatasTask.AsTask);
 
             // then
             actualOdsDataDependencyException.Should().BeEquivalentTo(expectedOdsDataDependencyException);
@@ -81,7 +81,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
 
             OdsDataServiceException actualOdsDataDependencyException =
                 await Assert.ThrowsAsync<OdsDataServiceException>(
-                    retrieveAllOdsDatasTask.AsTask);
+                    testCode: retrieveAllOdsDatasTask.AsTask);
 
             // then
             actualOdsDataDependencyException.Should().BeEquivalentTo(expectedOdsDataServiceException);
