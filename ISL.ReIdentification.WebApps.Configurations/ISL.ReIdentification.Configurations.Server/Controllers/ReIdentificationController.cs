@@ -55,10 +55,23 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
         public async ValueTask<ActionResult<AccessRequest>>
             PostCsvIdentificationRequestAsync(AccessRequest accessRequest)
         {
-            AccessRequest addedAccessRequest =
+            try
+            {
+                AccessRequest addedAccessRequest =
                     await this.identificationCoordinationService.ProcessCsvIdentificationRequestAsync(accessRequest);
 
-            return Created(addedAccessRequest);
+                return Created(addedAccessRequest);
+            }
+            catch (IdentificationCoordinationValidationException identificationCoordinationValidationException)
+            {
+                return BadRequest(identificationCoordinationValidationException.InnerException);
+            }
+            catch (
+                IdentificationCoordinationDependencyValidationException
+                    identificationCoordinationDependencyValidationException)
+            {
+                return BadRequest(identificationCoordinationDependencyValidationException.InnerException);
+            }
         }
     }
 }
