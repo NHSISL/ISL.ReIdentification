@@ -17,77 +17,59 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
             ValidateCsvIdentificationRequestIsNotNull(csvIdentificationRequest);
 
             Validate(
-                (Rule: await IsInvalidAsync(csvIdentificationRequest.Id),
+                (Rule: IsInvalid(csvIdentificationRequest.Id),
                 Parameter: nameof(CsvIdentificationRequest.Id)),
 
-                (Rule: await IsInvalidAsync(csvIdentificationRequest.RequesterFirstName),
-                Parameter: nameof(CsvIdentificationRequest.RequesterFirstName)),
+                (Rule: IsInvalid(csvIdentificationRequest.RequesterEntraUserId),
+                Parameter: nameof(CsvIdentificationRequest.RequesterEntraUserId)),
 
-                (Rule: await IsInvalidAsync(csvIdentificationRequest.RequesterLastName),
-                Parameter: nameof(CsvIdentificationRequest.RequesterLastName)),
-
-                (Rule: await IsInvalidAsync(csvIdentificationRequest.RequesterEmail),
+                (Rule: IsInvalid(csvIdentificationRequest.RequesterEmail),
                 Parameter: nameof(CsvIdentificationRequest.RequesterEmail)),
 
-                (Rule: await IsInvalidAsync(csvIdentificationRequest.RecipientFirstName),
-                Parameter: nameof(CsvIdentificationRequest.RecipientFirstName)),
+                (Rule: IsInvalid(csvIdentificationRequest.RecipientEntraUserId),
+                Parameter: nameof(CsvIdentificationRequest.RecipientEntraUserId)),
 
-                (Rule: await IsInvalidAsync(csvIdentificationRequest.RecipientLastName),
-                Parameter: nameof(CsvIdentificationRequest.RecipientLastName)),
-
-                (Rule: await IsInvalidAsync(csvIdentificationRequest.RecipientEmail),
+                (Rule: IsInvalid(csvIdentificationRequest.RecipientEmail),
                 Parameter: nameof(CsvIdentificationRequest.RecipientEmail)),
 
-                (Rule: await IsInvalidAsync(csvIdentificationRequest.IdentifierColumn),
+                (Rule: IsInvalid(csvIdentificationRequest.IdentifierColumn),
                 Parameter: nameof(CsvIdentificationRequest.IdentifierColumn)),
 
-                (Rule: await IsInvalidAsync(csvIdentificationRequest.CreatedBy),
+                (Rule: IsInvalid(csvIdentificationRequest.CreatedBy),
                 Parameter: nameof(CsvIdentificationRequest.CreatedBy)),
 
-                (Rule: await IsInvalidAsync(csvIdentificationRequest.UpdatedBy),
+                (Rule: IsInvalid(csvIdentificationRequest.UpdatedBy),
                 Parameter: nameof(CsvIdentificationRequest.UpdatedBy)),
 
-                (Rule: await IsInvalidAsync(csvIdentificationRequest.CreatedDate),
+                (Rule: IsInvalid(csvIdentificationRequest.CreatedDate),
                 Parameter: nameof(CsvIdentificationRequest.CreatedDate)),
 
-                (Rule: await IsInvalidAsync(csvIdentificationRequest.UpdatedDate),
+                (Rule: IsInvalid(csvIdentificationRequest.UpdatedDate),
                 Parameter: nameof(CsvIdentificationRequest.UpdatedDate)),
 
-                (Rule: await IsInvalidLengthAsync(csvIdentificationRequest.RequesterFirstName, 255),
-                Parameter: nameof(CsvIdentificationRequest.RequesterFirstName)),
-
-                (Rule: await IsInvalidLengthAsync(csvIdentificationRequest.RequesterLastName, 255),
-                Parameter: nameof(CsvIdentificationRequest.RequesterLastName)),
-
-                (Rule: await IsInvalidLengthAsync(csvIdentificationRequest.RequesterEmail, 320),
+                (Rule: IsInvalidLength(csvIdentificationRequest.RequesterEmail, 320),
                 Parameter: nameof(CsvIdentificationRequest.RequesterEmail)),
 
-                (Rule: await IsInvalidLengthAsync(csvIdentificationRequest.RecipientFirstName, 255),
-                Parameter: nameof(CsvIdentificationRequest.RecipientFirstName)),
-
-                (Rule: await IsInvalidLengthAsync(csvIdentificationRequest.RecipientLastName, 255),
-                Parameter: nameof(CsvIdentificationRequest.RecipientLastName)),
-
-                (Rule: await IsInvalidLengthAsync(csvIdentificationRequest.RecipientEmail, 320),
+                (Rule: IsInvalidLength(csvIdentificationRequest.RecipientEmail, 320),
                 Parameter: nameof(CsvIdentificationRequest.RecipientEmail)),
 
-                (Rule: await IsInvalidLengthAsync(csvIdentificationRequest.IdentifierColumn, 10),
+                (Rule: IsInvalidLength(csvIdentificationRequest.IdentifierColumn, 10),
                 Parameter: nameof(CsvIdentificationRequest.IdentifierColumn)),
 
-                (Rule: await IsInvalidLengthAsync(csvIdentificationRequest.CreatedBy, 255),
+                (Rule: IsInvalidLength(csvIdentificationRequest.CreatedBy, 255),
                 Parameter: nameof(CsvIdentificationRequest.CreatedBy)),
 
-                (Rule: await IsInvalidLengthAsync(csvIdentificationRequest.UpdatedBy, 255),
+                (Rule: IsInvalidLength(csvIdentificationRequest.UpdatedBy, 255),
                 Parameter: nameof(CsvIdentificationRequest.UpdatedBy)),
 
-                (Rule: await IsNotSameAsync(
+                (Rule: IsNotSame(
                     first: csvIdentificationRequest.UpdatedBy,
                     second: csvIdentificationRequest.CreatedBy,
                     secondName: nameof(CsvIdentificationRequest.CreatedBy)),
 
                 Parameter: nameof(CsvIdentificationRequest.UpdatedBy)),
 
-                (Rule: await IsNotSameAsync(
+                (Rule: IsNotSame(
                     first: csvIdentificationRequest.CreatedDate,
                     second: csvIdentificationRequest.UpdatedDate,
                     secondName: nameof(CsvIdentificationRequest.CreatedDate)),
@@ -104,82 +86,52 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
             ValidateCsvIdentificationRequestIsNotNull(csvIdentificationRequest);
 
             Validate(
-                (Rule: await IsInvalidAsync(csvIdentificationRequest.Id),
+                (Rule: IsInvalid(csvIdentificationRequest.Id),
                 Parameter: nameof(CsvIdentificationRequest.Id)),
 
-                (Rule: await IsInvalidAsync(csvIdentificationRequest.RequesterFirstName),
-                Parameter: nameof(CsvIdentificationRequest.RequesterFirstName)),
+                (Rule: IsInvalid(csvIdentificationRequest.RequesterEntraUserId),
+                Parameter: nameof(CsvIdentificationRequest.RequesterEntraUserId)),
 
-                (Rule: await IsInvalidAsync(csvIdentificationRequest.RequesterLastName),
-                Parameter: nameof(CsvIdentificationRequest.RequesterLastName)),
-
-                (Rule: await IsInvalidAsync(csvIdentificationRequest.RequesterEmail),
+                (Rule: IsInvalid(csvIdentificationRequest.RequesterEmail),
                 Parameter: nameof(CsvIdentificationRequest.RequesterEmail)),
 
-                (Rule: await IsInvalidAsync(csvIdentificationRequest.RecipientFirstName),
-                Parameter: nameof(CsvIdentificationRequest.RecipientFirstName)),
+                (Rule: IsInvalid(csvIdentificationRequest.RecipientEntraUserId),
+                Parameter: nameof(CsvIdentificationRequest.RecipientEntraUserId)),
 
-                (Rule: await IsInvalidAsync(csvIdentificationRequest.RecipientLastName),
-                Parameter: nameof(CsvIdentificationRequest.RecipientLastName)),
-
-                (Rule: await IsInvalidAsync(csvIdentificationRequest.RecipientEmail),
+                (Rule: IsInvalid(csvIdentificationRequest.RecipientEmail),
                 Parameter: nameof(CsvIdentificationRequest.RecipientEmail)),
 
-                (Rule: await IsInvalidAsync(
-                    csvIdentificationRequest.IdentifierColumn),
-
+                (Rule: IsInvalid(csvIdentificationRequest.IdentifierColumn),
                 Parameter: nameof(CsvIdentificationRequest.IdentifierColumn)),
 
-                (Rule: await IsInvalidAsync(csvIdentificationRequest.CreatedBy),
+                (Rule: IsInvalid(csvIdentificationRequest.CreatedBy),
                 Parameter: nameof(CsvIdentificationRequest.CreatedBy)),
 
-                (Rule: await IsInvalidAsync(csvIdentificationRequest.UpdatedBy),
+                (Rule: IsInvalid(csvIdentificationRequest.UpdatedBy),
                 Parameter: nameof(CsvIdentificationRequest.UpdatedBy)),
 
-                (Rule: await IsInvalidAsync(
-                    csvIdentificationRequest.CreatedDate),
-
+                (Rule: IsInvalid(csvIdentificationRequest.CreatedDate),
                 Parameter: nameof(CsvIdentificationRequest.CreatedDate)),
 
-                (Rule: await IsInvalidAsync(
-                    csvIdentificationRequest.UpdatedDate),
-
+                (Rule: IsInvalid(csvIdentificationRequest.UpdatedDate),
                 Parameter: nameof(CsvIdentificationRequest.UpdatedDate)),
 
-                (Rule: await IsInvalidLengthAsync(csvIdentificationRequest.RequesterFirstName, 255),
-                Parameter: nameof(CsvIdentificationRequest.RequesterFirstName)),
-
-                (Rule: await IsInvalidLengthAsync(csvIdentificationRequest.RequesterLastName, 255),
-                Parameter: nameof(CsvIdentificationRequest.RequesterLastName)),
-
-                (Rule: await IsInvalidLengthAsync(csvIdentificationRequest.RequesterEmail, 320),
+                (Rule: IsInvalidLength(csvIdentificationRequest.RequesterEmail, 320),
                 Parameter: nameof(CsvIdentificationRequest.RequesterEmail)),
 
-                (Rule: await IsInvalidLengthAsync(csvIdentificationRequest.RecipientFirstName, 255),
-                Parameter: nameof(CsvIdentificationRequest.RecipientFirstName)),
-
-                (Rule: await IsInvalidLengthAsync(csvIdentificationRequest.RecipientLastName, 255),
-                Parameter: nameof(CsvIdentificationRequest.RecipientLastName)),
-
-                (Rule: await IsInvalidLengthAsync(csvIdentificationRequest.RecipientEmail, 320),
+                (Rule: IsInvalidLength(csvIdentificationRequest.RecipientEmail, 320),
                 Parameter: nameof(CsvIdentificationRequest.RecipientEmail)),
 
-                (Rule: await IsInvalidLengthAsync(
-                    csvIdentificationRequest.IdentifierColumn, 10),
-
+                (Rule: IsInvalidLength(csvIdentificationRequest.IdentifierColumn, 10),
                 Parameter: nameof(CsvIdentificationRequest.IdentifierColumn)),
 
-                (Rule: await IsInvalidLengthAsync(
-                    csvIdentificationRequest.CreatedBy, 255),
-
+                (Rule: IsInvalidLength(csvIdentificationRequest.CreatedBy, 255),
                 Parameter: nameof(CsvIdentificationRequest.CreatedBy)),
 
-                (Rule: await IsInvalidLengthAsync(
-                    csvIdentificationRequest.UpdatedBy, 255),
-
+                (Rule: IsInvalidLength(csvIdentificationRequest.UpdatedBy, 255),
                 Parameter: nameof(CsvIdentificationRequest.UpdatedBy)),
 
-                (Rule: await IsSameAsync(
+                (Rule: IsSame(
                     firstDate: csvIdentificationRequest.UpdatedDate,
                     secondDate: csvIdentificationRequest.CreatedDate,
                     nameof(CsvIdentificationRequest.CreatedDate)),
@@ -190,10 +142,10 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
                     Parameter: nameof(CsvIdentificationRequest.UpdatedDate)));
         }
 
-        private static async ValueTask ValidateCsvIdentificationRequestIdAsync(Guid csvIdentificationRequestId)
+        private static void ValidateCsvIdentificationRequestId(Guid csvIdentificationRequestId)
         {
             Validate(
-                (Rule: await IsInvalidAsync(csvIdentificationRequestId),
+                (Rule: IsInvalid(csvIdentificationRequestId),
                 Parameter: nameof(CsvIdentificationRequest.Id)));
         }
 
@@ -201,11 +153,11 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
         {
             if (csvIdentificationRequest is null)
             {
-                throw new NullCsvIdentificationRequestException("Delegated access is null.");
+                throw new NullCsvIdentificationRequestException("Csv identification request is null.");
             }
         }
 
-        private static async ValueTask ValidateStorageCsvIdentificationRequestAsync(CsvIdentificationRequest maybeCsvIdentificationRequest,
+        private static void ValidateStorageCsvIdentificationRequest(CsvIdentificationRequest maybeCsvIdentificationRequest,
             Guid id)
         {
             if (maybeCsvIdentificationRequest is null)
@@ -215,25 +167,25 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
             }
         }
 
-        private static async ValueTask ValidateAgainstStorageCsvIdentificationRequestOnModifyAsync(
+        private static void ValidateAgainstStorageCsvIdentificationRequestOnModify(
             CsvIdentificationRequest inputCsvIdentificationRequest, CsvIdentificationRequest storageCsvIdentificationRequest)
         {
             Validate(
-                (Rule: await IsNotSameAsync(
+                (Rule: IsNotSame(
                     first: inputCsvIdentificationRequest.CreatedBy,
                     second: storageCsvIdentificationRequest.CreatedBy,
                     secondName: nameof(CsvIdentificationRequest.CreatedBy)),
 
                 Parameter: nameof(CsvIdentificationRequest.CreatedBy)),
 
-                (Rule: await IsNotSameAsync(
+                (Rule: IsNotSame(
                     first: inputCsvIdentificationRequest.CreatedDate,
                     second: storageCsvIdentificationRequest.CreatedDate,
                     secondName: nameof(CsvIdentificationRequest.CreatedDate)),
 
                 Parameter: nameof(CsvIdentificationRequest.CreatedDate)),
 
-                (Rule: await IsSameAsync(
+                (Rule: IsSame(
                     firstDate: inputCsvIdentificationRequest.UpdatedDate,
                     secondDate: storageCsvIdentificationRequest.UpdatedDate,
                     secondDateName: nameof(CsvIdentificationRequest.UpdatedDate)),
@@ -241,34 +193,34 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
                 Parameter: nameof(CsvIdentificationRequest.UpdatedDate)));
         }
 
-        private static async ValueTask<dynamic> IsInvalidAsync(Guid id) => new
+        private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,
             Message = "Id is invalid"
         };
 
-        private static async ValueTask<dynamic> IsInvalidAsync(string name) => new
+        private static dynamic IsInvalid(string name) => new
         {
             Condition = String.IsNullOrWhiteSpace(name),
             Message = "Text is invalid"
         };
 
-        private static async ValueTask<dynamic> IsInvalidAsync(DateTimeOffset date) => new
+        private static dynamic IsInvalid(DateTimeOffset date) => new
         {
             Condition = date == default,
             Message = "Date is invalid"
         };
 
-        private static async ValueTask<dynamic> IsInvalidLengthAsync(string text, int maxLength) => new
+        private static dynamic IsInvalidLength(string text, int maxLength) => new
         {
-            Condition = await IsExceedingLengthAsync(text, maxLength),
+            Condition = IsExceedingLength(text, maxLength),
             Message = $"Text exceed max length of {maxLength} characters"
         };
 
-        private static async ValueTask<bool> IsExceedingLengthAsync(string text, int maxLength) =>
+        private static bool IsExceedingLength(string text, int maxLength) =>
             (text ?? string.Empty).Length > maxLength;
 
-        private static async ValueTask<dynamic> IsSameAsync(
+        private static dynamic IsSame(
             DateTimeOffset firstDate,
             DateTimeOffset secondDate,
             string secondDateName) => new
@@ -277,7 +229,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
                 Message = $"Date is the same as {secondDateName}"
             };
 
-        private static async ValueTask<dynamic> IsNotSameAsync(
+        private static dynamic IsNotSame(
             DateTimeOffset first,
             DateTimeOffset second,
             string secondName) => new
@@ -286,7 +238,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
                 Message = $"Date is not the same as {secondName}"
             };
 
-        private static async ValueTask<dynamic> IsNotSameAsync(
+        private static dynamic IsNotSame(
             string first,
             string second,
             string secondName) => new
@@ -330,7 +282,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
         {
             var invalidCsvIdentificationRequestException =
                 new InvalidCsvIdentificationRequestException(
-                    message: "Invalid delegated access. Please correct the errors and try again.");
+                    message: "Invalid csv identification request. Please correct the errors and try again.");
 
             foreach ((dynamic rule, string parameter) in validations)
             {

@@ -37,7 +37,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
                 .RemoveUserAccessByIdAsync(invalidUserAccessId);
 
             UserAccessValidationException actualUserAccessValidationException =
-                await Assert.ThrowsAsync<UserAccessValidationException>(removeByIdUserAccessTask.AsTask);
+                await Assert.ThrowsAsync<UserAccessValidationException>(
+                    testCode: removeByIdUserAccessTask.AsTask);
 
             // then
             actualUserAccessValidationException.Should().BeEquivalentTo(expectedUserAccessValidationException);
@@ -78,7 +79,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
                 this.userAccessService.RemoveUserAccessByIdAsync(nonExistingUserAccess.Id);
 
             UserAccessValidationException actualUserAccessVaildationException =
-                await Assert.ThrowsAsync<UserAccessValidationException>(removeByIdUserAccessTask.AsTask);
+                await Assert.ThrowsAsync<UserAccessValidationException>(
+                    testCode: removeByIdUserAccessTask.AsTask);
 
             // then
             actualUserAccessVaildationException.Should().BeEquivalentTo(expectedUserAccessValidationException);

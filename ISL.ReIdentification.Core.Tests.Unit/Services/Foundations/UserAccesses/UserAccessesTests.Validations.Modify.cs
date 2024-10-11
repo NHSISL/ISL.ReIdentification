@@ -31,7 +31,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             ValueTask<UserAccess> modifyUserAccessTask = this.userAccessService.ModifyUserAccessAsync(nullUserAccess);
 
             UserAccessValidationException actualUserAccessValidationException =
-                await Assert.ThrowsAsync<UserAccessValidationException>(modifyUserAccessTask.AsTask);
+                await Assert.ThrowsAsync<UserAccessValidationException>(
+                    testCode: modifyUserAccessTask.AsTask);
 
             // then
             actualUserAccessValidationException.Should().BeEquivalentTo(expectedUserAccessValidationException);
@@ -56,9 +57,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             // given
             var invalidUserAccess = new UserAccess
             {
-                FirstName = invalidText,
-                LastName = invalidText,
-                UserEmail = invalidText,
+                EntraUserId = Guid.Empty,
+                Email = invalidText,
                 OrgCode = invalidText,
             };
 
@@ -71,15 +71,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
                 values: "Id is invalid");
 
             invalidUserAccessException.AddData(
-                key: nameof(UserAccess.FirstName),
-                values: "Text is invalid");
+                key: nameof(UserAccess.EntraUserId),
+                values: "Id is invalid");
 
             invalidUserAccessException.AddData(
-                key: nameof(UserAccess.LastName),
-                values: "Text is invalid");
-
-            invalidUserAccessException.AddData(
-                key: nameof(UserAccess.UserEmail),
+                key: nameof(UserAccess.Email),
                 values: "Text is invalid");
 
             invalidUserAccessException.AddData(
@@ -121,7 +117,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
                 this.userAccessService.ModifyUserAccessAsync(invalidUserAccess);
 
             UserAccessValidationException actualUserAccessValidationException =
-                await Assert.ThrowsAsync<UserAccessValidationException>(modifyUserAccessTask.AsTask);
+                await Assert.ThrowsAsync<UserAccessValidationException>(
+                    testCode: modifyUserAccessTask.AsTask);
 
             // then
             actualUserAccessValidationException.Should()
@@ -152,9 +149,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             UserAccess invalidUserAccess = CreateRandomModifyUserAccess(randomDateTimeOffset);
             var inputCreatedByUpdatedByString = GetRandomStringWithLength(256);
-            invalidUserAccess.FirstName = GetRandomStringWithLength(256);
-            invalidUserAccess.LastName = GetRandomStringWithLength(256);
-            invalidUserAccess.UserEmail = GetRandomStringWithLength(321);
+            invalidUserAccess.GivenName = GetRandomStringWithLength(256);
+            invalidUserAccess.Surname = GetRandomStringWithLength(256);
+            invalidUserAccess.Email = GetRandomStringWithLength(321);
             invalidUserAccess.OrgCode = GetRandomStringWithLength(16);
             invalidUserAccess.CreatedBy = inputCreatedByUpdatedByString;
             invalidUserAccess.UpdatedBy = inputCreatedByUpdatedByString;
@@ -163,16 +160,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
                 message: "Invalid user access. Please correct the errors and try again.");
 
             invalidUserAccessException.AddData(
-                key: nameof(UserAccess.FirstName),
-                values: $"Text exceed max length of {invalidUserAccess.FirstName.Length - 1} characters");
-
-            invalidUserAccessException.AddData(
-                key: nameof(UserAccess.LastName),
-                values: $"Text exceed max length of {invalidUserAccess.LastName.Length - 1} characters");
-
-            invalidUserAccessException.AddData(
-                key: nameof(UserAccess.UserEmail),
-                values: $"Text exceed max length of {invalidUserAccess.UserEmail.Length - 1} characters");
+                key: nameof(UserAccess.Email),
+                values: $"Text exceed max length of {invalidUserAccess.Email.Length - 1} characters");
 
             invalidUserAccessException.AddData(
                 key: nameof(UserAccess.OrgCode),
@@ -196,7 +185,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
                 this.userAccessService.ModifyUserAccessAsync(invalidUserAccess);
 
             UserAccessValidationException actualUserAccessValidationException =
-                await Assert.ThrowsAsync<UserAccessValidationException>(modifyUserAccessTask.AsTask);
+                await Assert.ThrowsAsync<UserAccessValidationException>(
+                    testCode: modifyUserAccessTask.AsTask);
 
             // then
             actualUserAccessValidationException.Should().BeEquivalentTo(expectedUserAccessException);
@@ -243,7 +233,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
                 this.userAccessService.ModifyUserAccessAsync(invalidUserAccess);
 
             UserAccessValidationException actualUserAccessVaildationException =
-                await Assert.ThrowsAsync<UserAccessValidationException>(modifyUserAccessTask.AsTask);
+                await Assert.ThrowsAsync<UserAccessValidationException>(
+                    testCode: modifyUserAccessTask.AsTask);
 
             // then
             actualUserAccessVaildationException.Should().BeEquivalentTo(expectedUserAccessValidationException);
@@ -301,7 +292,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
                 this.userAccessService.ModifyUserAccessAsync(invalidUserAccess);
 
             UserAccessValidationException actualUserAccessVaildationException =
-                await Assert.ThrowsAsync<UserAccessValidationException>(modifyUserAccessTask.AsTask);
+                await Assert.ThrowsAsync<UserAccessValidationException>(
+                    testCode: modifyUserAccessTask.AsTask);
 
             // then
             actualUserAccessVaildationException.Should().BeEquivalentTo(expectedUserAccessValidationException);
@@ -351,7 +343,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
                 this.userAccessService.ModifyUserAccessAsync(nonExistingUserAccess);
 
             UserAccessValidationException actualUserAccessVaildationException =
-                await Assert.ThrowsAsync<UserAccessValidationException>(modifyUserAccessTask.AsTask);
+                await Assert.ThrowsAsync<UserAccessValidationException>(
+                    testCode: modifyUserAccessTask.AsTask);
 
             // then
             actualUserAccessVaildationException.Should().BeEquivalentTo(expectedUserAccessValidationException);
@@ -411,7 +404,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
                 this.userAccessService.ModifyUserAccessAsync(invalidUserAccess);
 
             UserAccessValidationException actualUserAccessValidationException =
-                await Assert.ThrowsAsync<UserAccessValidationException>(modifyUserAccessTask.AsTask);
+                await Assert.ThrowsAsync<UserAccessValidationException>(
+                    testCode: modifyUserAccessTask.AsTask);
 
             // then
             actualUserAccessValidationException.Should().BeEquivalentTo(expectedUserAccessValidationException);
@@ -467,7 +461,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
                 this.userAccessService.ModifyUserAccessAsync(invalidUserAccess);
 
             UserAccessValidationException actualUserAccessValidationException =
-                await Assert.ThrowsAsync<UserAccessValidationException>(modifyUserAccessTask.AsTask);
+                await Assert.ThrowsAsync<UserAccessValidationException>(
+                    testCode: modifyUserAccessTask.AsTask);
 
             // then
             actualUserAccessValidationException.Should().BeEquivalentTo(expectedUserAccessValidationException);

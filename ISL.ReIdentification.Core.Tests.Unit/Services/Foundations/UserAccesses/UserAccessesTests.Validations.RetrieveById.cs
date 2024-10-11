@@ -37,7 +37,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
                 this.userAccessService.RetrieveUserAccessByIdAsync(invalidUserAccessId);
 
             UserAccessValidationException actualUserAccessValidationException =
-                await Assert.ThrowsAsync<UserAccessValidationException>(retrieveByIdUserAccessTask.AsTask);
+                await Assert.ThrowsAsync<UserAccessValidationException>(
+                    testCode: retrieveByIdUserAccessTask.AsTask);
 
             // then
             actualUserAccessValidationException.Should().BeEquivalentTo(expectedUserAccessValidationException);
@@ -78,7 +79,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
                 this.userAccessService.RetrieveUserAccessByIdAsync(someUserAccessId);
 
             UserAccessValidationException actualUserAccessValidationException =
-                await Assert.ThrowsAsync<UserAccessValidationException>(retrieveByIdUserAccessTask.AsTask);
+                await Assert.ThrowsAsync<UserAccessValidationException>(
+                    testCode: retrieveByIdUserAccessTask.AsTask);
 
             // then
             actualUserAccessValidationException.Should().BeEquivalentTo(expectedUserAccessValidationException);

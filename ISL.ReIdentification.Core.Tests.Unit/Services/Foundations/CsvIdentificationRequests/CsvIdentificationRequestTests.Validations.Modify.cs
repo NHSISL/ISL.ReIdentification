@@ -21,7 +21,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
             CsvIdentificationRequest nullCsvIdentificationRequest = null;
 
             var nullCsvIdentificationRequestException =
-                new NullCsvIdentificationRequestException(message: "Delegated access is null.");
+                new NullCsvIdentificationRequestException(message: "Csv identification request is null.");
 
             var expectedCsvIdentificationRequestValidationException =
                 new CsvIdentificationRequestValidationException(
@@ -34,7 +34,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             CsvIdentificationRequestValidationException actualCsvIdentificationRequestValidationException =
                 await Assert.ThrowsAsync<CsvIdentificationRequestValidationException>(
-                    modifyCsvIdentificationRequestTask.AsTask);
+                    testCode: modifyCsvIdentificationRequestTask.AsTask);
 
             // then
             actualCsvIdentificationRequestValidationException.Should().BeEquivalentTo(
@@ -64,41 +64,29 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
             //given
             var invalidCsvIdentificationRequest = new CsvIdentificationRequest
             {
-                RequesterFirstName = invalidText,
-                RequesterLastName = invalidText,
                 RequesterEmail = invalidText,
-                RecipientFirstName = invalidText,
-                RecipientLastName = invalidText,
                 RecipientEmail = invalidText,
                 IdentifierColumn = invalidText
             };
 
             var invalidCsvIdentificationRequestException = new InvalidCsvIdentificationRequestException(
-                message: "Invalid delegated access. Please correct the errors and try again.");
+                message: "Invalid csv identification request. Please correct the errors and try again.");
 
             invalidCsvIdentificationRequestException.AddData(
                 key: nameof(CsvIdentificationRequest.Id),
                 values: "Id is invalid");
 
             invalidCsvIdentificationRequestException.AddData(
-                key: nameof(CsvIdentificationRequest.RequesterFirstName),
-                values: "Text is invalid");
-
-            invalidCsvIdentificationRequestException.AddData(
-                key: nameof(CsvIdentificationRequest.RequesterLastName),
-                values: "Text is invalid");
+                key: nameof(CsvIdentificationRequest.RequesterEntraUserId),
+                values: "Id is invalid");
 
             invalidCsvIdentificationRequestException.AddData(
                 key: nameof(CsvIdentificationRequest.RequesterEmail),
                 values: "Text is invalid");
 
             invalidCsvIdentificationRequestException.AddData(
-                key: nameof(CsvIdentificationRequest.RecipientFirstName),
-                values: "Text is invalid");
-
-            invalidCsvIdentificationRequestException.AddData(
-                key: nameof(CsvIdentificationRequest.RecipientLastName),
-                values: "Text is invalid");
+                key: nameof(CsvIdentificationRequest.RecipientEntraUserId),
+                values: "Id is invalid");
 
             invalidCsvIdentificationRequestException.AddData(
                 key: nameof(CsvIdentificationRequest.RecipientEmail),
@@ -139,7 +127,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             CsvIdentificationRequestValidationException actualCsvIdentificationRequestValidationException =
                 await Assert.ThrowsAsync<CsvIdentificationRequestValidationException>(
-                    modifyCsvIdentificationRequestTask.AsTask);
+                    testCode: modifyCsvIdentificationRequestTask.AsTask);
 
             // then
             actualCsvIdentificationRequestValidationException.Should().BeEquivalentTo(
@@ -171,11 +159,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             var invalidCsvIdentificationRequest = CreateRandomCsvIdentificationRequest(dateTimeOffset: randomDateTimeOffset);
             var username = GetRandomStringWithLengthOf(256);
-            invalidCsvIdentificationRequest.RequesterFirstName = GetRandomStringWithLengthOf(256);
-            invalidCsvIdentificationRequest.RequesterLastName = GetRandomStringWithLengthOf(256);
             invalidCsvIdentificationRequest.RequesterEmail = GetRandomStringWithLengthOf(321);
-            invalidCsvIdentificationRequest.RecipientFirstName = GetRandomStringWithLengthOf(256);
-            invalidCsvIdentificationRequest.RecipientLastName = GetRandomStringWithLengthOf(256);
             invalidCsvIdentificationRequest.RecipientEmail = GetRandomStringWithLengthOf(321);
             invalidCsvIdentificationRequest.IdentifierColumn = GetRandomStringWithLengthOf(11);
             invalidCsvIdentificationRequest.CreatedBy = username;
@@ -183,35 +167,22 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             var invalidCsvIdentificationRequestException =
                 new InvalidCsvIdentificationRequestException(
-                    message: "Invalid delegated access. Please correct the errors and try again.");
-
-            invalidCsvIdentificationRequestException.AddData(
-                key: nameof(CsvIdentificationRequest.RequesterFirstName),
-                values: $"Text exceed max length of {invalidCsvIdentificationRequest.RequesterFirstName.Length - 1} characters");
-
-            invalidCsvIdentificationRequestException.AddData(
-                key: nameof(CsvIdentificationRequest.RequesterLastName),
-                values: $"Text exceed max length of {invalidCsvIdentificationRequest.RequesterLastName.Length - 1} characters");
+                    message: "Invalid csv identification request. Please correct the errors and try again.");
 
             invalidCsvIdentificationRequestException.AddData(
                 key: nameof(CsvIdentificationRequest.RequesterEmail),
-                values: $"Text exceed max length of {invalidCsvIdentificationRequest.RequesterEmail.Length - 1} characters");
-
-            invalidCsvIdentificationRequestException.AddData(
-                key: nameof(CsvIdentificationRequest.RecipientFirstName),
-                values: $"Text exceed max length of {invalidCsvIdentificationRequest.RecipientFirstName.Length - 1} characters");
-
-            invalidCsvIdentificationRequestException.AddData(
-                key: nameof(CsvIdentificationRequest.RecipientLastName),
-                values: $"Text exceed max length of {invalidCsvIdentificationRequest.RecipientLastName.Length - 1} characters");
+                values: $"Text exceed max length of " +
+                    $"{invalidCsvIdentificationRequest.RequesterEmail.Length - 1} characters");
 
             invalidCsvIdentificationRequestException.AddData(
                 key: nameof(CsvIdentificationRequest.RecipientEmail),
-                values: $"Text exceed max length of {invalidCsvIdentificationRequest.RecipientEmail.Length - 1} characters");
+                values: $"Text exceed max length of " +
+                    $"{invalidCsvIdentificationRequest.RecipientEmail.Length - 1} characters");
 
             invalidCsvIdentificationRequestException.AddData(
                 key: nameof(CsvIdentificationRequest.IdentifierColumn),
-                values: $"Text exceed max length of {invalidCsvIdentificationRequest.IdentifierColumn.Length - 1} characters");
+                values: $"Text exceed max length of " +
+                    $"{invalidCsvIdentificationRequest.IdentifierColumn.Length - 1} characters");
 
             invalidCsvIdentificationRequestException.AddData(
                 key: nameof(CsvIdentificationRequest.CreatedBy),
@@ -240,7 +211,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             CsvIdentificationRequestValidationException actualCsvIdentificationRequestValidationException =
                 await Assert.ThrowsAsync<CsvIdentificationRequestValidationException>(
-                    modifyCsvIdentificationRequestTask.AsTask);
+                    testCode: modifyCsvIdentificationRequestTask.AsTask);
 
             // then
             actualCsvIdentificationRequestValidationException.Should()
@@ -273,7 +244,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
             CsvIdentificationRequest invalidCsvIdentificationRequest = randomCsvIdentificationRequest;
 
             var invalidCsvIdentificationRequestException = new InvalidCsvIdentificationRequestException(
-                message: "Invalid delegated access. Please correct the errors and try again.");
+                message: "Invalid csv identification request. Please correct the errors and try again.");
 
             invalidCsvIdentificationRequestException.AddData(
                 key: nameof(CsvIdentificationRequest.UpdatedDate),
@@ -293,7 +264,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             CsvIdentificationRequestValidationException actualCsvIdentificationRequestValidationException =
                 await Assert.ThrowsAsync<CsvIdentificationRequestValidationException>(
-                    modifyCsvIdentificationRequestTask.AsTask);
+                    testCode: modifyCsvIdentificationRequestTask.AsTask);
 
             // then
             actualCsvIdentificationRequestValidationException.Should().BeEquivalentTo(
@@ -332,7 +303,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
             randomCsvIdentificationRequest.UpdatedDate = randomDateTimeOffset.AddSeconds(invalidSeconds);
 
             var invalidCsvIdentificationRequestException = new InvalidCsvIdentificationRequestException(
-                message: "Invalid delegated access. Please correct the errors and try again.");
+                message: "Invalid csv identification request. Please correct the errors and try again.");
 
             invalidCsvIdentificationRequestException.AddData(
                 key: nameof(CsvIdentificationRequest.UpdatedDate),
@@ -356,7 +327,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             CsvIdentificationRequestValidationException actualCsvIdentificationRequestValidationException =
                 await Assert.ThrowsAsync<CsvIdentificationRequestValidationException>(
-                    modifyCsvIdentificationRequestTask.AsTask);
+                    testCode: modifyCsvIdentificationRequestTask.AsTask);
 
             // then
             actualCsvIdentificationRequestValidationException.Should().BeEquivalentTo(
@@ -414,7 +385,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             CsvIdentificationRequestValidationException actualCsvIdentificationRequestValidationException =
                 await Assert.ThrowsAsync<CsvIdentificationRequestValidationException>(
-                    modifyCsvIdentificationRequestTask.AsTask);
+                    testCode: modifyCsvIdentificationRequestTask.AsTask);
 
             // then
             actualCsvIdentificationRequestValidationException.Should().BeEquivalentTo(
@@ -453,7 +424,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
             Guid CsvIdentificationRequestId = invalidCsvIdentificationRequest.Id;
 
             var invalidCsvIdentificationRequestException = new InvalidCsvIdentificationRequestException(
-                message: "Invalid delegated access. Please correct the errors and try again.");
+                message: "Invalid csv identification request. Please correct the errors and try again.");
 
             invalidCsvIdentificationRequestException.AddData(
                 key: nameof(CsvIdentificationRequest.CreatedBy),
@@ -481,7 +452,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             CsvIdentificationRequestValidationException actualCsvIdentificationRequestValidationException =
                 await Assert.ThrowsAsync<CsvIdentificationRequestValidationException>(
-                    modifyCsvIdentificationRequestTask.AsTask);
+                    testCode: modifyCsvIdentificationRequestTask.AsTask);
 
             // then
             actualCsvIdentificationRequestValidationException.Should().BeEquivalentTo(
@@ -517,7 +488,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
             invalidCsvIdentificationRequest.UpdatedDate = storageCsvIdentificationRequest.UpdatedDate;
 
             var invalidCsvIdentificationRequestException = new InvalidCsvIdentificationRequestException(
-                message: "Invalid delegated access. Please correct the errors and try again.");
+                message: "Invalid csv identification request. Please correct the errors and try again.");
 
             invalidCsvIdentificationRequestException.AddData(
                 key: nameof(CsvIdentificationRequest.UpdatedDate),
@@ -542,7 +513,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             CsvIdentificationRequestValidationException actualCsvIdentificationRequestValidationException =
                await Assert.ThrowsAsync<CsvIdentificationRequestValidationException>(
-                   modifyCsvIdentificationRequestTask.AsTask);
+                   testCode: modifyCsvIdentificationRequestTask.AsTask);
 
             // then
             actualCsvIdentificationRequestValidationException.Should().BeEquivalentTo(

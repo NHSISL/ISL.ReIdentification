@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ISL.ReIdentification.Core.Migrations
 {
     [DbContext(typeof(ReIdentificationStorageBroker))]
-    [Migration("20241009144924_InitialMigration")]
+    [Migration("20241011100427_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -116,35 +116,53 @@ namespace ISL.ReIdentification.Core.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("RecipientDisplayName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("RecipientEmail")
                         .IsRequired()
                         .HasMaxLength(320)
                         .HasColumnType("nvarchar(320)");
 
+                    b.Property<Guid>("RecipientEntraUserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("RecipientFirstName")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RecipientJobTitle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RecipientLastName")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RequesterDisplayName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RequesterEmail")
                         .IsRequired()
                         .HasMaxLength(320)
                         .HasColumnType("nvarchar(320)");
 
+                    b.Property<Guid>("RequesterEntraUserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("RequesterFirstName")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RequesterJobTitle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RequesterLastName")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Sha256Hash")
                         .IsRequired()
@@ -182,11 +200,19 @@ namespace ISL.ReIdentification.Core.Migrations
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
 
-                    b.Property<bool?>("IsApproved")
-                        .IsRequired()
+                    b.Property<bool>("IsApproved")
                         .HasColumnType("bit");
 
+                    b.Property<string>("ManagedIdentityName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Organisation")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("PipelineName")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
@@ -199,35 +225,53 @@ namespace ISL.ReIdentification.Core.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("RecipientDisplayName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("RecipientEmail")
                         .IsRequired()
                         .HasMaxLength(320)
                         .HasColumnType("nvarchar(320)");
 
+                    b.Property<Guid>("RecipientEntraUserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("RecipientFirstName")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RecipientJobTitle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RecipientLastName")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RequesterDisplayName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RequesterEmail")
                         .IsRequired()
                         .HasMaxLength(320)
                         .HasColumnType("nvarchar(320)");
 
+                    b.Property<Guid>("RequesterEntraUserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("RequesterFirstName")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RequesterJobTitle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RequesterLastName")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
@@ -238,6 +282,9 @@ namespace ISL.ReIdentification.Core.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PipelineName")
+                        .IsUnique();
 
                     b.ToTable("ImpersonationContexts");
                 });
@@ -396,20 +443,34 @@ namespace ISL.ReIdentification.Core.Migrations
                     b.Property<DateTimeOffset>("CreatedDate")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<string>("FirstName")
+                    b.Property<string>("DisplayName")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("LastName")
+                    b.Property<string>("Email")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasMaxLength(320)
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<Guid>("EntraUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("GivenName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("JobTitle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("OrgCode")
                         .IsRequired()
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
+
+                    b.Property<string>("Surname")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
@@ -419,10 +480,9 @@ namespace ISL.ReIdentification.Core.Migrations
                     b.Property<DateTimeOffset>("UpdatedDate")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<string>("UserEmail")
+                    b.Property<string>("UserPrincipalName")
                         .IsRequired()
-                        .HasMaxLength(320)
-                        .HasColumnType("nvarchar(320)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

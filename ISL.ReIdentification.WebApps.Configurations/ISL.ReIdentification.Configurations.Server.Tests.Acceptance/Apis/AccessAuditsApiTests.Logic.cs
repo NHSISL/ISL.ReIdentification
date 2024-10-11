@@ -102,8 +102,8 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
             // then
             deletedAccessAudit.Should().BeEquivalentTo(expectedAccessAudit);
 
-            await Assert.ThrowsAsync<HttpResponseNotFoundException>(() =>
-                getAccessAuditbyIdTask.AsTask());
+            await Assert.ThrowsAsync<HttpResponseNotFoundException>(
+                testCode: getAccessAuditbyIdTask.AsTask);
         }
     }
 }

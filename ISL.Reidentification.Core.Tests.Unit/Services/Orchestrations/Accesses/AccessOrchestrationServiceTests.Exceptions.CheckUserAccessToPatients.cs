@@ -60,7 +60,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
 
             AggregateException actualAggregateException =
                 await Assert.ThrowsAsync<AggregateException>(
-                    checkAccessToPatientTask.AsTask);
+                    testCode: checkAccessToPatientTask.AsTask);
 
             // then
             actualAggregateException

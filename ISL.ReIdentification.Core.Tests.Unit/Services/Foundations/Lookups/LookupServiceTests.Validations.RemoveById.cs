@@ -38,7 +38,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
 
             LookupValidationException actualLookupValidationException =
                 await Assert.ThrowsAsync<LookupValidationException>(
-                    removeLookupByIdTask.AsTask);
+                    testCode: removeLookupByIdTask.AsTask);
 
             // then
             actualLookupValidationException.Should()

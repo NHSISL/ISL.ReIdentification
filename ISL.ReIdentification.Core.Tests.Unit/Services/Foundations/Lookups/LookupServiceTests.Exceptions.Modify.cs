@@ -43,7 +43,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
 
             LookupDependencyException actualLookupDependencyException =
                 await Assert.ThrowsAsync<LookupDependencyException>(
-                    modifyLookupTask.AsTask);
+                    testCode: modifyLookupTask.AsTask);
 
             // then
             actualLookupDependencyException.Should()
@@ -102,7 +102,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
 
             LookupDependencyValidationException actualLookupDependencyValidationException =
                 await Assert.ThrowsAsync<LookupDependencyValidationException>(
-                    modifyLookupTask.AsTask);
+                    testCode: modifyLookupTask.AsTask);
 
             // then
             actualLookupDependencyValidationException.Should()
@@ -156,7 +156,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
 
             LookupDependencyException actualLookupDependencyException =
                 await Assert.ThrowsAsync<LookupDependencyException>(
-                    modifyLookupTask.AsTask);
+                    testCode: modifyLookupTask.AsTask);
 
             // then
             actualLookupDependencyException.Should()
@@ -211,7 +211,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
 
             LookupDependencyValidationException actualLookupDependencyValidationException =
                 await Assert.ThrowsAsync<LookupDependencyValidationException>(
-                    modifyLookupTask.AsTask);
+                    testCode: modifyLookupTask.AsTask);
 
             // then
             actualLookupDependencyValidationException.Should()
@@ -266,7 +266,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
 
             LookupServiceException actualLookupServiceException =
                 await Assert.ThrowsAsync<LookupServiceException>(
-                    modifyLookupTask.AsTask);
+                    testCode: modifyLookupTask.AsTask);
 
             // then
             actualLookupServiceException.Should()

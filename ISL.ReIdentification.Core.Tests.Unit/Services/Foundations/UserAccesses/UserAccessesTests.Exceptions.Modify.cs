@@ -43,7 +43,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             UserAccessDependencyException actualUserAccessDependencyException =
                 await Assert.ThrowsAsync<UserAccessDependencyException>(
-                    modifyUserAccessTask.AsTask);
+                    testCode: modifyUserAccessTask.AsTask);
 
             // then
             actualUserAccessDependencyException.Should().BeEquivalentTo(
@@ -148,7 +148,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
                 this.userAccessService.ModifyUserAccessAsync(randomUserAccess);
 
             UserAccessDependencyValidationException actualUserAccessDependencyValidationException =
-                await Assert.ThrowsAsync<UserAccessDependencyValidationException>(modifyUserAccessTask.AsTask);
+                await Assert.ThrowsAsync<UserAccessDependencyValidationException>(
+                    testCode: modifyUserAccessTask.AsTask);
 
             // then
             actualUserAccessDependencyValidationException.Should()

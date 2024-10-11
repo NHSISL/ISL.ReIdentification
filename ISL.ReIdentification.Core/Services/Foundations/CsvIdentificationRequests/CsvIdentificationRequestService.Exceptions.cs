@@ -41,7 +41,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
             catch (SqlException sqlException)
             {
                 var failedStorageCsvIdentificationRequestException = new FailedStorageCsvIdentificationRequestException(
-                    message: "Failed delegated access storage error occurred, contact support.",
+                    message: "Failed csv identification request storage error occurred, contact support.",
                     innerException: sqlException);
 
                 throw await CreateAndLogCriticalDependencyExceptionAsync(failedStorageCsvIdentificationRequestException);
@@ -60,7 +60,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
             {
                 var concurrencyGemException =
                     new LockedCsvIdentificationRequestException(
-                        message: "Locked delegated access record error occurred, please try again.",
+                        message: "Locked csv identification request record error occurred, please try again.",
                         innerException: dbUpdateConcurrencyException);
 
                 throw await CreateAndLogDependencyValidationExceptionAsync(concurrencyGemException);
@@ -69,7 +69,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
             {
                 var failedOperationCsvIdentificationRequestException =
                     new FailedOperationCsvIdentificationRequestException(
-                        message: "Failed operation delegated access error occurred, contact support.",
+                        message: "Failed operation csv identification request error occurred, contact support.",
                         innerException: dbUpdateException);
 
                 throw await CreateAndLogDependencyExceptionAsync(failedOperationCsvIdentificationRequestException);
@@ -78,7 +78,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
             {
                 var failedServiceCsvIdentificationRequestException =
                     new FailedServiceCsvIdentificationRequestException(
-                        message: "Failed service delegated access error occurred, contact support.",
+                        message: "Failed service csv identification request error occurred, contact support.",
                         innerException: exception);
 
                 throw await CreateAndLogServiceExceptionAsync(failedServiceCsvIdentificationRequestException);
@@ -95,7 +95,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
             catch (SqlException sqlException)
             {
                 var failedStorageCsvIdentificationRequestException = new FailedStorageCsvIdentificationRequestException(
-                   message: "Failed delegated access storage error occurred, contact support.",
+                   message: "Failed csv identification request storage error occurred, contact support.",
                    innerException: sqlException);
 
                 throw await CreateAndLogCriticalDependencyExceptionAsync(failedStorageCsvIdentificationRequestException);
@@ -104,7 +104,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
             {
                 var failedServiceCsvIdentificationRequestException =
                     new FailedServiceCsvIdentificationRequestException(
-                       message: "Failed service delegated access error occurred, contact support.",
+                       message: "Failed service csv identification request error occurred, contact support.",
                         innerException: exception);
 
                 throw await CreateAndLogServiceExceptionAsync(failedServiceCsvIdentificationRequestException);

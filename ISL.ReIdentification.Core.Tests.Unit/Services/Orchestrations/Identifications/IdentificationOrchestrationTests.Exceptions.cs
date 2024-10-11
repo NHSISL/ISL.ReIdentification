@@ -43,7 +43,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             IdentificationOrchestrationDependencyValidationException
                 actualIdentificationOrchestrationDependencyValidationException =
                 await Assert.ThrowsAsync<IdentificationOrchestrationDependencyValidationException>(
-                    identificationRequestTask.AsTask);
+                    testCode: identificationRequestTask.AsTask);
 
             // then
             actualIdentificationOrchestrationDependencyValidationException
@@ -94,7 +94,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             IdentificationOrchestrationDependencyException
                 actualIdentificationOrchestrationDependencyException =
                 await Assert.ThrowsAsync<IdentificationOrchestrationDependencyException>(
-                    identificationRequestTask.AsTask);
+                    testCode: identificationRequestTask.AsTask);
 
             // then
             actualIdentificationOrchestrationDependencyException
@@ -149,7 +149,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             IdentificationOrchestrationServiceException
                 actualIdentificationOrchestrationValidationException =
                 await Assert.ThrowsAsync<IdentificationOrchestrationServiceException>(
-                    identificationRequestTask.AsTask);
+                    testCode: identificationRequestTask.AsTask);
 
             // then
             actualIdentificationOrchestrationValidationException.Should().BeEquivalentTo(

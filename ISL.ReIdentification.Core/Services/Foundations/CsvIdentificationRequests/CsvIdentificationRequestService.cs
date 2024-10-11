@@ -39,12 +39,12 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
             Guid csvIdentificationRequestId) =>
         TryCatch(async () =>
         {
-            await ValidateCsvIdentificationRequestIdAsync(csvIdentificationRequestId);
+            ValidateCsvIdentificationRequestId(csvIdentificationRequestId);
 
             CsvIdentificationRequest maybeCsvIdentificationRequest =
                 await this.reIdentificationStorageBroker.SelectCsvIdentificationRequestByIdAsync(csvIdentificationRequestId);
 
-            await ValidateStorageCsvIdentificationRequestAsync(maybeCsvIdentificationRequest, csvIdentificationRequestId);
+            ValidateStorageCsvIdentificationRequest(maybeCsvIdentificationRequest, csvIdentificationRequestId);
 
             return maybeCsvIdentificationRequest;
         });
@@ -60,8 +60,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
                 CsvIdentificationRequest maybeCsvIdentificationRequest =
                     await this.reIdentificationStorageBroker.SelectCsvIdentificationRequestByIdAsync(csvIdentificationRequest.Id);
 
-                await ValidateStorageCsvIdentificationRequestAsync(maybeCsvIdentificationRequest, csvIdentificationRequest.Id);
-                await ValidateAgainstStorageCsvIdentificationRequestOnModifyAsync(csvIdentificationRequest, maybeCsvIdentificationRequest);
+                ValidateStorageCsvIdentificationRequest(maybeCsvIdentificationRequest, csvIdentificationRequest.Id);
+                ValidateAgainstStorageCsvIdentificationRequestOnModify(csvIdentificationRequest, maybeCsvIdentificationRequest);
 
                 return await this.reIdentificationStorageBroker.UpdateCsvIdentificationRequestAsync(csvIdentificationRequest);
             });
@@ -69,12 +69,12 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
         public ValueTask<CsvIdentificationRequest> RemoveCsvIdentificationRequestByIdAsync(Guid csvIdentificationRequestId) =>
             TryCatch(async () =>
             {
-                await ValidateCsvIdentificationRequestIdAsync(csvIdentificationRequestId);
+                ValidateCsvIdentificationRequestId(csvIdentificationRequestId);
 
                 CsvIdentificationRequest maybeCsvIdentificationRequest =
                     await this.reIdentificationStorageBroker.SelectCsvIdentificationRequestByIdAsync(csvIdentificationRequestId);
 
-                await ValidateStorageCsvIdentificationRequestAsync(maybeCsvIdentificationRequest, csvIdentificationRequestId);
+                ValidateStorageCsvIdentificationRequest(maybeCsvIdentificationRequest, csvIdentificationRequestId);
 
                 return await this.reIdentificationStorageBroker.DeleteCsvIdentificationRequestAsync(maybeCsvIdentificationRequest);
             });

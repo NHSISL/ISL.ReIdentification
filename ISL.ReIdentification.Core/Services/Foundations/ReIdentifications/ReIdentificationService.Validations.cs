@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications.Exceptions;
 
@@ -13,27 +12,27 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ReIdentifications
 {
     public partial class ReIdentificationService
     {
-        private async ValueTask ValidateIdentificationRequestOnProcessAsync(IdentificationRequest identificationRequest)
+        private static void ValidateIdentificationRequestOnProcess(IdentificationRequest identificationRequest)
         {
             ValidateIdentificationRequestIsNotNull(identificationRequest);
 
             Validate(
-                (Rule: await IsInvalidAsync(identificationRequest.IdentificationItems),
+                (Rule: IsInvalid(identificationRequest.IdentificationItems),
                 Parameter: nameof(IdentificationRequest.IdentificationItems)),
 
-                (Rule: await IsInvalidAsync(identificationRequest.UserIdentifier),
+                (Rule: IsInvalid(identificationRequest.UserIdentifier),
                 Parameter: nameof(IdentificationRequest.UserIdentifier)),
 
-                (Rule: await IsInvalidAsync(identificationRequest.Purpose),
+                (Rule: IsInvalid(identificationRequest.Purpose),
                 Parameter: nameof(IdentificationRequest.Purpose)),
 
-                (Rule: await IsInvalidAsync(identificationRequest.Organisation),
+                (Rule: IsInvalid(identificationRequest.Organisation),
                 Parameter: nameof(IdentificationRequest.Organisation)),
 
-                (Rule: await IsInvalidAsync(identificationRequest.Reason),
+                (Rule: IsInvalid(identificationRequest.Reason),
                 Parameter: nameof(IdentificationRequest.Reason)),
 
-                (Rule: await IsNotUniqueAsync(identificationRequest.IdentificationItems),
+                (Rule: IsNotUnique(identificationRequest.IdentificationItems),
                 Parameter: nameof(IdentificationRequest.IdentificationItems)));
         }
 
@@ -45,19 +44,19 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ReIdentifications
             }
         }
 
-        private static async ValueTask<dynamic> IsInvalidAsync(string name) => new
+        private static dynamic IsInvalid(string name) => new
         {
             Condition = String.IsNullOrWhiteSpace(name),
             Message = "Text is invalid"
         };
 
-        private static async ValueTask<dynamic> IsInvalidAsync(List<IdentificationItem>? identificationItems) => new
+        private static dynamic IsInvalid(List<IdentificationItem>? identificationItems) => new
         {
             Condition = identificationItems is null || identificationItems.Count == 0,
             Message = "IdentificationItems is invalid"
         };
 
-        private static async ValueTask<dynamic> IsNotUniqueAsync(List<IdentificationItem>? identificationItems) => new
+        private static dynamic IsNotUnique(List<IdentificationItem>? identificationItems) => new
         {
             Condition = IsNotUniqueList(identificationItems),
             Message = "IdentificationItems.RowNumber is invalid.  There are duplicate RowNumbers."
@@ -71,13 +70,13 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ReIdentifications
                     .Distinct().Count() != identificationItems.Count();
         }
 
-        private static async ValueTask<dynamic> IsInvalidLengthAsync(string text, int maxLength) => new
+        private static dynamic IsInvalidLength(string text, int maxLength) => new
         {
-            Condition = await IsExceedingLengthAsync(text, maxLength),
+            Condition = IsExceedingLength(text, maxLength),
             Message = $"Text exceed max length of {maxLength} characters"
         };
 
-        private static async ValueTask<bool> IsExceedingLengthAsync(string text, int maxLength) =>
+        private static bool IsExceedingLength(string text, int maxLength) =>
             (text ?? string.Empty).Length > maxLength;
 
 

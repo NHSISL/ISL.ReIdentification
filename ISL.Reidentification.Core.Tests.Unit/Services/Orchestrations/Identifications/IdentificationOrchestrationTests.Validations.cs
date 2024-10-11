@@ -43,7 +43,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             IdentificationOrchestrationValidationException
                 actualIdentificationOrchestrationValidationException =
                 await Assert.ThrowsAsync<IdentificationOrchestrationValidationException>(
-                    identificationRequestTask.AsTask);
+                    testCode: identificationRequestTask.AsTask);
 
             // then
             actualIdentificationOrchestrationValidationException

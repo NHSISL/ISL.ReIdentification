@@ -34,7 +34,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
 
             IdentificationRequestValidationException actualIdentificationRequestValidationException =
                 await Assert.ThrowsAsync<IdentificationRequestValidationException>(
-                    processdentificationRequestTask.AsTask);
+                    testCode: processdentificationRequestTask.AsTask);
 
             // then
             actualIdentificationRequestValidationException.Should()
@@ -103,7 +103,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
                 this.reIdentificationService.ProcessReidentificationRequest(invalidIdentificationRequest);
 
             IdentificationRequestValidationException actualIdentificationRequestValidationException =
-                await Assert.ThrowsAsync<IdentificationRequestValidationException>(addIdentificationRequestTask.AsTask);
+                await Assert.ThrowsAsync<IdentificationRequestValidationException>(
+                    testCode: addIdentificationRequestTask.AsTask);
 
             // then
             actualIdentificationRequestValidationException.Should()
@@ -151,7 +152,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
                 this.reIdentificationService.ProcessReidentificationRequest(invalidIdentificationRequest);
 
             IdentificationRequestValidationException actualIdentificationRequestValidationException =
-                await Assert.ThrowsAsync<IdentificationRequestValidationException>(addIdentificationRequestTask.AsTask);
+                await Assert.ThrowsAsync<IdentificationRequestValidationException>(
+                    testCode: addIdentificationRequestTask.AsTask);
 
             // then
             actualIdentificationRequestValidationException.Should()

@@ -32,7 +32,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
                 this.accessAuditService.ModifyAccessAuditAsync(nullAccessAudit);
 
             AccessAuditValidationException actualAccessAuditValidationException =
-                await Assert.ThrowsAsync<AccessAuditValidationException>(modifyAccessAuditTask.AsTask);
+                await Assert.ThrowsAsync<AccessAuditValidationException>(
+                    testCode: modifyAccessAuditTask.AsTask);
 
             // then
             actualAccessAuditValidationException.Should().BeEquivalentTo(expectedAccessAuditValidationException);
@@ -108,7 +109,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
                 this.accessAuditService.ModifyAccessAuditAsync(invalidAccessAudit);
 
             AccessAuditValidationException actualAccessAuditValidationException =
-                await Assert.ThrowsAsync<AccessAuditValidationException>(modifyAccessAuditTask.AsTask);
+                await Assert.ThrowsAsync<AccessAuditValidationException>(
+                    testCode: modifyAccessAuditTask.AsTask);
 
             // then
             actualAccessAuditValidationException.Should()
@@ -173,7 +175,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
                 this.accessAuditService.ModifyAccessAuditAsync(invalidAccessAudit);
 
             AccessAuditValidationException actualAccessAuditValidationException =
-                await Assert.ThrowsAsync<AccessAuditValidationException>(modifyAccessAuditTask.AsTask);
+                await Assert.ThrowsAsync<AccessAuditValidationException>(
+                    testCode: modifyAccessAuditTask.AsTask);
 
             // then
             actualAccessAuditValidationException.Should().BeEquivalentTo(expectedAccessAuditException);
@@ -220,7 +223,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
                 this.accessAuditService.ModifyAccessAuditAsync(invalidAccessAudit);
 
             AccessAuditValidationException actualAccessAuditVaildationException =
-                await Assert.ThrowsAsync<AccessAuditValidationException>(modifyAccessAuditTask.AsTask);
+                await Assert.ThrowsAsync<AccessAuditValidationException>(
+                    testCode: modifyAccessAuditTask.AsTask);
 
             // then
             actualAccessAuditVaildationException.Should().BeEquivalentTo(expectedAccessAuditValidationException);
@@ -278,7 +282,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
                 this.accessAuditService.ModifyAccessAuditAsync(invalidAccessAudit);
 
             AccessAuditValidationException actualAccessAuditVaildationException =
-                await Assert.ThrowsAsync<AccessAuditValidationException>(modifyAccessAuditTask.AsTask);
+                await Assert.ThrowsAsync<AccessAuditValidationException>(
+                    testCode: modifyAccessAuditTask.AsTask);
 
             // then
             actualAccessAuditVaildationException.Should().BeEquivalentTo(expectedAccessAuditValidationException);
@@ -328,7 +333,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
                 this.accessAuditService.ModifyAccessAuditAsync(nonExistingAccessAudit);
 
             AccessAuditValidationException actualAccessAuditVaildationException =
-                await Assert.ThrowsAsync<AccessAuditValidationException>(modifyAccessAuditTask.AsTask);
+                await Assert.ThrowsAsync<AccessAuditValidationException>(
+                    testCode: modifyAccessAuditTask.AsTask);
 
             // then
             actualAccessAuditVaildationException.Should().BeEquivalentTo(expectedAccessAuditValidationException);
@@ -388,7 +394,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
                 this.accessAuditService.ModifyAccessAuditAsync(invalidAccessAudit);
 
             AccessAuditValidationException actualAccessAuditValidationException =
-                await Assert.ThrowsAsync<AccessAuditValidationException>(modifyAccessAuditTask.AsTask);
+                await Assert.ThrowsAsync<AccessAuditValidationException>(
+                    testCode: modifyAccessAuditTask.AsTask);
 
             // then
             actualAccessAuditValidationException.Should().BeEquivalentTo(expectedAccessAuditValidationException);
@@ -444,7 +451,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
                 this.accessAuditService.ModifyAccessAuditAsync(invalidAccessAudit);
 
             AccessAuditValidationException actualAccessAuditValidationException =
-                await Assert.ThrowsAsync<AccessAuditValidationException>(modifyAccessAuditTask.AsTask);
+                await Assert.ThrowsAsync<AccessAuditValidationException>(
+                    testCode: modifyAccessAuditTask.AsTask);
 
             // then
             actualAccessAuditValidationException.Should().BeEquivalentTo(expectedAccessAuditValidationException);

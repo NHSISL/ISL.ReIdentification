@@ -100,8 +100,8 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
             //then
             actualUserAccess.Should().BeEquivalentTo(expectedDeletedUserAccess);
 
-            await Assert.ThrowsAsync<HttpResponseNotFoundException>(() =>
-                getUserAccessTask.AsTask());
+            await Assert.ThrowsAsync<HttpResponseNotFoundException>(
+                testCode: getUserAccessTask.AsTask);
         }
     }
 }

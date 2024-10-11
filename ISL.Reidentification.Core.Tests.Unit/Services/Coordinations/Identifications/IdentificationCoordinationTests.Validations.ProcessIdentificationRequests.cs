@@ -38,7 +38,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 this.identificationCoordinationService.ProcessIdentificationRequestsAsync(nullAccessRequest);
 
             IdentificationCoordinationValidationException actualIdentificationCoordinationValidationException =
-                await Assert.ThrowsAsync<IdentificationCoordinationValidationException>(accessRequestTask.AsTask);
+                await Assert.ThrowsAsync<IdentificationCoordinationValidationException>(
+                    testCode: accessRequestTask.AsTask);
 
             // then
             actualIdentificationCoordinationValidationException
@@ -80,7 +81,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 this.identificationCoordinationService.ProcessIdentificationRequestsAsync(inputAccessRequest);
 
             IdentificationCoordinationValidationException actualIdentificationCoordinationValidationException =
-                await Assert.ThrowsAsync<IdentificationCoordinationValidationException>(accessRequestTask.AsTask);
+                await Assert.ThrowsAsync<IdentificationCoordinationValidationException>(
+                    testCode: accessRequestTask.AsTask);
 
             // then
             actualIdentificationCoordinationValidationException
