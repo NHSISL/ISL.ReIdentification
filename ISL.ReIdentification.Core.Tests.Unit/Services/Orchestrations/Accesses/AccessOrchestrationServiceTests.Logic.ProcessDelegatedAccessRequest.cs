@@ -4,12 +4,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using ISL.ReIdentification.Core.Models.Foundations.DelegatedAccesses;
+using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using Moq;
 
@@ -18,56 +17,56 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
     public partial class AccessOrchestrationServiceTests
     {
         [Fact]
-        public async Task ShouldStoreDelegatedAccessRequestAndSendApprovalEmailWhenProcessingNewDelegatedAccessRequest()
+        public async Task ShouldStoreImpersonationContextRequestAndSendApprovalEmailWhenProcessingNewImpersonationContextRequest()
         {
             // given
             AccessRequest randomAccessRequest = CreateRandomAccessRequest();
             AccessRequest inputAccessRequest = randomAccessRequest.DeepClone();
-            DelegatedAccess randomDelegatedAccess = CreateRandomDelegatedAccess();
-            string recipientEmail = inputAccessRequest.DelegatedAccessRequest.RecipientEmail;
-            byte[] delegatedAccessRequestData = inputAccessRequest.DelegatedAccessRequest.Data;
-            Stream dataStream = new MemoryStream(delegatedAccessRequestData);
-            string dataHash = GetRandomStringWithLength(64);
+            ImpersonationContext randomImpersonationContext = CreateRandomImpersonationContext();
+            string recipientEmail = inputAccessRequest.ImpersonationContextRequest.RecipientEmail;
+            string randomSubject = GetRandomString();
+            string randomBody = GetRandomString();
+            Dictionary<string, dynamic> randomPersonalisation = new Dictionary<string, dynamic>();
+            string randomIdentifier = GetRandomString();
             AccessRequest expectedAccessRequest = inputAccessRequest.DeepClone();
-            expectedAccessRequest.DelegatedAccessRequest.CreatedDate = DateTimeOffset.UtcNow;
-            expectedAccessRequest.DelegatedAccessRequest.IsApproved = null;
+            expectedAccessRequest.ImpersonationContextRequest.CreatedDate = DateTimeOffset.UtcNow;
+            expectedAccessRequest.ImpersonationContextRequest.IsApproved = null;
 
-            IQueryable<DelegatedAccess> delegatedAccesses =
-                new List<DelegatedAccess> { randomDelegatedAccess }.AsQueryable();
+            IQueryable<ImpersonationContext> impersonationContextes =
+                new List<ImpersonationContext> { randomImpersonationContext }.AsQueryable();
 
-            this.delegatedAccessServiceMock.Setup(service =>
-                service.RetrieveAllDelegatedAccessesAsync())
-                .ReturnsAsync(delegatedAccesses);
+            this.impersonationContextServiceMock.Setup(service =>
+                service.RetrieveAllImpersonationContextsAsync())
+                .ReturnsAsync(impersonationContextes);
 
-            this.delegatedAccessServiceMock.Setup(service =>
-                service.AddDelegatedAccessAsync(inputAccessRequest.DelegatedAccessRequest))
-                .ReturnsAsync(expectedAccessRequest.DelegatedAccessRequest);
+            this.impersonationContextServiceMock.Setup(service =>
+                service.AddImpersonationContextAsync(inputAccessRequest.ImpersonationContextRequest))
+                .ReturnsAsync(expectedAccessRequest.ImpersonationContextRequest);
 
-            this.hashBrokerMock.Setup(broker =>
-                broker.GenerateSha256Hash(dataStream))
-                .Returns(dataHash);
-
-            // Setup notification broker
+            this.notificationBrokerMock.Setup(broker =>
+                broker.SendEmailAsync(recipientEmail, randomSubject, randomBody, randomPersonalisation))
+                .ReturnsAsync(randomIdentifier);
 
             // when
             AccessRequest actualAccessRequest =
-                await this.accessOrchestrationService.ProcessDelegatedAccessRequestAsync(inputAccessRequest);
+                await this.accessOrchestrationService.ProcessImpersonationContextRequestAsync(inputAccessRequest);
 
             // then
             actualAccessRequest.Should().BeEquivalentTo(expectedAccessRequest);
 
-            this.delegatedAccessServiceMock.Verify(service =>
-                service.RetrieveAllDelegatedAccessesAsync(),
+            this.impersonationContextServiceMock.Verify(service =>
+                service.RetrieveAllImpersonationContextsAsync(),
                 Times.Once);
 
-            this.hashBrokerMock.Verify(broker =>
-                broker.GenerateSha256Hash(dataStream),
+            this.notificationBrokerMock.Verify(broker =>
+                broker.SendEmailAsync(recipientEmail, randomSubject, randomBody, randomPersonalisation),
                 Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.delegatedAccessServiceMock.VerifyNoOtherCalls();
+            this.impersonationContextServiceMock.VerifyNoOtherCalls();
             this.hashBrokerMock.VerifyNoOtherCalls();
+            this.notificationBrokerMock.VerifyNoOtherCalls();
         }
     }
 }
