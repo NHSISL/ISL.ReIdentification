@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Guid } from "guid-typescript";
-import { ImpersonationContextView } from "../../../models/views/components/impersonationContext/impersonationContextView";
 import { impersonationContextService } from "../../foundations/impersonationContextService";
+import { ImpersonationContextView } from "../../../models/views/components/impersonationContext/ImpersonationContextView";
 
 type ImpersonationContextViewServiceResponse = {
     mappedImpersonationContexts: ImpersonationContextView[] | undefined;
@@ -37,11 +37,16 @@ export const impersonationContextViewService = {
                     x.data.forEach((impersonationContext: ImpersonationContextView) => {
                         impersonationContexts.push(new ImpersonationContextView(
                             impersonationContext.id,
+                            impersonationContext.requesterFirstName,
+                            impersonationContext.requesterLastName,
                             impersonationContext.requesterEmail,
+                            impersonationContext.recipientFirstName,
+                            impersonationContext.recipientLastName,
                             impersonationContext.recipientEmail,
-                            impersonationContext.isImpersonationContext,
+                            impersonationContext.reason,
+                            impersonationContext.purpose,
+                            impersonationContext.organisation,
                             impersonationContext.isApproved,
-                            impersonationContext.data,
                             impersonationContext.identifierColumn,
                             impersonationContext.createdBy,
                             impersonationContext.createdDate,
@@ -78,16 +83,21 @@ export const impersonationContextViewService = {
                 const impersonationContext = response.data.pages[0].data[0];
                 const impersonationContextView = new ImpersonationContextView(
                     impersonationContext.id,
+                    impersonationContext.requesterFirstName,
+                    impersonationContext.requesterLastName,
                     impersonationContext.requesterEmail,
+                    impersonationContext.recipientFirstName,
+                    impersonationContext.recipientLastName,
                     impersonationContext.recipientEmail,
-                    impersonationContext.isImpersonationContext,
+                    impersonationContext.reason,
+                    impersonationContext.purpose,
+                    impersonationContext.organisation,
                     impersonationContext.isApproved,
-                    impersonationContext.data,
                     impersonationContext.identifierColumn,
                     impersonationContext.createdBy,
                     impersonationContext.createdDate,
                     impersonationContext.updatedBy,
-                    impersonationContext.updatedDate
+                    impersonationContext.updatedDate,
                 );
 
                 setMappedImpersonationContext(impersonationContextView);

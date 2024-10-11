@@ -1,4 +1,4 @@
-export class ImpersonationContextView {
+export class CsvIdentificationRequestView {
     public id: string;
     public requesterFirstName: string;
     public requesterLastName: string;

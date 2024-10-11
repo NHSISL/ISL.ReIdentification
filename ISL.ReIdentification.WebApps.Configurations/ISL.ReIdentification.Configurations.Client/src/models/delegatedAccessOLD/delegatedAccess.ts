@@ -1,6 +1,6 @@
 import { Guid } from 'guid-typescript';
 
-export class ImpersonationContext {
+export class ImpersonationContextOLD {
     public id: Guid;
     public requesterEmail: string;
     public recipientEmail: string;

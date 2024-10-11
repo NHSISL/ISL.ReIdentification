@@ -1,8 +1,9 @@
 import { useMsal } from "@azure/msal-react";
 import { Guid } from "guid-typescript";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "react-query";
-import ImpersonationContextBroker from "../../brokers/apiBroker.impersonationContext";
-import { ImpersonationContext } from "../../models/impersonationContext/impersonationContext";
+import ImpersonationContextBroker from "../../brokers/apiBroker.ImpersonationContext";
+import { ImpersonationContext } from "../../models/impersonationContext.ts/impersonationContext";
+
 
 export const impersonationContextService = {
     useCreateimpersonationContext: () => {
@@ -12,7 +13,7 @@ export const impersonationContextService = {
 
         return useMutation((impersonationContext: ImpersonationContext) => {
             const date = new Date();
-            impersonationContext.createdDate = v.updatedDate = date;
+            impersonationContext.createdDate = impersonationContext.updatedDate = date;
             impersonationContext.createdBy = impersonationContext.updatedBy = msal.accounts[0].username;
 
             return broker.PostImpersonationContextAsync(impersonationContext);
@@ -20,7 +21,7 @@ export const impersonationContextService = {
             {
                 onSuccess: (variables: ImpersonationContext) => {
                     queryClient.invalidateQueries("ImpersonationContextGetAll");
-                    queryClient.invalidateQueries(["DelgatedAccessGetById", { id: variables.id }]);
+                    queryClient.invalidateQueries(["ImpersonationContextById", { id: variables.id }]);
                 }
             });
     },
