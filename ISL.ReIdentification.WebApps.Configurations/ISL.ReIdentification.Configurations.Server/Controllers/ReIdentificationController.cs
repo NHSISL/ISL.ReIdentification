@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
@@ -54,7 +53,12 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
 
         [HttpPost("impersonation")]
         public async ValueTask<ActionResult<AccessRequest>>
-            PostImpersonationContextRequestAsync(AccessRequest accessRequest) =>
-                throw new NotImplementedException();
+            PostImpersonationContextRequestAsync(AccessRequest accessRequest)
+        {
+            AccessRequest addedAccessRequest =
+                    await this.identificationCoordinationService.ProcessImpersonationContextRequestAsync(accessRequest);
+
+            return Created(addedAccessRequest);
+        }
     }
 }
