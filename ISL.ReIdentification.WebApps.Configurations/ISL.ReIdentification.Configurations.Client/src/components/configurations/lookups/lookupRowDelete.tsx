@@ -30,9 +30,11 @@ const LookupRowDelete: FunctionComponent<LookupRowDeleteProps> = (props) => {
             <td>
                 {lookup.value}
             </td>
-            <td className="text-end">
-                <Button onClick={() => onCancel(lookup.id)}>Cancel</Button>&nbsp;
-                <Button onClick={() => handleDelete(lookup)}>Yes, Delete</Button>
+            <td></td>
+            <td></td>
+            <td>
+                <Button onClick={() => onCancel(lookup.id)} variant="warning">Cancel</Button>&nbsp;
+                <Button onClick={() => handleDelete(lookup)} variant="danger">Yes, Delete</Button>
             </td>
         </tr>
     );

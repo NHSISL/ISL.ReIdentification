@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import { lookupService } from "../../foundations/lookupService";
 import { LookupView } from "../../../models/views/components/lookups/lookupView";
 import { Guid } from "guid-typescript";
+import { Lookup } from "../../../models/lookups/lookup";
 
 type LookupViewServiceResponse = {
-    mappedLookUps: LookupView[] | undefined;
+    mappedLookups: LookupView[] | undefined;
     pages: Array<{ data: LookupView[] }>;
     isLoading: boolean;
     fetchNextPage: () => void;
@@ -23,45 +24,32 @@ export const lookupViewService = {
         let query = `?$orderby=createdDate desc`;
 
         if (searchTerm) {
-            query = query + `&$filter=contains(Name,'${searchTerm}')`;
+            query = query + `&$filter=contains(name,'${searchTerm}')`;
         }
 
         const response = lookupService.useRetrieveAllLookupPages(query);
-        const [mappedLookUps, setMappedLookups] = useState<Array<LookupView>>();
-        const [pages, setPages] = useState<Array<{ data: LookupView[] }>>([]);
+        const [mappedLookups, setMappedLookups] = useState<Array<LookupView>>();
 
         useEffect(() => {
-            if (response.data && response.data.pages) {
-                const lookups: Array<LookupView> = [];
-                response.data.pages.forEach((x: { data: LookupView[] }) => {
-                    x.data.forEach((lookup: LookupView) => {
-                        lookups.push(new LookupView(
-                            lookup.id,
-                            lookup.name,
-                            lookup.value,
-                            lookup.createdBy,
-                            lookup.createdDate,
-                            lookup.updatedBy,
-                            lookup.updatedDate,
-                        ));
-                    });
-                });
+            if (response.data) {
+                const lookups = response.data.map((lookup: Lookup) =>
+                    new LookupView(
+                        lookup.id,
+                        lookup.name,
+                        lookup.value,
+                        lookup.createdBy,
+                        lookup.createdDate,
+                        lookup.updatedBy,
+                        lookup.updatedDate,
+                    ));
 
                 setMappedLookups(lookups);
-                setPages(response.data.pages);
             }
         }, [response.data]);
 
         return {
-            mappedLookUps,
-            pages,
-            isLoading: response.isLoading,
-            fetchNextPage: response.fetchNextPage,
-            isFetchingNextPage: response.isFetchingNextPage,
-            hasNextPage: !!response.hasNextPage,
-            data: response.data,
-            refetch: response.refetch
-        };
+            mappedLookups, ...response
+        }
     },
 
     useGetLookupById: (id: Guid) => {

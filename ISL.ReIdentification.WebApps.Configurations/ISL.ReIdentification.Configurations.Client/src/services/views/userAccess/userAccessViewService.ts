@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Guid } from "guid-typescript";
 import { UserAccessView } from "../../../models/views/components/userAccess/userAccessView";
 import { userAccessService } from "../../foundations/userAccessService";
+import { UserAccess } from "../../../models/userAccess/userAccess";
 
 type UserAccessViewServiceResponse = {
     mappedUserAccess: UserAccessView[] | undefined;
@@ -23,22 +24,26 @@ export const userAccessViewService = {
         let query = `?$orderby=createdDate desc`;
 
         if (searchTerm) {
-            query = query + `&$filter=contains(UserEmail,'${searchTerm}')`;
+            query = query + `&$filter=contains(UserEmail,'${searchTerm}') or 
+                 contains(firstName,'${searchTerm}') or 
+                 contains(lastName,'${searchTerm}') or 
+                 contains(orgCode,'${searchTerm}')`;
         }
 
         const response = userAccessService.useRetrieveAllUserAccessPages(query);
         const [mappedUserAccess, setMappedUserAccess] = useState<Array<UserAccessView>>();
-        const [pages, setPages] = useState<Array<{ data: UserAccessView[] }>>([]);
+        const [pages, setPages] = useState<any>([]);
 
         useEffect(() => {
             if (response.data && response.data.pages) {
                 const userAccesses: Array<UserAccessView> = [];
-                response.data.pages.forEach((x: { data: UserAccessView[] }) => {
-                    x.data.forEach((userAccess: UserAccessView) => {
+                response.data.pages.forEach(page => {
+                    page.data.forEach((userAccess: UserAccess) => {
                         userAccesses.push(new UserAccessView(
                             userAccess.id,
+                            userAccess.firstName,
+                            userAccess.lastName,
                             userAccess.userEmail,
-                            userAccess.recipientEmail,
                             userAccess.orgCode,
                             userAccess.activeFrom,
                             userAccess.activeTo,
@@ -53,7 +58,7 @@ export const userAccessViewService = {
                 setMappedUserAccess(userAccesses);
                 setPages(response.data.pages);
             }
-        }, [response.data]);
+        }, [response.data?.pages]);
 
         return {
             mappedUserAccess,
@@ -67,7 +72,7 @@ export const userAccessViewService = {
         };
     },
 
-    useGetUserAccessById: (id: Guid) => {
+    useGetUserAccessById: (id: string) => {
         const query = `?$filter=id eq ${id}`;
         const response = userAccessService.useRetrieveAllUserAccessPages(query);
         const [mappedUserAccess, setMappedUserAccess] = useState<UserAccessView>();
@@ -77,8 +82,9 @@ export const userAccessViewService = {
                 const userAccess = response.data.pages[0].data[0];
                 const userAccessView = new UserAccessView(
                     userAccess.id,
+                    userAccess.firstName,
+                    userAccess.lastName,
                     userAccess.userEmail,
-                    userAccess.recipientEmail,
                     userAccess.orgCode,
                     userAccess.activeFrom,
                     userAccess.activeTo,
@@ -90,7 +96,7 @@ export const userAccessViewService = {
 
                 setMappedUserAccess(userAccessView);
             }
-        }, [response.data]);
+        }, [response.data?.pages]);
 
         return {
             mappedUserAccess,

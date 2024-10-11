@@ -1,12 +1,13 @@
 import React, { FunctionComponent, useMemo, useState } from "react";
 import { debounce } from "lodash";
-
-import SearchBase from "../bases/search/SearchBase";
-import { SpinnerBase } from "../bases/spinner/SpinnerBase";
-import { Card, CardBody, CardText, CardTitle, Container, Table } from "react-bootstrap";
+import { Card, Container, Table } from "react-bootstrap";
 import LookupRow from "./lookupRow";
 import { LookupView } from "../../../models/views/components/lookups/lookupView";
 import { lookupViewService } from "../../../services/views/lookups/lookupViewService";
+import SearchBase from "../../bases/inputs/SearchBase";
+import { SpinnerBase } from "../../bases/spinner/SpinnerBase";
+import LookupRowAdd from "./lookupRowAdd";
+import LookupRowNew from "./lookupRowNew";
 
 type LookupTableProps = {
     allowedToAdd: boolean;
@@ -23,15 +24,11 @@ const LookupTable: FunctionComponent<LookupTableProps> = (props) => {
 
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [debouncedTerm, setDebouncedTerm] = useState<string>("");
-
-    const { mappedLookups: lookupsRetrieved, isLoading } = lookupViewService.useGetAllLookups(debouncedTerm);
-
-    //const addLookup = lookupViewService.useCreateLookup();
-    //const updateLookup = lookupViewService.useUpdateLookup();
-    //const deleteLookup = lookupViewService.useRemoveLookup();
-
     const [addMode, setAddMode] = useState<boolean>(false);
     const [addApiError, setAddApiError] = useState<any>({});
+
+    const { mappedLookups: lookupsRetrieved, isLoading }
+        = lookupViewService.useGetAllLookups(debouncedTerm);
 
     const handleSearchChange = (value: string) => {
         setSearchTerm(value);
@@ -42,24 +39,27 @@ const LookupTable: FunctionComponent<LookupTableProps> = (props) => {
         setAddMode(!addMode);
     };
 
+    const addLookup = lookupViewService.useCreateLookup();
     const handleAddNew = (lookup: LookupView) => {
-        //return addLookup.mutate(lookup, {
-        //    onSuccess: () => {
-        //        setAddMode(false);
-        //    },
-        //    onError: (error: any) => {
-        //        setAddApiError(error?.response?.data?.errors);
-        //    }
-        //});
+        return addLookup.mutate(lookup, {
+            onSuccess: () => {
+                setAddMode(false);
+            },
+            onError: (error: any) => {
+                setAddApiError(error?.response?.data?.errors);
+            }
+        });
     };
 
-    //const handleUpdate = (lookup: LookupView) => {
-    //    return updateLookup.mutateAsync(lookup);
-    //}
+    const updateLookup = lookupViewService.useUpdateLookup();
+    const handleUpdate = (lookup: LookupView) => {
+        return updateLookup.mutateAsync(lookup);
+    }
 
-    //const handleDelete = (lookup: LookupView) => {
-    //    return deleteLookup.mutateAsync(lookup.id);
-    //}
+    const deleteLookup = lookupViewService.useRemoveLookup();
+    const handleDelete = (lookup:LookupView) => {
+        return deleteLookup.mutateAsync(lookup.id);
+    }
 
     const handleDebounce = useMemo(
         () => debounce((value: string) => {
@@ -70,20 +70,38 @@ const LookupTable: FunctionComponent<LookupTableProps> = (props) => {
     return (
         <>
             <Container fluid>
+                <SearchBase id="search" label="Search lookups" value={searchTerm} placeholder="Search lookups"
+                    onChange={(e) => { handleSearchChange(e.currentTarget.value) }} />
+                <br />
                 <Card>
                     <Card.Header as="h5">
                         Lookup Configuration
                     </Card.Header>
                     <Card.Body>
-                        <Table striped bordered hover variant="dark">
+                        {isLoading && <> <SpinnerBase />.</>}
+                        <Table striped bordered hover variant="light">
                             <thead>
                                 <tr>
                                     <th>Name</th>
                                     <th>Value</th>
+                                    <th>Created By</th>
+                                    <th>Created When</th>
                                     <th>Action(s)</th>
                                 </tr>
                             </thead>
                             <tbody>
+                                {
+                                    allowedToAdd &&
+                                    <>
+                                        {addMode === false && (<LookupRowNew onAdd={handleAddState} />)}
+
+                                        {addMode === true && (
+                                            <LookupRowAdd
+                                                onCancel={handleAddState}
+                                                onAdd={handleAddNew}
+                                                apiError={addApiError} />)}
+                                    </>
+                                }
                                 {
                                     lookupsRetrieved?.map((lookup: LookupView) =>
                                         <LookupRow
@@ -92,7 +110,7 @@ const LookupTable: FunctionComponent<LookupTableProps> = (props) => {
                                             allowedToEdit={allowedToEdit}
                                             allowedToDelete={allowedToDelete}
                                             onUpdate={handleUpdate}
-                                            onDelete={handleDelete} />
+                                            onDelete={handleDelete}/>
                                     )}
                             </tbody>
                         </Table>

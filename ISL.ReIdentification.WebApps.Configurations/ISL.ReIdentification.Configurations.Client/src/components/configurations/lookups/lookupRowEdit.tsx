@@ -56,23 +56,22 @@ const LookupRowEdit: FunctionComponent<LookupRowEditProps> = (props) => {
     return (
         <tr>
             <td>
-
                 <TextInputBase
                     id="name"
                     name="name"
-                    label="Lookup Name"
                     placeholder="Lookup Name"
                     value={editLookup.name}
                     required={true}
                     error={errors.name}
                     onChange={handleChange} />
 
-                <br />
 
+                
+            </td>
+            <td>
                 <TextInputBase
                     id="value"
                     name="value"
-                    label="Lookup Value"
                     placeholder="Lookup Value"
                     value={editLookup.value}
                     required={true}
@@ -80,11 +79,10 @@ const LookupRowEdit: FunctionComponent<LookupRowEditProps> = (props) => {
                     onChange={handleChange} />
 
             </td>
-
-            <br />
-
-            <td className="text-end">
-                <Button onClick={() => handleCancel()}>Cancel</Button>&nbsp;
+            <td></td>
+            <td></td>
+            <td>
+                <Button onClick={() => handleCancel()} variant="danger">Cancel</Button>&nbsp;
                 <Button onClick={() => handleUpdate()} disabled={errors.hasErrors} >Update</Button>
             </td>
         </tr>

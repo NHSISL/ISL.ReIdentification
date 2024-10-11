@@ -1,11 +1,14 @@
 import { debounce } from "lodash";
 import React, { FunctionComponent, useMemo, useState } from "react";
 import { SpinnerBase } from "../bases/spinner/SpinnerBase";
-import { Card, Table } from "react-bootstrap";
+import { Card, Container, Table } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDatabase } from "@fortawesome/free-solid-svg-icons";
-import { userAccessViewService } from "../../services/views/userAccess/lookupViewService";
 import { UserAccessView } from "../../models/views/components/userAccess/userAccessView";
+import InfiniteScroll from "../bases/pagers/InfiniteScroll";
+import InfiniteScrollLoader from "../bases/pagers/InfiniteScroll.Loader";
+import { userAccessViewService } from "../../services/views/userAccess/userAccessViewService";
+import SearchBase from "../bases/inputs/SearchBase";
 import UserAccessRow from "./userAccessRow";
 
 type UserAccessTableProps = {};
@@ -46,49 +49,65 @@ const UserAccessTable: FunctionComponent<UserAccessTableProps> = (props) => {
     };
 
     return (
-        <div className="infiniteScrollContainer">
-            <Card>
-                <Card.Header> <FontAwesomeIcon icon={faDatabase} className="me-2" /> Ingestion Tracking</Card.Header>
-                <Card.Body>
-                    <InfiniteScroll loading={isLoading || showSpinner} hasNextPage={hasNextPage || false} loadMore={fetchNextPage}>
+        <>
+            <SearchBase id="search" label="Search lookups" value={searchTerm} placeholder="Search User Access"
+                onChange={(e) => { handleSearchChange(e.currentTarget.value) }} />
+            <br />
 
-                        <Table>
-                            <tbody>
-                                {isLoading || showSpinner ? (
+            <Container fluid className="infiniteScrollContainer">
+                <Card>
+                    <Card.Header> <FontAwesomeIcon icon={faDatabase} className="me-2" /> User Access</Card.Header>
+                    <Card.Body>
+                        <InfiniteScroll loading={isLoading || showSpinner} hasNextPage={hasNextPage || false} loadMore={fetchNextPage}>
+
+                            <Table striped bordered hover variant="light">
+                                <thead>
                                     <tr>
-                                        <td colSpan={6} className="text-center">
-                                            <SpinnerBase />
-                                        </td>
+                                        <th>First Name</th>
+                                        <th>Last Name</th>
+                                        <th>Email</th>
+                                        <th>Organisation Code</th>
+                                        <th>Active From</th>
+                                        <th>Active To</th>
+                                        <th>Action(s)</th>
                                     </tr>
-                                ) : (
-                                    <>
-                                        {userAccessRetrieved?.map(
-                                            (userAccessView: UserAccessView) => (
-                                                    <UserAccessRow
-                                                        key={userAccessView.id}
-                                                        ingestionTracking={userAccessView}
-                                                    />
-                                                )
-                                        )}
+                                </thead>
+                                <tbody>
+                                    {isLoading || showSpinner ? (
                                         <tr>
-                                            <td colSpan={5} className="text-center">
-                                                <InfiniteScrollLoader
-                                                    loading={isLoading || isFetchingNextPage}
-                                                    spinner={<SpinnerBase />}
-                                                    noMorePages={hasNoMorePages()}
-                                                    noMorePagesMessage={<>-- No more pages --</>}
-                                                />
+                                            <td colSpan={6} className="text-center">
+                                                <SpinnerBase />
                                             </td>
                                         </tr>
-                                    </>
-                                )}
-                            </tbody>
-                        </Table>
-                    </InfiniteScroll>
-                </Card.Body>
-            </Card>
-
-        </div>
+                                    ) : (
+                                        <>
+                                            {userAccessRetrieved?.map(
+                                                (userAccessView: UserAccessView) => (
+                                                    <UserAccessRow
+                                                        key={userAccessView.id.toString()}
+                                                        userAccess={userAccessView}
+                                                    />
+                                                )
+                                            )}
+                                            <tr>
+                                                <td colSpan={7} className="text-center">
+                                                    <InfiniteScrollLoader
+                                                        loading={isLoading || isFetchingNextPage}
+                                                        spinner={<SpinnerBase />}
+                                                        noMorePages={hasNoMorePages()}
+                                                        noMorePagesMessage={<>-- No more pages --</>}
+                                                    />
+                                                    </td>
+                                            </tr>
+                                        </>
+                                    )}
+                                </tbody>
+                            </Table>
+                        </InfiniteScroll>
+                    </Card.Body>
+                </Card>
+            </Container>
+        </>
     );
 };
 

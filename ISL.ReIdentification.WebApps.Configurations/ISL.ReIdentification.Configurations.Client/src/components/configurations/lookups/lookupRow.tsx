@@ -1,6 +1,8 @@
 import React, { FunctionComponent, useState } from "react";
 import { LookupView } from "../../models/views/components/lookups/lookupView";
 import LookupRowView from "./lookupRowView";
+import LookupRowEdit from "./lookupRowEdit";
+import LookupRowDelete from "./lookupRowDelete";
 
 type LookupRowProps = {
     lookup: LookupView;
@@ -27,41 +29,59 @@ const LookupRow: FunctionComponent<LookupRowProps> = (props) => {
         setMode(value);
     };
 
-    //const handleUpdate = async (lookup: LookupView) => {
-    //    try {
-    //        await onUpdate(lookup);
-    //        setMode('VIEW');
-    //    } catch (error) {
-    //        setApiError(error);
-    //        setMode('EDIT');
-    //    }
-    //};
+    const handleUpdate = async (lookup: LookupView) => {
+        console.log(lookup);
+        try {
+            await onUpdate(lookup);
+            setMode('VIEW');
+        } catch (error) {
+            setApiError(error);
+            setMode('EDIT');
+        }
+    };
 
-    //const handleDelete = (lookup: LookupView) => {
-    //    onDelete(lookup);
-    //    setMode('VIEW');
-    //};
+    const handleDelete = (lookup: LookupView) => {
+        console.log(lookup);
+        onDelete(lookup);
+        setMode('VIEW');
+    };
 
-    //const handleCancel = () => {
-    //    setMode('VIEW');
-    //};
+    const handleCancel = () => {
+        setMode('VIEW');
+    };
 
     return (
         <>
+            {mode !== 'EDIT' && mode !== 'DELETE' && (
                 <LookupRowView
                     key={lookup.id.toString()}
                     lookup={lookup}
                     onEdit={handleMode}
                     onDelete={handleMode}
                     allowedToEdit={allowedToEdit}
-                    allowedToDelete={allowedToDelete} />
+                    allowedToDelete={allowedToDelete} 
+                />
+            )}
+            {mode === 'EDIT' && (
+                <LookupRowEdit
+                    key={lookup.id.toString()}
+                    lookup={lookup}
+                    onCancel={handleCancel}
+                    onEdit={handleUpdate}
+                    apiError={apiError}
+                />
+            )}
+
+            {mode === 'DELETE' && (
+                <LookupRowDelete
+                    key={lookup.id.toString()}
+                    lookup={lookup}
+                    onCancel={handleCancel}
+                    onDelete={handleDelete} />
+            )}
+
         </>
     );
 }
-
-LookupRow.defaultProps = {
-    allowedToEdit: false,
-    allowedToDelete: false
-};
 
 export default LookupRow;

@@ -20,6 +20,7 @@ import { UserAccess } from './pages/userAccess';
 import { DelegatedUserAccess } from './pages/delegatedUserAccess';
 import { OdsData } from './pages/odsData';
 import { PdsData } from './pages/pdsData';
+import UserAccessDetail from './components/userAccess/userAccessDetail';
 
 // TODO:
 //      - API Secured Routes
@@ -47,6 +48,10 @@ function App({ instance }: any) {
                 {
                     path: "userAccess",
                     element: <UserAccess />
+                },
+                {
+                    path: "userAccessDetail/:userDetailId",
+                    element: <UserAccessDetail />
                 },
                 {
                     path: "delegatedUserAccess",

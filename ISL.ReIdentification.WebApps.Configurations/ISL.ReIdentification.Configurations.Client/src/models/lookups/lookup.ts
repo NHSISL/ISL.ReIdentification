@@ -1,8 +1,5 @@
-import { Guid } from "guid-typescript";
-
-
 export class Lookup {
-    public id: Guid;
+    public id: string;
     public name: string;
     public value: string;
     public createdBy?: string;
@@ -11,7 +8,7 @@ export class Lookup {
     public updatedDate?: Date | undefined;
 
     constructor(lookup: any) {
-        this.id = lookup.id ? Guid.parse(lookup.id) : Guid.parse(Guid.EMPTY);
+        this.id = lookup.id ? lookup.id : "";
         this.name = lookup.name || "";
         this.value = lookup.value || "";
         this.createdDate = lookup.createdDate ? new Date(lookup.createdDate) : undefined;
