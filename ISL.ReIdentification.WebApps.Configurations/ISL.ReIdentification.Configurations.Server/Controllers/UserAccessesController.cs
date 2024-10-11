@@ -4,12 +4,14 @@
 
 using System;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using ISL.Reidentification.Core.Models.Foundations.UserAccesses.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses.Exceptions;
 using ISL.ReIdentification.Core.Services.Foundations.UserAccesses;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
 
 namespace ISL.ReIdentification.Configurations.Server.Controllers
@@ -33,9 +35,9 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
 
                 return Created(addedUserAccess);
             }
-            catch (UserAccessValidationException lookupValidationException)
+            catch (UserAccessValidationException userAccessValidationException)
             {
-                return BadRequest(lookupValidationException.InnerException);
+                return BadRequest(userAccessValidationException.InnerException);
             }
             catch (UserAccessDependencyValidationException lookupDependencyValidationException)
                when (lookupDependencyValidationException.InnerException is AlreadyExistsUserAccessException)
@@ -56,8 +58,18 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             }
         }
 
+
         [HttpGet]
-        public async ValueTask<ActionResult<IQueryable<UserAccess>>> GetAsync()
+#if !DEBUG
+        [EnableQuery(PageSize = 50)]
+#endif
+#if DEBUG
+        [EnableQuery(PageSize = 25)]
+#endif
+#if RELEASE
+        [Authorize(Roles = "")]
+#endif
+        public async ValueTask<ActionResult<IQueryable<UserAccess>>> Get()
         {
             try
             {

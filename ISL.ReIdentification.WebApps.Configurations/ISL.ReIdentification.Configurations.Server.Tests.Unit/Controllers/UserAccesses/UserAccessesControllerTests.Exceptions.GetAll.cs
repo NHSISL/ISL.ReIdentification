@@ -35,7 +35,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.User
 
             // when
             ActionResult<IQueryable<UserAccess>> actualActionResult =
-                await this.userAccessesController.GetAsync();
+                await this.userAccessesController.Get();
 
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);

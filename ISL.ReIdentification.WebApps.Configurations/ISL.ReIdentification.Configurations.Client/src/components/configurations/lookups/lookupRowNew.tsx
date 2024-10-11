@@ -18,8 +18,10 @@ const LookupRowNew: FunctionComponent<LookupRowNewProps> = (props) => {
             <tr>
                 <td></td>
                 <td></td>
-                <td className="text-end">
-                    <Button id="supplierssAdd" onClick={() => onAdd(true)}>
+                <td></td>
+                <td></td>
+                <td>
+                    <Button id="lookupAdd" onClick={() => onAdd(true)} variant="success">
                         <FontAwesomeIcon icon={faCirclePlus} size="lg" />&nbsp; New
                     </Button>
                 </td>

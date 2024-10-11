@@ -4,8 +4,8 @@ import ApiBroker from "./apiBroker";
 import { UserAccess } from "../models/userAccess/userAccess";
 
 class UserAccessBroker {
-    relativeUserAccessUrl = '/api/userAccess';
-    relativeUserAccessOdataUrl = '/odata/userAccess'
+    relativeUserAccessUrl = '/api/userAccesses';
+    relativeUserAccessOdataUrl = '/odata/userAccesses'
 
     private apiBroker: ApiBroker = new ApiBroker();
 

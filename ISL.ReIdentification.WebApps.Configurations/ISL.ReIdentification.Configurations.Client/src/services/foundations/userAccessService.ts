@@ -1,54 +1,56 @@
 import { useMsal } from "@azure/msal-react";
 import { Guid } from "guid-typescript";
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "react-query";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import UserAccessBroker from "../../brokers/apiBroker.userAccess";
 import { UserAccess } from "../../models/userAccess/userAccess";
 
 export const userAccessService = {
+
     useCreateUserAccess: () => {
         const broker = new UserAccessBroker();
         const queryClient = useQueryClient();
         const msal = useMsal();
 
-        return useMutation((userAccess: UserAccess) => {
-            const date = new Date();
-            userAccess.createdDate = userAccess.updatedDate = date;
-            userAccess.createdBy = userAccess.updatedBy = msal.accounts[0].username;
+        return useMutation({
+            mutationFn: (userAccess: UserAccess) => {
+                const date = new Date();
+                userAccess.createdDate = userAccess.updatedDate = date;
+                userAccess.createdBy = userAccess.updatedBy = msal.accounts[0].username;
 
-            return broker.PostUserAccessAsync(userAccess);
-        },
-            {
-                onSuccess: (variables: UserAccess) => {
-                    queryClient.invalidateQueries("UserAccessGetAll");
-                    queryClient.invalidateQueries(["UserAccessGetById", { id: variables.id }]);
-                }
-            });
+                return broker.PostUserAccessAsync(userAccess);
+            },
+
+            onSuccess: (variables: UserAccess) => {
+                queryClient.invalidateQueries({ queryKey: ["UserAccessGetAll"]});
+                queryClient.invalidateQueries({ queryKey: ["UserAccessGetById", { id: variables.id }] });
+            }
+        });
     },
 
     useRetrieveAllUserAccess: (query: string) => {
         const broker = new UserAccessBroker();
 
-        return useQuery(
-            ["UserAccessGetAll", { query: query }],
-            () => broker.GetAllUserAccessAsync(query),
-            { staleTime: Infinity });
+        return useQuery({
+            queryKey: ["UserAccessGetAll", { query: query }],
+            queryFn: () => broker.GetAllUserAccessAsync(query),
+            staleTime: Infinity
+        });
     },
 
     useRetrieveAllUserAccessPages: (query: string) => {
-        const broker = new UserAccessBroker();
-
-        return useInfiniteQuery(
-            ["UserAccessGetAll", { query: query }],
-            ({ pageParam }: { pageParam?: string }) => {
+        const userAccessBroker = new UserAccessBroker();
+        return useInfiniteQuery({
+            queryKey: ["UserAccessGetAll", { query: query }],
+            queryFn: ({ pageParam = null }) => {
                 if (!pageParam) {
-                    return broker.GetUserAccessFirstPagesAsync(query)
+                    return userAccessBroker.GetUserAccessFirstPagesAsync(query);
                 }
-                return broker.GetUserAccessSubsequentPagesAsync(pageParam)
+                return userAccessBroker.GetUserAccessSubsequentPagesAsync(pageParam);
             },
-            {
-                getNextPageParam: (lastPage: { nextPage?: string }) => lastPage.nextPage,
-                staleTime: Infinity
-            });
+            initialPageParam: 0,
+            staleTime: Infinity,
+            getNextPageParam: (lastPage: any) => lastPage.nextPage ?? null,
+        });
     },
 
     useModifyUserAccess: () => {
@@ -56,33 +58,35 @@ export const userAccessService = {
         const queryClient = useQueryClient();
         const msal = useMsal();
 
-        return useMutation((userAccess: UserAccess) => {
-            const date = new Date();
-            userAccess.updatedDate = date;
-            userAccess.updatedBy = msal.accounts[0].username;
+        return useMutation({
+            mutationFn: (userAccess: UserAccess) => {
+                const date = new Date();
+                userAccess.updatedDate = date;
+                userAccess.updatedBy = msal.accounts[0].username;
 
-            return broker.PutUserAccessAsync(userAccess);
-        },
-            {
-                onSuccess: (data: UserAccess) => {
-                    queryClient.invalidateQueries("UserAccessGetAll");
-                    queryClient.invalidateQueries(["UserAccessGetById", { id: data.id }]);
-                }
-            });
+                return broker.PutUserAccessAsync(userAccess);
+            },
+
+            onSuccess: (data: UserAccess) => {
+                queryClient.invalidateQueries({ queryKey: ["UserAccessGetAll"]});
+                queryClient.invalidateQueries({ queryKey: ["UserAccessGetById", { id: data.id }] });
+            }
+        });
     },
 
     useRemoveUserAccess: () => {
         const broker = new UserAccessBroker();
         const queryClient = useQueryClient();
 
-        return useMutation((id: Guid) => {
-            return broker.DeleteUserAccessByIdAsync(id);
-        },
-            {
-                onSuccess: (data: { id: Guid }) => {
-                    queryClient.invalidateQueries("UserAccessGetAll");
-                    queryClient.invalidateQueries(["UserAccessGetById", { id: data.id }]);
-                }
-            });
+        return useMutation({
+            mutationFn: (id: Guid) => {
+                return broker.DeleteUserAccessByIdAsync(id);
+            },
+
+            onSuccess: (data: { id: Guid }) => {
+                queryClient.invalidateQueries({ queryKey: ["UserAccessGetAll"] });
+                queryClient.invalidateQueries({ queryKey: ["UserAccessGetById", { id: data.id }] });
+            }
+        });
     },
 }

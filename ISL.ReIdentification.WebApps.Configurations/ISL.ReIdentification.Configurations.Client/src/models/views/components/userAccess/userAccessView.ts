@@ -1,11 +1,10 @@
-import { Guid } from 'guid-typescript';
-
 export class UserAccessView {
-    public id: Guid;
+    public id: string;
+    public firstName: string;
+    public lastName: string;
     public userEmail: string;
-    public recipientEmail: string;
     public orgCode: string;
-    public activeFrom: Date;
+    public activeFrom?: Date;
     public activeTo?: Date;
     public createdBy?: string;
     public createdDate?: Date;
@@ -13,11 +12,12 @@ export class UserAccessView {
     public updatedDate?: Date;
 
     constructor(
-        id: Guid,
+        id: string,
+        firstName: string,
+        lastName: string,
         userEmail: string,
-        recipientEmail: string,
         orgCode: string,
-        activeFrom: Date,
+        activeFrom?: Date,
         activeTo?: Date,
         createdBy?: string,
         createdDate?: Date,
@@ -25,8 +25,9 @@ export class UserAccessView {
         updatedDate?: Date,
     ) {
         this.id = id;
+        this.firstName = firstName || "";
+        this.lastName = lastName || "";
         this.userEmail = userEmail || "";
-        this.recipientEmail = recipientEmail || "";
         this.orgCode = orgCode || "";
         this.activeFrom = activeFrom;
         this.activeTo = activeTo;

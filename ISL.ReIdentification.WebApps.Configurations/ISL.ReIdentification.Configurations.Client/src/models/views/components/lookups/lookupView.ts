@@ -1,7 +1,7 @@
 import { Guid } from 'guid-typescript';
 
 export class LookupView {
-    public id: Guid;
+    public id: string;
     public name: string;
     public value: string;
     public createdBy?: string;
@@ -10,7 +10,7 @@ export class LookupView {
     public updatedDate?: Date;
 
     constructor(
-        id: Guid,
+        id: string,
         name?: string,
         value?: string,
         createdBy?: string,

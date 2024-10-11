@@ -1,5 +1,4 @@
 import React, { FunctionComponent, ChangeEvent, useState, useEffect } from "react";
-import { Guid } from "guid-typescript";
 import { LookupView } from "../../../models/views/components/lookups/lookupView";
 import { lookupErrors } from "./lookupErrors";
 import { lookupValidations } from "./lookupValidations";
@@ -21,7 +20,7 @@ const LookupRowAdd: FunctionComponent<LookupRowAddProps> = (props) => {
         apiError
     } = props;
 
-    const [lookup, setLookup] = useState<LookupView>(new LookupView(Guid.create()));
+    const [lookup, setLookup] = useState<LookupView>(new LookupView(crypto.randomUUID()));
 
     const { errors, processApiErrors, enableValidationMessages, validate } =
         useValidation(lookupErrors, lookupValidations, lookup);
@@ -50,32 +49,31 @@ const LookupRowAdd: FunctionComponent<LookupRowAddProps> = (props) => {
 
     return (
         <tr>
-            
             <td>
                 <TextInputBase
                     id="name"
                     name="name"
-                    label="Lookup Name"
                     placeholder="Lookup Name"
                     value={lookup.name}
                     required={true}
                     error={errors.name}
                     onChange={handleChange} />
+            </td>
+            <td>
                 <TextAreaInputBase
                     id="value"
                     name="value"
-                    label="Lookup value"
                     placeholder="Lookup Value"
                     value={lookup.value}
                     error={errors.value}
                     onChange={handleChange}
-                    rows={3}
-                />
+                    rows={3} />
             </td>
-          
-            <td className="text-end">
-                <Button onClick={() => onCancel()}>Cancel</Button>&nbsp;
-                <Button onClick={() => handleSave()} disabled={errors.hasErrors} add>Add</Button>
+            <td></td>
+            <td></td>
+            <td className="centre">
+                <Button onClick={() => onCancel()} variant="danger">Cancel</Button>&nbsp;
+                <Button onClick={() => handleSave()} disabled={errors.hasErrors} >Add</Button>
             </td>
 
         </tr>
