@@ -39,7 +39,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
 
             InvalidArgumentAccessOrchestrationException actualAccessValidationOrchestrationException =
                 await Assert.ThrowsAsync<InvalidArgumentAccessOrchestrationException>(
-                    getUserHasAccessToPatientTask.AsTask);
+                    testCode: getUserHasAccessToPatientTask.AsTask);
 
             // Then
             actualAccessValidationOrchestrationException.Should()

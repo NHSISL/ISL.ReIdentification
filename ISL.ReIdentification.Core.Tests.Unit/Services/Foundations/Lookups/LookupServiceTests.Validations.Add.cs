@@ -32,8 +32,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
                 this.lookupService.AddLookupAsync(nullLookup);
 
             LookupValidationException actualLookupValidationException =
-                await Assert.ThrowsAsync<LookupValidationException>(() =>
-                    addLookupTask.AsTask());
+                await Assert.ThrowsAsync<LookupValidationException>(
+                    testCode: addLookupTask.AsTask);
 
             // then
             actualLookupValidationException.Should()
@@ -99,8 +99,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
                 this.lookupService.AddLookupAsync(invalidLookup);
 
             LookupValidationException actualLookupValidationException =
-                await Assert.ThrowsAsync<LookupValidationException>(() =>
-                    addLookupTask.AsTask());
+                await Assert.ThrowsAsync<LookupValidationException>(
+                    testCode: addLookupTask.AsTask);
 
             // then
             actualLookupValidationException.Should()
@@ -160,7 +160,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
 
             LookupValidationException actualLookupValidationException =
                 await Assert.ThrowsAsync<LookupValidationException>(
-                    addLookupTask.AsTask);
+                    testCode: addLookupTask.AsTask);
 
             // then
             actualLookupValidationException.Should()
@@ -218,7 +218,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
 
             LookupValidationException actualLookupValidationException =
                 await Assert.ThrowsAsync<LookupValidationException>(
-                    addLookupTask.AsTask);
+                    testCode: addLookupTask.AsTask);
 
             // then
             actualLookupValidationException.Should().BeEquivalentTo(
@@ -288,7 +288,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
 
             LookupValidationException actualLookupValidationException =
                 await Assert.ThrowsAsync<LookupValidationException>(
-                    addLookupTask.AsTask);
+                    testCode: addLookupTask.AsTask);
 
             // then
             actualLookupValidationException.Should().BeEquivalentTo(

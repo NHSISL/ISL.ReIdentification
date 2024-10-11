@@ -153,7 +153,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
         {
             if (csvIdentificationRequest is null)
             {
-                throw new NullCsvIdentificationRequestException("Delegated access is null.");
+                throw new NullCsvIdentificationRequestException("Csv identification request is null.");
             }
         }
 
@@ -282,7 +282,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
         {
             var invalidCsvIdentificationRequestException =
                 new InvalidCsvIdentificationRequestException(
-                    message: "Invalid delegated access. Please correct the errors and try again.");
+                    message: "Invalid csv identification request. Please correct the errors and try again.");
 
             foreach ((dynamic rule, string parameter) in validations)
             {

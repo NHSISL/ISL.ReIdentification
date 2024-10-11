@@ -103,8 +103,8 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
             // then
             deletedImpersonationContext.Should().BeEquivalentTo(expectedImpersonationContext);
 
-            await Assert.ThrowsAsync<HttpResponseNotFoundException>(() =>
-                getImpersonationContextbyIdTask.AsTask());
+            await Assert.ThrowsAsync<HttpResponseNotFoundException>(
+                testCode: getImpersonationContextbyIdTask.AsTask);
         }
     }
 }
