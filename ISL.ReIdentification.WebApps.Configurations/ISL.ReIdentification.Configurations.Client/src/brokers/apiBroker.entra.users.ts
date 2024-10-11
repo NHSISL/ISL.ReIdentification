@@ -1,3 +1,4 @@
+import { entraUser } from "../models/views/components/entraUsers/entraUsers";
 import ApiBroker from "./apiBroker";
 
 class EntraUsersBroker {
@@ -10,7 +11,11 @@ class EntraUsersBroker {
         const url = `${this.absoluteUrl}?$filter=startswith(mail,'${emailAddressFragment}')`;
 
         return await this.apiBroker.GetAsyncAbsolute(url)
-            .then(result => result.data.value);
+            .then(result => {
+                if(result.data && result.data.value) {
+                    return result.data.value.map((eu: any) => { return new entraUser(eu) })
+                }
+            });
     }
 }
 export default EntraUsersBroker;

@@ -56,10 +56,6 @@ class ApiBroker {
         return axios.get(url, await this.config());
     }
 
-    //public async GetAsyncAbsolute(absoluteUri: string) {
-    //    return axios.get(absoluteUri, await this.config());
-    //}
-
     public async GetAsyncAbsolute(absoluteUri: string) {
         return axios.get(absoluteUri, await this.config());;
     }
