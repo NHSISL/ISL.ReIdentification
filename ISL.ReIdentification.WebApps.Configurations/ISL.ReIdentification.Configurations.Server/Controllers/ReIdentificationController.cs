@@ -55,10 +55,23 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
         public async ValueTask<ActionResult<AccessRequest>>
             PostImpersonationContextRequestAsync(AccessRequest accessRequest)
         {
-            AccessRequest addedAccessRequest =
-                    await this.identificationCoordinationService.ProcessImpersonationContextRequestAsync(accessRequest);
+            try
+            {
+                AccessRequest addedAccessRequest =
+                   await this.identificationCoordinationService.ProcessImpersonationContextRequestAsync(accessRequest);
 
-            return Created(addedAccessRequest);
+                return Created(addedAccessRequest);
+            }
+            catch (IdentificationCoordinationValidationException identificationCoordinationValidationException)
+            {
+                return BadRequest(identificationCoordinationValidationException.InnerException);
+            }
+            catch (
+                IdentificationCoordinationDependencyValidationException
+                    identificationCoordinationDependencyValidationException)
+            {
+                return BadRequest(identificationCoordinationDependencyValidationException.InnerException);
+            }
         }
     }
 }
