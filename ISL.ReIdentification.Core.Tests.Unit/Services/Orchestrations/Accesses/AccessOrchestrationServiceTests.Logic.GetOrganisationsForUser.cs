@@ -19,7 +19,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
         public async Task ShouldGetOrganisationsForUserReturnsOrganisations(UserAccess returnedUserAccess)
         {
             // given
-            string inputUserEmail = returnedUserAccess.UserEmail;
+            string inputUserEmail = returnedUserAccess.Email;
 
             IQueryable<UserAccess> returnedUserAccesses =
                 new List<UserAccess> { returnedUserAccess }
@@ -64,12 +64,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
         {
             // given
             DateTimeOffset currentDateTimeOffset = DateTimeOffset.UtcNow;
-            string inputUserEmail = returnedUserAccess.UserEmail;
+            string inputUserEmail = returnedUserAccess.Email;
             string differentEmail = GetRandomStringWithLength(50);
 
             if (changeEmail)
             {
-                returnedUserAccess.UserEmail = differentEmail;
+                returnedUserAccess.Email = differentEmail;
             }
 
             IQueryable<UserAccess> returnedUserAccesses =

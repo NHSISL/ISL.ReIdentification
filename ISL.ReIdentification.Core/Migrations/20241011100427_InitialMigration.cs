@@ -36,12 +36,18 @@ namespace ISL.ReIdentification.Core.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    RequesterFirstName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    RequesterLastName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    RequesterEntraUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RequesterFirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RequesterLastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RequesterDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     RequesterEmail = table.Column<string>(type: "nvarchar(320)", maxLength: 320, nullable: false),
-                    RecipientFirstName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    RecipientLastName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    RequesterJobTitle = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RecipientEntraUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RecipientFirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RecipientLastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RecipientDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     RecipientEmail = table.Column<string>(type: "nvarchar(320)", maxLength: 320, nullable: false),
+                    RecipientJobTitle = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Reason = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Purpose = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Organisation = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
@@ -63,15 +69,23 @@ namespace ISL.ReIdentification.Core.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    RequesterFirstName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    RequesterLastName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    RequesterEntraUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RequesterFirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RequesterLastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RequesterDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     RequesterEmail = table.Column<string>(type: "nvarchar(320)", maxLength: 320, nullable: false),
-                    RecipientFirstName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    RecipientLastName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    RequesterJobTitle = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RecipientEntraUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RecipientFirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RecipientLastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RecipientDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     RecipientEmail = table.Column<string>(type: "nvarchar(320)", maxLength: 320, nullable: false),
+                    RecipientJobTitle = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Reason = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Purpose = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Organisation = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    PipelineName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    ManagedIdentityName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsApproved = table.Column<bool>(type: "bit", nullable: false),
                     IdentifierColumn = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
@@ -127,9 +141,13 @@ namespace ISL.ReIdentification.Core.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    FirstName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    UserEmail = table.Column<string>(type: "nvarchar(320)", maxLength: 320, nullable: false),
+                    EntraUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    GivenName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Surname = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DisplayName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    JobTitle = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(320)", maxLength: 320, nullable: false),
+                    UserPrincipalName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     OrgCode = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
                     ActiveFrom = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     ActiveTo = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
@@ -188,6 +206,12 @@ namespace ISL.ReIdentification.Core.Migrations
                 name: "IX_AccessAudits_UserEmail",
                 table: "AccessAudits",
                 column: "UserEmail");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ImpersonationContexts_PipelineName",
+                table: "ImpersonationContexts",
+                column: "PipelineName",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Lookups_Name",

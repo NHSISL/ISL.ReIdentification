@@ -13,7 +13,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
 {
     public partial class ImpersonationContextsApiTests
     {
-        [Fact(Skip = "Need to refactor test")]
+        [Fact]
         public async Task ShouldPostImpersonationContextAsync()
         {
             // given
@@ -32,7 +32,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
             await this.apiBroker.DeleteImpersonationContextByIdAsync(actualImpersonationContext.Id);
         }
 
-        [Fact(Skip = "Need to refactor test")]
+        [Fact]
         public async Task ShouldGetAllImpersonationContextsAsync()
         {
             // given
@@ -54,7 +54,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
             }
         }
 
-        [Fact(Skip = "Need to refactor test")]
+        [Fact]
         public async Task ShouldGetImpersonationContextByIdAsync()
         {
             // given
@@ -69,7 +69,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
             await this.apiBroker.DeleteImpersonationContextByIdAsync(actualImpersonationContext.Id);
         }
 
-        [Fact(Skip = "Need to refactor test")]
+        [Fact]
         public async Task ShouldPutImpersonationContextAsync()
         {
             // given
@@ -85,7 +85,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
             await this.apiBroker.DeleteImpersonationContextByIdAsync(actualImpersonationContext.Id);
         }
 
-        [Fact(Skip = "Need to refactor test")]
+        [Fact]
         public async Task ShouldDeleteImpersonationContextAsync()
         {
             // given
@@ -103,8 +103,8 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
             // then
             deletedImpersonationContext.Should().BeEquivalentTo(expectedImpersonationContext);
 
-            await Assert.ThrowsAsync<HttpResponseNotFoundException>(() =>
-                getImpersonationContextbyIdTask.AsTask());
+            await Assert.ThrowsAsync<HttpResponseNotFoundException>(
+                testCode: getImpersonationContextbyIdTask.AsTask);
         }
     }
 }

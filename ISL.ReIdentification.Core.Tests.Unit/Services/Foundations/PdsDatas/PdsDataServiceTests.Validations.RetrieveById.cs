@@ -37,7 +37,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
 
             PdsDataValidationException actualPdsDataValidationException =
                 await Assert.ThrowsAsync<PdsDataValidationException>(
-                    retrievePdsDataByIdTask.AsTask);
+                    testCode: retrievePdsDataByIdTask.AsTask);
 
             // then
             actualPdsDataValidationException.Should()
@@ -81,7 +81,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
 
             PdsDataValidationException actualPdsDataValidationException =
                 await Assert.ThrowsAsync<PdsDataValidationException>(
-                    retrievePdsDataByIdTask.AsTask);
+                    testCode: retrievePdsDataByIdTask.AsTask);
 
             //then
             actualPdsDataValidationException.Should().BeEquivalentTo(expectedPdsDataValidationException);

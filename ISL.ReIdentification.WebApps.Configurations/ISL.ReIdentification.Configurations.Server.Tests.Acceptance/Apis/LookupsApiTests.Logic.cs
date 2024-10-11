@@ -100,8 +100,8 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
             // then
             deletedLookup.Should().BeEquivalentTo(expectedLookup);
 
-            await Assert.ThrowsAsync<HttpResponseNotFoundException>(() =>
-                getLookupbyIdTask.AsTask());
+            await Assert.ThrowsAsync<HttpResponseNotFoundException>(
+                testCode: getLookupbyIdTask.AsTask);
         }
     }
 }

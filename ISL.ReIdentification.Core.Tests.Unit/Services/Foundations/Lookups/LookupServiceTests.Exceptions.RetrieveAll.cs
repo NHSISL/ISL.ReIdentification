@@ -40,7 +40,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
                 this.lookupService.RetrieveAllLookupsAsync();
 
             LookupDependencyException actualLookupDependencyException =
-                await Assert.ThrowsAsync<LookupDependencyException>(retrieveAllLookupsTask.AsTask);
+                await Assert.ThrowsAsync<LookupDependencyException>(
+                    testCode: retrieveAllLookupsTask.AsTask);
 
             // then
             actualLookupDependencyException.Should()
@@ -86,7 +87,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
                 this.lookupService.RetrieveAllLookupsAsync();
 
             LookupServiceException actualLookupServiceException =
-                await Assert.ThrowsAsync<LookupServiceException>(retrieveAllLookupsTask.AsTask);
+                await Assert.ThrowsAsync<LookupServiceException>(
+                    testCode: retrieveAllLookupsTask.AsTask);
 
             // then
             actualLookupServiceException.Should()

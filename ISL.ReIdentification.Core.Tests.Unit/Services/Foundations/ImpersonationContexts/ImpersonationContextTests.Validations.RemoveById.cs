@@ -38,7 +38,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
 
             ImpersonationContextValidationException actualImpersonationContextValidationException =
                 await Assert.ThrowsAsync<ImpersonationContextValidationException>(
-                    removeImpersonationContextByIdTask.AsTask);
+                    testCode: removeImpersonationContextByIdTask.AsTask);
 
             // then
             actualImpersonationContextValidationException.Should().BeEquivalentTo(
@@ -89,7 +89,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
 
             ImpersonationContextValidationException actualImpersonationContextValidationException =
                 await Assert.ThrowsAsync<ImpersonationContextValidationException>(
-                    removeImpersonationContextByIdTask.AsTask);
+                    testCode: removeImpersonationContextByIdTask.AsTask);
 
             // then
             actualImpersonationContextValidationException.Should().BeEquivalentTo(
