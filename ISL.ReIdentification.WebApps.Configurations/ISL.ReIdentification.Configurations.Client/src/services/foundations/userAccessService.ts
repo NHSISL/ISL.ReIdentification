@@ -49,7 +49,7 @@ export const userAccessService = {
             },
             initialPageParam: 0,
             staleTime: Infinity,
-            
+            getNextPageParam: (lastPage: any) => lastPage.nextPage ?? null,
         });
     },
 
