@@ -22,12 +22,43 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
 
         [HttpPost]
         public async ValueTask<ActionResult<AccessRequest>>
-            PostIdentificationRequestsAsync(AccessRequest accessRequest)
+            PostIdentificationRequestsAsync([FromBody] AccessRequest accessRequest)
         {
             try
             {
                 AccessRequest addedAccessRequest =
                     await this.identificationCoordinationService.ProcessIdentificationRequestsAsync(accessRequest);
+
+                return Created(addedAccessRequest);
+            }
+            catch (IdentificationCoordinationValidationException identificationCoordinationValidationException)
+            {
+                return BadRequest(identificationCoordinationValidationException.InnerException);
+            }
+            catch (
+                IdentificationCoordinationDependencyValidationException
+                    identificationCoordinationDependencyValidationException)
+            {
+                return BadRequest(identificationCoordinationDependencyValidationException.InnerException);
+            }
+            catch (IdentificationCoordinationDependencyException identificationCoordinationDependencyException)
+            {
+                return InternalServerError(identificationCoordinationDependencyException);
+            }
+            catch (IdentificationCoordinationServiceException identificationCoordinationServiceException)
+            {
+                return InternalServerError(identificationCoordinationServiceException);
+            }
+        }
+
+        [HttpPost("csv")]
+        public async ValueTask<ActionResult<AccessRequest>>
+            PostCsvIdentificationRequestAsync([FromBody] AccessRequest accessRequest)
+        {
+            try
+            {
+                AccessRequest addedAccessRequest =
+                    await this.identificationCoordinationService.ProcessCsvIdentificationRequestAsync(accessRequest);
 
                 return Created(addedAccessRequest);
             }
