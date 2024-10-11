@@ -72,6 +72,14 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             {
                 return BadRequest(identificationCoordinationDependencyValidationException.InnerException);
             }
+            catch (IdentificationCoordinationDependencyException identificationCoordinationDependencyException)
+            {
+                return InternalServerError(identificationCoordinationDependencyException);
+            }
+            catch (IdentificationCoordinationServiceException identificationCoordinationServiceException)
+            {
+                return InternalServerError(identificationCoordinationServiceException);
+            }
         }
     }
 }
