@@ -22,7 +22,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
 
         [HttpPost]
         public async ValueTask<ActionResult<AccessRequest>>
-            PostIdentificationRequestsAsync(AccessRequest accessRequest)
+            PostIdentificationRequestsAsync([FromBody] AccessRequest accessRequest)
         {
             try
             {
@@ -53,7 +53,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
 
         [HttpPost("impersonation")]
         public async ValueTask<ActionResult<AccessRequest>>
-            PostImpersonationContextRequestAsync(AccessRequest accessRequest)
+            PostImpersonationContextRequestAsync([FromBody] AccessRequest accessRequest)
         {
             try
             {
