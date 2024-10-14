@@ -10,9 +10,10 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
 {
     public interface IIdentificationCoordinationService
     {
-        ValueTask<AccessRequest> ProcessImpersonationContextRequestAsync(AccessRequest accessRequest);
+        ValueTask<AccessRequest> ProcessIdentificationRequestsAsync(AccessRequest accessRequest);
         ValueTask<AccessRequest> PersistsCsvIdentificationRequestAsync(AccessRequest accessRequest);
         ValueTask<AccessRequest> ProcessCsvIdentificationRequestAsync(Guid csvIdentificationRequestId);
-        ValueTask<AccessRequest> ProcessIdentificationRequestsAsync(AccessRequest accessRequest);
+        ValueTask<AccessRequest> PersistsImpersonationContextRequestAsync(AccessRequest accessRequest);
+        ValueTask<AccessRequest> ProcessImpersonationContextRequestAsync(AccessRequest accessRequest);
     }
 }
