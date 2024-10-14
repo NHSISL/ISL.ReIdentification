@@ -1,12 +1,15 @@
-import { Guid } from 'guid-typescript';
-
 export class ImpersonationContext {
-    public id: Guid;
+    public id: string;
+    public requesterFirstName: string;
+    public requesterLastName: string;
     public requesterEmail: string;
+    public recipientFirstName: string;
+    public recipientLastName: string;
     public recipientEmail: string;
-    public isDelegatedAccess: boolean;
+    public reason: string;
+    public purpose: string;
+    public organisation: string;
     public isApproved: boolean;
-    public data: Uint8Array;
     public identifierColumn: string;
     public createdBy?: string;
     public createdDate?: Date | undefined;
@@ -14,12 +17,17 @@ export class ImpersonationContext {
     public updatedDate?: Date | undefined;
 
     constructor(impersonationContext: any) {
-        this.id = impersonationContext.id ? Guid.parse(impersonationContext.id) : Guid.parse(Guid.EMPTY);
+        this.id = impersonationContext.id ? impersonationContext.id : "";
+        this.requesterFirstName = impersonationContext.requesterFirstName || "";
+        this.requesterLastName = impersonationContext.requesterLastName || "";
         this.requesterEmail = impersonationContext.requesterEmail || "";
+        this.recipientFirstName = impersonationContext.recipientFirstName || "";
+        this.recipientLastName = impersonationContext.recipientLastName || "";
         this.recipientEmail = impersonationContext.recipientEmail || "";
-        this.isDelegatedAccess = impersonationContext.isDelegatedAccess || false;
+        this.reason = impersonationContext.reason || "";
+        this.purpose = impersonationContext.purpose || "";
+        this.organisation = impersonationContext.organisation || "";
         this.isApproved = impersonationContext.isApproved || false;
-        this.data = impersonationContext.data || 0;
         this.identifierColumn = impersonationContext.identifierColumn || ""; 
         this.createdDate = impersonationContext.createdDate ? new Date(impersonationContext.createdDate) : undefined;
         this.createdBy = impersonationContext.createdBy || "";

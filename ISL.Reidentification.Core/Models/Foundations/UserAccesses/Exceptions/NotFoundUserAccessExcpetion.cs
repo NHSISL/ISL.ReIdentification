@@ -4,7 +4,7 @@
 
 using Xeptions;
 
-namespace ISL.Reidentification.Core.Models.Foundations.UserAccesses.Exceptions
+namespace ISL.ReIdentification.Core.Models.Foundations.UserAccesses.Exceptions
 {
     public class NotFoundUserAccessException : Xeption
     {

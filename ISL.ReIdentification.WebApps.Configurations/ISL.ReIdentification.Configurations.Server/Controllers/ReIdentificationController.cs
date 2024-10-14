@@ -86,6 +86,37 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             }
         }
 
+        [HttpPost("impersonation")]
+        public async ValueTask<ActionResult<AccessRequest>>
+            PostImpersonationContextRequestAsync([FromBody] AccessRequest accessRequest)
+        {
+            try
+            {
+                AccessRequest addedAccessRequest =
+                   await this.identificationCoordinationService.ProcessImpersonationContextRequestAsync(accessRequest);
+
+                return Created(addedAccessRequest);
+            }
+            catch (IdentificationCoordinationValidationException identificationCoordinationValidationException)
+            {
+                return BadRequest(identificationCoordinationValidationException.InnerException);
+            }
+            catch (
+                IdentificationCoordinationDependencyValidationException
+                    identificationCoordinationDependencyValidationException)
+            {
+                return BadRequest(identificationCoordinationDependencyValidationException.InnerException);
+            }
+            catch (IdentificationCoordinationDependencyException identificationCoordinationDependencyException)
+            {
+                return InternalServerError(identificationCoordinationDependencyException);
+            }
+            catch (IdentificationCoordinationServiceException identificationCoordinationServiceException)
+            {
+                return InternalServerError(identificationCoordinationServiceException);
+            }
+        }
+
         [HttpGet("{csvIdentificationRequestId}")]
         public async ValueTask<ActionResult> GetCsvIdentificationRequestByIdAsync(
             Guid csvIdentificationRequestId)

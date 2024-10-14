@@ -39,7 +39,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.CsvI
 
             // when
             ActionResult<IQueryable<CsvIdentificationRequest>> actualActionResult =
-                await csvIdentificationRequestsController.GetAsync();
+                await csvIdentificationRequestsController.Get();
 
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);

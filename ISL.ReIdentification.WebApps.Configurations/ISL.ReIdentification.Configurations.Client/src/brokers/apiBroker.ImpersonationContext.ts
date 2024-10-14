@@ -4,8 +4,8 @@ import ApiBroker from "./apiBroker";
 import { ImpersonationContext } from "../models/impersonationContext/impersonationContext";
 
 class ImpersonationContextBroker {
-    relativeImpersonationContextUrl = '/api/impersonationContext';
-    relativeImpersonationContextOdataUrl = '/odata/impersonationContext'
+    relativeImpersonationContextUrl = '/api/impersonationContexts';
+    relativeImpersonationContextOdataUrl = '/odata/impersonationContexts'
 
     private apiBroker: ApiBroker = new ApiBroker();
 

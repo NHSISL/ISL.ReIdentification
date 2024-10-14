@@ -17,10 +17,13 @@ import { Home } from './pages/home';
 import { ConfigurationHome } from './pages/configuration/configurationHome';
 import { Lookups } from './pages/configuration/lookups';
 import { UserAccess } from './pages/userAccess';
-import { DelegatedUserAccess } from './pages/delegatedUserAccess';
 import { OdsData } from './pages/odsData';
 import { PdsData } from './pages/pdsData';
 import UserAccessDetail from './components/userAccess/userAccessDetail';
+import { ImpersonationContext } from './pages/impersonationContext';
+import { ImpersonationContextDetailPage } from './pages/impersonationContextDetail';
+import { CsvIdentificationRequestDetailPage } from './pages/csvIdentificationRequestDetail';
+import { CsvIdentificationRequestPage } from './pages/csvIdentificationRequest';
 
 // TODO:
 //      - API Secured Routes
@@ -54,8 +57,20 @@ function App({ instance }: any) {
                     element: <UserAccessDetail />
                 },
                 {
-                    path: "delegatedUserAccess",
-                    element: <DelegatedUserAccess />
+                    path: "impersonationContext",
+                    element: <ImpersonationContext />
+                },
+                {
+                    path: "impersonationContextDetail/:ImpersonationContextId",
+                    element: <ImpersonationContextDetailPage />
+                },
+                {
+                    path: "csvIdentificationRequest",
+                    element: <CsvIdentificationRequestPage />
+                },
+                {
+                    path: "csvIdentificationRequestDetail/:CsvIdentificationRequestId",
+                    element: <CsvIdentificationRequestDetailPage />
                 },
                 {
                     path: "odsData",
