@@ -50,7 +50,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
 
 
         public async ValueTask<AccessRequest> PersistsCsvIdentificationRequestAsync(AccessRequest accessRequest) =>
-            throw new System.NotImplementedException();
+            await this.persistanceOrchestrationService.PersistCsvIdentificationRequestAsync(accessRequest);
 
         public async ValueTask<AccessRequest> ProcessCsvIdentificationRequestAsync(Guid csvIdentificationRequestId) =>
             throw new System.NotImplementedException();
