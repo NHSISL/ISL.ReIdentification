@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -11,15 +12,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
 {
     public partial class AccessOrchestrationServiceTests
     {
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnGetOrganisationsForUserIfInvalidAndLogItAsync(
-            string invalidText)
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnGetOrganisationsForUserIfInvalidAndLogItAsync()
         {
             // Given
-            string invalidUserEmail = invalidText;
+            Guid invalidUserEmail = Guid.Empty;
 
             var invalidArgumentAccessOrchestrationException =
                 new InvalidArgumentAccessOrchestrationException(
@@ -27,8 +24,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
                         "please correct the errors and try again.");
 
             invalidArgumentAccessOrchestrationException.AddData(
-                key: "userEmail",
-                values: "Text is invalid");
+                key: "entraUserId",
+                values: "Id is invalid");
 
             var expectedAccessValidationOrchestrationException = invalidArgumentAccessOrchestrationException;
 

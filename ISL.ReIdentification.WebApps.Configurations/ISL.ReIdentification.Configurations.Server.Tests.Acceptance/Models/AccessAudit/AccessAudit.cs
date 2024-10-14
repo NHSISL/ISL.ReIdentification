@@ -3,22 +3,26 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 
-namespace ISL.ReIdentification.Core.Models.Foundations.ReIdentifications
+namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.AccessAudit
 {
-    public class IdentificationRequest
+
+    public class AccessAudit
     {
         public Guid Id { get; set; }
-        public List<IdentificationItem> IdentificationItems { get; set; }
+        public string PseudoIdentifier { get; set; }
         public Guid EntraUserId { get; set; }
         public string GivenName { get; set; }
         public string Surname { get; set; }
-        public string DisplayName { get; set; }
-        public string JobTitle { get; set; }
         public string Email { get; set; }
         public string Purpose { get; set; }
-        public string Organisation { get; set; }
         public string Reason { get; set; }
+        public string Organisation { get; set; }
+        public bool HasAccess { get; set; }
+        public string Message { get; set; }
+        public string CreatedBy { get; set; }
+        public DateTimeOffset CreatedDate { get; set; }
+        public string UpdatedBy { get; set; }
+        public DateTimeOffset UpdatedDate { get; set; }
     }
 }

@@ -17,11 +17,12 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
 
             Validate(
                 (Rule: await IsInvalidAsync(accessAudit.Id), Parameter: nameof(AccessAudit.Id)),
+                (Rule: await IsInvalidAsync(accessAudit.EntraUserId), Parameter: nameof(AccessAudit.EntraUserId)),
 
                 (Rule: await IsInvalidAsync(accessAudit.PseudoIdentifier),
                 Parameter: nameof(AccessAudit.PseudoIdentifier)),
 
-                (Rule: await IsInvalidAsync(accessAudit.UserEmail), Parameter: nameof(AccessAudit.UserEmail)),
+                (Rule: await IsInvalidAsync(accessAudit.Email), Parameter: nameof(AccessAudit.Email)),
                 (Rule: await IsInvalidAsync(accessAudit.CreatedBy), Parameter: nameof(AccessAudit.CreatedBy)),
                 (Rule: await IsInvalidAsync(accessAudit.UpdatedBy), Parameter: nameof(AccessAudit.UpdatedBy)),
                 (Rule: await IsInvalidAsync(accessAudit.CreatedDate), Parameter: nameof(AccessAudit.CreatedDate)),
@@ -29,8 +30,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
                 (Rule: await IsInvalidLengthAsync(accessAudit.CreatedBy, 255), Parameter: nameof(AccessAudit.CreatedBy)),
                 (Rule: await IsInvalidLengthAsync(accessAudit.UpdatedBy, 255), Parameter: nameof(AccessAudit.UpdatedBy)),
 
-                (Rule: await IsInvalidLengthAsync(accessAudit.UserEmail, 320),
-                Parameter: nameof(AccessAudit.UserEmail)),
+                (Rule: await IsInvalidLengthAsync(accessAudit.Email, 320),
+                Parameter: nameof(AccessAudit.Email)),
 
                 (Rule: await IsInvalidLengthAsync(accessAudit.PseudoIdentifier, 10),
                 Parameter: nameof(AccessAudit.PseudoIdentifier)),
@@ -61,7 +62,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
 
             Validate(
                 (Rule: await IsInvalidAsync(accessAudit.Id), Parameter: nameof(AccessAudit.Id)),
-                (Rule: await IsInvalidAsync(accessAudit.UserEmail), Parameter: nameof(AccessAudit.UserEmail)),
+                (Rule: await IsInvalidAsync(accessAudit.EntraUserId), Parameter: nameof(AccessAudit.EntraUserId)),
+                (Rule: await IsInvalidAsync(accessAudit.Email), Parameter: nameof(AccessAudit.Email)),
 
                 (Rule: await IsInvalidAsync(accessAudit.PseudoIdentifier),
                 Parameter: nameof(AccessAudit.PseudoIdentifier)),
@@ -77,8 +79,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
                 (Rule: await IsInvalidLengthAsync(accessAudit.UpdatedBy, 255),
                 Parameter: nameof(AccessAudit.UpdatedBy)),
 
-                (Rule: await IsInvalidLengthAsync(accessAudit.UserEmail, 320),
-                Parameter: nameof(AccessAudit.UserEmail)),
+                (Rule: await IsInvalidLengthAsync(accessAudit.Email, 320),
+                Parameter: nameof(AccessAudit.Email)),
 
                 (Rule: await IsInvalidLengthAsync(accessAudit.PseudoIdentifier, 10),
                 Parameter: nameof(AccessAudit.PseudoIdentifier)),

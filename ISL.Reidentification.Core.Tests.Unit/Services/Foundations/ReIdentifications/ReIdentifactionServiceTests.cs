@@ -96,7 +96,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
                 NecsReidentificationRequest necsReidentificationRequest = new NecsReidentificationRequest
                 {
                     RequestId = identifier,
-                    UserIdentifier = identificationRequest.UserIdentifier,
+                    UserIdentifier = identificationRequest.EntraUserId.ToString(),
                     Purpose = identificationRequest.Purpose,
                     Organisation = identificationRequest.Organisation,
                     Reason = identificationRequest.Reason,
