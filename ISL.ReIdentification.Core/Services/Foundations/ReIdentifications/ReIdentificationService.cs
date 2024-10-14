@@ -8,10 +8,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Brokers.Identifiers;
 using ISL.ReIdentification.Core.Brokers.Loggings;
+using ISL.ReIdentification.Core.Brokers.NECS;
 using ISL.ReIdentification.Core.Models.Brokers.NECS;
 using ISL.ReIdentification.Core.Models.Brokers.NECS.Requests;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
-using LHDS.Core.Brokers.NECS;
 
 namespace ISL.ReIdentification.Core.Services.Foundations.ReIdentifications
 {
@@ -61,7 +61,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ReIdentifications
                         NecsReidentificationRequest necsReidentificationRequest = new NecsReidentificationRequest
                         {
                             RequestId = await this.identifierBroker.GetIdentifierAsync(),
-                            UserIdentifier = identificationRequest.UserIdentifier,
+                            UserIdentifier = identificationRequest.EntraUserId.ToString(),
                             Purpose = identificationRequest.Purpose,
                             Organisation = identificationRequest.Organisation,
                             Reason = identificationRequest.Reason,

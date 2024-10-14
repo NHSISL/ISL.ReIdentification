@@ -9,7 +9,7 @@ using ISL.ReIdentification.Core.Models.Brokers.NECS;
 using ISL.ReIdentification.Core.Models.Brokers.NECS.Requests;
 using RESTFulSense.Clients;
 
-namespace LHDS.Core.Brokers.NECS
+namespace ISL.ReIdentification.Core.Brokers.NECS
 {
     public class NECSBroker : INECSBroker
     {
@@ -20,15 +20,15 @@ namespace LHDS.Core.Brokers.NECS
         public NECSBroker(NECSConfiguration necsConfiguration)
         {
             this.necsConfiguration = necsConfiguration;
-            this.httpClient = SetupHttpClient();
-            this.apiClient = SetupApiClient();
+            httpClient = SetupHttpClient();
+            apiClient = SetupApiClient();
         }
 
         public async ValueTask<NecsReIdentificationResponse> ReIdAsync(
             NecsReidentificationRequest necsReidentificationRequest)
         {
             var returnedAddress =
-                await this.apiClient.PostContentAsync<NecsReidentificationRequest, NecsReIdentificationResponse>
+                await apiClient.PostContentAsync<NecsReidentificationRequest, NecsReIdentificationResponse>
                     ($"api/Reid/Process", necsReidentificationRequest);
 
             return returnedAddress;
@@ -39,7 +39,7 @@ namespace LHDS.Core.Brokers.NECS
             var httpClient = new HttpClient()
             {
                 BaseAddress =
-                    new Uri(uriString: this.necsConfiguration.ApiUrl),
+                    new Uri(uriString: necsConfiguration.ApiUrl),
             };
 
             httpClient.DefaultRequestHeaders.Add("X-API-KEY", necsConfiguration.ApiKey);
@@ -48,6 +48,6 @@ namespace LHDS.Core.Brokers.NECS
         }
 
         private IRESTFulApiFactoryClient SetupApiClient() =>
-            new RESTFulApiFactoryClient(this.httpClient);
+            new RESTFulApiFactoryClient(httpClient);
     }
 }

@@ -5,7 +5,7 @@
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Brokers.NECS.Requests;
 
-namespace LHDS.Core.Brokers.NECS
+namespace ISL.ReIdentification.Core.Brokers.NECS
 {
     public interface INECSBroker
     {

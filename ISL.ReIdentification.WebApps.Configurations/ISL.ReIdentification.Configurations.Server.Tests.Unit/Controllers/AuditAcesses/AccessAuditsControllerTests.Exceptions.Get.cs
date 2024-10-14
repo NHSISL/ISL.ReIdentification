@@ -4,7 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
-using ISL.Reidentification.Core.Models.Foundations.AccessAudits.Exceptions;
+using ISL.ReIdentification.Core.Models.Foundations.AccessAudits.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits.Exceptions;
 using Microsoft.AspNetCore.Mvc;

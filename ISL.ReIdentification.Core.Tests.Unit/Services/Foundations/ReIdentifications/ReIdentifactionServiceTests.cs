@@ -8,12 +8,12 @@ using System.Linq;
 using System.Linq.Expressions;
 using ISL.ReIdentification.Core.Brokers.Identifiers;
 using ISL.ReIdentification.Core.Brokers.Loggings;
+using ISL.ReIdentification.Core.Brokers.NECS;
 using ISL.ReIdentification.Core.Models.Brokers.NECS;
 using ISL.ReIdentification.Core.Models.Brokers.NECS.Requests;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
 using ISL.ReIdentification.Core.Services.Foundations.ReIdentifications;
 using KellermanSoftware.CompareNetObjects;
-using LHDS.Core.Brokers.NECS;
 using Moq;
 using RESTFulSense.Exceptions;
 using Tynamix.ObjectFiller;
@@ -95,7 +95,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
                 NecsReidentificationRequest necsReidentificationRequest = new NecsReidentificationRequest
                 {
                     RequestId = identifier,
-                    UserIdentifier = identificationRequest.UserIdentifier,
+                    UserIdentifier = identificationRequest.EntraUserId.ToString(),
                     Purpose = identificationRequest.Purpose,
                     Organisation = identificationRequest.Organisation,
                     Reason = identificationRequest.Reason,

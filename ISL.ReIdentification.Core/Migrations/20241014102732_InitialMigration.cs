@@ -17,8 +17,13 @@ namespace ISL.ReIdentification.Core.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     PseudoIdentifier = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
-                    UserEmail = table.Column<string>(type: "nvarchar(320)", maxLength: 320, nullable: false),
+                    EntraUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    GivenName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Surname = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(320)", maxLength: 320, nullable: false),
+                    Purpose = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Reason = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Organisation = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     HasAccess = table.Column<bool>(type: "bit", nullable: false),
                     Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
@@ -193,6 +198,16 @@ namespace ISL.ReIdentification.Core.Migrations
                 column: "CreatedDate");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AccessAudits_Email",
+                table: "AccessAudits",
+                column: "Email");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AccessAudits_EntraUserId",
+                table: "AccessAudits",
+                column: "EntraUserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_AccessAudits_HasAccess",
                 table: "AccessAudits",
                 column: "HasAccess");
@@ -201,11 +216,6 @@ namespace ISL.ReIdentification.Core.Migrations
                 name: "IX_AccessAudits_PseudoIdentifier",
                 table: "AccessAudits",
                 column: "PseudoIdentifier");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AccessAudits_UserEmail",
-                table: "AccessAudits",
-                column: "UserEmail");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ImpersonationContexts_PipelineName",

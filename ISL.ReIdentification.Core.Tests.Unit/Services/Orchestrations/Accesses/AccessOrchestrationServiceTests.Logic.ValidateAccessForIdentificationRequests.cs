@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -25,11 +26,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
                 this.loggingBrokerMock.Object)
             { CallBase = true };
 
-            string userEmail = GetRandomStringWithLength(10);
-            string inputUserEmail = userEmail;
+            Guid entraUserId = Guid.NewGuid();
+            Guid inputEntraUserId = entraUserId;
             AccessRequest randomAccessRequest = CreateRandomAccessRequest();
             AccessRequest inputAccessRequest = randomAccessRequest.DeepClone();
-            inputAccessRequest.IdentificationRequest.UserIdentifier = userEmail;
+            inputAccessRequest.IdentificationRequest.EntraUserId = entraUserId;
             AccessRequest outputAccessRequest = inputAccessRequest.DeepClone();
             outputAccessRequest.IdentificationRequest.IdentificationItems.ForEach(x => x.HasAccess = true);
             AccessRequest expectedAccessRequest = outputAccessRequest.DeepClone();
@@ -39,7 +40,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
                 new List<string> { userOrganisation };
 
             accessOrchestrationServiceMock.Setup(service =>
-                service.GetOrganisationsForUserAsync(inputUserEmail))
+                service.GetOrganisationsForUserAsync(inputEntraUserId))
                     .ReturnsAsync(userOrganisations);
 
             accessOrchestrationServiceMock.Setup(service =>
@@ -56,7 +57,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
             actualAccessRequest.Should().BeEquivalentTo(expectedAccessRequest);
 
             accessOrchestrationServiceMock.Verify(service =>
-                service.GetOrganisationsForUserAsync(inputUserEmail),
+                service.GetOrganisationsForUserAsync(inputEntraUserId),
                     Times.Once);
 
             accessOrchestrationServiceMock.Verify(service =>

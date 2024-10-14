@@ -5,7 +5,7 @@
 using System;
 using Xeptions;
 
-namespace ISL.Reidentification.Core.Models.Foundations.AccessAudits.Exceptions
+namespace ISL.ReIdentification.Core.Models.Foundations.AccessAudits.Exceptions
 {
     public class LockedAccessAuditException : Xeption
     {
