@@ -90,14 +90,27 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
         public async ValueTask<ActionResult> GetCsvIdentificationRequestByIdAsync(
             Guid csvIdentificationRequestId)
         {
-            AccessRequest reIdentifiedAccessRequest =
+            try
+            {
+                AccessRequest reIdentifiedAccessRequest =
                 await this.identificationCoordinationService
                     .ProcessCsvIdentificationRequestAsync(csvIdentificationRequestId);
 
-            string fileName = "data.csv";
-            string contentType = "text/csv";
+                string fileName = "data.csv";
+                string contentType = "text/csv";
 
-            return File(reIdentifiedAccessRequest.CsvIdentificationRequest.Data, contentType, fileName);
+                return File(reIdentifiedAccessRequest.CsvIdentificationRequest.Data, contentType, fileName);
+            }
+            catch (IdentificationCoordinationValidationException identificationCoordinationValidationException)
+            {
+                return BadRequest(identificationCoordinationValidationException.InnerException);
+            }
+            catch (
+                IdentificationCoordinationDependencyValidationException
+                    identificationCoordinationDependencyValidationException)
+            {
+                return BadRequest(identificationCoordinationDependencyValidationException.InnerException);
+            }
         }
     }
 }

@@ -32,7 +32,8 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.ReId
 
             // when
             ActionResult<object> actualActionResult =
-                await this.reIdentificationController.GetCsvIdentificationRequestByIdAsync(someCsvIdentificationRequestId);
+                await this.reIdentificationController
+                    .GetCsvIdentificationRequestByIdAsync(someCsvIdentificationRequestId);
 
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
