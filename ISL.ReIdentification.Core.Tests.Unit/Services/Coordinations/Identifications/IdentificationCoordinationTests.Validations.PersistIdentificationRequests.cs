@@ -15,7 +15,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
     public partial class IdentificationCoordinationTests
     {
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnProcessWhenAccessRequestIsNullAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnPersistWhenAccessRequestIsNullAndLogItAsync()
         {
             // given
             AccessRequest nullAccessRequest = null;
@@ -30,9 +30,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                     innerException: nullAccessRequestException);
 
             // when
-            ValueTask<AccessRequest> accessRequestTask =
-                this.identificationCoordinationService
-                    .ProcessIdentificationRequestsAsync(nullAccessRequest);
+            ValueTask<AccessRequest> accessRequestTask = this.identificationCoordinationService
+                .PersistsCsvIdentificationRequestAsync(nullAccessRequest);
 
             IdentificationCoordinationValidationException actualIdentificationCoordinationValidationException =
                 await Assert.ThrowsAsync<IdentificationCoordinationValidationException>(
@@ -47,33 +46,33 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                    expectedIdentificationCoordinationValidationException))),
                        Times.Once);
 
+            this.persistanceOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.accessOrchestrationServiceMock.VerifyNoOtherCalls();
             this.identificationOrchestrationServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.persistanceOrchestrationServiceMock.VerifyNoOtherCalls();
         }
 
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnProcessWhenIdentificationRequestIsNullAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnPersistsWhenIdentificationRequestIsNullAndLogItAsync()
         {
             // given
             AccessRequest randomAccessRequest = CreateRandomAccessRequest();
             AccessRequest inputAccessRequest = randomAccessRequest;
             inputAccessRequest.IdentificationRequest = null;
 
-            var nullIdentificationRequestException =
-                new NullIdentificationRequestException(message: "Identification request is null.");
+            var nullCsvIdentificationRequestException =
+                new NullCsvIdentificationRequestException(message: "CSV identification request is null.");
 
             var expectedIdentificationCoordinationValidationException =
                 new IdentificationCoordinationValidationException(
                     message: "Identification coordination validation error occurred, " +
                         "fix the errors and try again.",
-                    innerException: nullIdentificationRequestException);
+                    innerException: nullCsvIdentificationRequestException);
 
             // when
             ValueTask<AccessRequest> accessRequestTask =
                 this.identificationCoordinationService
-                    .ProcessIdentificationRequestsAsync(inputAccessRequest);
+                    .PersistsCsvIdentificationRequestAsync(inputAccessRequest);
 
             IdentificationCoordinationValidationException actualIdentificationCoordinationValidationException =
                 await Assert.ThrowsAsync<IdentificationCoordinationValidationException>(
@@ -88,10 +87,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                    expectedIdentificationCoordinationValidationException))),
                        Times.Once);
 
+            this.persistanceOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.accessOrchestrationServiceMock.VerifyNoOtherCalls();
             this.identificationOrchestrationServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.persistanceOrchestrationServiceMock.VerifyNoOtherCalls();
         }
     }
 }

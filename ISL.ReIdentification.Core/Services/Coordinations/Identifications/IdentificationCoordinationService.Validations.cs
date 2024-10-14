@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
@@ -18,6 +19,12 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             ValidateIdentificationRequestIsNotNull(accessRequest.IdentificationRequest);
         }
 
+        private static void ValidateOnPersistsCsvIdentificationRequest(AccessRequest accessRequest)
+        {
+            ValidateAccessRequestIsNotNull(accessRequest);
+            ValidateCsvIdentificationRequestIsNotNull(accessRequest.CsvIdentificationRequest);
+        }
+
         private static void ValidateAccessRequestIsNotNull(AccessRequest accessRequest)
         {
             if (accessRequest is null)
@@ -31,6 +38,14 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             if (identificationRequest is null)
             {
                 throw new NullIdentificationRequestException("Identification request is null.");
+            }
+        }
+
+        private static void ValidateCsvIdentificationRequestIsNotNull(CsvIdentificationRequest csvIdentificationRequest)
+        {
+            if (csvIdentificationRequest is null)
+            {
+                throw new NullCsvIdentificationRequestException("CSV identification request is null.");
             }
         }
     }
