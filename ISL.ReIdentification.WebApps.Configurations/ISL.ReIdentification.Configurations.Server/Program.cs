@@ -14,6 +14,7 @@ using ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Brokers.Notifications;
 using ISL.ReIdentification.Core.Models.Foundations.Lookups;
 using ISL.ReIdentification.Core.Services.Foundations.AccessAudits;
+using ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Services.Foundations.Lookups;
 using ISL.ReIdentification.Core.Services.Foundations.OdsDatas;
@@ -145,6 +146,7 @@ namespace ISL.ReIdentification.Configurations.Server
             services.AddTransient<IOdsDataService, OdsDataService>();
             services.AddTransient<IPdsDataService, PdsDataService>();
             services.AddTransient<IUserAccessService, UserAccessService>();
+            services.AddTransient<ICsvIdentificationRequestService, CsvIdentificationRequestService>();
         }
 
         private static void AddProcessingServices(IServiceCollection services)

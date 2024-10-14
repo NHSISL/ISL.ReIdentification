@@ -2,13 +2,14 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Force.DeepCloner;
+using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using RESTFulSense.Clients.Extensions;
-using RESTFulSense.Models;
 
 namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.ReIdentification
 {
@@ -18,35 +19,43 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.ReId
         public async Task ShouldReturnRecordOnGetByIdAsync()
         {
             // given
+            Guid inputCsvIdentificationRequestId = Guid.NewGuid();
+            CsvIdentificationRequest returnedCsvIdentificationRequest = CreateRandomCsvIdentificationRequest();
             AccessRequest randomAccessRequest = CreateRandomAccessRequest();
             AccessRequest inputAccessRequest = randomAccessRequest;
+            inputAccessRequest.CsvIdentificationRequest = returnedCsvIdentificationRequest;
             AccessRequest addedAccessRequest = inputAccessRequest.DeepClone();
             AccessRequest expectedAccessRequest = addedAccessRequest.DeepClone();
             string contentType = "text/csv";
-            string fileName = GetRandomString();
-            var expectedFile = File(expectedAccessRequest.CsvIdentificationRequest.Data, contentType, fileName);
+            string fileName = "data.csv";
+            var expectedObjectResult = File(expectedAccessRequest.CsvIdentificationRequest.Data, contentType, fileName);
 
-            var expectedObjectResult =
-                new CreatedObjectResult(expectedFile);
+            var expectedActionResult = expectedObjectResult;
 
-            var expectedActionResult =
-                new ActionResult<object>(expectedObjectResult);
+            csvIdentificationRequestService
+               .Setup(service => service.RetrieveCsvIdentificationRequestByIdAsync(inputCsvIdentificationRequestId))
+                   .ReturnsAsync(returnedCsvIdentificationRequest);
 
             identificationCoordinationServiceMock
-                .Setup(service => service.ReIdentifyCsvIdentificationRequestAsync(inputAccessRequest))
+                .Setup(service => service.ReIdentifyCsvIdentificationRequestAsync(It.IsAny<AccessRequest>()))
                     .ReturnsAsync(addedAccessRequest);
 
             // when
-            ActionResult<object> actualActionResult = await reIdentificationController
-                .GetCsvIdentificationRequestByIdAsync(randomAccessRequest.CsvIdentificationRequest.Id);
+            ActionResult actualActionResult = await reIdentificationController
+                .GetCsvIdentificationRequestByIdAsync(inputCsvIdentificationRequestId);
 
             // then
-            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+            actualActionResult.Should().BeEquivalentTo(expectedActionResult);
 
-            identificationCoordinationServiceMock
-               .Verify(service => service.ReIdentifyCsvIdentificationRequestAsync(inputAccessRequest),
+            csvIdentificationRequestService
+               .Verify(service => service.RetrieveCsvIdentificationRequestByIdAsync(inputCsvIdentificationRequestId),
                    Times.Once);
 
+            identificationCoordinationServiceMock
+               .Verify(service => service.ReIdentifyCsvIdentificationRequestAsync(It.IsAny<AccessRequest>()),
+                   Times.Once);
+
+            csvIdentificationRequestService.VerifyNoOtherCalls();
             identificationCoordinationServiceMock.VerifyNoOtherCalls();
         }
     }
