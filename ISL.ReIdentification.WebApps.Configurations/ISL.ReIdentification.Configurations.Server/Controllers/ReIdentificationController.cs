@@ -84,7 +84,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
         }
 
         [HttpGet("{csvIdentificationRequestId}")]
-        public async ValueTask<ActionResult<AccessRequest>> GetCsvIdentificationRequestByIdAsync(
+        public async ValueTask<ActionResult> GetCsvIdentificationRequestByIdAsync(
             Guid csvIdentificationRequestId) =>
             throw new NotImplementedException();
     }

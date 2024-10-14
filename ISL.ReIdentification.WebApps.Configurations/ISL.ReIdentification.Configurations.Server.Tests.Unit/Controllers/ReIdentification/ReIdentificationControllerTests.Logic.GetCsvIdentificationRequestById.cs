@@ -22,19 +22,22 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.ReId
             AccessRequest inputAccessRequest = randomAccessRequest;
             AccessRequest addedAccessRequest = inputAccessRequest.DeepClone();
             AccessRequest expectedAccessRequest = addedAccessRequest.DeepClone();
+            string contentType = "text/csv";
+            string fileName = GetRandomString();
+            var expectedFile = File(expectedAccessRequest.CsvIdentificationRequest.Data, contentType, fileName);
 
             var expectedObjectResult =
-                new CreatedObjectResult(expectedAccessRequest);
+                new CreatedObjectResult(expectedFile);
 
             var expectedActionResult =
-                new ActionResult<AccessRequest>(expectedObjectResult);
+                new ActionResult<object>(expectedObjectResult);
 
             identificationCoordinationServiceMock
                 .Setup(service => service.ReIdentifyCsvIdentificationRequestAsync(inputAccessRequest))
                     .ReturnsAsync(addedAccessRequest);
 
             // when
-            ActionResult<AccessRequest> actualActionResult = await reIdentificationController
+            ActionResult<object> actualActionResult = await reIdentificationController
                 .GetCsvIdentificationRequestByIdAsync(randomAccessRequest.CsvIdentificationRequest.Id);
 
             // then
