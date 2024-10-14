@@ -9,9 +9,13 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.Loo
     public class UserAccess
     {
         public Guid Id { get; set; }
-        public string FirstName { get; set; } = string.Empty;
-        public string LastName { get; set; } = string.Empty;
-        public string UserEmail { get; set; } = string.Empty;
+        public Guid EntraUserId { get; set; }
+        public string GivenName { get; set; } = string.Empty;
+        public string Surname { get; set; } = string.Empty;
+        public string DisplayName { get; set; } = string.Empty;
+        public string JobTitle { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string UserPrincipalName { get; set; } = string.Empty;
         public string OrgCode { get; set; } = string.Empty;
         public DateTimeOffset ActiveFrom { get; set; }
         public DateTimeOffset? ActiveTo { get; set; }

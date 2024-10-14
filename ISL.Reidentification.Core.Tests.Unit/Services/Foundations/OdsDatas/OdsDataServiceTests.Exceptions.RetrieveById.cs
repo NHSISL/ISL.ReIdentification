@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
@@ -15,88 +15,94 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
     public partial class OdsDataServiceTests
     {
         [Fact]
-        public async Task ShouldThrowCriticalDependencyExceptionOnRetrieveOdsDataByIdByIdIfSqlErrorOccursAndLogItAsync()
+        public async Task ShouldThrowCriticalDependencyExceptionOnRetrieveByIdIfSqlErrorOccursAndLogItAsync()
         {
             // given
-            Guid randomOdsDataId = Guid.NewGuid();
+            Guid someId = Guid.NewGuid();
             SqlException sqlException = CreateSqlException();
 
-            var failedStorageOdsDataException = new FailedStorageOdsDataException(
-                message: "Failed ODS data storage error occurred, contact support.",
-                innerException: sqlException);
+            var failedStorageOdsDataException =
+                new FailedStorageOdsDataException(
+                    message: "Failed odsData storage error occurred, contact support.",
+                    innerException: sqlException);
 
-            var expectedOdsDataDependencyException = new OdsDataDependencyException(
-                message: "OdsData dependency error occurred, contact support.",
-                innerException: failedStorageOdsDataException);
+            var expectedOdsDataDependencyException =
+                new OdsDataDependencyException(
+                    message: "OdsData dependency error occurred, contact support.",
+                    innerException: failedStorageOdsDataException);
 
-            this.reIdentificationStorageBrokerMock.Setup(broker =>
-                broker.SelectOdsDataByIdAsync(randomOdsDataId))
+            this.reIdentificationStorageBroker.Setup(broker =>
+                broker.SelectOdsDataByIdAsync(It.IsAny<Guid>()))
                     .ThrowsAsync(sqlException);
 
             // when
-            ValueTask<OdsData> retrieveByIdOdsDataTask =
-                this.odsDataService.RetrieveOdsDataByIdAsync(randomOdsDataId);
+            ValueTask<OdsData> retrieveOdsDataByIdTask =
+                this.odsDataService.RetrieveOdsDataByIdAsync(someId);
 
             OdsDataDependencyException actualOdsDataDependencyException =
                 await Assert.ThrowsAsync<OdsDataDependencyException>(
-                    retrieveByIdOdsDataTask.AsTask);
+                    testCode: retrieveOdsDataByIdTask.AsTask);
 
             // then
-            actualOdsDataDependencyException.Should().BeEquivalentTo(expectedOdsDataDependencyException);
+            actualOdsDataDependencyException.Should()
+                .BeEquivalentTo(expectedOdsDataDependencyException);
 
-            this.reIdentificationStorageBrokerMock.Verify(broker =>
-                broker.SelectOdsDataByIdAsync(randomOdsDataId),
-                    Times.Once());
+            this.reIdentificationStorageBroker.Verify(broker =>
+                broker.SelectOdsDataByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogCriticalAsync(It.Is(SameExceptionAs(
                     expectedOdsDataDependencyException))),
-                        Times.Once());
+                        Times.Once);
 
-            this.reIdentificationStorageBrokerMock.VerifyNoOtherCalls();
+            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnRetrieveOdsDataByIdWhenServiceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnRetrieveByIdIfServiceErrorOccursAndLogItAsync()
         {
             // given
-            Guid randomOdsDataId = Guid.NewGuid();
-            Exception serviceException = new Exception();
+            Guid someId = Guid.NewGuid();
+            var serviceException = new Exception();
 
-            var failedServiceOdsDataException = new FailedServiceOdsDataException(
-                message: "Failed service ODS data error occurred, contact support.",
-                innerException: serviceException);
+            var failedOdsDataServiceException =
+                new FailedOdsDataServiceException(
+                    message: "Failed odsData service occurred, please contact support",
+                    innerException: serviceException);
 
-            var expectedOdsDataServiceException = new OdsDataServiceException(
-                message: "Service error occurred, contact support.",
-                innerException: failedServiceOdsDataException);
+            var expectedOdsDataServiceException =
+                new OdsDataServiceException(
+                    message: "OdsData service error occurred, contact support.",
+                    innerException: failedOdsDataServiceException);
 
-            this.reIdentificationStorageBrokerMock.Setup(broker =>
-                broker.SelectOdsDataByIdAsync(randomOdsDataId))
+            this.reIdentificationStorageBroker.Setup(broker =>
+                broker.SelectOdsDataByIdAsync(It.IsAny<Guid>()))
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<OdsData> retrieveByIdOdsDataTask =
-                this.odsDataService.RetrieveOdsDataByIdAsync(randomOdsDataId);
+            ValueTask<OdsData> retrieveOdsDataByIdTask =
+                this.odsDataService.RetrieveOdsDataByIdAsync(someId);
 
-            OdsDataServiceException actualOdsDataDependencyException =
+            OdsDataServiceException actualOdsDataServiceException =
                 await Assert.ThrowsAsync<OdsDataServiceException>(
-                    retrieveByIdOdsDataTask.AsTask);
+                    testCode: retrieveOdsDataByIdTask.AsTask);
 
             // then
-            actualOdsDataDependencyException.Should().BeEquivalentTo(expectedOdsDataServiceException);
+            actualOdsDataServiceException.Should()
+                .BeEquivalentTo(expectedOdsDataServiceException);
 
-            this.reIdentificationStorageBrokerMock.Verify(broker =>
-                broker.SelectOdsDataByIdAsync(randomOdsDataId),
-                    Times.Once());
+            this.reIdentificationStorageBroker.Verify(broker =>
+                broker.SelectOdsDataByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogErrorAsync(It.Is(SameExceptionAs(
-                    expectedOdsDataServiceException))),
-                        Times.Once());
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
+                   expectedOdsDataServiceException))),
+                        Times.Once);
 
-            this.reIdentificationStorageBrokerMock.VerifyNoOtherCalls();
+            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

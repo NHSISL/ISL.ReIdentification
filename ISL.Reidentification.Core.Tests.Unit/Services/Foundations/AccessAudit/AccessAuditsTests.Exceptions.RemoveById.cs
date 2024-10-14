@@ -5,7 +5,6 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using ISL.Reidentification.Core.Models.Foundations.AccessAudits.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -43,7 +42,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
 
             AccessAuditDependencyException actualAccessAuditDependencyException =
                 await Assert.ThrowsAsync<AccessAuditDependencyException>(
-                    removeByIdAccessAuditTask.AsTask);
+                    testCode: removeByIdAccessAuditTask.AsTask);
 
             // then
             actualAccessAuditDependencyException.Should().BeEquivalentTo(
@@ -101,7 +100,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
 
             AccessAuditDependencyValidationException actualAccessAuditDependencyValidationException =
                 await Assert.ThrowsAsync<AccessAuditDependencyValidationException>(
-                    removeAccessAuditByIdTask.AsTask);
+                    testCode: removeAccessAuditByIdTask.AsTask);
 
             // then
             actualAccessAuditDependencyValidationException.Should()
@@ -154,7 +153,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
 
             AccessAuditServiceException actualAccessAuditServiceExcpetion =
                 await Assert.ThrowsAsync<AccessAuditServiceException>(
-                    removeByIdAccessAuditTask.AsTask);
+                    testCode: removeByIdAccessAuditTask.AsTask);
 
             // then
             actualAccessAuditServiceExcpetion.Should().BeEquivalentTo(expectedAccessAuditServiceException);

@@ -25,7 +25,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             var failedStorageCsvIdentificationRequestException =
                 new FailedStorageCsvIdentificationRequestException(
-                    message: "Failed delegated access storage error occurred, contact support.",
+                    message: "Failed csv identification request storage error occurred, contact support.",
                     innerException: sqlException);
 
             var expectedCsvIdentificationRequestDependencyException =
@@ -132,7 +132,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             var failedOperationCsvIdentificationRequestException =
                 new FailedOperationCsvIdentificationRequestException(
-                    message: "Failed operation delegated access error occurred, contact support.",
+                    message: "Failed operation csv identification request error occurred, contact support.",
                     innerException: dbUpdateException);
 
             var expectedCsvIdentificationRequestDependencyException =
@@ -184,7 +184,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             var failedServiceCsvIdentificationRequestException =
                 new FailedServiceCsvIdentificationRequestException(
-                    message: "Failed service delegated access error occurred, contact support.",
+                    message: "Failed service csv identification request error occurred, contact support.",
                     innerException: serviceException);
 
             var expectedCsvIdentificationRequestServiceException =

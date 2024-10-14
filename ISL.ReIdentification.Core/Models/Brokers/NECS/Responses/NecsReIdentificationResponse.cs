@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace ISL.ReIdentification.Core.Models.Brokers.NECS.Requests
+namespace ISL.ReIdentification.Core.Models.Brokers.NECS.Responses
 {
     public class NecsReIdentificationResponse
     {

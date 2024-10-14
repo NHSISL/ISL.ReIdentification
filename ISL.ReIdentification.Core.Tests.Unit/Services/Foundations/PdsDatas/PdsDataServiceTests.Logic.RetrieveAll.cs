@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
@@ -13,29 +13,29 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
     public partial class PdsDataServiceTests
     {
         [Fact]
-        public async Task ShouldRetrieveAllPdsDataAsync()
+        public async Task ShouldReturnPdsDatas()
         {
-            //given
-            IQueryable<PdsData> randomPdsData = CreateRandomPdsDatas();
-            IQueryable<PdsData> storagePdsData = randomPdsData;
-            IQueryable<PdsData> expectedPdsData = storagePdsData;
+            // given
+            IQueryable<PdsData> randomPdsDatas = CreateRandomPdsDatas();
+            IQueryable<PdsData> storagePdsDatas = randomPdsDatas;
+            IQueryable<PdsData> expectedPdsDatas = storagePdsDatas;
 
-            this.reIdentificationStorageBrokerMock.Setup(broker =>
+            this.reIdentificationStorageBroker.Setup(broker =>
                 broker.SelectAllPdsDatasAsync())
-                    .ReturnsAsync(storagePdsData);
+                    .ReturnsAsync(storagePdsDatas);
 
-            //when
-            IQueryable<PdsData> actualPdsData =
+            // when
+            IQueryable<PdsData> actualPdsDatas =
                 await this.pdsDataService.RetrieveAllPdsDatasAsync();
 
             // then
-            actualPdsData.Should().BeEquivalentTo(expectedPdsData);
+            actualPdsDatas.Should().BeEquivalentTo(expectedPdsDatas);
 
-            this.reIdentificationStorageBrokerMock.Verify(broker =>
+            this.reIdentificationStorageBroker.Verify(broker =>
                 broker.SelectAllPdsDatasAsync(),
                     Times.Once);
 
-            this.reIdentificationStorageBrokerMock.VerifyNoOtherCalls();
+            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

@@ -96,9 +96,11 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Accesses
 
             userAccesses = userAccesses
                 .Where(userAccess =>
-                    userAccess.UserEmail == userEmail
+                    userAccess.Email == userEmail
                     && userAccess.ActiveFrom <= currentDateTime
                     && (userAccess.ActiveTo == null || userAccess.ActiveTo > currentDateTime));
+
+            // hit the ODS tree
 
             List<string> organisationsForUser = userAccesses
                 .Select(userAccess => userAccess.OrgCode)

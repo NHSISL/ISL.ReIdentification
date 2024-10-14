@@ -5,7 +5,6 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using ISL.Reidentification.Core.Models.Foundations.AccessAudits.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits.Exceptions;
 using Moq;
@@ -37,7 +36,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
                 .RemoveAccessAuditByIdAsync(invalidAccessAuditId);
 
             AccessAuditValidationException actualAccessAuditValidationException =
-                await Assert.ThrowsAsync<AccessAuditValidationException>(removeByIdAccessAuditTask.AsTask);
+                await Assert.ThrowsAsync<AccessAuditValidationException>(
+                    testCode: removeByIdAccessAuditTask.AsTask);
 
             // then
             actualAccessAuditValidationException.Should().BeEquivalentTo(expectedAccessAuditValidationException);
@@ -78,7 +78,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
                 this.accessAuditService.RemoveAccessAuditByIdAsync(nonExistingAccessAudit.Id);
 
             AccessAuditValidationException actualAccessAuditVaildationException =
-                await Assert.ThrowsAsync<AccessAuditValidationException>(removeByIdAccessAuditTask.AsTask);
+                await Assert.ThrowsAsync<AccessAuditValidationException>(
+                    testCode: removeByIdAccessAuditTask.AsTask);
 
             // then
             actualAccessAuditVaildationException.Should().BeEquivalentTo(expectedAccessAuditValidationException);

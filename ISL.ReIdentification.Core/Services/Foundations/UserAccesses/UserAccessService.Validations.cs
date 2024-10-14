@@ -17,31 +17,28 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
             ValidateUserAccessIsNotNull(userAccess);
 
             Validate(
-                (Rule: await IsInvalidAsync(userAccess.Id), Parameter: nameof(UserAccess.Id)),
-                (Rule: await IsInvalidAsync(userAccess.FirstName), Parameter: nameof(UserAccess.FirstName)),
-                (Rule: await IsInvalidAsync(userAccess.LastName), Parameter: nameof(UserAccess.LastName)),
-                (Rule: await IsInvalidAsync(userAccess.UserEmail), Parameter: nameof(UserAccess.UserEmail)),
-                (Rule: await IsInvalidAsync(userAccess.OrgCode), Parameter: nameof(UserAccess.OrgCode)),
-                (Rule: await IsInvalidAsync(userAccess.ActiveFrom), Parameter: nameof(UserAccess.ActiveFrom)),
-                (Rule: await IsInvalidAsync(userAccess.CreatedBy), Parameter: nameof(UserAccess.CreatedBy)),
-                (Rule: await IsInvalidAsync(userAccess.UpdatedBy), Parameter: nameof(UserAccess.UpdatedBy)),
-                (Rule: await IsInvalidAsync(userAccess.CreatedDate), Parameter: nameof(UserAccess.CreatedDate)),
-                (Rule: await IsInvalidAsync(userAccess.UpdatedDate), Parameter: nameof(UserAccess.UpdatedDate)),
-                (Rule: await IsInvalidLengthAsync(userAccess.FirstName, 255), Parameter: nameof(UserAccess.FirstName)),
-                (Rule: await IsInvalidLengthAsync(userAccess.LastName, 255), Parameter: nameof(UserAccess.LastName)),
-                (Rule: await IsInvalidLengthAsync(userAccess.CreatedBy, 255), Parameter: nameof(UserAccess.CreatedBy)),
-                (Rule: await IsInvalidLengthAsync(userAccess.UpdatedBy, 255), Parameter: nameof(UserAccess.UpdatedBy)),
-                (Rule: await IsInvalidLengthAsync(userAccess.UserEmail, 320), Parameter: nameof(UserAccess.UserEmail)),
-                (Rule: await IsInvalidLengthAsync(userAccess.OrgCode, 15), Parameter: nameof(UserAccess.OrgCode)),
+                (Rule: IsInvalid(userAccess.Id), Parameter: nameof(UserAccess.Id)),
+                (Rule: IsInvalid(userAccess.EntraUserId), Parameter: nameof(UserAccess.EntraUserId)),
+                (Rule: IsInvalid(userAccess.Email), Parameter: nameof(UserAccess.Email)),
+                (Rule: IsInvalid(userAccess.OrgCode), Parameter: nameof(UserAccess.OrgCode)),
+                (Rule: IsInvalid(userAccess.ActiveFrom), Parameter: nameof(UserAccess.ActiveFrom)),
+                (Rule: IsInvalid(userAccess.CreatedBy), Parameter: nameof(UserAccess.CreatedBy)),
+                (Rule: IsInvalid(userAccess.UpdatedBy), Parameter: nameof(UserAccess.UpdatedBy)),
+                (Rule: IsInvalid(userAccess.CreatedDate), Parameter: nameof(UserAccess.CreatedDate)),
+                (Rule: IsInvalid(userAccess.UpdatedDate), Parameter: nameof(UserAccess.UpdatedDate)),
+                (Rule: IsInvalidLength(userAccess.CreatedBy, 255), Parameter: nameof(UserAccess.CreatedBy)),
+                (Rule: IsInvalidLength(userAccess.UpdatedBy, 255), Parameter: nameof(UserAccess.UpdatedBy)),
+                (Rule: IsInvalidLength(userAccess.Email, 320), Parameter: nameof(UserAccess.Email)),
+                (Rule: IsInvalidLength(userAccess.OrgCode, 15), Parameter: nameof(UserAccess.OrgCode)),
 
-                (Rule: await IsNotSameAsync(
+                (Rule: IsNotSame(
                     first: userAccess.UpdatedBy,
                     second: userAccess.CreatedBy,
                     secondName: nameof(UserAccess.CreatedBy)),
 
                 Parameter: nameof(UserAccess.UpdatedBy)),
 
-                (Rule: await IsNotSameAsync(
+                (Rule: IsNotSame(
                     first: userAccess.UpdatedDate,
                     second: userAccess.CreatedDate,
                     secondName: nameof(UserAccess.CreatedDate)),
@@ -51,10 +48,10 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
                 (Rule: await IsNotRecentAsync(userAccess.CreatedDate), Parameter: nameof(UserAccess.CreatedDate)));
         }
 
-        private async ValueTask ValidateUserAccessOnRetrieveById(Guid userAccessId)
+        private static void ValidateUserAccessOnRetrieveById(Guid userAccessId)
         {
             Validate(
-                (Rule: await IsInvalidAsync(userAccessId), Parameter: nameof(UserAccess.Id)));
+                (Rule: IsInvalid(userAccessId), Parameter: nameof(UserAccess.Id)));
         }
 
         private async ValueTask ValidateUserAccessOnModifyAsync(UserAccess userAccess)
@@ -62,24 +59,21 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
             ValidateUserAccessIsNotNull(userAccess);
 
             Validate(
-                (Rule: await IsInvalidAsync(userAccess.Id), Parameter: nameof(UserAccess.Id)),
-                (Rule: await IsInvalidAsync(userAccess.FirstName), Parameter: nameof(UserAccess.FirstName)),
-                (Rule: await IsInvalidAsync(userAccess.LastName), Parameter: nameof(UserAccess.LastName)),
-                (Rule: await IsInvalidAsync(userAccess.UserEmail), Parameter: nameof(UserAccess.UserEmail)),
-                (Rule: await IsInvalidAsync(userAccess.OrgCode), Parameter: nameof(UserAccess.OrgCode)),
-                (Rule: await IsInvalidAsync(userAccess.ActiveFrom), Parameter: nameof(UserAccess.ActiveFrom)),
-                (Rule: await IsInvalidAsync(userAccess.CreatedBy), Parameter: nameof(UserAccess.CreatedBy)),
-                (Rule: await IsInvalidAsync(userAccess.UpdatedBy), Parameter: nameof(UserAccess.UpdatedBy)),
-                (Rule: await IsInvalidAsync(userAccess.CreatedDate), Parameter: nameof(UserAccess.CreatedDate)),
-                (Rule: await IsInvalidAsync(userAccess.UpdatedDate), Parameter: nameof(UserAccess.UpdatedDate)),
-                (Rule: await IsInvalidLengthAsync(userAccess.FirstName, 255), Parameter: nameof(UserAccess.FirstName)),
-                (Rule: await IsInvalidLengthAsync(userAccess.LastName, 255), Parameter: nameof(UserAccess.LastName)),
-                (Rule: await IsInvalidLengthAsync(userAccess.CreatedBy, 255), Parameter: nameof(UserAccess.CreatedBy)),
-                (Rule: await IsInvalidLengthAsync(userAccess.UpdatedBy, 255), Parameter: nameof(UserAccess.UpdatedBy)),
-                (Rule: await IsInvalidLengthAsync(userAccess.UserEmail, 320), Parameter: nameof(UserAccess.UserEmail)),
-                (Rule: await IsInvalidLengthAsync(userAccess.OrgCode, 15), Parameter: nameof(UserAccess.OrgCode)),
+                (Rule: IsInvalid(userAccess.Id), Parameter: nameof(UserAccess.Id)),
+                (Rule: IsInvalid(userAccess.EntraUserId), Parameter: nameof(UserAccess.EntraUserId)),
+                (Rule: IsInvalid(userAccess.Email), Parameter: nameof(UserAccess.Email)),
+                (Rule: IsInvalid(userAccess.OrgCode), Parameter: nameof(UserAccess.OrgCode)),
+                (Rule: IsInvalid(userAccess.ActiveFrom), Parameter: nameof(UserAccess.ActiveFrom)),
+                (Rule: IsInvalid(userAccess.CreatedBy), Parameter: nameof(UserAccess.CreatedBy)),
+                (Rule: IsInvalid(userAccess.UpdatedBy), Parameter: nameof(UserAccess.UpdatedBy)),
+                (Rule: IsInvalid(userAccess.CreatedDate), Parameter: nameof(UserAccess.CreatedDate)),
+                (Rule: IsInvalid(userAccess.UpdatedDate), Parameter: nameof(UserAccess.UpdatedDate)),
+                (Rule: IsInvalidLength(userAccess.CreatedBy, 255), Parameter: nameof(UserAccess.CreatedBy)),
+                (Rule: IsInvalidLength(userAccess.UpdatedBy, 255), Parameter: nameof(UserAccess.UpdatedBy)),
+                (Rule: IsInvalidLength(userAccess.Email, 320), Parameter: nameof(UserAccess.Email)),
+                (Rule: IsInvalidLength(userAccess.OrgCode, 15), Parameter: nameof(UserAccess.OrgCode)),
 
-                (Rule: await IsSameAsAsync(
+                (Rule: IsSameAs(
                     createdDate: userAccess.CreatedDate,
                     updatedDate: userAccess.UpdatedDate,
                     createdDateName: nameof(UserAccess.CreatedDate)),
@@ -89,10 +83,10 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
                 (Rule: await IsNotRecentAsync(userAccess.UpdatedDate), Parameter: nameof(UserAccess.UpdatedDate)));
         }
 
-        private async ValueTask ValidateUserAccessOnRemoveById(Guid userAccessId) =>
-            Validate((Rule: await IsInvalidAsync(userAccessId), Parameter: nameof(UserAccess.Id)));
+        private static void ValidateUserAccessOnRemoveById(Guid userAccessId) =>
+            Validate((Rule: IsInvalid(userAccessId), Parameter: nameof(UserAccess.Id)));
 
-        private static async ValueTask ValidateStorageUserAccessAsync(UserAccess maybeUserAccess, Guid maybeId)
+        private static void ValidateStorageUserAccess(UserAccess maybeUserAccess, Guid maybeId)
         {
             if (maybeUserAccess is null)
             {
@@ -100,19 +94,19 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
             }
         }
 
-        private async ValueTask ValidateAgainstStorageUserAccessOnModifyAsync(
+        private static void ValidateAgainstStorageUserAccessOnModify(
             UserAccess userAccess,
             UserAccess maybeUserAccess)
         {
             Validate(
-                (Rule: await IsNotSameAsync(
+                (Rule: IsNotSame(
                     userAccess.CreatedDate,
                     maybeUserAccess.CreatedDate,
                     nameof(maybeUserAccess.CreatedDate)),
 
                 Parameter: nameof(UserAccess.CreatedDate)),
 
-                (Rule: await IsSameAsAsync(
+                (Rule: IsSameAs(
                     userAccess.UpdatedDate,
                     maybeUserAccess.UpdatedDate,
                     nameof(maybeUserAccess.UpdatedDate)),
@@ -128,34 +122,34 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
             }
         }
 
-        private static async ValueTask<dynamic> IsInvalidAsync(Guid id) => new
+        private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,
             Message = "Id is invalid"
         };
 
-        private static async ValueTask<dynamic> IsInvalidAsync(string name) => new
+        private static dynamic IsInvalid(string name) => new
         {
             Condition = String.IsNullOrWhiteSpace(name),
             Message = "Text is invalid"
         };
 
-        private static async ValueTask<dynamic> IsInvalidAsync(DateTimeOffset date) => new
+        private static dynamic IsInvalid(DateTimeOffset date) => new
         {
             Condition = date == default,
             Message = "Date is invalid"
         };
 
-        private static async ValueTask<dynamic> IsInvalidLengthAsync(string text, int maxLength) => new
+        private static dynamic IsInvalidLength(string text, int maxLength) => new
         {
-            Condition = await IsExceedingLengthAsync(text, maxLength),
+            Condition = IsExceedingLength(text, maxLength),
             Message = $"Text exceed max length of {maxLength} characters"
         };
 
-        private static async ValueTask<bool> IsExceedingLengthAsync(string text, int maxLength) =>
+        private static bool IsExceedingLength(string text, int maxLength) =>
             (text ?? string.Empty).Length > maxLength;
 
-        private static async ValueTask<dynamic> IsNotSameAsync(
+        private static dynamic IsNotSame(
             DateTimeOffset first,
             DateTimeOffset second,
             string secondName) => new
@@ -164,7 +158,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
                 Message = $"Date is not the same as {secondName}"
             };
 
-        private static async ValueTask<dynamic> IsNotSameAsync(
+        private static dynamic IsNotSame(
             string first,
             string second,
             string secondName) => new
@@ -173,7 +167,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
                 Message = $"Text is not the same as {secondName}"
             };
 
-        private static async ValueTask<dynamic> IsSameAsAsync(
+        private static dynamic IsSameAs(
             DateTimeOffset createdDate,
             DateTimeOffset updatedDate,
             string createdDateName) => new

@@ -87,7 +87,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
             CreateIdentificationRequestFiller().Create();
 
         private static AccessRequest CreateRandomAccessRequest() =>
-            CreateAccessRequestFiller().Create();
+            CreateAccessRequestFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
 
         private static ImpersonationContext CreateRandomImpersonationContext() =>
             CreateRandomImpersonationContext(dateTimeOffset: GetRandomDateTimeOffset());
@@ -113,8 +113,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
-                .OnProperty(odsData => odsData.PdsData).IgnoreIt();
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset);
 
             return filler;
         }
@@ -124,8 +123,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
             var filler = new Filler<PdsData>();
 
             filler.Setup()
-                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
-                .OnProperty(pdsData => pdsData.OdsDatas).IgnoreIt();
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset);
 
             return filler;
         }
@@ -149,6 +147,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
             var filler = new Filler<IdentificationItem>();
 
             filler.Setup()
+                .OnType<DateTimeOffset?>().Use((DateTimeOffset?)default)
                 .OnProperty(identificationItem => identificationItem.HasAccess).Use(false);
 
             return filler;
@@ -165,11 +164,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
             return filler;
         }
 
-        private static Filler<AccessRequest> CreateAccessRequestFiller()
+        private static Filler<AccessRequest> CreateAccessRequestFiller(DateTimeOffset dateTimeOffset)
         {
             var filler = new Filler<AccessRequest>();
 
             filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use((DateTimeOffset?)default)
                 .OnProperty(accessRequest => accessRequest.IdentificationRequest)
                     .Use(CreateRandomIdentificationRequest())
                 .OnProperty(accessRequest => accessRequest.ImpersonationContextRequest)
@@ -185,7 +186,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use((DateTimeOffset?)default)
 
                 .OnProperty(impersonationContext => impersonationContext.IdentifierColumn)
                     .Use(() => GetRandomStringWithLength(10))

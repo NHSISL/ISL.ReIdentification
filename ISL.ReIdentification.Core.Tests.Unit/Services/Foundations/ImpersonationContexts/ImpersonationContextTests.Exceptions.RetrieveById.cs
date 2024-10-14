@@ -39,8 +39,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
                 this.impersonationContextService.RetrieveImpersonationContextByIdAsync(someImpersonationContextId);
 
             // then
-            await Assert.ThrowsAsync<ImpersonationContextDependencyException>(() =>
-                retrieveImpersonationContextByIdTask.AsTask());
+            await Assert.ThrowsAsync<ImpersonationContextDependencyException>(
+                testCode: retrieveImpersonationContextByIdTask.AsTask);
 
             this.reIdentificationStorageBroker.Verify(broker =>
                 broker.SelectImpersonationContextByIdAsync(someImpersonationContextId),
@@ -87,7 +87,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
 
             ImpersonationContextServiceException actualImpersonationContextServiceException =
                 await Assert.ThrowsAsync<ImpersonationContextServiceException>(
-                    retrieveImpersonationContextByIdTask.AsTask);
+                    testCode: retrieveImpersonationContextByIdTask.AsTask);
 
             //then
             actualImpersonationContextServiceException.Should().BeEquivalentTo(

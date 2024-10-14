@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
@@ -14,21 +14,23 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
     public partial class OdsDataServiceTests
     {
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnRetrieveOdsDataByIdWithInvalidIdAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnRetrieveByIdIfIdIsInvalidAndLogItAsync()
         {
             // given
-            Guid invalidOdsDataId = Guid.Empty;
+            var invalidOdsDataId = Guid.Empty;
 
-            var invalidOdsDataException = new InvalidOdsDataException(
-                message: "Invalid ODS data. Please correct the errors and try again.");
+            var invalidOdsDataException =
+                new InvalidOdsDataException(
+                    message: "Invalid odsData. Please correct the errors and try again.");
 
             invalidOdsDataException.AddData(
                 key: nameof(OdsData.Id),
                 values: "Id is invalid");
 
-            var expectedOdsDataValidationException = new OdsDataValidationException(
-                message: "OdsData validation error occurred, please fix errors and try again.",
-                innerException: invalidOdsDataException);
+            var expectedOdsDataValidationException =
+                new OdsDataValidationException(
+                    message: "OdsData validation error occurred, please fix errors and try again.",
+                    innerException: invalidOdsDataException);
 
             // when
             ValueTask<OdsData> retrieveOdsDataByIdTask =
@@ -36,7 +38,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
 
             OdsDataValidationException actualOdsDataValidationException =
                 await Assert.ThrowsAsync<OdsDataValidationException>(
-                    retrieveOdsDataByIdTask.AsTask);
+                    testCode: retrieveOdsDataByIdTask.AsTask);
 
             // then
             actualOdsDataValidationException.Should()
@@ -47,44 +49,44 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
                     expectedOdsDataValidationException))),
                         Times.Once);
 
-            this.reIdentificationStorageBrokerMock.Verify(broker =>
+            this.reIdentificationStorageBroker.Verify(broker =>
                 broker.SelectOdsDataByIdAsync(It.IsAny<Guid>()),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.reIdentificationStorageBrokerMock.VerifyNoOtherCalls();
+            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
         }
 
         [Fact]
         public async Task ShouldThrowNotFoundExceptionOnRetrieveByIdIfOdsDataIsNotFoundAndLogItAsync()
         {
             //given
-            Guid randomOdsDataId = Guid.NewGuid();
+            Guid someOdsDataId = Guid.NewGuid();
             OdsData noOdsData = null;
             var notFoundOdsDataException =
-                new NotFoundOdsDataException(message: $"ODS data not found with Id: {randomOdsDataId}");
+                new NotFoundOdsDataException(message: $"OdsData not found with Id: {someOdsDataId}");
 
             var expectedOdsDataValidationException =
                 new OdsDataValidationException(
                     message: "OdsData validation error occurred, please fix errors and try again.",
                     innerException: notFoundOdsDataException);
 
-            this.reIdentificationStorageBrokerMock.Setup(broker =>
+            this.reIdentificationStorageBroker.Setup(broker =>
                 broker.SelectOdsDataByIdAsync(It.IsAny<Guid>()))
                     .ReturnsAsync(noOdsData);
 
             //when
             ValueTask<OdsData> retrieveOdsDataByIdTask =
-                this.odsDataService.RetrieveOdsDataByIdAsync(randomOdsDataId);
+                this.odsDataService.RetrieveOdsDataByIdAsync(someOdsDataId);
 
             OdsDataValidationException actualOdsDataValidationException =
                 await Assert.ThrowsAsync<OdsDataValidationException>(
-                    retrieveOdsDataByIdTask.AsTask);
+                    testCode: retrieveOdsDataByIdTask.AsTask);
 
             //then
             actualOdsDataValidationException.Should().BeEquivalentTo(expectedOdsDataValidationException);
 
-            this.reIdentificationStorageBrokerMock.Verify(broker =>
+            this.reIdentificationStorageBroker.Verify(broker =>
                 broker.SelectOdsDataByIdAsync(It.IsAny<Guid>()),
                     Times.Once());
 
@@ -93,7 +95,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
                     expectedOdsDataValidationException))),
                         Times.Once);
 
-            this.reIdentificationStorageBrokerMock.VerifyNoOtherCalls();
+            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

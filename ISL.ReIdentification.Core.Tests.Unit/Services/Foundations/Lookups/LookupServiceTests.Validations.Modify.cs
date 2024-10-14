@@ -32,7 +32,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
 
             LookupValidationException actualLookupValidationException =
                 await Assert.ThrowsAsync<LookupValidationException>(
-                    modifyLookupTask.AsTask);
+                    testCode: modifyLookupTask.AsTask);
 
             // then
             actualLookupValidationException.Should()
@@ -111,7 +111,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
 
             LookupValidationException actualLookupValidationException =
                 await Assert.ThrowsAsync<LookupValidationException>(
-                    modifyLookupTask.AsTask);
+                    testCode: modifyLookupTask.AsTask);
 
             //then
             actualLookupValidationException.Should()
@@ -171,7 +171,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
                 this.lookupService.ModifyLookupAsync(invalidLookup);
 
             LookupValidationException actualLookupValidationException =
-                await Assert.ThrowsAsync<LookupValidationException>(modifyLookupTask.AsTask);
+                await Assert.ThrowsAsync<LookupValidationException>(
+                    testCode: modifyLookupTask.AsTask);
 
             // then
             actualLookupValidationException.Should().BeEquivalentTo(expectedLookupException);
@@ -225,7 +226,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
 
             LookupValidationException actualLookupValidationException =
                 await Assert.ThrowsAsync<LookupValidationException>(
-                    modifyLookupTask.AsTask);
+                    testCode: modifyLookupTask.AsTask);
 
             // then
             actualLookupValidationException.Should()
@@ -288,7 +289,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
                 this.lookupService.ModifyLookupAsync(invalidLookup);
 
             LookupValidationException actualLookupVaildationException =
-                await Assert.ThrowsAsync<LookupValidationException>(modifyLookupTask.AsTask);
+                await Assert.ThrowsAsync<LookupValidationException>(
+                    testCode: modifyLookupTask.AsTask);
 
             // then
             actualLookupVaildationException.Should().BeEquivalentTo(expectedLookupValidationException);
@@ -338,7 +340,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
 
             LookupValidationException actualLookupValidationException =
                 await Assert.ThrowsAsync<LookupValidationException>(
-                    modifyLookupTask.AsTask);
+                    testCode: modifyLookupTask.AsTask);
 
             // then
             actualLookupValidationException.Should()
@@ -402,7 +404,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
 
             LookupValidationException actualLookupValidationException =
                 await Assert.ThrowsAsync<LookupValidationException>(
-                    modifyLookupTask.AsTask);
+                    testCode: modifyLookupTask.AsTask);
 
             // then
             actualLookupValidationException.Should()
@@ -464,7 +466,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
 
             LookupValidationException actualLookupValidationException =
                 await Assert.ThrowsAsync<LookupValidationException>(
-                    modifyLookupTask.AsTask);
+                    testCode: modifyLookupTask.AsTask);
 
             // then
             actualLookupValidationException.Should().BeEquivalentTo(expectedLookupValidationException);
@@ -523,7 +525,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
 
             // then
             await Assert.ThrowsAsync<LookupValidationException>(
-                modifyLookupTask.AsTask);
+                testCode: modifyLookupTask.AsTask);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),

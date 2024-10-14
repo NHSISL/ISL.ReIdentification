@@ -44,13 +44,15 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             new MnemonicString().GetValue();
 
         private static AccessRequest CreateRandomAccessRequest() =>
-            CreateAccessRequestFiller().Create();
+            CreateAccessRequestFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
 
-        private static Filler<AccessRequest> CreateAccessRequestFiller()
+        private static Filler<AccessRequest> CreateAccessRequestFiller(DateTimeOffset dateTimeOffset)
         {
             var filler = new Filler<AccessRequest>();
 
             filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use((DateTimeOffset?)default)
                 .OnProperty(request => request.ImpersonationContextRequest).Use(CreateRandomImpersonationContext);
 
             return filler;
@@ -77,7 +79,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnType<DateTimeOffset?>().Use(dateTimeOffset);
+                .OnType<DateTimeOffset?>().Use((DateTimeOffset?)default);
 
             return filler;
         }

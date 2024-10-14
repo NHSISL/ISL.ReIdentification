@@ -26,7 +26,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
 
         [HttpPost]
         public async ValueTask<ActionResult<CsvIdentificationRequest>> PostCsvIdentificationRequestAsync(
-            CsvIdentificationRequest csvIdentificationRequest)
+            [FromBody] CsvIdentificationRequest csvIdentificationRequest)
         {
             try
             {
@@ -128,7 +128,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
 
         [HttpPut]
         public async ValueTask<ActionResult<CsvIdentificationRequest>> PutCsvIdentificationRequestAsync(
-            CsvIdentificationRequest csvIdentificationRequest)
+            [FromBody] CsvIdentificationRequest csvIdentificationRequest)
         {
             try
             {

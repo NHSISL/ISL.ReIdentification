@@ -62,7 +62,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
                 .BulkProcessRequestsAsync(inputIdentificationRequest, batchSize);
 
             AggregateException actualAggregateException =
-                await Assert.ThrowsAsync<AggregateException>(reidentificationRequestTask.AsTask);
+                await Assert.ThrowsAsync<AggregateException>(
+                    testCode: reidentificationRequestTask.AsTask);
 
             // Then
             actualAggregateException.Should().BeEquivalentTo(expectedAggregateException);
@@ -127,7 +128,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
                 .BulkProcessRequestsAsync(inputIdentificationRequest, batchSize);
 
             AggregateException actualAggregateException =
-                await Assert.ThrowsAsync<AggregateException>(reidentificationRequestTask.AsTask);
+                await Assert.ThrowsAsync<AggregateException>(
+                    testCode: reidentificationRequestTask.AsTask);
 
             // Then
             actualAggregateException.Should().BeEquivalentTo(expectedAggregateException);
@@ -192,7 +194,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
                 .BulkProcessRequestsAsync(inputIdentificationRequest, batchSize);
 
             AggregateException actualAggregateException =
-                await Assert.ThrowsAsync<AggregateException>(reidentificationRequestTask.AsTask);
+                await Assert.ThrowsAsync<AggregateException>(
+                    testCode: reidentificationRequestTask.AsTask);
 
             // Then
             actualAggregateException.Should().BeEquivalentTo(expectedAggregateException);

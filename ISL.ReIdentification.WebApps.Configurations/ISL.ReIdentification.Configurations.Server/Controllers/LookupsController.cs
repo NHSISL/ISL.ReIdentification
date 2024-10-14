@@ -24,7 +24,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             this.lookupService = lookupService;
 
         [HttpPost]
-        public async ValueTask<ActionResult<Lookup>> PostLookupAsync(Lookup lookup)
+        public async ValueTask<ActionResult<Lookup>> PostLookupAsync([FromBody] Lookup lookup)
         {
             try
             {
@@ -118,7 +118,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
         }
 
         [HttpPut]
-        public async ValueTask<ActionResult<Lookup>> PutLookupAsync(Lookup lookup)
+        public async ValueTask<ActionResult<Lookup>> PutLookupAsync([FromBody] Lookup lookup)
         {
             try
             {

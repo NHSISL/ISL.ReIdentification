@@ -41,13 +41,13 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
                 .OnType<DateTimeOffset>().Use(now)
                 .OnType<DateTimeOffset?>().Use(now)
 
-                .OnProperty(userAccess => userAccess.FirstName)
+                .OnProperty(userAccess => userAccess.GivenName)
                     .Use(() => GetRandomStringWithLengthOf(255))
 
-                .OnProperty(userAccess => userAccess.LastName)
+                .OnProperty(userAccess => userAccess.Surname)
                     .Use(() => GetRandomStringWithLengthOf(255))
 
-                .OnProperty(userAccess => userAccess.UserEmail)
+                .OnProperty(userAccess => userAccess.Email)
                     .Use(() => GetRandomStringWithLengthOf(320))
 
                 .OnProperty(userAccess => userAccess.CreatedDate).Use(now)

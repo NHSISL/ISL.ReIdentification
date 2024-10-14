@@ -8,10 +8,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Brokers.Identifiers;
 using ISL.ReIdentification.Core.Brokers.Loggings;
+using ISL.ReIdentification.Core.Brokers.NECS;
 using ISL.ReIdentification.Core.Models.Brokers.NECS;
 using ISL.ReIdentification.Core.Models.Brokers.NECS.Requests;
+using ISL.ReIdentification.Core.Models.Brokers.NECS.Responses;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
-using LHDS.Core.Brokers.NECS;
 
 namespace ISL.ReIdentification.Core.Services.Foundations.ReIdentifications
 {
@@ -38,7 +39,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ReIdentifications
             IdentificationRequest identificationRequests) =>
             TryCatch(async () =>
             {
-                await ValidateIdentificationRequestOnProcessAsync(identificationRequests);
+                ValidateIdentificationRequestOnProcess(identificationRequests);
 
                 IdentificationRequest processedItems =
                     await BulkProcessRequestsAsync(identificationRequests, necsConfiguration.ApiMaxBatchSize);

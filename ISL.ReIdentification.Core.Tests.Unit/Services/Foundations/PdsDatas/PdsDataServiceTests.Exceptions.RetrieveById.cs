@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
@@ -23,7 +23,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
 
             var failedStoragePdsDataException =
                 new FailedStoragePdsDataException(
-                    message: "Failed pds data storage error occurred, contact support.",
+                    message: "Failed pdsData storage error occurred, contact support.",
                     innerException: sqlException);
 
             var expectedPdsDataDependencyException =
@@ -31,7 +31,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                     message: "PdsData dependency error occurred, contact support.",
                     innerException: failedStoragePdsDataException);
 
-            this.reIdentificationStorageBrokerMock.Setup(broker =>
+            this.reIdentificationStorageBroker.Setup(broker =>
                 broker.SelectPdsDataByIdAsync(It.IsAny<long>()))
                     .ThrowsAsync(sqlException);
 
@@ -41,13 +41,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
 
             PdsDataDependencyException actualPdsDataDependencyException =
                 await Assert.ThrowsAsync<PdsDataDependencyException>(
-                    retrievePdsDataByIdTask.AsTask);
+                    testCode: retrievePdsDataByIdTask.AsTask);
 
             // then
             actualPdsDataDependencyException.Should()
                 .BeEquivalentTo(expectedPdsDataDependencyException);
 
-            this.reIdentificationStorageBrokerMock.Verify(broker =>
+            this.reIdentificationStorageBroker.Verify(broker =>
                 broker.SelectPdsDataByIdAsync(It.IsAny<long>()),
                     Times.Once);
 
@@ -56,7 +56,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                     expectedPdsDataDependencyException))),
                         Times.Once);
 
-            this.reIdentificationStorageBrokerMock.VerifyNoOtherCalls();
+            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -68,8 +68,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
             var serviceException = new Exception();
 
             var failedPdsDataServiceException =
-                new FailedServicePdsDataException(
-                    message: "Failed pds data service occurred, please contact support",
+                new FailedPdsDataServiceException(
+                    message: "Failed pdsData service occurred, please contact support",
                     innerException: serviceException);
 
             var expectedPdsDataServiceException =
@@ -77,7 +77,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                     message: "PdsData service error occurred, contact support.",
                     innerException: failedPdsDataServiceException);
 
-            this.reIdentificationStorageBrokerMock.Setup(broker =>
+            this.reIdentificationStorageBroker.Setup(broker =>
                 broker.SelectPdsDataByIdAsync(It.IsAny<long>()))
                     .ThrowsAsync(serviceException);
 
@@ -87,13 +87,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
 
             PdsDataServiceException actualPdsDataServiceException =
                 await Assert.ThrowsAsync<PdsDataServiceException>(
-                    retrievePdsDataByIdTask.AsTask);
+                    testCode: retrievePdsDataByIdTask.AsTask);
 
             // then
             actualPdsDataServiceException.Should()
                 .BeEquivalentTo(expectedPdsDataServiceException);
 
-            this.reIdentificationStorageBrokerMock.Verify(broker =>
+            this.reIdentificationStorageBroker.Verify(broker =>
                 broker.SelectPdsDataByIdAsync(It.IsAny<long>()),
                     Times.Once);
 
@@ -102,7 +102,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                    expectedPdsDataServiceException))),
                         Times.Once);
 
-            this.reIdentificationStorageBrokerMock.VerifyNoOtherCalls();
+            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

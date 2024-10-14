@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
+using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.AccessAudits;
 using RESTFulSense.Exceptions;
 
 namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
@@ -102,8 +102,8 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
             // then
             deletedAccessAudit.Should().BeEquivalentTo(expectedAccessAudit);
 
-            await Assert.ThrowsAsync<HttpResponseNotFoundException>(() =>
-                getAccessAuditbyIdTask.AsTask());
+            await Assert.ThrowsAsync<HttpResponseNotFoundException>(
+                testCode: getAccessAuditbyIdTask.AsTask);
         }
     }
 }

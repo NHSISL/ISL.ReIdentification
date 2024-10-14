@@ -4,8 +4,9 @@
 
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Brokers.NECS.Requests;
+using ISL.ReIdentification.Core.Models.Brokers.NECS.Responses;
 
-namespace LHDS.Core.Brokers.NECS
+namespace ISL.ReIdentification.Core.Brokers.NECS
 {
     public interface INECSBroker
     {
