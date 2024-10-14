@@ -13,7 +13,6 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
         ValueTask<AccessRequest> ProcessImpersonationContextRequestAsync(AccessRequest accessRequest);
         ValueTask<AccessRequest> PersistsCsvIdentificationRequestAsync(AccessRequest accessRequest);
         ValueTask<AccessRequest> ProcessCsvIdentificationRequestAsync(Guid csvIdentificationRequestId);
-        ValueTask<AccessRequest> ReIdentifyCsvIdentificationRequestAsync(AccessRequest accessRequest);
         ValueTask<AccessRequest> ProcessIdentificationRequestsAsync(AccessRequest accessRequest);
     }
 }
