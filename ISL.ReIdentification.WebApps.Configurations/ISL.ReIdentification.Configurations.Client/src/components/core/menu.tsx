@@ -1,4 +1,4 @@
-import { faFileLines, faHome, faCog, faUser, faAddressBook, faUserDoctor, faChartBar } from '@fortawesome/free-solid-svg-icons';
+import { faFileLines, faHome, faCog, faUser, faAddressBook, faUserDoctor, faChartBar,v } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState } from 'react';
 import { ListGroup } from 'react-bootstrap';
@@ -9,6 +9,7 @@ import { SecuredComponent } from '../securitys/securedComponents';
 import securityPoints from '../../securityMatrix';
 import { SecuredLink } from '../securitys/securedLinks';
 import { faUserFriends } from '@fortawesome/free-solid-svg-icons/faUserFriends';
+import { faIdBadge } from '@fortawesome/free-solid-svg-icons/faIdBadge';
 
 const MenuComponent: React.FC = () => {
     const location = useLocation();
@@ -36,10 +37,17 @@ const MenuComponent: React.FC = () => {
             </ListGroup.Item>
 
             <ListGroup.Item
-                className={`bg-dark text-white ${activePath === '/delegatedUserAccess' ? 'active' : ''}`}
-                onClick={() => handleItemClick('/delegatedUserAccess')}>
+                className={`bg-dark text-white ${activePath === '/impersonationContext' ? 'active' : ''}`}
+                onClick={() => handleItemClick('/impersonationContext')}>
                 <FontAwesomeIcon icon={faUserFriends} className="me-2 fa-icon" />
-                <SecuredLink to="/delegatedUserAccess">Delegated User Access</SecuredLink>
+                <SecuredLink to="/impersonationContext">Impersonation Context</SecuredLink>
+            </ListGroup.Item>
+
+            <ListGroup.Item
+                className={`bg-dark text-white ${activePath === '/csvIdentificationRequest' ? 'active' : ''}`}
+                onClick={() => handleItemClick('/csvIdentificationRequest')}>
+                <FontAwesomeIcon icon={faIdBadge} className="me-2 fa-icon" />
+                <SecuredLink to="/csvIdentificationRequest">Csv Identification Request</SecuredLink>
             </ListGroup.Item>
 
             <ListGroup.Item

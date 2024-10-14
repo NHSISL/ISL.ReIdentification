@@ -29,6 +29,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web;
 using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
+using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
+using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
+using ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationRequests;
+using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 
 namespace ISL.ReIdentification.Configurations.Server
 {
@@ -84,6 +88,11 @@ namespace ISL.ReIdentification.Configurations.Server
                    new ODataConventionModelBuilder();
 
                 builder.EntitySet<Lookup>("Lookups");
+                builder.EntitySet<UserAccess>("UserAccesses");
+                builder.EntitySet<ImpersonationContext>("ImpersonationContexts");
+                builder.EntitySet<CsvIdentificationRequest>("CsvIdentificationRequests");
+                builder.EnableLowerCamelCase();
+
                 return builder.GetEdmModel();
             }
 
@@ -145,6 +154,8 @@ namespace ISL.ReIdentification.Configurations.Server
             services.AddTransient<IOdsDataService, OdsDataService>();
             services.AddTransient<IPdsDataService, PdsDataService>();
             services.AddTransient<IUserAccessService, UserAccessService>();
+            services.AddTransient<IImpersonationContextService, ImpersonationContextService>();
+            services.AddTransient<ICsvIdentificationRequestService, CsvIdentificationRequestService>();
         }
 
         private static void AddProcessingServices(IServiceCollection services)
