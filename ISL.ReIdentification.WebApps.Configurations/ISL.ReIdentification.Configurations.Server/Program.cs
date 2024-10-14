@@ -33,6 +33,8 @@ using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
+using ISL.ReIdentification.Core.Models.Foundations.OdsDatas;
+using ISL.ReIdentification.Core.Models.Foundations.PdsDatas;
 
 namespace ISL.ReIdentification.Configurations.Server
 {
@@ -91,11 +93,12 @@ namespace ISL.ReIdentification.Configurations.Server
                 builder.EntitySet<UserAccess>("UserAccesses");
                 builder.EntitySet<ImpersonationContext>("ImpersonationContexts");
                 builder.EntitySet<CsvIdentificationRequest>("CsvIdentificationRequests");
+                builder.EntitySet<OdsData>("OdsData");
+                //builder.EntitySet<PdsData>("PdsData");
                 builder.EnableLowerCamelCase();
 
                 return builder.GetEdmModel();
             }
-
 
             var app = builder.Build();
             app.UseDefaultFiles();
