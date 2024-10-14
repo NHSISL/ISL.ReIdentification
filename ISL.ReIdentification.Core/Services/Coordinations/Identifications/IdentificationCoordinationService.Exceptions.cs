@@ -32,6 +32,10 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             {
                 throw await CreateAndLogValidationExceptionAsync(nullIdentificationRequestException);
             }
+            catch (NullCsvIdentificationRequestException nullCsvIdentificationRequestException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(nullCsvIdentificationRequestException);
+            }
             catch (IdentificationOrchestrationValidationException identificationOrchestrationValidationException)
             {
                 throw await CreateAndLogDependencyValidationExceptionAsync(

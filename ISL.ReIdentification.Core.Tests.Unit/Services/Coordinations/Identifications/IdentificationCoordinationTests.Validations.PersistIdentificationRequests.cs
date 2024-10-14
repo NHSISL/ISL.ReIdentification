@@ -58,7 +58,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             // given
             AccessRequest randomAccessRequest = CreateRandomAccessRequest();
             AccessRequest inputAccessRequest = randomAccessRequest;
-            inputAccessRequest.IdentificationRequest = null;
+            inputAccessRequest.CsvIdentificationRequest = null;
 
             var nullCsvIdentificationRequestException =
                 new NullCsvIdentificationRequestException(message: "CSV identification request is null.");
