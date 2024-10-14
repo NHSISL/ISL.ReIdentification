@@ -5,10 +5,8 @@
 using System;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications.Exceptions;
-using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Services.Coordinations.Identifications;
-using ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationRequests;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
 
@@ -19,13 +17,10 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
     public class ReIdentificationController : RESTFulController
     {
         private readonly IIdentificationCoordinationService identificationCoordinationService;
-        private readonly ICsvIdentificationRequestService csvIdentificationRequestService;
 
-        public ReIdentificationController(IIdentificationCoordinationService identificationCoordinationService,
-                ICsvIdentificationRequestService csvIdentificationRequestService)
+        public ReIdentificationController(IIdentificationCoordinationService identificationCoordinationService)
         {
             this.identificationCoordinationService = identificationCoordinationService;
-            this.csvIdentificationRequestService = csvIdentificationRequestService;
         }
 
 
@@ -67,7 +62,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             try
             {
                 AccessRequest addedAccessRequest =
-                    await this.identificationCoordinationService.ProcessCsvIdentificationRequestAsync(accessRequest);
+                    await this.identificationCoordinationService.PersistsCsvIdentificationRequestAsync(accessRequest);
 
                 return Created(addedAccessRequest);
             }
@@ -95,20 +90,14 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
         public async ValueTask<ActionResult> GetCsvIdentificationRequestByIdAsync(
             Guid csvIdentificationRequestId)
         {
-            CsvIdentificationRequest csvIdentificationRequest =
-                await this.csvIdentificationRequestService
-                    .RetrieveCsvIdentificationRequestByIdAsync(csvIdentificationRequestId);
-
-            AccessRequest accessRequest = new AccessRequest();
-            accessRequest.CsvIdentificationRequest = csvIdentificationRequest;
-
             AccessRequest reIdentifiedAccessRequest =
-                await this.identificationCoordinationService.ReIdentifyCsvIdentificationRequestAsync(accessRequest);
+                await this.identificationCoordinationService
+                    .ProcessCsvIdentificationRequestAsync(csvIdentificationRequestId);
 
             string fileName = "data.csv";
             string contentType = "text/csv";
 
-            return File(csvIdentificationRequest.Data, contentType, fileName);
+            return File(reIdentifiedAccessRequest.CsvIdentificationRequest.Data, contentType, fileName);
         }
     }
 }

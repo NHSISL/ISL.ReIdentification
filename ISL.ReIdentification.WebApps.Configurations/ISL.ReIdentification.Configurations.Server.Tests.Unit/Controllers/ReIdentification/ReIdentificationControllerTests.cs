@@ -13,7 +13,6 @@ using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Services.Coordinations.Identifications;
-using ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationRequests;
 using Moq;
 using RESTFulSense.Controllers;
 using Tynamix.ObjectFiller;
@@ -24,17 +23,14 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.ReId
     public partial class ReIdentificationControllerTests : RESTFulController
     {
         private readonly Mock<IIdentificationCoordinationService> identificationCoordinationServiceMock;
-        private readonly Mock<ICsvIdentificationRequestService> csvIdentificationRequestService;
         private readonly ReIdentificationController reIdentificationController;
 
         public ReIdentificationControllerTests()
         {
             this.identificationCoordinationServiceMock = new Mock<IIdentificationCoordinationService>();
-            this.csvIdentificationRequestService = new Mock<ICsvIdentificationRequestService>();
             this.reIdentificationController =
                 new ReIdentificationController(
-                    this.identificationCoordinationServiceMock.Object,
-                    this.csvIdentificationRequestService.Object);
+                    this.identificationCoordinationServiceMock.Object);
         }
 
         public static TheoryData<Xeption> ValidationExceptions()

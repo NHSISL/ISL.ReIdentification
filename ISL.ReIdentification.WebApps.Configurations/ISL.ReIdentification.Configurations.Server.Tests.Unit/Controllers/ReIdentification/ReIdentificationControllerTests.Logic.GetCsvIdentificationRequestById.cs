@@ -6,7 +6,6 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -20,10 +19,8 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.ReId
         {
             // given
             Guid inputCsvIdentificationRequestId = Guid.NewGuid();
-            CsvIdentificationRequest returnedCsvIdentificationRequest = CreateRandomCsvIdentificationRequest();
             AccessRequest randomAccessRequest = CreateRandomAccessRequest();
             AccessRequest inputAccessRequest = randomAccessRequest;
-            inputAccessRequest.CsvIdentificationRequest = returnedCsvIdentificationRequest;
             AccessRequest addedAccessRequest = inputAccessRequest.DeepClone();
             AccessRequest expectedAccessRequest = addedAccessRequest.DeepClone();
             string contentType = "text/csv";
@@ -32,12 +29,8 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.ReId
 
             var expectedActionResult = expectedObjectResult;
 
-            csvIdentificationRequestService
-               .Setup(service => service.RetrieveCsvIdentificationRequestByIdAsync(inputCsvIdentificationRequestId))
-                   .ReturnsAsync(returnedCsvIdentificationRequest);
-
             identificationCoordinationServiceMock
-                .Setup(service => service.ReIdentifyCsvIdentificationRequestAsync(It.IsAny<AccessRequest>()))
+                .Setup(service => service.ProcessCsvIdentificationRequestAsync(inputCsvIdentificationRequestId))
                     .ReturnsAsync(addedAccessRequest);
 
             // when
@@ -47,15 +40,10 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.ReId
             // then
             actualActionResult.Should().BeEquivalentTo(expectedActionResult);
 
-            csvIdentificationRequestService
-               .Verify(service => service.RetrieveCsvIdentificationRequestByIdAsync(inputCsvIdentificationRequestId),
-                   Times.Once);
-
             identificationCoordinationServiceMock
-               .Verify(service => service.ReIdentifyCsvIdentificationRequestAsync(It.IsAny<AccessRequest>()),
+               .Verify(service => service.ProcessCsvIdentificationRequestAsync(inputCsvIdentificationRequestId),
                    Times.Once);
 
-            csvIdentificationRequestService.VerifyNoOtherCalls();
             identificationCoordinationServiceMock.VerifyNoOtherCalls();
         }
     }
