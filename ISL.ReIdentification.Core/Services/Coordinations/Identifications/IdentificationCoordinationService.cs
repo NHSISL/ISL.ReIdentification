@@ -48,13 +48,14 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             return returnedAccessRequest;
         });
 
-        public ValueTask<AccessRequest> ProcessImpersonationContextRequestAsync(AccessRequest accessRequest) =>
-            throw new System.NotImplementedException();
 
         public ValueTask<AccessRequest> PersistsCsvIdentificationRequestAsync(AccessRequest accessRequest) =>
             throw new System.NotImplementedException();
 
         public ValueTask<AccessRequest> ProcessCsvIdentificationRequestAsync(Guid csvIdentificationRequestId) =>
+            throw new System.NotImplementedException();
+
+        public ValueTask<AccessRequest> ProcessImpersonationContextRequestAsync(AccessRequest accessRequest) =>
             throw new System.NotImplementedException();
     }
 }

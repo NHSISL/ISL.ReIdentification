@@ -2,8 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
-using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using RESTFulSense.Clients.Extensions;
@@ -16,30 +16,31 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.ReId
     {
         [Theory]
         [MemberData(nameof(ValidationExceptions))]
-        public async Task ShouldReturnBadRequestOnPostCsvIfValidationErrorOccurredAsync(Xeption validationException)
+        public async Task ShouldReturnBadRequestOnGetIfValidationErrorOccurredAsync(Xeption validationException)
         {
             // given
-            AccessRequest someAccessRequest = CreateRandomAccessRequest();
+            Guid someCsvIdentificationRequestId = Guid.NewGuid();
 
             BadRequestObjectResult expectedBadRequestObjectResult =
                 BadRequest(validationException.InnerException);
 
             var expectedActionResult =
-                new ActionResult<AccessRequest>(expectedBadRequestObjectResult);
+                new ActionResult<object>(expectedBadRequestObjectResult);
 
             this.identificationCoordinationServiceMock.Setup(service =>
-                service.PersistsCsvIdentificationRequestAsync(It.IsAny<AccessRequest>()))
+                service.ProcessCsvIdentificationRequestAsync(someCsvIdentificationRequestId))
                     .ThrowsAsync(validationException);
 
             // when
-            ActionResult<AccessRequest> actualActionResult =
-                await this.reIdentificationController.PostCsvIdentificationRequestAsync(someAccessRequest);
+            ActionResult<object> actualActionResult =
+                await this.reIdentificationController
+                    .GetCsvIdentificationRequestByIdAsync(someCsvIdentificationRequestId);
 
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
             this.identificationCoordinationServiceMock.Verify(service =>
-                service.PersistsCsvIdentificationRequestAsync(It.IsAny<AccessRequest>()),
+                service.ProcessCsvIdentificationRequestAsync(someCsvIdentificationRequestId),
                     Times.Once);
 
             this.identificationCoordinationServiceMock.VerifyNoOtherCalls();
@@ -47,31 +48,32 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.ReId
 
         [Theory]
         [MemberData(nameof(ServerExceptions))]
-        public async Task ShouldReturnInternalServerErrorOnPostCsvIfServerErrorOccurredAsync(
+        public async Task ShouldReturnInternalServerErrorOnGetIfServerErrorOccurredAsync(
             Xeption validationException)
         {
             // given
-            AccessRequest someAccessRequest = CreateRandomAccessRequest();
+            Guid someCsvIdentificationRequestId = Guid.NewGuid();
 
             InternalServerErrorObjectResult expectedBadRequestObjectResult =
                 InternalServerError(validationException);
 
             var expectedActionResult =
-                new ActionResult<AccessRequest>(expectedBadRequestObjectResult);
+                new ActionResult<object>(expectedBadRequestObjectResult);
 
             this.identificationCoordinationServiceMock.Setup(service =>
-                service.PersistsCsvIdentificationRequestAsync(It.IsAny<AccessRequest>()))
+                service.ProcessCsvIdentificationRequestAsync(someCsvIdentificationRequestId))
                     .ThrowsAsync(validationException);
 
             // when
-            ActionResult<AccessRequest> actualActionResult =
-                await this.reIdentificationController.PostCsvIdentificationRequestAsync(someAccessRequest);
+            ActionResult<object> actualActionResult =
+                await this.reIdentificationController
+                    .GetCsvIdentificationRequestByIdAsync(someCsvIdentificationRequestId);
 
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
             this.identificationCoordinationServiceMock.Verify(service =>
-                service.PersistsCsvIdentificationRequestAsync(It.IsAny<AccessRequest>()),
+                service.ProcessCsvIdentificationRequestAsync(someCsvIdentificationRequestId),
                     Times.Once);
 
             this.identificationCoordinationServiceMock.VerifyNoOtherCalls();

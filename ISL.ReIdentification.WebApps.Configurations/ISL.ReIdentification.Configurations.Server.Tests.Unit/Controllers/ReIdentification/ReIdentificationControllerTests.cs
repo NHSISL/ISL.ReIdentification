@@ -29,7 +29,8 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.ReId
         {
             this.identificationCoordinationServiceMock = new Mock<IIdentificationCoordinationService>();
             this.reIdentificationController =
-                new ReIdentificationController(this.identificationCoordinationServiceMock.Object);
+                new ReIdentificationController(
+                    this.identificationCoordinationServiceMock.Object);
         }
 
         public static TheoryData<Xeption> ValidationExceptions()

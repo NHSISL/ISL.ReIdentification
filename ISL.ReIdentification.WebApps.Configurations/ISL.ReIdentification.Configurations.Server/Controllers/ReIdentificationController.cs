@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
@@ -17,8 +18,11 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
     {
         private readonly IIdentificationCoordinationService identificationCoordinationService;
 
-        public ReIdentificationController(IIdentificationCoordinationService identificationCoordinationService) =>
+        public ReIdentificationController(IIdentificationCoordinationService identificationCoordinationService)
+        {
             this.identificationCoordinationService = identificationCoordinationService;
+        }
+
 
         [HttpPost]
         public async ValueTask<ActionResult<AccessRequest>>
@@ -26,8 +30,8 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
         {
             try
             {
-                AccessRequest addedAccessRequest =
-                    await this.identificationCoordinationService.ProcessIdentificationRequestsAsync(accessRequest);
+                AccessRequest addedAccessRequest = await this.identificationCoordinationService
+                    .ProcessIdentificationRequestsAsync(accessRequest);
 
                 return Created(addedAccessRequest);
             }
@@ -35,9 +39,8 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             {
                 return BadRequest(identificationCoordinationValidationException.InnerException);
             }
-            catch (
-                IdentificationCoordinationDependencyValidationException
-                    identificationCoordinationDependencyValidationException)
+            catch (IdentificationCoordinationDependencyValidationException
+                identificationCoordinationDependencyValidationException)
             {
                 return BadRequest(identificationCoordinationDependencyValidationException.InnerException);
             }
@@ -51,14 +54,14 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             }
         }
 
-        [HttpPost("csv")]
+        [HttpPost("submitcsv")]
         public async ValueTask<ActionResult<AccessRequest>>
             PostCsvIdentificationRequestAsync([FromBody] AccessRequest accessRequest)
         {
             try
             {
-                AccessRequest addedAccessRequest =
-                    await this.identificationCoordinationService.PersistsCsvIdentificationRequestAsync(accessRequest);
+                AccessRequest addedAccessRequest = await this.identificationCoordinationService
+                    .PersistsCsvIdentificationRequestAsync(accessRequest);
 
                 return Created(addedAccessRequest);
             }
@@ -66,9 +69,8 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             {
                 return BadRequest(identificationCoordinationValidationException.InnerException);
             }
-            catch (
-                IdentificationCoordinationDependencyValidationException
-                    identificationCoordinationDependencyValidationException)
+            catch (IdentificationCoordinationDependencyValidationException
+                identificationCoordinationDependencyValidationException)
             {
                 return BadRequest(identificationCoordinationDependencyValidationException.InnerException);
             }
@@ -88,8 +90,8 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
         {
             try
             {
-                AccessRequest addedAccessRequest =
-                   await this.identificationCoordinationService.ProcessImpersonationContextRequestAsync(accessRequest);
+                AccessRequest addedAccessRequest = await this.identificationCoordinationService
+                    .ProcessImpersonationContextRequestAsync(accessRequest);
 
                 return Created(addedAccessRequest);
             }
@@ -97,9 +99,41 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             {
                 return BadRequest(identificationCoordinationValidationException.InnerException);
             }
-            catch (
-                IdentificationCoordinationDependencyValidationException
-                    identificationCoordinationDependencyValidationException)
+            catch (IdentificationCoordinationDependencyValidationException
+                identificationCoordinationDependencyValidationException)
+            {
+                return BadRequest(identificationCoordinationDependencyValidationException.InnerException);
+            }
+            catch (IdentificationCoordinationDependencyException identificationCoordinationDependencyException)
+            {
+                return InternalServerError(identificationCoordinationDependencyException);
+            }
+            catch (IdentificationCoordinationServiceException identificationCoordinationServiceException)
+            {
+                return InternalServerError(identificationCoordinationServiceException);
+            }
+        }
+
+        [HttpGet("{csvreidentification}")]
+        public async ValueTask<ActionResult> GetCsvIdentificationRequestByIdAsync(
+            Guid csvIdentificationRequestId)
+        {
+            try
+            {
+                AccessRequest reIdentifiedAccessRequest = await this.identificationCoordinationService
+                    .ProcessCsvIdentificationRequestAsync(csvIdentificationRequestId);
+
+                string fileName = "data.csv";
+                string contentType = "text/csv";
+
+                return File(reIdentifiedAccessRequest.CsvIdentificationRequest.Data, contentType, fileName);
+            }
+            catch (IdentificationCoordinationValidationException identificationCoordinationValidationException)
+            {
+                return BadRequest(identificationCoordinationValidationException.InnerException);
+            }
+            catch (IdentificationCoordinationDependencyValidationException
+                identificationCoordinationDependencyValidationException)
             {
                 return BadRequest(identificationCoordinationDependencyValidationException.InnerException);
             }
