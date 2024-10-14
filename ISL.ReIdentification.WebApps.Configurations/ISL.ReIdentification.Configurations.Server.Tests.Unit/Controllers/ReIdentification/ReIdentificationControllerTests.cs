@@ -29,8 +29,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.ReId
         {
             this.identificationCoordinationServiceMock = new Mock<IIdentificationCoordinationService>();
             this.reIdentificationController =
-                new ReIdentificationController(
-                    this.identificationCoordinationServiceMock.Object);
+                new ReIdentificationController(this.identificationCoordinationServiceMock.Object);
         }
 
         public static TheoryData<Xeption> ValidationExceptions()
@@ -81,7 +80,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.ReId
             var filler = new Filler<AccessRequest>();
 
             filler.Setup()
-                .OnProperty(request => request.ImpersonationContextRequest).Use(CreateRandomImpersonationContext)
+                .OnProperty(request => request.ImpersonationContext).Use(CreateRandomImpersonationContext)
                 .OnProperty(request => request.CsvIdentificationRequest).Use(CreateRandomCsvIdentificationRequest)
 
                 .OnProperty(request => request.IdentificationRequest)

@@ -27,7 +27,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
             // when
             AccessRequest actualAccessRequest = await this.identificationCoordinationService
-                .PersistsImpersonationContextRequestAsync(inputAccessRequest);
+                .PersistsImpersonationContextAsync(inputAccessRequest);
 
             // then
             actualAccessRequest.Should().BeEquivalentTo(expectedAccessRequest);

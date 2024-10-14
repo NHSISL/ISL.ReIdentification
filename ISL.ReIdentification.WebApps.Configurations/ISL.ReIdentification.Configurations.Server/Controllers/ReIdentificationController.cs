@@ -91,7 +91,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             try
             {
                 AccessRequest addedAccessRequest = await this.identificationCoordinationService
-                    .PersistsImpersonationContextRequestAsync(accessRequest);
+                    .PersistsImpersonationContextAsync(accessRequest);
 
                 return Created(addedAccessRequest);
             }
