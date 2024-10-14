@@ -47,7 +47,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Accesses
                 ValidateAccessRequestIsNotNull(accessRequest);
 
                 List<string> userOrgs =
-                    await GetOrganisationsForUserAsync(accessRequest.IdentificationRequest.UserIdentifier);
+                    await GetOrganisationsForUserAsync(accessRequest.IdentificationRequest.EntraUserId);
 
                 AccessRequest validatedAccessRequest = await CheckUserAccessToPatientsAsync(accessRequest, userOrgs);
 
@@ -85,9 +85,9 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Accesses
             return accessRequest;
         }
 
-        virtual internal async ValueTask<List<string>> GetOrganisationsForUserAsync(string userEmail)
+        virtual internal async ValueTask<List<string>> GetOrganisationsForUserAsync(Guid entraUserId)
         {
-            await ValidateUserEmail(userEmail);
+            ValidateOnGetOrganisationsForUser(entraUserId);
             DateTimeOffset currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
             IQueryable<UserAccess> userAccesses =
@@ -96,11 +96,9 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Accesses
 
             userAccesses = userAccesses
                 .Where(userAccess =>
-                    userAccess.Email == userEmail
+                    userAccess.EntraUserId == entraUserId
                     && userAccess.ActiveFrom <= currentDateTime
                     && (userAccess.ActiveTo == null || userAccess.ActiveTo > currentDateTime));
-
-            // hit the ODS tree
 
             List<string> organisationsForUser = userAccesses
                 .Select(userAccess => userAccess.OrgCode)
@@ -111,8 +109,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Accesses
 
         virtual internal async ValueTask<bool> UserHasAccessToPatientAsync(string identifier, List<string> orgs)
         {
-            await ValidateIdentifierAndOrgsNotNull(identifier, orgs);
-            await ValidateIdentifierAndOrgs(identifier, orgs);
+            ValidateOnUserHasAccessToPatientAsync(identifier, orgs);
             DateTimeOffset currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
             IQueryable<PdsData> pdsDatas =

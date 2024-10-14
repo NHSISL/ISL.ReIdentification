@@ -37,10 +37,26 @@ namespace ISL.ReIdentification.Core.Migrations
                     b.Property<DateTimeOffset>("CreatedDate")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(320)
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<Guid>("EntraUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("GivenName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("HasAccess")
                         .HasColumnType("bit");
 
                     b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Organisation")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -49,7 +65,15 @@ namespace ISL.ReIdentification.Core.Migrations
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
 
+                    b.Property<string>("Purpose")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Surname")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -61,20 +85,17 @@ namespace ISL.ReIdentification.Core.Migrations
                     b.Property<DateTimeOffset>("UpdatedDate")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<string>("UserEmail")
-                        .IsRequired()
-                        .HasMaxLength(320)
-                        .HasColumnType("nvarchar(320)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedDate");
 
+                    b.HasIndex("Email");
+
+                    b.HasIndex("EntraUserId");
+
                     b.HasIndex("HasAccess");
 
                     b.HasIndex("PseudoIdentifier");
-
-                    b.HasIndex("UserEmail");
 
                     b.ToTable("AccessAudits");
                 });

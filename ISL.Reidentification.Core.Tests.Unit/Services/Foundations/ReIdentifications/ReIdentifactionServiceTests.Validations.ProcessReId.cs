@@ -62,7 +62,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
             // given
             var invalidIdentificationRequest = new IdentificationRequest
             {
-                UserIdentifier = invalidText,
+                GivenName = invalidText,
+                Surname = invalidText,
+                DisplayName = invalidText,
+                JobTitle = invalidText,
+                Email = invalidText,
                 Purpose = invalidText,
                 Organisation = invalidText,
                 Reason = invalidText,
@@ -74,7 +78,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
                     message: "Invalid identification request. Please correct the errors and try again.");
 
             invalidIdentificationRequestException.AddData(
-                key: nameof(IdentificationRequest.UserIdentifier),
+                key: nameof(IdentificationRequest.EntraUserId),
+                values: "Id is invalid");
+
+            invalidIdentificationRequestException.AddData(
+                key: nameof(IdentificationRequest.Email),
                 values: "Text is invalid");
 
             invalidIdentificationRequestException.AddData(

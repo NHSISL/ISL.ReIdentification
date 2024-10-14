@@ -32,7 +32,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
             AccessRequest someAccessRequest = CreateRandomAccessRequest();
 
             accessOrchestrationServiceMock.Setup(service =>
-                 service.GetOrganisationsForUserAsync(It.IsAny<string>()))
+                 service.GetOrganisationsForUserAsync(It.IsAny<Guid>()))
                      .ThrowsAsync(dependencyValidationException);
 
             var expectedAccessOrchestrationDependencyValidationException =
@@ -84,7 +84,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
             AccessRequest someAccessRequest = CreateRandomAccessRequest();
 
             accessOrchestrationServiceMock.Setup(service =>
-                 service.GetOrganisationsForUserAsync(It.IsAny<string>()))
+                 service.GetOrganisationsForUserAsync(It.IsAny<Guid>()))
                      .ThrowsAsync(dependencyException);
 
             var expectedAccessOrchestrationDependencyException =
@@ -156,7 +156,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
                     innerException: failedAccessOrchestrationServiceException);
 
             accessOrchestrationServiceMock.Setup(service =>
-                 service.GetOrganisationsForUserAsync(It.IsAny<string>()))
+                 service.GetOrganisationsForUserAsync(It.IsAny<Guid>()))
                      .ThrowsAsync(aggregateException);
 
             // when
@@ -173,7 +173,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
                 .Should().BeEquivalentTo(expectedAccessOrchestrationServiceException);
 
             accessOrchestrationServiceMock.Verify(service =>
-                service.GetOrganisationsForUserAsync(It.IsAny<string>()),
+                service.GetOrganisationsForUserAsync(It.IsAny<Guid>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -211,7 +211,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
                     innerException: failedServiceAccessOrchestrationException);
 
             accessOrchestrationServiceMock.Setup(service =>
-                 service.GetOrganisationsForUserAsync(It.IsAny<string>()))
+                 service.GetOrganisationsForUserAsync(It.IsAny<Guid>()))
                      .ThrowsAsync(serviceException);
 
             AccessOrchestrationService accessOrchestrationService = accessOrchestrationServiceMock.Object;
