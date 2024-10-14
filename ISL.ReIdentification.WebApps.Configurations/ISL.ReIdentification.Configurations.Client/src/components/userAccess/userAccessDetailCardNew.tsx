@@ -2,6 +2,7 @@ import React, { FunctionComponent, useState } from "react";
 import EntraUserSearch from "../EntraUserSearch/entraUserSearch";
 import { entraUser } from "../../models/views/components/entraUsers/entraUsers";
 import { Button, Card, CardFooter } from "react-bootstrap";
+import OdsTree from "../odsData/odsTree";
 
 type UserAccessDetailCardNewProps = {
 };
@@ -27,7 +28,7 @@ const UserAccessDetailCardNew: FunctionComponent<UserAccessDetailCardNewProps> =
             <Card>
                 <Card.Header>Select Orgs</Card.Header>
                 <Card.Body>
-                    
+                    <OdsTree/>
                 </Card.Body>
             </Card>            
             
