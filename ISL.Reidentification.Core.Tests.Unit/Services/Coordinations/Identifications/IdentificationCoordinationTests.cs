@@ -12,6 +12,7 @@ using ISL.ReIdentification.Core.Models.Orchestrations.Accesses.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Identifications.Exceptions;
 using ISL.ReIdentification.Core.Services.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Services.Orchestrations.Identifications;
+using ISL.ReIdentification.Core.Services.Orchestrations.Persists;
 using KellermanSoftware.CompareNetObjects;
 using Moq;
 using Tynamix.ObjectFiller;
@@ -21,21 +22,24 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 {
     public partial class IdentificationCoordinationTests
     {
-        private readonly Mock<IIdentificationOrchestrationService> identificationOrchestrationServiceMock;
         private readonly Mock<IAccessOrchestrationService> accessOrchestrationServiceMock;
+        private readonly Mock<IPersistanceOrchestrationService> persistanceOrchestrationServiceMock;
+        private readonly Mock<IIdentificationOrchestrationService> identificationOrchestrationServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly IdentificationCoordinationService identificationCoordinationService;
         private readonly ICompareLogic compareLogic;
 
         public IdentificationCoordinationTests()
         {
-            this.identificationOrchestrationServiceMock = new Mock<IIdentificationOrchestrationService>();
             this.accessOrchestrationServiceMock = new Mock<IAccessOrchestrationService>();
+            this.persistanceOrchestrationServiceMock = new Mock<IPersistanceOrchestrationService>();
+            this.identificationOrchestrationServiceMock = new Mock<IIdentificationOrchestrationService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.compareLogic = new CompareLogic();
 
             this.identificationCoordinationService = new IdentificationCoordinationService(
                 this.accessOrchestrationServiceMock.Object,
+                this.persistanceOrchestrationServiceMock.Object,
                 this.identificationOrchestrationServiceMock.Object,
                 this.loggingBrokerMock.Object);
         }

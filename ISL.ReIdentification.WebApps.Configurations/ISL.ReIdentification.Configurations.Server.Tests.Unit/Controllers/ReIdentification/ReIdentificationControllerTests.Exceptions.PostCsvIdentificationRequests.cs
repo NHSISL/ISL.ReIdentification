@@ -28,7 +28,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.ReId
                 new ActionResult<AccessRequest>(expectedBadRequestObjectResult);
 
             this.identificationCoordinationServiceMock.Setup(service =>
-                service.ProcessCsvIdentificationRequestAsync(It.IsAny<AccessRequest>()))
+                service.PersistsCsvIdentificationRequestAsync(It.IsAny<AccessRequest>()))
                     .ThrowsAsync(validationException);
 
             // when
@@ -39,7 +39,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.ReId
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
             this.identificationCoordinationServiceMock.Verify(service =>
-                service.ProcessCsvIdentificationRequestAsync(It.IsAny<AccessRequest>()),
+                service.PersistsCsvIdentificationRequestAsync(It.IsAny<AccessRequest>()),
                     Times.Once);
 
             this.identificationCoordinationServiceMock.VerifyNoOtherCalls();
@@ -60,7 +60,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.ReId
                 new ActionResult<AccessRequest>(expectedBadRequestObjectResult);
 
             this.identificationCoordinationServiceMock.Setup(service =>
-                service.ProcessCsvIdentificationRequestAsync(It.IsAny<AccessRequest>()))
+                service.PersistsCsvIdentificationRequestAsync(It.IsAny<AccessRequest>()))
                     .ThrowsAsync(validationException);
 
             // when
@@ -71,7 +71,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.ReId
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
             this.identificationCoordinationServiceMock.Verify(service =>
-                service.ProcessCsvIdentificationRequestAsync(It.IsAny<AccessRequest>()),
+                service.PersistsCsvIdentificationRequestAsync(It.IsAny<AccessRequest>()),
                     Times.Once);
 
             this.identificationCoordinationServiceMock.VerifyNoOtherCalls();
