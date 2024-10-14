@@ -13,7 +13,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
     public partial class IdentificationCoordinationTests
     {
         [Fact]
-        public async Task ShouldPersistsCsvIdentificationRequestAsync()
+        public async Task ShouldPersistCsvIdentificationRequestAsync()
         {
             // given
             AccessRequest randomAccessRequest = CreateRandomAccessRequest();

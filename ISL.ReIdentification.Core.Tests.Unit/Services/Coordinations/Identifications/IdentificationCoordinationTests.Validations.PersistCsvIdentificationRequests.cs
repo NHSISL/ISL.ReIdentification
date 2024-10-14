@@ -15,7 +15,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
     public partial class IdentificationCoordinationTests
     {
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnPersistWhenAccessRequestIsNullAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnPersistsCsvIdentificationWhenRequestIsNullAndLogItAsync()
         {
             // given
             AccessRequest nullAccessRequest = null;
@@ -53,7 +53,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
         }
 
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnPersistsWhenIdentificationRequestIsNullAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnPersistsCsvIdentificationWhenCsvRequestIsNullAndLogItAsync()
         {
             // given
             AccessRequest randomAccessRequest = CreateRandomAccessRequest();
