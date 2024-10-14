@@ -60,8 +60,12 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
         public async ValueTask<AccessRequest> ProcessCsvIdentificationRequestAsync(Guid csvIdentificationRequestId) =>
             throw new NotImplementedException();
 
-        public async ValueTask<AccessRequest> PersistsImpersonationContextRequestAsync(AccessRequest accessRequest) =>
-            throw new NotImplementedException();
+        public ValueTask<AccessRequest> PersistsImpersonationContextRequestAsync(AccessRequest accessRequest) =>
+        TryCatch(async () =>
+        {
+            return await this.persistanceOrchestrationService.PersistImpersonationContextAsync(accessRequest);
+        });
+
 
         public async ValueTask<AccessRequest> ProcessImpersonationContextRequestAsync(AccessRequest accessRequest) =>
             throw new NotImplementedException();
