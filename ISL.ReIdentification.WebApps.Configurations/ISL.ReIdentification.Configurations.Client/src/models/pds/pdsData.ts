@@ -1,7 +1,6 @@
-import { Guid } from "guid-typescript";
 
 export class PdsData {
-    public rowId: Guid;
+    public rowId: string;
     public pseudoNhsNumber: string;
     public primaryCareProvider: string;
     public primaryCareProviderBusinessEffectiveFromDate?: Date | undefined;
@@ -12,7 +11,7 @@ export class PdsData {
     public currentIcbOfRegistration?: string;
 
     constructor(pds: any) {
-        this.rowId = pds.rowId ? Guid.parse(pds.rowId) : Guid.parse(Guid.EMPTY);
+        this.rowId = pds.rowId ?? crypto.randomUUID;
         this.pseudoNhsNumber = pds.pseudoNhsNumber || "";
         this.primaryCareProvider = pds.primaryCareProvider || "";
 

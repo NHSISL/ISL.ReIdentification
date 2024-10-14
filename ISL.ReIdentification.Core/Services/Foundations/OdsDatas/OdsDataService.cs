@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Brokers.Loggings;
@@ -73,6 +74,17 @@ namespace ISL.ReIdentification.Core.Services.Foundations.OdsDatas
                 ValidateStorageOdsData(maybeOdsData, odsDataId);
 
                 return await this.reIdentificationStorageBroker.DeleteOdsDataAsync(maybeOdsData);
+            });
+
+        public ValueTask<IQueryable<OdsData>> GetChildren(Guid odsDataId) =>
+            TryCatch(async () =>
+            {
+                OdsData parentRecord = await this.reIdentificationStorageBroker
+                    .SelectOdsDataByIdAsync(odsDataId);
+
+                var children = await this.reIdentificationStorageBroker.SelectAllChildren(parentRecord);
+
+                return children;
             });
     }
 }

@@ -3,6 +3,8 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Foundations.OdsDatas;
@@ -27,5 +29,9 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications
 
         public async ValueTask<OdsData> DeleteOdsDataAsync(OdsData odsData) =>
             await DeleteAsync(odsData);
+
+        public async ValueTask<IQueryable<OdsData>> SelectAllChildren(OdsData parent){
+            return OdsDatas.Where(ods => ods.OdsHierarchy.GetAncestor(1) == parent.OdsHierarchy);
+        }
     }
 }

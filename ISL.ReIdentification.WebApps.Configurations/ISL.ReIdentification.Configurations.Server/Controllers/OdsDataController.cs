@@ -52,6 +52,14 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             }
         }
 
+        [HttpGet("GetChildren")]
+        public async ValueTask<ActionResult<IQueryable<OdsData>>> GetAllChildren(Guid id)
+        {
+           IQueryable<OdsData> retrievedOdsDatas = await this.odsDataService.GetChildren(id);
+            return Ok(retrievedOdsDatas);
+        }
+
+
         [HttpGet("{odsDataId}")]
         public async ValueTask<ActionResult<OdsData>> GetOdsDataByIdAsync(Guid odsDataId)
         {
