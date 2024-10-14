@@ -12,8 +12,6 @@ using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Models.Foundations.PdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
-using ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationRequests;
-using ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Services.Foundations.PdsDatas;
 using ISL.ReIdentification.Core.Services.Foundations.UserAccesses;
 using Xeptions;
@@ -29,8 +27,6 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Accesses
 
         public AccessOrchestrationService(
             IUserAccessService userAccessService,
-            IImpersonationContextService impersonationContextService,
-            ICsvIdentificationRequestService csvIdentificationRequestService,
             IPdsDataService pdsDataService,
             IDateTimeBroker dateTimeBroker,
             ILoggingBroker loggingBroker)

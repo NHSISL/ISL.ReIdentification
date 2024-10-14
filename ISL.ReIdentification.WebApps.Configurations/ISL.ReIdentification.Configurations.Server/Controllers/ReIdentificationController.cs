@@ -58,7 +58,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             try
             {
                 AccessRequest addedAccessRequest =
-                    await this.identificationCoordinationService.ProcessCsvIdentificationRequestAsync(accessRequest);
+                    await this.identificationCoordinationService.PersistsCsvIdentificationRequestAsync(accessRequest);
 
                 return Created(addedAccessRequest);
             }

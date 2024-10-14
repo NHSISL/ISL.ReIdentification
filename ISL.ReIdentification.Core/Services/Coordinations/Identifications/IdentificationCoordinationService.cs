@@ -31,9 +31,6 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<AccessRequest> ProcessImpersonationContextRequestAsync(AccessRequest accessRequest) =>
-            throw new System.NotImplementedException();
-
         public ValueTask<AccessRequest> ProcessIdentificationRequestsAsync(AccessRequest accessRequest) =>
         TryCatch(async () =>
         {
@@ -50,6 +47,9 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
 
             return returnedAccessRequest;
         });
+
+        public ValueTask<AccessRequest> ProcessImpersonationContextRequestAsync(AccessRequest accessRequest) =>
+            throw new System.NotImplementedException();
 
         public ValueTask<AccessRequest> PersistsCsvIdentificationRequestAsync(AccessRequest accessRequest) =>
             throw new System.NotImplementedException();

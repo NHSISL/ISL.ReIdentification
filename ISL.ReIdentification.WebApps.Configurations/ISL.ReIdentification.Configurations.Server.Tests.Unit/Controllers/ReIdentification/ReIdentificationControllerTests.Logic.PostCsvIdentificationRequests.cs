@@ -30,7 +30,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.ReId
                 new ActionResult<AccessRequest>(expectedObjectResult);
 
             identificationCoordinationServiceMock
-                .Setup(service => service.ProcessCsvIdentificationRequestAsync(inputAccessRequest))
+                .Setup(service => service.PersistsCsvIdentificationRequestAsync(inputAccessRequest))
                     .ReturnsAsync(addedAccessRequest);
 
             // when
@@ -41,7 +41,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.ReId
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
             identificationCoordinationServiceMock
-               .Verify(service => service.ProcessCsvIdentificationRequestAsync(inputAccessRequest),
+               .Verify(service => service.PersistsCsvIdentificationRequestAsync(inputAccessRequest),
                    Times.Once);
 
             identificationCoordinationServiceMock.VerifyNoOtherCalls();
