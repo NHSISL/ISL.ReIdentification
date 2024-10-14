@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
@@ -23,17 +23,55 @@ namespace ISL.ReIdentification.Core.Services.Foundations.PdsDatas
             this.loggingBroker = loggingBroker;
         }
 
+        public ValueTask<PdsData> AddPdsDataAsync(PdsData pdsData) =>
+            TryCatch(async () =>
+            {
+                await ValidatePdsDataOnAddAsync(pdsData);
+
+                return await this.reIdentificationStorageBroker.InsertPdsDataAsync(pdsData);
+            });
+
         public ValueTask<IQueryable<PdsData>> RetrieveAllPdsDatasAsync() =>
             TryCatch(this.reIdentificationStorageBroker.SelectAllPdsDatasAsync);
 
         public ValueTask<PdsData> RetrievePdsDataByIdAsync(long pdsDataRowId) =>
             TryCatch(async () =>
             {
-                await ValidatePdsDataRowId(pdsDataRowId);
-                PdsData maybePdsData = await this.reIdentificationStorageBroker.SelectPdsDataByIdAsync(pdsDataRowId);
-                await ValidateStoragePdsData(maybePdsData, pdsDataRowId);
+                ValidatePdsDataId(pdsDataRowId);
+
+                PdsData maybePdsData = await this.reIdentificationStorageBroker
+                    .SelectPdsDataByIdAsync(pdsDataRowId);
+
+                ValidateStoragePdsData(maybePdsData, pdsDataRowId);
 
                 return maybePdsData;
+            });
+
+        public ValueTask<PdsData> ModifyPdsDataAsync(PdsData pdsData) =>
+            TryCatch(async () =>
+            {
+                await ValidatePdsDataOnModifyAsync(pdsData);
+
+                PdsData maybePdsData =
+                    await this.reIdentificationStorageBroker.SelectPdsDataByIdAsync(pdsData.RowId);
+
+                ValidateStoragePdsData(maybePdsData, pdsData.RowId);
+                ValidateAgainstStoragePdsDataOnModify(inputPdsData: pdsData, storagePdsData: maybePdsData);
+
+                return await this.reIdentificationStorageBroker.UpdatePdsDataAsync(pdsData);
+            });
+
+        public ValueTask<PdsData> RemovePdsDataByIdAsync(long pdsDataRowId) =>
+            TryCatch(async () =>
+            {
+                ValidatePdsDataId(pdsDataRowId);
+
+                PdsData maybePdsData = await this.reIdentificationStorageBroker
+                    .SelectPdsDataByIdAsync(pdsDataRowId);
+
+                ValidateStoragePdsData(maybePdsData, pdsDataRowId);
+
+                return await this.reIdentificationStorageBroker.DeletePdsDataAsync(maybePdsData);
             });
     }
 }
