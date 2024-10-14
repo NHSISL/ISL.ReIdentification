@@ -1,0 +1,272 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
+using System;
+using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
+using FluentAssertions;
+using ISL.ReIdentification.Core.Models.Foundations.PdsDatas;
+using ISL.ReIdentification.Core.Models.Foundations.PdsDatas.Exceptions;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using Moq;
+
+namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
+{
+    public partial class PdsDataServiceTests
+    {
+        [Fact]
+        public async Task ShouldThrowCriticalDependencyExceptionOnModifyIfSqlErrorOccursAndLogItAsync()
+        {
+            // given
+            PdsData randomPdsData = CreateRandomPdsData();
+            SqlException sqlException = CreateSqlException();
+
+            var failedStoragePdsDataException =
+                new FailedStoragePdsDataException(
+                    message: "Failed pdsData storage error occurred, contact support.",
+                    innerException: sqlException);
+
+            var expectedPdsDataDependencyException =
+                new PdsDataDependencyException(
+                    message: "PdsData dependency error occurred, contact support.",
+                    innerException: failedStoragePdsDataException);
+
+            this.reIdentificationStorageBroker.Setup(broker =>
+                broker.SelectPdsDataByIdAsync(randomPdsData.RowId))
+                    .ThrowsAsync(sqlException);
+
+            // when
+            ValueTask<PdsData> modifyPdsDataTask =
+                this.pdsDataService.ModifyPdsDataAsync(randomPdsData);
+
+            PdsDataDependencyException actualPdsDataDependencyException =
+                await Assert.ThrowsAsync<PdsDataDependencyException>(
+                    testCode: modifyPdsDataTask.AsTask);
+
+            // then
+            actualPdsDataDependencyException.Should()
+                .BeEquivalentTo(expectedPdsDataDependencyException);
+
+            this.reIdentificationStorageBroker.Verify(broker =>
+                broker.SelectPdsDataByIdAsync(randomPdsData.RowId),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogCriticalAsync(It.Is(SameExceptionAs(
+                    expectedPdsDataDependencyException))),
+                        Times.Once);
+
+            this.reIdentificationStorageBroker.Verify(broker =>
+                broker.UpdatePdsDataAsync(randomPdsData),
+                    Times.Never);
+
+            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfReferenceErrorOccursAndLogItAsync()
+        {
+            // given
+            PdsData somePdsData = CreateRandomPdsData();
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+
+            var foreignKeyConstraintConflictException =
+                new ForeignKeyConstraintConflictException(exceptionMessage);
+
+            var invalidPdsDataReferenceException =
+                new InvalidPdsDataReferenceException(
+                    message: "Invalid pdsData reference error occurred.",
+                    innerException: foreignKeyConstraintConflictException);
+
+            PdsDataDependencyValidationException expectedPdsDataDependencyValidationException =
+                new PdsDataDependencyValidationException(
+                    message: "PdsData dependency validation occurred, please try again.",
+                    innerException: invalidPdsDataReferenceException);
+
+            this.reIdentificationStorageBroker.Setup(broker =>
+                broker.SelectPdsDataByIdAsync(somePdsData.RowId))
+                    .ThrowsAsync(foreignKeyConstraintConflictException);
+
+            // when
+            ValueTask<PdsData> modifyPdsDataTask =
+                this.pdsDataService.ModifyPdsDataAsync(somePdsData);
+
+            PdsDataDependencyValidationException actualPdsDataDependencyValidationException =
+                await Assert.ThrowsAsync<PdsDataDependencyValidationException>(
+                    testCode: modifyPdsDataTask.AsTask);
+
+            // then
+            actualPdsDataDependencyValidationException.Should()
+                .BeEquivalentTo(expectedPdsDataDependencyValidationException);
+
+            this.reIdentificationStorageBroker.Verify(broker =>
+                broker.SelectPdsDataByIdAsync(somePdsData.RowId),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(expectedPdsDataDependencyValidationException))),
+                    Times.Once);
+
+            this.reIdentificationStorageBroker.Verify(broker =>
+                broker.UpdatePdsDataAsync(somePdsData),
+                    Times.Never);
+
+            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnModifyIfDatabaseUpdateExceptionOccursAndLogItAsync()
+        {
+            // given
+            PdsData randomPdsData = CreateRandomPdsData();
+            var databaseUpdateException = new DbUpdateException();
+
+            var failedOperationPdsDataException =
+                new FailedOperationPdsDataException(
+                    message: "Failed pdsData operation error occurred, contact support.",
+                    innerException: databaseUpdateException);
+
+            var expectedPdsDataDependencyException =
+                new PdsDataDependencyException(
+                    message: "PdsData dependency error occurred, contact support.",
+                    innerException: failedOperationPdsDataException);
+
+            this.reIdentificationStorageBroker.Setup(broker =>
+                broker.SelectPdsDataByIdAsync(randomPdsData.RowId))
+                    .ThrowsAsync(databaseUpdateException);
+
+            // when
+            ValueTask<PdsData> modifyPdsDataTask =
+                this.pdsDataService.ModifyPdsDataAsync(randomPdsData);
+
+            PdsDataDependencyException actualPdsDataDependencyException =
+                await Assert.ThrowsAsync<PdsDataDependencyException>(
+                    testCode: modifyPdsDataTask.AsTask);
+
+            // then
+            actualPdsDataDependencyException.Should()
+                .BeEquivalentTo(expectedPdsDataDependencyException);
+
+            this.reIdentificationStorageBroker.Verify(broker =>
+                broker.SelectPdsDataByIdAsync(randomPdsData.RowId),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedPdsDataDependencyException))),
+                        Times.Once);
+
+            this.reIdentificationStorageBroker.Verify(broker =>
+                broker.UpdatePdsDataAsync(randomPdsData),
+                    Times.Never);
+
+            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationExceptionOnModifyIfDbUpdateConcurrencyErrorOccursAndLogAsync()
+        {
+            // given
+            PdsData randomPdsData = CreateRandomPdsData();
+            var databaseUpdateConcurrencyException = new DbUpdateConcurrencyException();
+
+            var lockedPdsDataException =
+                new LockedPdsDataException(
+                    message: "Locked pdsData record exception, please try again later",
+                    innerException: databaseUpdateConcurrencyException);
+
+            var expectedPdsDataDependencyValidationException =
+                new PdsDataDependencyValidationException(
+                    message: "PdsData dependency validation occurred, please try again.",
+                    innerException: lockedPdsDataException);
+
+            this.reIdentificationStorageBroker.Setup(broker =>
+                broker.SelectPdsDataByIdAsync(randomPdsData.RowId))
+                    .ThrowsAsync(databaseUpdateConcurrencyException);
+
+            // when
+            ValueTask<PdsData> modifyPdsDataTask =
+                this.pdsDataService.ModifyPdsDataAsync(randomPdsData);
+
+            PdsDataDependencyValidationException actualPdsDataDependencyValidationException =
+                await Assert.ThrowsAsync<PdsDataDependencyValidationException>(
+                    testCode: modifyPdsDataTask.AsTask);
+
+            // then
+            actualPdsDataDependencyValidationException.Should()
+                .BeEquivalentTo(expectedPdsDataDependencyValidationException);
+
+            this.reIdentificationStorageBroker.Verify(broker =>
+                broker.SelectPdsDataByIdAsync(randomPdsData.RowId),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedPdsDataDependencyValidationException))),
+                        Times.Once);
+
+            this.reIdentificationStorageBroker.Verify(broker =>
+                broker.UpdatePdsDataAsync(randomPdsData),
+                    Times.Never);
+
+            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnModifyIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            PdsData randomPdsData = CreateRandomPdsData();
+            var serviceException = new Exception();
+
+            var failedPdsDataServiceException =
+                new FailedPdsDataServiceException(
+                    message: "Failed pdsData service occurred, please contact support",
+                    innerException: serviceException);
+
+            var expectedPdsDataServiceException =
+                new PdsDataServiceException(
+                    message: "PdsData service error occurred, contact support.",
+                    innerException: failedPdsDataServiceException);
+
+            this.reIdentificationStorageBroker.Setup(broker =>
+                broker.SelectPdsDataByIdAsync(randomPdsData.RowId))
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask<PdsData> modifyPdsDataTask =
+                this.pdsDataService.ModifyPdsDataAsync(randomPdsData);
+
+            PdsDataServiceException actualPdsDataServiceException =
+                await Assert.ThrowsAsync<PdsDataServiceException>(
+                    testCode: modifyPdsDataTask.AsTask);
+
+            // then
+            actualPdsDataServiceException.Should()
+                .BeEquivalentTo(expectedPdsDataServiceException);
+
+            this.reIdentificationStorageBroker.Verify(broker =>
+                broker.SelectPdsDataByIdAsync(randomPdsData.RowId),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedPdsDataServiceException))),
+                        Times.Once);
+
+            this.reIdentificationStorageBroker.Verify(broker =>
+                broker.UpdatePdsDataAsync(randomPdsData),
+                    Times.Never);
+
+            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+    }
+}

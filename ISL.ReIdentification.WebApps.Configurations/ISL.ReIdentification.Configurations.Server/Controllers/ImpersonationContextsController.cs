@@ -23,7 +23,8 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             this.impersonationContextService = impersonationContextService;
 
         [HttpPost]
-        public async ValueTask<ActionResult<ImpersonationContext>> PostImpersonationContextAsync(ImpersonationContext impersonationContext)
+        public async ValueTask<ActionResult<ImpersonationContext>> PostImpersonationContextAsync(
+            [FromBody] ImpersonationContext impersonationContext)
         {
             try
             {
@@ -109,7 +110,8 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
         }
 
         [HttpPut]
-        public async ValueTask<ActionResult<ImpersonationContext>> PutImpersonationContextAsync(ImpersonationContext impersonationContext)
+        public async ValueTask<ActionResult<ImpersonationContext>> PutImpersonationContextAsync(
+            [FromBody] ImpersonationContext impersonationContext)
         {
             try
             {
