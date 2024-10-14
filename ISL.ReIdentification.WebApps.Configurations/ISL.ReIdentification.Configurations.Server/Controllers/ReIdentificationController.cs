@@ -30,8 +30,8 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
         {
             try
             {
-                AccessRequest addedAccessRequest =
-                    await this.identificationCoordinationService.ProcessIdentificationRequestsAsync(accessRequest);
+                AccessRequest addedAccessRequest = await this.identificationCoordinationService
+                    .ProcessIdentificationRequestsAsync(accessRequest);
 
                 return Created(addedAccessRequest);
             }
@@ -39,9 +39,8 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             {
                 return BadRequest(identificationCoordinationValidationException.InnerException);
             }
-            catch (
-                IdentificationCoordinationDependencyValidationException
-                    identificationCoordinationDependencyValidationException)
+            catch (IdentificationCoordinationDependencyValidationException
+                identificationCoordinationDependencyValidationException)
             {
                 return BadRequest(identificationCoordinationDependencyValidationException.InnerException);
             }
@@ -55,14 +54,14 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             }
         }
 
-        [HttpPost("csv")]
+        [HttpPost("submitcsv")]
         public async ValueTask<ActionResult<AccessRequest>>
             PostCsvIdentificationRequestAsync([FromBody] AccessRequest accessRequest)
         {
             try
             {
-                AccessRequest addedAccessRequest =
-                    await this.identificationCoordinationService.PersistsCsvIdentificationRequestAsync(accessRequest);
+                AccessRequest addedAccessRequest = await this.identificationCoordinationService
+                    .PersistsCsvIdentificationRequestAsync(accessRequest);
 
                 return Created(addedAccessRequest);
             }
@@ -70,9 +69,8 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             {
                 return BadRequest(identificationCoordinationValidationException.InnerException);
             }
-            catch (
-                IdentificationCoordinationDependencyValidationException
-                    identificationCoordinationDependencyValidationException)
+            catch (IdentificationCoordinationDependencyValidationException
+                identificationCoordinationDependencyValidationException)
             {
                 return BadRequest(identificationCoordinationDependencyValidationException.InnerException);
             }
@@ -92,8 +90,8 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
         {
             try
             {
-                AccessRequest addedAccessRequest =
-                   await this.identificationCoordinationService.ProcessImpersonationContextRequestAsync(accessRequest);
+                AccessRequest addedAccessRequest = await this.identificationCoordinationService
+                    .ProcessImpersonationContextRequestAsync(accessRequest);
 
                 return Created(addedAccessRequest);
             }
@@ -101,9 +99,8 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             {
                 return BadRequest(identificationCoordinationValidationException.InnerException);
             }
-            catch (
-                IdentificationCoordinationDependencyValidationException
-                    identificationCoordinationDependencyValidationException)
+            catch (IdentificationCoordinationDependencyValidationException
+                identificationCoordinationDependencyValidationException)
             {
                 return BadRequest(identificationCoordinationDependencyValidationException.InnerException);
             }
@@ -117,14 +114,13 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             }
         }
 
-        [HttpGet("{csvIdentificationRequestId}")]
+        [HttpGet("{csvreidentification}")]
         public async ValueTask<ActionResult> GetCsvIdentificationRequestByIdAsync(
             Guid csvIdentificationRequestId)
         {
             try
             {
-                AccessRequest reIdentifiedAccessRequest =
-                await this.identificationCoordinationService
+                AccessRequest reIdentifiedAccessRequest = await this.identificationCoordinationService
                     .ProcessCsvIdentificationRequestAsync(csvIdentificationRequestId);
 
                 string fileName = "data.csv";
@@ -136,9 +132,8 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             {
                 return BadRequest(identificationCoordinationValidationException.InnerException);
             }
-            catch (
-                IdentificationCoordinationDependencyValidationException
-                    identificationCoordinationDependencyValidationException)
+            catch (IdentificationCoordinationDependencyValidationException
+                identificationCoordinationDependencyValidationException)
             {
                 return BadRequest(identificationCoordinationDependencyValidationException.InnerException);
             }
