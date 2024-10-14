@@ -11,34 +11,8 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications
     {
         private void AddOdsDataConfigurations(EntityTypeBuilder<OdsData> builder)
         {
-            builder.Property(odsData => odsData.OrganisationCode_Root)
-                .HasMaxLength(15)
-                .IsRequired();
-
-            builder.Property(odsData => odsData.OrganisationPrimaryRole_Root)
-                .HasMaxLength(5)
-                .IsRequired();
-
-            builder.Property(odsData => odsData.OrganisationCode_Parent)
-                .HasMaxLength(15)
-                .IsRequired();
-
-            builder.Property(odsData => odsData.OrganisationPrimaryRole_Parent)
-                .HasMaxLength(5)
-                .IsRequired();
-
-            builder.Property(odsData => odsData.RelationshipStartDate)
-                .IsRequired();
-
-            builder.Property(odsData => odsData.RelationshipEndDate)
-                .IsRequired();
-
-            builder.Property(odsData => odsData.Path)
-                .HasMaxLength(500)
-                .IsRequired();
-
-            builder.Property(odsData => odsData.Depth)
-                .IsRequired();
+            builder.Property(OdsData => OdsData.OrganisationName)
+                .HasMaxLength(30);
         }
     }
 }
