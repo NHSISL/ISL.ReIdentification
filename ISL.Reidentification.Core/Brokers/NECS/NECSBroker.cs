@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Brokers.NECS;
 using ISL.ReIdentification.Core.Models.Brokers.NECS.Requests;
+using ISL.ReIdentification.Core.Models.Brokers.NECS.Responses;
 using RESTFulSense.Clients;
 
 namespace ISL.ReIdentification.Core.Brokers.NECS

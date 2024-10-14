@@ -8,70 +8,72 @@ export const odsDataService = {
         const broker = new OdsDataBroker();
         const queryClient = useQueryClient();
 
-        return useMutation((odsData: OdsData) => {
-            return broker.PostOdsDataAsync(odsData);
-        },
-            {
-                onSuccess: (variables: OdsData) => {
-                    queryClient.invalidateQueries("OdsDataGetAll");
-                    queryClient.invalidateQueries(["OdsDataGetById", { id: variables.id }]);
-                }
-            });
+        return useMutation({
+            muntationFn: (odsData: OdsData) => {
+                return broker.PostOdsDataAsync(odsData);
+            },
+            onSuccess: (variables: OdsData) => {
+                queryClient.invalidateQueries({ queryKey: ["OdsDataGetAll"] });
+                queryClient.invalidateQueries({ queryKey: ["OdsDataGetById", { id: variables.id }] });
+            }
+        });
     },
 
     useRetrieveAllOdsData: (query: string) => {
         const broker = new OdsDataBroker();
 
-        return useQuery(
-            ["OdsDataGetAll", { query: query }],
-            () => broker.GetAllOdsDataAsync(query),
-            { staleTime: Infinity });
+        return useQuery({
+            queryKey: ["OdsDataGetAll", { query: query }],
+            queryFn: () => broker.GetAllOdsDataAsync(query),
+            staleTime: Infinity
+        });
     },
 
     useRetrieveAllOdsDataPages: (query: string) => {
         const broker = new OdsDataBroker();
 
-        return useInfiniteQuery(
-            ["OdsDataGetAll", { query: query }],
-            ({ pageParam }: { pageParam?: string }) => {
+        return useInfiniteQuery({
+            queryKey: ["OdsDataGetAll", { query: query }],
+            queryFn: ({ pageParam }: { pageParam?: string }) => {
                 if (!pageParam) {
                     return broker.GetOdsDataFirstPagesAsync(query)
                 }
                 return broker.GetOdsDataSubsequentPagesAsync(pageParam)
             },
-            {
-                getNextPageParam: (lastPage: { nextPage?: string }) => lastPage.nextPage,
-                staleTime: Infinity
-            });
+            initialPageParam: 0,
+            staleTime: Infinity,
+            getNextPageParam: (lastPage: { nextPage?: string }) => lastPage.nextPage,
+        });
     },
 
     useModifyOdsData: () => {
         const broker = new OdsDataBroker();
         const queryClient = useQueryClient();
 
-        return useMutation((odsData: OdsData) => {
-            return broker.PutOdsDataAsync(odsData);
-        },
-            {
-                onSuccess: (data: OdsData) => {
-                    queryClient.invalidateQueries("OdsDataGetAll");
-                    queryClient.invalidateQueries(["OdsDataGetById", { id: data.id }]);
-                }
-            });
+        return useMutation({
+            mutationFn: (odsData: OdsData) => {
+                return broker.PutOdsDataAsync(odsData);
+            },
+
+            onSuccess: (data: OdsData) => {
+                queryClient.invalidateQueries({ queryKey: ["OdsDataGetAll"] });
+                queryClient.invalidateQueries({ queryKey: ["OdsDataGetById", { id: data.id }] });
+            }
+        });
     },
 
     useRemoveOdsData: () => {
         const broker = new OdsDataBroker();
         const queryClient = useQueryClient();
 
-        return useMutation((id: Guid) => {
-            return broker.DeleteOdsDataByIdAsync(id);
-        },
-            {
-                onSuccess: (data: { id: Guid }) => {
-                    queryClient.invalidateQueries("OdsDataGetAll");
-                    queryClient.invalidateQueries(["OdsDataGetById", { id: data.id }]);
-                }
-            });
+        return useMutation({
+            mutationFn: (id: Guid) => {
+                return broker.DeleteOdsDataByIdAsync(id);
+            },
+            onSuccess: (data: { id: Guid }) => {
+                queryClient.invalidateQueries({ queryKey: ["OdsDataGetAll"] });
+                queryClient.invalidateQueries({ queryKey: ["OdsDataGetById", { id: data.id }] });
+            }
+        });
     },
 }

@@ -4,7 +4,6 @@
 
 using System;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;

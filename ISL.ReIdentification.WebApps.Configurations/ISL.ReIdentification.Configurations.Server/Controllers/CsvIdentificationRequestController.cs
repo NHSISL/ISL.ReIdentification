@@ -7,8 +7,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests.Exceptions;
+using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationRequests;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
 
 namespace ISL.ReIdentification.Configurations.Server.Controllers
@@ -24,7 +26,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
 
         [HttpPost]
         public async ValueTask<ActionResult<CsvIdentificationRequest>> PostCsvIdentificationRequestAsync(
-            CsvIdentificationRequest csvIdentificationRequest)
+            [FromBody] CsvIdentificationRequest csvIdentificationRequest)
         {
             try
             {
@@ -59,7 +61,16 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
         }
 
         [HttpGet]
-        public async ValueTask<ActionResult<IQueryable<CsvIdentificationRequest>>> GetAsync()
+#if !DEBUG
+        [EnableQuery(PageSize = 50)]
+#endif
+#if DEBUG
+        [EnableQuery(PageSize = 25)]
+#endif
+#if RELEASE
+        [Authorize(Roles = "")]
+#endif
+        public async ValueTask<ActionResult<IQueryable<CsvIdentificationRequest>>> Get()
         {
             try
             {
@@ -117,7 +128,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
 
         [HttpPut]
         public async ValueTask<ActionResult<CsvIdentificationRequest>> PutCsvIdentificationRequestAsync(
-            CsvIdentificationRequest csvIdentificationRequest)
+            [FromBody] CsvIdentificationRequest csvIdentificationRequest)
         {
             try
             {

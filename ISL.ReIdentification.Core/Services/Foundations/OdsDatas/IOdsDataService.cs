@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
@@ -11,7 +11,10 @@ namespace ISL.ReIdentification.Core.Services.Foundations.OdsDatas
 {
     public interface IOdsDataService
     {
+        ValueTask<OdsData> AddOdsDataAsync(OdsData odsData);
         ValueTask<IQueryable<OdsData>> RetrieveAllOdsDatasAsync();
-        ValueTask<OdsData> RetrieveOdsDataByIdAsync(Guid odsId);
+        ValueTask<OdsData> RetrieveOdsDataByIdAsync(Guid odsDataId);
+        ValueTask<OdsData> ModifyOdsDataAsync(OdsData odsData);
+        ValueTask<OdsData> RemoveOdsDataByIdAsync(Guid odsDataId);
     }
 }

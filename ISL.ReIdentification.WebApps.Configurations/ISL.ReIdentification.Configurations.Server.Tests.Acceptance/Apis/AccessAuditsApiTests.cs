@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Brokers;
-using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.AccessAudit;
+using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.AccessAudits;
 using Tynamix.ObjectFiller;
 
 namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis

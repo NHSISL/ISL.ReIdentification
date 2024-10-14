@@ -23,7 +23,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             this.accessAuditService = accessAuditService;
 
         [HttpPost]
-        public async ValueTask<ActionResult<AccessAudit>> PostAccessAuditAsync(AccessAudit accessAudit)
+        public async ValueTask<ActionResult<AccessAudit>> PostAccessAuditAsync([FromBody] AccessAudit accessAudit)
         {
             try
             {
@@ -108,7 +108,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
         }
 
         [HttpPut]
-        public async ValueTask<ActionResult<AccessAudit>> PutAccessAuditAsync(AccessAudit accessAudit)
+        public async ValueTask<ActionResult<AccessAudit>> PutAccessAuditAsync([FromBody] AccessAudit accessAudit)
         {
             try
             {

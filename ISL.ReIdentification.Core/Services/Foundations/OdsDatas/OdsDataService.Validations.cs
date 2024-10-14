@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
@@ -9,30 +9,101 @@ using ISL.ReIdentification.Core.Models.Foundations.OdsDatas.Exceptions;
 
 namespace ISL.ReIdentification.Core.Services.Foundations.OdsDatas
 {
-    public partial class OdsDataService : IOdsDataService
+    public partial class OdsDataService
     {
-        private async ValueTask ValidateOdsDataId(Guid odsDataId) =>
-            Validate((Rule: await IsInvalidAsync(odsDataId), Parameter: nameof(OdsData.Id)));
+        private async ValueTask ValidateOdsDataOnAddAsync(OdsData odsData)
+        {
+            ValidateOdsDataIsNotNull(odsData);
+            Validate((Rule: IsInvalid(odsData.Id), Parameter: nameof(OdsData.Id)));
+        }
 
-        private static async ValueTask<dynamic> IsInvalidAsync(Guid id) => new
+        private async ValueTask ValidateOdsDataOnModifyAsync(OdsData odsData)
+        {
+            ValidateOdsDataIsNotNull(odsData);
+            Validate((Rule: IsInvalid(odsData.Id), Parameter: nameof(OdsData.Id)));
+        }
+
+        public static void ValidateOdsDataId(Guid odsDataId) =>
+            Validate((Rule: IsInvalid(odsDataId), Parameter: nameof(OdsData.Id)));
+
+        private static void ValidateStorageOdsData(OdsData maybeOdsData, Guid odsDataId)
+        {
+            if (maybeOdsData is null)
+            {
+                throw new NotFoundOdsDataException(message: $"OdsData not found with Id: {odsDataId}");
+            }
+        }
+
+        private static void ValidateOdsDataIsNotNull(OdsData odsData)
+        {
+            if (odsData is null)
+            {
+                throw new NullOdsDataException(message: "OdsData is null.");
+            }
+        }
+
+        private static void ValidateAgainstStorageOdsDataOnModify(OdsData inputOdsData, OdsData storageOdsData)
+        { }
+
+        private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,
             Message = "Id is invalid"
         };
 
-        private async static ValueTask ValidateStorageOdsData(OdsData maybeOdsData, Guid odsDataId)
+        private static dynamic IsInvalid(string name) => new
         {
-            if (maybeOdsData is null)
+            Condition = String.IsNullOrWhiteSpace(name),
+            Message = "Text is invalid"
+        };
+
+        private static dynamic IsInvalidLength(string text, int maxLength) => new
+        {
+            Condition = IsExceedingLength(text, maxLength),
+            Message = $"Text exceed max length of {maxLength} characters"
+        };
+
+        private static bool IsExceedingLength(string text, int maxLength) =>
+            (text ?? string.Empty).Length > maxLength;
+
+        private static dynamic IsInvalid(DateTimeOffset date) => new
+        {
+            Condition = date == default,
+            Message = "Date is invalid"
+        };
+
+        private static dynamic IsSameAs(
+            DateTimeOffset firstDate,
+            DateTimeOffset secondDate,
+            string secondDateName) => new
             {
-                throw new NotFoundOdsDataException(message: $"ODS data not found with Id: {odsDataId}");
-            }
-        }
+                Condition = firstDate == secondDate,
+                Message = $"Date is the same as {secondDateName}"
+            };
+
+        private static dynamic IsNotSame(
+            string first,
+            string second,
+            string secondName) => new
+            {
+                Condition = first != second,
+                Message = $"Text is not the same as {secondName}"
+            };
+
+        private static dynamic IsNotSame(
+            DateTimeOffset first,
+            DateTimeOffset second,
+            string secondName) => new
+            {
+                Condition = first != second,
+                Message = $"Date is not the same as {secondName}"
+            };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
             var invalidOdsDataException =
                 new InvalidOdsDataException(
-                    message: "Invalid ODS data. Please correct the errors and try again.");
+                    message: "Invalid odsData. Please correct the errors and try again.");
 
             foreach ((dynamic rule, string parameter) in validations)
             {

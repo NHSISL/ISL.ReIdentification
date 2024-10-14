@@ -113,8 +113,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
-                .OnProperty(odsData => odsData.PdsData).IgnoreIt();
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset);
 
             return filler;
         }
@@ -124,8 +123,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
             var filler = new Filler<PdsData>();
 
             filler.Setup()
-                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
-                .OnProperty(pdsData => pdsData.OdsDatas).IgnoreIt();
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset);
 
             return filler;
         }

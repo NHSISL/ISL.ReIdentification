@@ -6,6 +6,7 @@ using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses.Exceptions;
+using ISL.ReIdentification.Core.Services.Coordinations.Identifications;
 
 namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
 {

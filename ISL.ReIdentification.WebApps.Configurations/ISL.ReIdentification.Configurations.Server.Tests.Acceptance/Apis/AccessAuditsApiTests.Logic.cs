@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.AccessAudit;
+using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.AccessAudits;
 using RESTFulSense.Exceptions;
 
 namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis

@@ -7,8 +7,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts.Exceptions;
+using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
 
 namespace ISL.ReIdentification.Configurations.Server.Controllers
@@ -23,7 +25,8 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             this.impersonationContextService = impersonationContextService;
 
         [HttpPost]
-        public async ValueTask<ActionResult<ImpersonationContext>> PostImpersonationContextAsync(ImpersonationContext impersonationContext)
+        public async ValueTask<ActionResult<ImpersonationContext>> PostImpersonationContextAsync(
+            [FromBody] ImpersonationContext impersonationContext)
         {
             try
             {
@@ -56,7 +59,16 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
         }
 
         [HttpGet]
-        public async ValueTask<ActionResult<IQueryable<ImpersonationContext>>> GetAsync()
+#if !DEBUG
+        [EnableQuery(PageSize = 50)]
+#endif
+#if DEBUG
+        [EnableQuery(PageSize = 25)]
+#endif
+#if RELEASE
+        [Authorize(Roles = "")]
+#endif
+        public async ValueTask<ActionResult<IQueryable<ImpersonationContext>>> Get()
         {
             try
             {
@@ -109,7 +121,8 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
         }
 
         [HttpPut]
-        public async ValueTask<ActionResult<ImpersonationContext>> PutImpersonationContextAsync(ImpersonationContext impersonationContext)
+        public async ValueTask<ActionResult<ImpersonationContext>> PutImpersonationContextAsync(
+            [FromBody] ImpersonationContext impersonationContext)
         {
             try
             {

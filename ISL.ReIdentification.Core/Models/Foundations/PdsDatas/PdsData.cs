@@ -3,8 +3,6 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Linq;
-using ISL.ReIdentification.Core.Models.Foundations.OdsDatas;
 
 namespace ISL.ReIdentification.Core.Models.Foundations.PdsDatas
 {
@@ -19,6 +17,5 @@ namespace ISL.ReIdentification.Core.Models.Foundations.PdsDatas
         public string? CurrentCcgOfRegistration { get; set; }
         public string? IcbOfRegistration { get; set; }
         public string? CurrentIcbOfRegistration { get; set; }
-        public IQueryable<OdsData> OdsDatas { get; set; }
     }
 }

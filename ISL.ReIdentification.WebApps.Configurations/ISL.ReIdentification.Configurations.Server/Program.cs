@@ -6,7 +6,6 @@ using System.Text.Json;
 using ISL.Providers.Notifications.Abstractions;
 using ISL.Providers.Notifications.GovukNotify.Models;
 using ISL.Providers.Notifications.GovukNotify.Providers.Notifications;
-using FluentAssertions.Common;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Identifiers;
 using ISL.ReIdentification.Core.Brokers.Loggings;
@@ -14,7 +13,6 @@ using ISL.ReIdentification.Core.Brokers.Notifications;
 using ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Brokers.Notifications;
 using ISL.ReIdentification.Core.Models.Foundations.Lookups;
-using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Services.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Services.Foundations.Lookups;
@@ -31,6 +29,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web;
 using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
+using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
+using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
+using ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationRequests;
+using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 
 namespace ISL.ReIdentification.Configurations.Server
 {
@@ -66,7 +68,6 @@ namespace ISL.ReIdentification.Configurations.Server
             builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
             JsonNamingPolicy jsonNamingPolicy = JsonNamingPolicy.CamelCase;
 
-            builder.Services.AddODataQueryFilter();
             builder.Services.AddControllers()
                .AddOData(options =>
                {
@@ -81,12 +82,6 @@ namespace ISL.ReIdentification.Configurations.Server
                    options.JsonSerializerOptions.WriteIndented = true;
                });
 
-            builder.Services.AddSingleton(new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = jsonNamingPolicy,
-                DictionaryKeyPolicy = jsonNamingPolicy,
-            });
-
             static IEdmModel GetEdmModel()
             {
                 ODataConventionModelBuilder builder =
@@ -94,10 +89,13 @@ namespace ISL.ReIdentification.Configurations.Server
 
                 builder.EntitySet<Lookup>("Lookups");
                 builder.EntitySet<UserAccess>("UserAccesses");
+                builder.EntitySet<ImpersonationContext>("ImpersonationContexts");
+                builder.EntitySet<CsvIdentificationRequest>("CsvIdentificationRequests");
                 builder.EnableLowerCamelCase();
 
                 return builder.GetEdmModel();
             }
+
 
             var app = builder.Build();
             app.UseDefaultFiles();
@@ -156,6 +154,8 @@ namespace ISL.ReIdentification.Configurations.Server
             services.AddTransient<IOdsDataService, OdsDataService>();
             services.AddTransient<IPdsDataService, PdsDataService>();
             services.AddTransient<IUserAccessService, UserAccessService>();
+            services.AddTransient<IImpersonationContextService, ImpersonationContextService>();
+            services.AddTransient<ICsvIdentificationRequestService, CsvIdentificationRequestService>();
         }
 
         private static void AddProcessingServices(IServiceCollection services)

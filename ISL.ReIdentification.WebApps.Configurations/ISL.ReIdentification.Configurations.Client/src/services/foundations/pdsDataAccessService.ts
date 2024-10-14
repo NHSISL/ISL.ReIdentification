@@ -8,70 +8,71 @@ export const pdsDataService = {
         const broker = new PdsDataBroker();
         const queryClient = useQueryClient();
 
-        return useMutation((pdsData: PdsData) => {
-            return broker.PostPdsDataAsync(pdsData);
-        },
-            {
-                onSuccess: (variables: PdsData) => {
-                    queryClient.invalidateQueries("PdsDataGetAll");
-                    queryClient.invalidateQueries(["PdsDataGetById", { id: variables.id }]);
-                }
-            });
+        return useMutation({
+            mutationFn: (pdsData: PdsData) => {
+                return broker.PostPdsDataAsync(pdsData);
+            },
+            onSuccess: (variables: PdsData) => {
+                queryClient.invalidateQueries({ queryKey: ["PdsDataGetAll"] });
+                queryClient.invalidateQueries({ queryKey: ["PdsDataGetById", { id: variables.id }] });
+            }
+        });
     },
 
     useRetrieveAllPdsData: (query: string) => {
         const broker = new PdsDataBroker();
 
-        return useQuery(
-            ["PdsDataGetAll", { query: query }],
-            () => broker.GetAllPdsDataAsync(query),
-            { staleTime: Infinity });
+        return useQuery({
+            queryKey: ["PdsDataGetAll", { query: query }],
+            queryFn: () => broker.GetAllPdsDataAsync(query),
+            staleTime: Infinity
+        });
     },
 
     useRetrieveAllPdsDataPages: (query: string) => {
         const broker = new PdsDataBroker();
 
-        return useInfiniteQuery(
-            ["PdsDataGetAll", { query: query }],
-            ({ pageParam }: { pageParam?: string }) => {
+        return useInfiniteQuery({
+            queryKey: ["PdsDataGetAll", { query: query }],
+            queryFn: ({ pageParam }: { pageParam?: string }) => {
                 if (!pageParam) {
                     return broker.GetPdsDataFirstPagesAsync(query)
                 }
                 return broker.GetPdsDataSubsequentPagesAsync(pageParam)
             },
-            {
-                getNextPageParam: (lastPage: { nextPage?: string }) => lastPage.nextPage,
-                staleTime: Infinity
-            });
+            initialPageParam: 0,
+            staleTime: Infinity,
+            getNextPageParam: (lastPage: { nextPage?: string }) => lastPage.nextPage,
+        });
     },
 
     useModifyPdsData: () => {
         const broker = new PdsDataBroker();
         const queryClient = useQueryClient();
 
-        return useMutation((pdsData: PdsData) => {
-            return broker.PutPdsDataAsync(pdsData);
-        },
-            {
-                onSuccess: (data: PdsData) => {
-                    queryClient.invalidateQueries("PdsDataGetAll");
-                    queryClient.invalidateQueries(["PdsDataGetById", { id: data.id }]);
-                }
-            });
+        return useMutation({
+            mutationFn: (pdsData: PdsData) => {
+                return broker.PutPdsDataAsync(pdsData);
+            },
+            onSuccess: (data: PdsData) => {
+                queryClient.invalidateQueries({ queryKey: ["PdsDataGetAll"] });
+                queryClient.invalidateQueries({ queryKey: ["PdsDataGetById", { id: data.id }] });
+            }
+        });
     },
 
     useRemovePdsData: () => {
         const broker = new PdsDataBroker();
         const queryClient = useQueryClient();
 
-        return useMutation((id: Guid) => {
-            return broker.DeletePdsDataByIdAsync(id);
-        },
-            {
-                onSuccess: (data: { id: Guid }) => {
-                    queryClient.invalidateQueries("PdsDataGetAll");
-                    queryClient.invalidateQueries(["PdsDataGetById", { id: data.id }]);
-                }
-            });
+        return useMutation({
+            mutationFn: (id: Guid) => {
+                return broker.DeletePdsDataByIdAsync(id);
+            },
+            onSuccess: (data: { id: Guid }) => {
+                queryClient.invalidateQueries({ queryKey: ["PdsDataGetAll"] });
+                queryClient.invalidateQueries({ queryKey: ["PdsDataGetById", { id: data.id }] });
+            }
+        });
     },
 }
