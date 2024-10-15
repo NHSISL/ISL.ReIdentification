@@ -3,13 +3,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState } from 'react';
 import { ListGroup } from 'react-bootstrap';
 import { Link, useLocation } from 'react-router-dom';
-import { FeatureDefinitions } from '../../featureDefinitions';
-import { FeatureSwitch } from '../accessControls/featureSwitch';
-import { SecuredComponent } from '../securitys/securedComponents';
-import securityPoints from '../../securityMatrix';
 import { SecuredLink } from '../securitys/securedLinks';
-import { faUserFriends } from '@fortawesome/free-solid-svg-icons/faUserFriends';
-import { faIdBadge } from '@fortawesome/free-solid-svg-icons/faIdBadge';
+
 
 const MenuComponent: React.FC = () => {
     const location = useLocation();
@@ -28,6 +23,34 @@ const MenuComponent: React.FC = () => {
                 onClick={() => handleItemClick('/')}>
                 <FontAwesomeIcon icon={faHome} className="me-2 fa-icon" />
                 <SecuredLink to="/home">Home</SecuredLink>
+            </ListGroup.Item>
+
+            <ListGroup.Item
+                className={`bg-dark text-white ${activePath === '/' ? 'active' : ''}`}
+                onClick={() => handleItemClick('/')}>
+                <FontAwesomeIcon icon={faHome} className="me-2 fa-icon" />
+                <SecuredLink to="/home">Product 3 - CSV Upload</SecuredLink>
+            </ListGroup.Item>
+
+            <ListGroup.Item
+                className={`bg-dark text-white ${activePath === '/' ? 'active' : ''}`}
+                onClick={() => handleItemClick('/')}>
+                <FontAwesomeIcon icon={faHome} className="me-2 fa-icon" />
+                <SecuredLink to="/home">Product 4 - Simple Re-Id</SecuredLink>
+            </ListGroup.Item>
+
+            <ListGroup.Item
+                className={`bg-dark text-white ${activePath === '/' ? 'active' : ''}`}
+                onClick={() => handleItemClick('/')}>
+                <FontAwesomeIcon icon={faHome} className="me-2 fa-icon" />
+                <SecuredLink to="/home">Product 5 - CSV ReId Storage</SecuredLink>
+            </ListGroup.Item>
+
+            <ListGroup.Item
+                className={`bg-dark text-white ${activePath === '/' ? 'active' : ''}`}
+                onClick={() => handleItemClick('/')}>
+                <FontAwesomeIcon icon={faHome} className="me-2 fa-icon" />
+                <SecuredLink to="/home">PowerBi Route (Hide)</SecuredLink>
             </ListGroup.Item>
 
         </ListGroup>
