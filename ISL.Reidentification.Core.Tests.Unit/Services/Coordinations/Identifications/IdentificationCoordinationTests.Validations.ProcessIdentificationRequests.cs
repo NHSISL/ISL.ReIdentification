@@ -29,13 +29,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                         "fix the errors and try again.",
                     innerException: nullAccessRequestException);
 
-            this.accessOrchestrationServiceMock.Setup(service =>
-                service.ValidateAccessForIdentificationRequestAsync(nullAccessRequest))
-                    .ThrowsAsync(nullAccessRequestException);
-
             // when
             ValueTask<AccessRequest> accessRequestTask =
-                this.identificationCoordinationService.ProcessIdentificationRequestsAsync(nullAccessRequest);
+                this.identificationCoordinationService
+                    .ProcessIdentificationRequestsAsync(nullAccessRequest);
 
             IdentificationCoordinationValidationException actualIdentificationCoordinationValidationException =
                 await Assert.ThrowsAsync<IdentificationCoordinationValidationException>(
@@ -53,6 +50,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             this.accessOrchestrationServiceMock.VerifyNoOtherCalls();
             this.identificationOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.persistanceOrchestrationServiceMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -72,13 +70,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                         "fix the errors and try again.",
                     innerException: nullIdentificationRequestException);
 
-            this.accessOrchestrationServiceMock.Setup(service =>
-                service.ValidateAccessForIdentificationRequestAsync(inputAccessRequest))
-                    .ThrowsAsync(nullIdentificationRequestException);
-
             // when
             ValueTask<AccessRequest> accessRequestTask =
-                this.identificationCoordinationService.ProcessIdentificationRequestsAsync(inputAccessRequest);
+                this.identificationCoordinationService
+                    .ProcessIdentificationRequestsAsync(inputAccessRequest);
 
             IdentificationCoordinationValidationException actualIdentificationCoordinationValidationException =
                 await Assert.ThrowsAsync<IdentificationCoordinationValidationException>(
@@ -96,6 +91,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             this.accessOrchestrationServiceMock.VerifyNoOtherCalls();
             this.identificationOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.persistanceOrchestrationServiceMock.VerifyNoOtherCalls();
         }
     }
 }

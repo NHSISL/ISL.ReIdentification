@@ -62,7 +62,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ReIdentifications
                         NecsReidentificationRequest necsReidentificationRequest = new NecsReidentificationRequest
                         {
                             RequestId = await this.identifierBroker.GetIdentifierAsync(),
-                            UserIdentifier = identificationRequest.UserIdentifier,
+                            UserIdentifier = identificationRequest.EntraUserId.ToString(),
                             Purpose = identificationRequest.Purpose,
                             Organisation = identificationRequest.Organisation,
                             Reason = identificationRequest.Reason,

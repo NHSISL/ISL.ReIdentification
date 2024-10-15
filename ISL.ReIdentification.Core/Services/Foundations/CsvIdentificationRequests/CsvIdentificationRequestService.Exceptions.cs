@@ -41,7 +41,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
             catch (SqlException sqlException)
             {
                 var failedStorageCsvIdentificationRequestException = new FailedStorageCsvIdentificationRequestException(
-                    message: "Failed csv identification request storage error occurred, contact support.",
+                    message: "Failed CSV identification request storage error occurred, contact support.",
                     innerException: sqlException);
 
                 throw await CreateAndLogCriticalDependencyExceptionAsync(failedStorageCsvIdentificationRequestException);
@@ -50,7 +50,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
             {
                 var alreadyExistsCsvIdentificationRequestException =
                     new AlreadyExistsCsvIdentificationRequestException(
-                        message: "CsvIdentificationRequest already exists error occurred.",
+                        message: "CSV identification request already exists error occurred.",
                         innerException: duplicateKeyException,
                         data: duplicateKeyException.Data);
 
@@ -60,7 +60,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
             {
                 var concurrencyGemException =
                     new LockedCsvIdentificationRequestException(
-                        message: "Locked csv identification request record error occurred, please try again.",
+                        message: "Locked CSV identification request record error occurred, please try again.",
                         innerException: dbUpdateConcurrencyException);
 
                 throw await CreateAndLogDependencyValidationExceptionAsync(concurrencyGemException);
@@ -69,7 +69,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
             {
                 var failedOperationCsvIdentificationRequestException =
                     new FailedOperationCsvIdentificationRequestException(
-                        message: "Failed operation csv identification request error occurred, contact support.",
+                        message: "Failed operation CSV identification request error occurred, contact support.",
                         innerException: dbUpdateException);
 
                 throw await CreateAndLogDependencyExceptionAsync(failedOperationCsvIdentificationRequestException);
@@ -78,7 +78,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
             {
                 var failedServiceCsvIdentificationRequestException =
                     new FailedServiceCsvIdentificationRequestException(
-                        message: "Failed service csv identification request error occurred, contact support.",
+                        message: "Failed service CSV identification request error occurred, contact support.",
                         innerException: exception);
 
                 throw await CreateAndLogServiceExceptionAsync(failedServiceCsvIdentificationRequestException);
@@ -94,17 +94,19 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
             }
             catch (SqlException sqlException)
             {
-                var failedStorageCsvIdentificationRequestException = new FailedStorageCsvIdentificationRequestException(
-                   message: "Failed csv identification request storage error occurred, contact support.",
-                   innerException: sqlException);
+                var failedStorageCsvIdentificationRequestException =
+                    new FailedStorageCsvIdentificationRequestException(
+                        message: "Failed CSV identification request storage error occurred, contact support.",
+                        innerException: sqlException);
 
-                throw await CreateAndLogCriticalDependencyExceptionAsync(failedStorageCsvIdentificationRequestException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(
+                    failedStorageCsvIdentificationRequestException);
             }
             catch (Exception exception)
             {
                 var failedServiceCsvIdentificationRequestException =
                     new FailedServiceCsvIdentificationRequestException(
-                       message: "Failed service csv identification request error occurred, contact support.",
+                        message: "Failed service CSV identification request error occurred, contact support.",
                         innerException: exception);
 
                 throw await CreateAndLogServiceExceptionAsync(failedServiceCsvIdentificationRequestException);
@@ -115,7 +117,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
             Xeption exception)
         {
             var impersonationContextValidationException = new CsvIdentificationRequestValidationException(
-                message: "CsvIdentificationRequest validation error occurred, please fix errors and try again.",
+                message: "CSV identification request validation error occurred, please fix errors and try again.",
                 innerException: exception);
 
             await this.loggingBroker.LogErrorAsync(impersonationContextValidationException);
@@ -123,11 +125,11 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
             return impersonationContextValidationException;
         }
 
-        private async ValueTask<CsvIdentificationRequestDependencyException> CreateAndLogCriticalDependencyExceptionAsync(
-            Xeption exception)
+        private async ValueTask<CsvIdentificationRequestDependencyException>
+            CreateAndLogCriticalDependencyExceptionAsync(Xeption exception)
         {
             var impersonationContextDependencyException = new CsvIdentificationRequestDependencyException(
-                message: "CsvIdentificationRequest dependency error occurred, contact support.",
+                message: "CSV identification request dependency error occurred, contact support.",
                 innerException: exception);
 
             await this.loggingBroker.LogCriticalAsync(impersonationContextDependencyException);
@@ -139,7 +141,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
             CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var impersonationContextDependencyValidationException = new CsvIdentificationRequestDependencyValidationException(
-                message: "CsvIdentificationRequest dependency validation error occurred, fix errors and try again.",
+                message: "CSV identification request dependency validation error occurred, fix errors and try again.",
                 innerException: exception);
 
             await this.loggingBroker.LogErrorAsync(impersonationContextDependencyValidationException);
@@ -151,7 +153,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
             Xeption exception)
         {
             var impersonationContextDependencyException = new CsvIdentificationRequestDependencyException(
-                message: "CsvIdentificationRequest dependency error occurred, contact support.",
+                message: "CSV identification request dependency error occurred, contact support.",
                 innerException: exception);
 
             await this.loggingBroker.LogErrorAsync(impersonationContextDependencyException);
@@ -163,7 +165,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
            Xeption exception)
         {
             var impersonationContextServiceException = new CsvIdentificationRequestServiceException(
-                message: "Service error occurred, contact support.",
+                message: "CSV identification request service error occurred, contact support.",
                 innerException: exception);
 
             await this.loggingBroker.LogErrorAsync(impersonationContextServiceException);

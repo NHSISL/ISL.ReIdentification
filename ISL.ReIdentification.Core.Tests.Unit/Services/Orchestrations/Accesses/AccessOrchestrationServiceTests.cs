@@ -173,7 +173,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
                 .OnType<DateTimeOffset?>().Use((DateTimeOffset?)default)
                 .OnProperty(accessRequest => accessRequest.IdentificationRequest)
                     .Use(CreateRandomIdentificationRequest())
-                .OnProperty(accessRequest => accessRequest.ImpersonationContextRequest)
+                .OnProperty(accessRequest => accessRequest.ImpersonationContext)
                     .Use(CreateRandomImpersonationContext());
 
             return filler;
@@ -279,16 +279,16 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
             UserAccess randomUserAccess = CreateRandomUserAccess(GetRandomPastDateTimeOffset());
             UserAccess futureActiveFromUserAccess = randomUserAccess.DeepClone();
             UserAccess pastActiveToUserAccess = randomUserAccess.DeepClone();
-            UserAccess differentEmailUserAccess = randomUserAccess.DeepClone();
+            UserAccess differentEntraUserIdUserAccess = randomUserAccess.DeepClone();
             futureActiveFromUserAccess.ActiveFrom = GetRandomFutureDateTimeOffset();
             pastActiveToUserAccess.ActiveTo = GetRandomPastDateTimeOffset();
-            differentEmailUserAccess.ActiveTo = null;
+            differentEntraUserIdUserAccess.ActiveTo = null;
 
             return new TheoryData<UserAccess, bool>
             {
                 { pastActiveToUserAccess, false },
                 { futureActiveFromUserAccess, false },
-                { differentEmailUserAccess, true }
+                { differentEntraUserIdUserAccess, true }
             };
         }
 

@@ -58,7 +58,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
             var invalidAccessAudit = new AccessAudit
             {
                 PseudoIdentifier = invalidText,
-                UserEmail = invalidText,
+                Email = invalidText,
             };
 
             var invalidAccessAuditException =
@@ -70,7 +70,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
                 values: "Id is invalid");
 
             invalidAccessAuditException.AddData(
-                key: nameof(AccessAudit.UserEmail),
+                key: nameof(AccessAudit.EntraUserId),
+                values: "Id is invalid");
+
+            invalidAccessAuditException.AddData(
+                key: nameof(AccessAudit.Email),
                 values: "Text is invalid");
 
             invalidAccessAuditException.AddData(
@@ -141,7 +145,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
             AccessAudit invalidAccessAudit = CreateRandomModifyAccessAudit(randomDateTimeOffset);
             var inputCreatedByUpdatedByString = GetRandomStringWithLength(256);
             invalidAccessAudit.PseudoIdentifier = GetRandomStringWithLength(11);
-            invalidAccessAudit.UserEmail = GetRandomStringWithLength(321);
+            invalidAccessAudit.Email = GetRandomStringWithLength(321);
             invalidAccessAudit.CreatedBy = inputCreatedByUpdatedByString;
             invalidAccessAudit.UpdatedBy = inputCreatedByUpdatedByString;
 
@@ -153,8 +157,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
                 values: $"Text exceed max length of {invalidAccessAudit.PseudoIdentifier.Length - 1} characters");
 
             invalidAccessAuditException.AddData(
-                key: nameof(AccessAudit.UserEmail),
-                values: $"Text exceed max length of {invalidAccessAudit.UserEmail.Length - 1} characters");
+                key: nameof(AccessAudit.Email),
+                values: $"Text exceed max length of {invalidAccessAudit.Email.Length - 1} characters");
 
             invalidAccessAuditException.AddData(
                 key: nameof(AccessAudit.CreatedBy),

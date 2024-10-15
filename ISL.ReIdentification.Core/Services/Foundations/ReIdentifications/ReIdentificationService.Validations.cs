@@ -20,8 +20,11 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ReIdentifications
                 (Rule: IsInvalid(identificationRequest.IdentificationItems),
                 Parameter: nameof(IdentificationRequest.IdentificationItems)),
 
-                (Rule: IsInvalid(identificationRequest.UserIdentifier),
-                Parameter: nameof(IdentificationRequest.UserIdentifier)),
+                (Rule: IsInvalid(identificationRequest.EntraUserId),
+                Parameter: nameof(IdentificationRequest.EntraUserId)),
+
+                (Rule: IsInvalid(identificationRequest.Email),
+                Parameter: nameof(IdentificationRequest.Email)),
 
                 (Rule: IsInvalid(identificationRequest.Purpose),
                 Parameter: nameof(IdentificationRequest.Purpose)),
@@ -43,6 +46,12 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ReIdentifications
                 throw new NullIdentificationRequestException("Identification request is null.");
             }
         }
+
+        private static dynamic IsInvalid(Guid id) => new
+        {
+            Condition = id == Guid.Empty,
+            Message = "Id is invalid"
+        };
 
         private static dynamic IsInvalid(string name) => new
         {

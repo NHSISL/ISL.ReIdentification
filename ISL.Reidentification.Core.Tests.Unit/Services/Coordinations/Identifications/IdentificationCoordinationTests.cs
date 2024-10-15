@@ -10,8 +10,10 @@ using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Identifications.Exceptions;
+using ISL.ReIdentification.Core.Models.Orchestrations.Persists.Exceptions;
 using ISL.ReIdentification.Core.Services.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Services.Orchestrations.Identifications;
+using ISL.ReIdentification.Core.Services.Orchestrations.Persists;
 using KellermanSoftware.CompareNetObjects;
 using Moq;
 using Tynamix.ObjectFiller;
@@ -21,21 +23,24 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 {
     public partial class IdentificationCoordinationTests
     {
-        private readonly Mock<IIdentificationOrchestrationService> identificationOrchestrationServiceMock;
         private readonly Mock<IAccessOrchestrationService> accessOrchestrationServiceMock;
+        private readonly Mock<IPersistanceOrchestrationService> persistanceOrchestrationServiceMock;
+        private readonly Mock<IIdentificationOrchestrationService> identificationOrchestrationServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly IdentificationCoordinationService identificationCoordinationService;
         private readonly ICompareLogic compareLogic;
 
         public IdentificationCoordinationTests()
         {
-            this.identificationOrchestrationServiceMock = new Mock<IIdentificationOrchestrationService>();
             this.accessOrchestrationServiceMock = new Mock<IAccessOrchestrationService>();
+            this.persistanceOrchestrationServiceMock = new Mock<IPersistanceOrchestrationService>();
+            this.identificationOrchestrationServiceMock = new Mock<IIdentificationOrchestrationService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.compareLogic = new CompareLogic();
 
             this.identificationCoordinationService = new IdentificationCoordinationService(
                 this.accessOrchestrationServiceMock.Object,
+                this.persistanceOrchestrationServiceMock.Object,
                 this.identificationOrchestrationServiceMock.Object,
                 this.loggingBrokerMock.Object);
         }
@@ -53,7 +58,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use((DateTimeOffset?)default)
-                .OnProperty(request => request.ImpersonationContextRequest).Use(CreateRandomImpersonationContext);
+                .OnProperty(request => request.ImpersonationContext).Use(CreateRandomImpersonationContext());
 
             return filler;
         }
@@ -103,6 +108,14 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                     message: "Access orchestration dependency validation occurred, please try again.",
                     innerException),
 
+                new PersistanceOrchestrationValidationException(
+                    message: "Persistance orchestration validation errors occured, please try again.",
+                    innerException),
+
+                new PersistanceOrchestrationDependencyValidationException(
+                    message: "Persistance orchestration dependency validation occurred, please try again.",
+                    innerException),
+
                 new IdentificationOrchestrationValidationException(
                     message: "Identification orchestration validation errors occurred, please try again.",
                     innerException),
@@ -121,20 +134,28 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
             return new TheoryData<Xeption>
             {
-                new AccessOrchestrationServiceException(
-                    message: "Access orchestration service error occurred, please contact support.",
-                    innerException),
-
                 new AccessOrchestrationDependencyException(
                     message: "Access orchestration dependency error occurred, please contact support.",
                     innerException),
 
-                new IdentificationOrchestrationServiceException(
-                    message: "Identification orchestration service error occurred, please contact support.",
+                new AccessOrchestrationServiceException(
+                    message: "Access orchestration service error occurred, please contact support.",
+                    innerException),
+
+                new PersistanceOrchestrationDependencyException(
+                    message: "Persistance orchestration dependency error occurred, please contact support.",
+                    innerException),
+
+                new PersistanceOrchestrationServiceException(
+                    message: "Persistance orchestration service error occurred, please contact support.",
                     innerException),
 
                 new IdentificationOrchestrationDependencyException(
                     message: "Identification orchestration dependency error occurred, please contact support.",
+                    innerException),
+
+                new IdentificationOrchestrationServiceException(
+                    message: "Identification orchestration service error occurred, please contact support.",
                     innerException),
             };
         }

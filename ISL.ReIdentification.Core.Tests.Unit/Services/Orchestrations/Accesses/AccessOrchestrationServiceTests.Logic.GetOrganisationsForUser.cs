@@ -19,7 +19,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
         public async Task ShouldGetOrganisationsForUserReturnsOrganisations(UserAccess returnedUserAccess)
         {
             // given
-            string inputUserEmail = returnedUserAccess.Email;
+            Guid inputEntraUserId = returnedUserAccess.EntraUserId;
 
             IQueryable<UserAccess> returnedUserAccesses =
                 new List<UserAccess> { returnedUserAccess }
@@ -38,7 +38,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
 
             // when
             List<string> actualOrganisations = await this.accessOrchestrationService
-                .GetOrganisationsForUserAsync(inputUserEmail);
+                .GetOrganisationsForUserAsync(inputEntraUserId);
 
             // then
             actualOrganisations.Should().BeEquivalentTo(expectedOrganisations);
@@ -60,16 +60,16 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
         [Theory]
         [MemberData(nameof(GetOrganisationsReturnsNoOrgs))]
         public async Task ShouldGetOrganisationsForUserReturnsNoOrganisations(
-            UserAccess returnedUserAccess, bool changeEmail)
+            UserAccess returnedUserAccess, bool changeEntraUserId)
         {
             // given
             DateTimeOffset currentDateTimeOffset = DateTimeOffset.UtcNow;
-            string inputUserEmail = returnedUserAccess.Email;
-            string differentEmail = GetRandomStringWithLength(50);
+            Guid inputEntraUserId = returnedUserAccess.EntraUserId;
+            Guid differentEntraUserId = Guid.NewGuid();
 
-            if (changeEmail)
+            if (changeEntraUserId)
             {
-                returnedUserAccess.Email = differentEmail;
+                returnedUserAccess.EntraUserId = differentEntraUserId;
             }
 
             IQueryable<UserAccess> returnedUserAccesses =
@@ -89,7 +89,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
 
             // when
             List<string> actualOrganisations = await this.accessOrchestrationService
-                .GetOrganisationsForUserAsync(inputUserEmail);
+                .GetOrganisationsForUserAsync(inputEntraUserId);
 
             // then
             actualOrganisations.Should().BeEquivalentTo(expectedOrganisations);
