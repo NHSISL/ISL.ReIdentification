@@ -5,7 +5,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using ISL.ReIdentification.Core.Models.Foundations.Lookups;
 using ISL.ReIdentification.Core.Models.Foundations.OdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.OdsDatas.Exceptions;
 using ISL.ReIdentification.Core.Services.Foundations.OdsDatas;

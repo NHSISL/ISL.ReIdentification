@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests.Exceptions;
-using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationRequests;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;

@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts.Exceptions;
-using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
