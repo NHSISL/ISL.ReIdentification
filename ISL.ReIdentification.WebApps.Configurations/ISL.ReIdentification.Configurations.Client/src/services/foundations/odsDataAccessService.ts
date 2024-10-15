@@ -79,8 +79,6 @@ export const odsDataService = {
     useGetOdsChildren: (id: string) => {
         const broker = new OdsDataBroker();
 
-        console.log(id);
-
         return useQuery({
             queryKey: ["OdsChildren", {query: id}],
             queryFn: () => broker.GetOdsChildrenByIdAsync(id),

@@ -16,5 +16,6 @@ namespace ISL.ReIdentification.Core.Models.Foundations.OdsDatas
         public string OrganisationName { get; set; }
         public DateTimeOffset? RelationshipStartDate { get; set; }
         public DateTimeOffset? RelationshipEndDate { get; set; }
+        public bool HasChildren { get; set; }
     }
 }

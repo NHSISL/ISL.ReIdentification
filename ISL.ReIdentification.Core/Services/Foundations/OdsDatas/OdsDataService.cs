@@ -86,5 +86,17 @@ namespace ISL.ReIdentification.Core.Services.Foundations.OdsDatas
 
                 return children;
             });
+
+        public ValueTask<IQueryable<OdsData>> GetAllDecendents(Guid odsDataId) => throw new NotImplementedException("TODO");
+        /*TryCatch(async () =>
+            {
+                OdsData parentRecord = await this.reIdentificationStorageBroker
+                    .SelectOdsDataByIdAsync(odsDataId);
+
+                //var children = await this.reIdentificationStorageBroker.SelectAllChildren(parentRecord);
+                throw new NotImplementedException("TODO");
+
+                //return children;
+            });*/
     }
 }

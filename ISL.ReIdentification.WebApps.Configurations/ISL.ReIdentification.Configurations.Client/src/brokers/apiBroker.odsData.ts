@@ -46,6 +46,10 @@ class OdsDataBroker {
 
     async GetOdsChildrenByIdAsync(id: string) {
         const url = `${this.relativeOdsDataUrl}/GetChildren?id=${id}`;
+        
+        if(!id) {
+            return [];
+        }
 
         return await this.apiBroker.GetAsync(url)
             .then(result => result.data.map((odsData: any) => new OdsData(odsData)));
