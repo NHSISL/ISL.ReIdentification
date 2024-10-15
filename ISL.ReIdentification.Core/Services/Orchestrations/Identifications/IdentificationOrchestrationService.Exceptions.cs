@@ -78,6 +78,20 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             }
         }
 
+        private async ValueTask<IdentificationOrchestrationValidationException>
+            CreateAndLogValidationExceptionAsync(Xeption exception)
+        {
+            var identificationOrchestrationValidationException =
+                new IdentificationOrchestrationValidationException(
+                    message: "Identification orchestration validation error occurred, " +
+                        "fix the errors and try again.",
+                    innerException: exception);
+
+            await this.loggingBroker.LogErrorAsync(identificationOrchestrationValidationException);
+
+            return identificationOrchestrationValidationException;
+        }
+
         private async ValueTask<IdentificationOrchestrationDependencyValidationException>
             CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
@@ -104,20 +118,6 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             await this.loggingBroker.LogErrorAsync(identificationOrchestrationDependencyException);
 
             return identificationOrchestrationDependencyException;
-        }
-
-        private async ValueTask<IdentificationOrchestrationValidationException>
-            CreateAndLogValidationExceptionAsync(Xeption exception)
-        {
-            var identificationOrchestrationValidationException =
-                new IdentificationOrchestrationValidationException(
-                    message: "Identification orchestration validation error occurred, " +
-                        "fix the errors and try again.",
-                    innerException: exception);
-
-            await this.loggingBroker.LogErrorAsync(identificationOrchestrationValidationException);
-
-            return identificationOrchestrationValidationException;
         }
 
         private async ValueTask<IdentificationOrchestrationServiceException> CreateAndLogServiceExceptionAsync(

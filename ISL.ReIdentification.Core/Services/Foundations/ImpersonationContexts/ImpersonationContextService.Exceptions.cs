@@ -50,7 +50,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts
             {
                 var alreadyExistsImpersonationContextException =
                     new AlreadyExistsImpersonationContextException(
-                        message: "ImpersonationContext already exists error occurred.",
+                        message: "Impersonation context already exists error occurred.",
                         innerException: duplicateKeyException,
                         data: duplicateKeyException.Data);
 
@@ -115,7 +115,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts
             Xeption exception)
         {
             var impersonationContextValidationException = new ImpersonationContextValidationException(
-                message: "ImpersonationContext validation error occurred, please fix errors and try again.",
+                message: "Impersonation context validation error occurred, please fix errors and try again.",
                 innerException: exception);
 
             await this.loggingBroker.LogErrorAsync(impersonationContextValidationException);
@@ -127,7 +127,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts
             Xeption exception)
         {
             var impersonationContextDependencyException = new ImpersonationContextDependencyException(
-                message: "ImpersonationContext dependency error occurred, contact support.",
+                message: "Impersonation context dependency error occurred, contact support.",
                 innerException: exception);
 
             await this.loggingBroker.LogCriticalAsync(impersonationContextDependencyException);
@@ -139,7 +139,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts
             CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var impersonationContextDependencyValidationException = new ImpersonationContextDependencyValidationException(
-                message: "ImpersonationContext dependency validation error occurred, fix errors and try again.",
+                message: "Impersonation context dependency validation error occurred, fix errors and try again.",
                 innerException: exception);
 
             await this.loggingBroker.LogErrorAsync(impersonationContextDependencyValidationException);
@@ -151,7 +151,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts
             Xeption exception)
         {
             var impersonationContextDependencyException = new ImpersonationContextDependencyException(
-                message: "ImpersonationContext dependency error occurred, contact support.",
+                message: "Impersonation context dependency error occurred, contact support.",
                 innerException: exception);
 
             await this.loggingBroker.LogErrorAsync(impersonationContextDependencyException);
@@ -163,7 +163,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts
            Xeption exception)
         {
             var impersonationContextServiceException = new ImpersonationContextServiceException(
-                message: "Service error occurred, contact support.",
+                message: "Impersonation context service error occurred, contact support.",
                 innerException: exception);
 
             await this.loggingBroker.LogErrorAsync(impersonationContextServiceException);

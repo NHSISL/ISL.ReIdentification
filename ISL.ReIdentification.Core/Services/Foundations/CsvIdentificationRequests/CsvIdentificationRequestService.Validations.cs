@@ -153,7 +153,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
         {
             if (csvIdentificationRequest is null)
             {
-                throw new NullCsvIdentificationRequestException("Csv identification request is null.");
+                throw new NullCsvIdentificationRequestException("CSV identification request is null.");
             }
         }
 
@@ -163,7 +163,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
             if (maybeCsvIdentificationRequest is null)
             {
                 throw new NotFoundCsvIdentificationRequestException(
-                    message: $"CsvIdentificationRequest not found with id: {id}");
+                    message: $"CSV identification request not found with id: {id}");
             }
         }
 
@@ -282,7 +282,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
         {
             var invalidCsvIdentificationRequestException =
                 new InvalidCsvIdentificationRequestException(
-                    message: "Invalid csv identification request. Please correct the errors and try again.");
+                    message: "Invalid CSV identification request. Please correct the errors and try again.");
 
             foreach ((dynamic rule, string parameter) in validations)
             {

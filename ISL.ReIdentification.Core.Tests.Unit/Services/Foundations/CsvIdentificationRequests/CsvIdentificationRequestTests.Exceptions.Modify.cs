@@ -24,12 +24,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             var failedCsvIdentificationRequestStorageException =
                 new FailedStorageCsvIdentificationRequestException(
-                    message: "Failed csv identification request storage error occurred, contact support.",
+                    message: "Failed CSV identification request storage error occurred, contact support.",
                         innerException: sqlException);
 
             var expectedCsvIdentificationRequestDependencyException =
                 new CsvIdentificationRequestDependencyException(
-                    message: "CsvIdentificationRequest dependency error occurred, contact support.",
+                    message: "CSV identification request dependency error occurred, contact support.",
                         innerException: failedCsvIdentificationRequestStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -87,12 +87,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             var failedOperationCsvIdentificationRequestException =
                 new FailedOperationCsvIdentificationRequestException(
-                    message: "Failed operation csv identification request error occurred, contact support.",
+                    message: "Failed operation CSV identification request error occurred, contact support.",
                     innerException: dbUpdateException);
 
             var expectedCsvIdentificationRequestDependencyException =
                 new CsvIdentificationRequestDependencyException(
-                    message: "CsvIdentificationRequest dependency error occurred, contact support.",
+                    message: "CSV identification request dependency error occurred, contact support.",
                     innerException: failedOperationCsvIdentificationRequestException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -134,19 +134,21 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            CsvIdentificationRequest randomCsvIdentificationRequest = CreateRandomCsvIdentificationRequest(randomDateTimeOffset);
+            
+            CsvIdentificationRequest randomCsvIdentificationRequest = 
+                CreateRandomCsvIdentificationRequest(randomDateTimeOffset);
 
             var dbUpdateConcurrencyException =
                 new DbUpdateConcurrencyException();
 
             var lockedCsvIdentificationRequestException =
                 new LockedCsvIdentificationRequestException(
-                    message: "Locked csv identification request record error occurred, please try again.",
+                    message: "Locked CSV identification request record error occurred, please try again.",
                     innerException: dbUpdateConcurrencyException);
 
             var expectedCsvIdentificationRequestDependencyValidationException =
                 new CsvIdentificationRequestDependencyValidationException(
-                    message: "CsvIdentificationRequest dependency validation error occurred, fix errors and try again.",
+                    message: "CSV identification request dependency validation error occurred, fix errors and try again.",
                     innerException: lockedCsvIdentificationRequestException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -200,12 +202,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             var failedServiceCsvIdentificationRequestException =
                 new FailedServiceCsvIdentificationRequestException(
-                    message: "Failed service csv identification request error occurred, contact support.",
+                    message: "Failed service CSV identification request error occurred, contact support.",
                     innerException: serviceException);
 
             var expectedCsvIdentificationRequestServiceException =
                 new CsvIdentificationRequestServiceException(
-                    message: "Service error occurred, contact support.",
+                    message: "CSV identification request service error occurred, contact support.",
                     innerException: failedServiceCsvIdentificationRequestException);
 
             this.reIdentificationStorageBroker.Setup(broker =>

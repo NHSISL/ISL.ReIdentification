@@ -23,12 +23,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             var failedStorageCsvIdentificationRequestException =
                 new FailedStorageCsvIdentificationRequestException(
-                    message: "Failed csv identification request storage error occurred, contact support.",
+                    message: "Failed CSV identification request storage error occurred, contact support.",
                     innerException: sqlException);
 
             var expectedCsvIdentificationRequestDependencyException =
                 new CsvIdentificationRequestDependencyException(
-                    message: "CsvIdentificationRequest dependency error occurred, contact support.",
+                    message: "CSV identification request dependency error occurred, contact support.",
                     innerException: failedStorageCsvIdentificationRequestException);
 
             this.reIdentificationStorageBroker.Setup(broker =>
@@ -73,12 +73,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             var failedServiceCsvIdentificationRequestException =
                 new FailedServiceCsvIdentificationRequestException(
-                    message: "Failed service csv identification request error occurred, contact support.",
+                    message: "Failed service CSV identification request error occurred, contact support.",
                     innerException: serviceError);
 
             var expectedCsvIdentificationRequestServiceException =
                 new CsvIdentificationRequestServiceException(
-                    message: "Service error occurred, contact support.",
+                    message: "CSV identification request service error occurred, contact support.",
                     innerException: failedServiceCsvIdentificationRequestException);
 
             this.reIdentificationStorageBroker.Setup(broker =>

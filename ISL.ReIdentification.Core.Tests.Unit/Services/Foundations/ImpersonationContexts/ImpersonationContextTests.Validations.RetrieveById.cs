@@ -29,7 +29,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
 
             var expectedImpersonationContextValidationException =
             new ImpersonationContextValidationException(
-                    message: "ImpersonationContext validation error occurred, please fix errors and try again.",
+                    message: "Impersonation context validation error occurred, please fix errors and try again.",
                     innerException: invalidImpersonationContextException);
 
             // when
@@ -72,11 +72,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
 
             var notFoundImpersonationContextException =
                 new NotFoundImpersonationContextException(
-                    message: $"ImpersonationContext not found with id: {someImpersonationContextId}");
+                    message: $"Impersonation context not found with id: {someImpersonationContextId}");
 
             var expectedImpersonationContextValidationException =
                 new ImpersonationContextValidationException(
-                    message: "ImpersonationContext validation error occurred, please fix errors and try again.",
+                    message: "Impersonation context validation error occurred, please fix errors and try again.",
                     innerException: notFoundImpersonationContextException);
 
             this.reIdentificationStorageBroker.Setup(broker =>
