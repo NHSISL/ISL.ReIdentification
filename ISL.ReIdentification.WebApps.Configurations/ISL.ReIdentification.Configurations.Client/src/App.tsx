@@ -25,6 +25,7 @@ import { ImpersonationContextDetailPage } from './pages/impersonationContextDeta
 import { CsvIdentificationRequestDetailPage } from './pages/csvIdentificationRequestDetail';
 import { CsvIdentificationRequestPage } from './pages/csvIdentificationRequest';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { UserAccessNew } from './pages/userAccessNew';
 
 // TODO:
 //      - API Secured Routes
@@ -52,6 +53,10 @@ function App({ instance }: any) {
                 {
                     path: "userAccess",
                     element: <UserAccess />
+                },
+                {
+                    path: "userAccess/newUser",
+                    element: <UserAccessNew />
                 },
                 {
                     path: "userAccessDetail/:userDetailId",

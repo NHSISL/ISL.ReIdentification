@@ -8,7 +8,7 @@ class ApiBroker {
 
     constructor();
     constructor(scope?: string) {
-        this.scope = [scope] || loginRequest.scopes;
+        this.scope = scope ? [scope] : loginRequest.scopes;
     }
 
 
@@ -29,6 +29,7 @@ class ApiBroker {
 
         let authResult;
         try {
+            console.log(request);
             authResult = await this.msalInstance.acquireTokenSilent(request);
         } catch (error) {
             if (error instanceof InteractionRequiredAuthError) {
