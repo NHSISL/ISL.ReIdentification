@@ -329,8 +329,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
                 values:
                 [
                     $"Date is not recent." +
-                    $" Expected a value between {startDate} and {endDate} but " + 
-                    "found {randomImpersonationContext.UpdatedDate}"
+                    $" Expected a value between {startDate} and {endDate} but " +
+                    $"found {randomImpersonationContext.UpdatedDate}"
                 ]);
 
             var expectedImpersonationContextValidationException = new ImpersonationContextValidationException(
@@ -435,10 +435,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
             //given
             int randomMinutes = GetRandomNegativeNumber();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            
-            ImpersonationContext randomImpersonationContext = 
+
+            ImpersonationContext randomImpersonationContext =
                 CreateRandomModifyImpersonationContext(randomDateTimeOffset);
-            
+
             ImpersonationContext invalidImpersonationContext = randomImpersonationContext;
             ImpersonationContext storedImpersonationContext = randomImpersonationContext.DeepClone();
             storedImpersonationContext.CreatedBy = GetRandomString();
@@ -504,10 +504,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            
-            ImpersonationContext randomImpersonationContext = 
+
+            ImpersonationContext randomImpersonationContext =
                 CreateRandomModifyImpersonationContext(randomDateTimeOffset);
-            
+
             ImpersonationContext invalidImpersonationContext = randomImpersonationContext;
             ImpersonationContext storageImpersonationContext = randomImpersonationContext.DeepClone();
             invalidImpersonationContext.UpdatedDate = storageImpersonationContext.UpdatedDate;
