@@ -13,7 +13,7 @@ using ISL.ReIdentification.Core.Services.Foundations.Notifications;
 
 namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
 {
-    public class PersistanceOrchestrationService : IPersistanceOrchestrationService
+    public partial class PersistanceOrchestrationService : IPersistanceOrchestrationService
     {
         private readonly IImpersonationContextService impersonationContextService;
         private readonly ICsvIdentificationRequestService csvIdentificationRequestService;
@@ -38,13 +38,16 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
         public ValueTask<AccessRequest> PersistCsvIdentificationRequestAsync(AccessRequest accessRequest) =>
             throw new NotImplementedException();
 
-        public async ValueTask<AccessRequest> RetrieveCsvIdentificationRequestByIdAsync(
-            Guid csvIdentificationRequestId)
+        public ValueTask<AccessRequest> RetrieveCsvIdentificationRequestByIdAsync(
+            Guid csvIdentificationRequestId) =>
+        TryCatch(async () =>
         {
+            ValidateOnRetrieveCsvIdentificationRequestByIdAsync(csvIdentificationRequestId);
+
             CsvIdentificationRequest csvIdentificationRequest = await this.csvIdentificationRequestService
                 .RetrieveCsvIdentificationRequestByIdAsync(csvIdentificationRequestId);
 
             return new AccessRequest { CsvIdentificationRequest = csvIdentificationRequest };
-        }
+        });
     }
 }

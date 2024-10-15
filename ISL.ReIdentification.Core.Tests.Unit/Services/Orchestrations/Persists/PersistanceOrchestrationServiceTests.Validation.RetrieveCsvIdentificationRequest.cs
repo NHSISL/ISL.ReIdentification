@@ -5,8 +5,6 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
-using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Models.Orchestrations.Persists.Exceptions;
 using Moq;
@@ -27,21 +25,21 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                         "please correct the errors and try again.");
 
             invalidArgumentPersistanceOrchestrationException.AddData(
-                key: nameof(CsvIdentificationRequest.Id),
+                key: "csvIdentificationRequestId",
                 values: "Id is invalid");
 
             var expectedPersistanceOrchestrationValidationException =
             new PersistanceOrchestrationValidationException(
-                    message: "Persistance orchestration validation error occurred, please fix errors and try again.",
-                    innerException: invalidArgumentPersistanceOrchestrationException);
+                message: "Persistance orchestration validation error occurred, please fix errors and try again.",
+                innerException: invalidArgumentPersistanceOrchestrationException);
 
             // when
             ValueTask<AccessRequest> retrieveCsvIdentificationRequestByIdTask =
                 this.persistanceOrchestrationService.RetrieveCsvIdentificationRequestByIdAsync(
                     invalidCsvIdentificationRequestId);
 
-            CsvIdentificationRequestValidationException actualCsvIdentificationRequestValidationException =
-                await Assert.ThrowsAsync<CsvIdentificationRequestValidationException>(
+            PersistanceOrchestrationValidationException actualCsvIdentificationRequestValidationException =
+                await Assert.ThrowsAsync<PersistanceOrchestrationValidationException>(
                     testCode: retrieveCsvIdentificationRequestByIdTask.AsTask);
 
             // then
@@ -52,10 +50,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedPersistanceOrchestrationValidationException))),
                     Times.Once);
-
-            this.csvIdentificationRequestServiceMock.Verify(broker =>
-                broker.RetrieveCsvIdentificationRequestByIdAsync(invalidCsvIdentificationRequestId),
-                    Times.Never);
 
             this.csvIdentificationRequestServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
