@@ -29,7 +29,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<AccessRequest> PersistImpersonationContextRequestAsync(AccessRequest accessRequest) =>
+        public ValueTask<AccessRequest> PersistImpersonationContextAsync(AccessRequest accessRequest) =>
             throw new NotImplementedException();
 
         public ValueTask<AccessRequest> PersistCsvIdentificationRequestAsync(AccessRequest accessRequest) =>

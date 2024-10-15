@@ -48,7 +48,6 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             return returnedAccessRequest;
         });
 
-
         public ValueTask<AccessRequest> PersistsCsvIdentificationRequestAsync(AccessRequest accessRequest) =>
         TryCatch(async () =>
         {
@@ -58,9 +57,17 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
         });
 
         public async ValueTask<AccessRequest> ProcessCsvIdentificationRequestAsync(Guid csvIdentificationRequestId) =>
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
+
+        public ValueTask<AccessRequest> PersistsImpersonationContextAsync(AccessRequest accessRequest) =>
+        TryCatch(async () =>
+        {
+            ValidateOnPersistsImpersonationContext(accessRequest);
+
+            return await this.persistanceOrchestrationService.PersistImpersonationContextAsync(accessRequest);
+        });
 
         public async ValueTask<AccessRequest> ProcessImpersonationContextRequestAsync(AccessRequest accessRequest) =>
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
     }
 }
