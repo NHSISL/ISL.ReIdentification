@@ -22,10 +22,12 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
         public PersistanceOrchestrationService(
             IImpersonationContextService impersonationContextService,
             ICsvIdentificationRequestService csvIdentificationRequestService,
+            INotificationService notificationService,
             ILoggingBroker loggingBroker)
         {
             this.impersonationContextService = impersonationContextService;
             this.csvIdentificationRequestService = csvIdentificationRequestService;
+            this.notificationService = notificationService;
             this.loggingBroker = loggingBroker;
         }
 
