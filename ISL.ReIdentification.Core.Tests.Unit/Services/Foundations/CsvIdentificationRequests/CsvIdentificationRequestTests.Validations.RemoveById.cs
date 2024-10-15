@@ -21,7 +21,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             var invalidCsvIdentificationRequestException =
                 new InvalidCsvIdentificationRequestException(
-                    message: "Invalid csv identification request. Please correct the errors and try again.");
+                    message: "Invalid CSV identification request. Please correct the errors and try again.");
 
             invalidCsvIdentificationRequestException.AddData(
                 key: nameof(CsvIdentificationRequest.Id),
@@ -29,7 +29,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             var expectedCsvIdentificationRequestValidationException =
                 new CsvIdentificationRequestValidationException(
-                    message: "CsvIdentificationRequest validation error occurred, please fix errors and try again.",
+                    message: "CSV identification request validation error occurred, please fix errors and try again.",
                     innerException: invalidCsvIdentificationRequestException);
 
             // when
@@ -72,11 +72,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             var notFoundCsvIdentificationRequestException =
                 new NotFoundCsvIdentificationRequestException(
-                    message: $"CsvIdentificationRequest not found with id: {someCsvIdentificationRequestId}");
+                    message: $"CSV identification request not found with id: {someCsvIdentificationRequestId}");
 
             var expectedCsvIdentificationRequestValidationException =
                 new CsvIdentificationRequestValidationException(
-                    message: "CsvIdentificationRequest validation error occurred, please fix errors and try again.",
+                    message: "CSV identification request validation error occurred, please fix errors and try again.",
                     innerException: notFoundCsvIdentificationRequestException);
 
             this.reIdentificationStorageBroker.Setup(broker =>
@@ -85,7 +85,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             // when
             ValueTask<CsvIdentificationRequest> removeCsvIdentificationRequestByIdTask =
-                this.csvIdentificationRequestService.RemoveCsvIdentificationRequestByIdAsync(someCsvIdentificationRequestId);
+                this.csvIdentificationRequestService
+                    .RemoveCsvIdentificationRequestByIdAsync(someCsvIdentificationRequestId);
 
             CsvIdentificationRequestValidationException actualCsvIdentificationRequestValidationException =
                 await Assert.ThrowsAsync<CsvIdentificationRequestValidationException>(
