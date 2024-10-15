@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Guid } from "guid-typescript";
 import { impersonationContextService } from "../../foundations/impersonationContextService";
 import { ImpersonationContextView } from "../../../models/views/components/impersonationContext/impersonationContextView";
 
