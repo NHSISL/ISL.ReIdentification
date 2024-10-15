@@ -10,7 +10,7 @@ namespace ISL.ReIdentification.Core.Models.Orchestrations.Persists.Exceptions
     public class FailedServicePersistanceOrchestrationException : Xeption
     {
         public FailedServicePersistanceOrchestrationException(string message, Exception innerException)
-            : base(message)
+            : base(message, innerException)
         { }
     }
 }
