@@ -149,7 +149,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            var invalidCsvIdentificationRequest = CreateRandomCsvIdentificationRequest(dateTimeOffset: randomDateTimeOffset);
+            
+            var invalidCsvIdentificationRequest = CreateRandomCsvIdentificationRequest(
+                dateTimeOffset: randomDateTimeOffset);
+            
             var username = GetRandomStringWithLengthOf(256);
             invalidCsvIdentificationRequest.RequesterEmail = GetRandomStringWithLengthOf(321);
             invalidCsvIdentificationRequest.RecipientEmail = GetRandomStringWithLengthOf(321);

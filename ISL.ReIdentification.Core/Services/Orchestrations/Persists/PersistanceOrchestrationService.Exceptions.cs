@@ -42,7 +42,8 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
                 throw await CreateAndLogDependencyValidationExceptionAsync(
                     csvIdentificationRequestValidationException);
             }
-            catch (CsvIdentificationRequestDependencyValidationException csvIdentificationRequestDependencyValidationException)
+            catch (CsvIdentificationRequestDependencyValidationException 
+                csvIdentificationRequestDependencyValidationException)
             {
                 throw await CreateAndLogDependencyValidationExceptionAsync(
                     csvIdentificationRequestDependencyValidationException);

@@ -123,7 +123,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             // when
             ValueTask<CsvIdentificationRequest> modifyCsvIdentificationRequestTask =
-                this.csvIdentificationRequestService.ModifyCsvIdentificationRequestAsync(invalidCsvIdentificationRequest);
+                this.csvIdentificationRequestService.ModifyCsvIdentificationRequestAsync(
+                    invalidCsvIdentificationRequest);
 
             CsvIdentificationRequestValidationException actualCsvIdentificationRequestValidationException =
                 await Assert.ThrowsAsync<CsvIdentificationRequestValidationException>(
@@ -157,7 +158,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            var invalidCsvIdentificationRequest = CreateRandomCsvIdentificationRequest(dateTimeOffset: randomDateTimeOffset);
+
+            var invalidCsvIdentificationRequest = 
+                CreateRandomCsvIdentificationRequest(dateTimeOffset: randomDateTimeOffset);
+            
             var username = GetRandomStringWithLengthOf(256);
             invalidCsvIdentificationRequest.RequesterEmail = GetRandomStringWithLengthOf(321);
             invalidCsvIdentificationRequest.RecipientEmail = GetRandomStringWithLengthOf(321);
@@ -304,7 +308,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
             DateTimeOffset now = randomDateTimeOffset;
             DateTimeOffset startDate = now.AddSeconds(-60);
             DateTimeOffset endDate = now.AddSeconds(0);
-            CsvIdentificationRequest randomCsvIdentificationRequest = CreateRandomCsvIdentificationRequest(randomDateTimeOffset);
+            
+            CsvIdentificationRequest randomCsvIdentificationRequest = 
+                CreateRandomCsvIdentificationRequest(randomDateTimeOffset);
+            
             randomCsvIdentificationRequest.UpdatedDate = randomDateTimeOffset.AddSeconds(invalidSeconds);
 
             var invalidCsvIdentificationRequestException = new InvalidCsvIdentificationRequestException(
@@ -315,7 +322,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
                 values:
                 [
                     $"Date is not recent." +
-                    $" Expected a value between {startDate} and {endDate} but found {randomCsvIdentificationRequest.UpdatedDate}"
+                    $" Expected a value between {startDate} and {endDate} but " + 
+                    "found {randomCsvIdentificationRequest.UpdatedDate}"
                 ]);
 
             var expectedCsvIdentificationRequestValidationException = new CsvIdentificationRequestValidationException(
@@ -362,7 +370,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
             //given
             int randomNegative = GetRandomNegativeNumber();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            CsvIdentificationRequest randomCsvIdentificationRequest = CreateRandomCsvIdentificationRequest(randomDateTimeOffset);
+            
+            CsvIdentificationRequest randomCsvIdentificationRequest = 
+                CreateRandomCsvIdentificationRequest(randomDateTimeOffset);
+            
             CsvIdentificationRequest nonExistingCsvIdentificationRequest = randomCsvIdentificationRequest;
             nonExistingCsvIdentificationRequest.CreatedDate = randomDateTimeOffset.AddMinutes(randomNegative);
             CsvIdentificationRequest nullCsvIdentificationRequest = null;
@@ -420,12 +431,20 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
             //given
             int randomMinutes = GetRandomNegativeNumber();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            CsvIdentificationRequest randomCsvIdentificationRequest = CreateRandomModifyCsvIdentificationRequest(randomDateTimeOffset);
+            
+            CsvIdentificationRequest randomCsvIdentificationRequest = 
+                CreateRandomModifyCsvIdentificationRequest(randomDateTimeOffset);
+            
             CsvIdentificationRequest invalidCsvIdentificationRequest = randomCsvIdentificationRequest;
             CsvIdentificationRequest storedCsvIdentificationRequest = randomCsvIdentificationRequest.DeepClone();
             storedCsvIdentificationRequest.CreatedBy = GetRandomString();
-            storedCsvIdentificationRequest.CreatedDate = storedCsvIdentificationRequest.CreatedDate.AddMinutes(randomMinutes);
-            storedCsvIdentificationRequest.UpdatedDate = storedCsvIdentificationRequest.UpdatedDate.AddMinutes(randomMinutes);
+            
+            storedCsvIdentificationRequest.CreatedDate = 
+                storedCsvIdentificationRequest.CreatedDate.AddMinutes(randomMinutes);
+            
+            storedCsvIdentificationRequest.UpdatedDate = 
+                storedCsvIdentificationRequest.UpdatedDate.AddMinutes(randomMinutes);
+            
             Guid CsvIdentificationRequestId = invalidCsvIdentificationRequest.Id;
 
             var invalidCsvIdentificationRequestException = new InvalidCsvIdentificationRequestException(
@@ -453,7 +472,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             // when
             ValueTask<CsvIdentificationRequest> modifyCsvIdentificationRequestTask =
-                this.csvIdentificationRequestService.ModifyCsvIdentificationRequestAsync(invalidCsvIdentificationRequest);
+                this.csvIdentificationRequestService.ModifyCsvIdentificationRequestAsync(
+                    invalidCsvIdentificationRequest);
 
             CsvIdentificationRequestValidationException actualCsvIdentificationRequestValidationException =
                 await Assert.ThrowsAsync<CsvIdentificationRequestValidationException>(

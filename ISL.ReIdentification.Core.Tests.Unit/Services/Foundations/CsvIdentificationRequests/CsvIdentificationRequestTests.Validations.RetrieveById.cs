@@ -34,7 +34,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             // when
             ValueTask<CsvIdentificationRequest> retrieveCsvIdentificationRequestByIdTask =
-                this.csvIdentificationRequestService.RetrieveCsvIdentificationRequestByIdAsync(invalidCsvIdentificationRequestId);
+                this.csvIdentificationRequestService.RetrieveCsvIdentificationRequestByIdAsync(
+                    invalidCsvIdentificationRequestId);
 
             CsvIdentificationRequestValidationException actualCsvIdentificationRequestValidationException =
                 await Assert.ThrowsAsync<CsvIdentificationRequestValidationException>(
@@ -85,7 +86,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             // when
             ValueTask<CsvIdentificationRequest> retrieveCsvIdentificationRequestByIdTask =
-                this.csvIdentificationRequestService.RetrieveCsvIdentificationRequestByIdAsync(someCsvIdentificationRequestId);
+                this.csvIdentificationRequestService.RetrieveCsvIdentificationRequestByIdAsync(
+                    someCsvIdentificationRequestId);
 
             CsvIdentificationRequestValidationException actualCsvIdentificationRequestValidationException =
                 await Assert.ThrowsAsync<CsvIdentificationRequestValidationException>(

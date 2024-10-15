@@ -55,7 +55,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
         public ValueTask<IQueryable<CsvIdentificationRequest>> RetrieveAllCsvIdentificationRequestsAsync() =>
         TryCatch(this.reIdentificationStorageBroker.SelectAllCsvIdentificationRequestsAsync);
 
-        public ValueTask<CsvIdentificationRequest> ModifyCsvIdentificationRequestAsync(CsvIdentificationRequest csvIdentificationRequest) =>
+        public ValueTask<CsvIdentificationRequest> ModifyCsvIdentificationRequestAsync(
+            CsvIdentificationRequest csvIdentificationRequest) =>
         TryCatch(async () =>
         {
             await ValidateCsvIdentificationRequestOnModify(csvIdentificationRequest);
@@ -83,11 +84,13 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
             ValidateCsvIdentificationRequestId(csvIdentificationRequestId);
 
             CsvIdentificationRequest maybeCsvIdentificationRequest =
-                await this.reIdentificationStorageBroker.SelectCsvIdentificationRequestByIdAsync(csvIdentificationRequestId);
+                await this.reIdentificationStorageBroker
+                    .SelectCsvIdentificationRequestByIdAsync(csvIdentificationRequestId);
 
             ValidateStorageCsvIdentificationRequest(maybeCsvIdentificationRequest, csvIdentificationRequestId);
 
-            return await this.reIdentificationStorageBroker.DeleteCsvIdentificationRequestAsync(maybeCsvIdentificationRequest);
+            return await this.reIdentificationStorageBroker
+                .DeleteCsvIdentificationRequestAsync(maybeCsvIdentificationRequest);
         });
     }
 }

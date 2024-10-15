@@ -84,7 +84,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             // when
             ValueTask<CsvIdentificationRequest> removeCsvIdentificationRequestByIdTask =
-                this.csvIdentificationRequestService.RemoveCsvIdentificationRequestByIdAsync(someCsvIdentificationRequestId);
+                this.csvIdentificationRequestService.RemoveCsvIdentificationRequestByIdAsync(
+                    someCsvIdentificationRequestId);
 
             CsvIdentificationRequestServiceException actualCsvIdentificationRequestServiceException =
                 await Assert.ThrowsAsync<CsvIdentificationRequestServiceException>(
