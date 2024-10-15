@@ -27,7 +27,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
 
             var expectedImpersonationContextDependencyException =
                 new ImpersonationContextDependencyException(
-                    message: "ImpersonationContext dependency error occurred, contact support.",
+                    message: "Impersonation context dependency error occurred, contact support.",
                     innerException: failedStorageImpersonationContextException);
 
             this.reIdentificationStorageBroker.Setup(broker =>
@@ -74,7 +74,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
 
             var expectedImpersonationContextServiceException =
                 new ImpersonationContextServiceException(
-                    message: "Service error occurred, contact support.",
+                    message: "Impersonation context service error occurred, contact support.",
                     innerException: failedServiceImpersonationContextException);
 
             this.reIdentificationStorageBroker.Setup(broker =>

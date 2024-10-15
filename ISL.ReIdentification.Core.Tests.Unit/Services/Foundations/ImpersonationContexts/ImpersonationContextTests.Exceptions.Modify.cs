@@ -29,7 +29,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
 
             var expectedImpersonationContextDependencyException =
                 new ImpersonationContextDependencyException(
-                    message: "ImpersonationContext dependency error occurred, contact support.",
+                    message: "Impersonation context dependency error occurred, contact support.",
                         innerException: failedImpersonationContextStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -92,7 +92,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
 
             var expectedImpersonationContextDependencyException =
                 new ImpersonationContextDependencyException(
-                    message: "ImpersonationContext dependency error occurred, contact support.",
+                    message: "Impersonation context dependency error occurred, contact support.",
                     innerException: failedOperationImpersonationContextException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -146,7 +146,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
 
             var expectedImpersonationContextDependencyValidationException =
                 new ImpersonationContextDependencyValidationException(
-                    message: "ImpersonationContext dependency validation error occurred, fix errors and try again.",
+                    message: "Impersonation context dependency validation error occurred, fix errors and try again.",
                     innerException: lockedImpersonationContextException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -205,7 +205,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
 
             var expectedImpersonationContextServiceException =
                 new ImpersonationContextServiceException(
-                    message: "Service error occurred, contact support.",
+                    message: "Impersonation context service error occurred, contact support.",
                     innerException: failedServiceImpersonationContextException);
 
             this.reIdentificationStorageBroker.Setup(broker =>

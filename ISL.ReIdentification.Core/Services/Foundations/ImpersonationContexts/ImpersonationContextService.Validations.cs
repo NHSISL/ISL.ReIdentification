@@ -174,7 +174,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts
             if (maybeImpersonationContext is null)
             {
                 throw new NotFoundImpersonationContextException(
-                    message: $"ImpersonationContext not found with id: {id}");
+                    message: $"Impersonation context not found with id: {id}");
             }
         }
 

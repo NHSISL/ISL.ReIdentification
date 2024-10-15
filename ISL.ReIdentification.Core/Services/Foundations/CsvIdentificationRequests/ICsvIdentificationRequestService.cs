@@ -11,10 +11,18 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
 {
     public interface ICsvIdentificationRequestService
     {
-        ValueTask<CsvIdentificationRequest> AddCsvIdentificationRequestAsync(CsvIdentificationRequest impersonationContext);
-        ValueTask<CsvIdentificationRequest> RetrieveCsvIdentificationRequestByIdAsync(Guid impersonationContextId);
+        ValueTask<CsvIdentificationRequest> AddCsvIdentificationRequestAsync(
+            CsvIdentificationRequest csvIdentificationRequest);
+
+        ValueTask<CsvIdentificationRequest> RetrieveCsvIdentificationRequestByIdAsync(
+            Guid csvIdentificationRequestById);
+
         ValueTask<IQueryable<CsvIdentificationRequest>> RetrieveAllCsvIdentificationRequestsAsync();
-        ValueTask<CsvIdentificationRequest> ModifyCsvIdentificationRequestAsync(CsvIdentificationRequest impersonationContext);
-        ValueTask<CsvIdentificationRequest> RemoveCsvIdentificationRequestByIdAsync(Guid impersonationContextId);
+
+        ValueTask<CsvIdentificationRequest> ModifyCsvIdentificationRequestAsync(
+            CsvIdentificationRequest csvIdentificationRequest);
+
+        ValueTask<CsvIdentificationRequest> RemoveCsvIdentificationRequestByIdAsync(
+            Guid csvIdentificationRequestById);
     }
 }
