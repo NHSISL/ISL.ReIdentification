@@ -10,7 +10,7 @@ using Moq;
 using RESTFulSense.Clients.Extensions;
 using RESTFulSense.Models;
 
-namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.CsvIdentificationRequests
+namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.CsvIdentificationRequests
 {
     public partial class CsvIdentificationRequestsControllerTests
     {

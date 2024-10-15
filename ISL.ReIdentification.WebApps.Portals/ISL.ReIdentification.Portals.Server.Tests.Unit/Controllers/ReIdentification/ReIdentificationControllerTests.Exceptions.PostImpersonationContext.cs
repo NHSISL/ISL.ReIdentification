@@ -16,7 +16,8 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.ReIdentific
     {
         [Theory]
         [MemberData(nameof(ValidationExceptions))]
-        public async Task ShouldReturnBadRequestOnPostCsvIfValidationErrorOccurredAsync(Xeption validationException)
+        public async Task ShouldReturnBadRequestOnPostImpersonationContextIfValidationErrorOccurredAsync(
+            Xeption validationException)
         {
             // given
             AccessRequest someAccessRequest = CreateRandomAccessRequest();
@@ -28,18 +29,18 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.ReIdentific
                 new ActionResult<AccessRequest>(expectedBadRequestObjectResult);
 
             this.identificationCoordinationServiceMock.Setup(service =>
-                service.PersistsCsvIdentificationRequestAsync(It.IsAny<AccessRequest>()))
+                service.PersistsImpersonationContextAsync(It.IsAny<AccessRequest>()))
                     .ThrowsAsync(validationException);
 
             // when
             ActionResult<AccessRequest> actualActionResult =
-                await this.reIdentificationController.PostCsvIdentificationRequestAsync(someAccessRequest);
+                await this.reIdentificationController.PostImpersonationContextRequestAsync(someAccessRequest);
 
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
             this.identificationCoordinationServiceMock.Verify(service =>
-                service.PersistsCsvIdentificationRequestAsync(It.IsAny<AccessRequest>()),
+                service.PersistsImpersonationContextAsync(It.IsAny<AccessRequest>()),
                     Times.Once);
 
             this.identificationCoordinationServiceMock.VerifyNoOtherCalls();
@@ -47,7 +48,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.ReIdentific
 
         [Theory]
         [MemberData(nameof(ServerExceptions))]
-        public async Task ShouldReturnInternalServerErrorOnPostCsvIfServerErrorOccurredAsync(
+        public async Task ShouldReturnInternalServerErrorOnPostImpersonationContextIfServerErrorOccurredAsync(
             Xeption validationException)
         {
             // given
@@ -60,18 +61,18 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.ReIdentific
                 new ActionResult<AccessRequest>(expectedBadRequestObjectResult);
 
             this.identificationCoordinationServiceMock.Setup(service =>
-                service.PersistsCsvIdentificationRequestAsync(It.IsAny<AccessRequest>()))
+                service.PersistsImpersonationContextAsync(It.IsAny<AccessRequest>()))
                     .ThrowsAsync(validationException);
 
             // when
             ActionResult<AccessRequest> actualActionResult =
-                await this.reIdentificationController.PostCsvIdentificationRequestAsync(someAccessRequest);
+                await this.reIdentificationController.PostImpersonationContextRequestAsync(someAccessRequest);
 
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
             this.identificationCoordinationServiceMock.Verify(service =>
-                service.PersistsCsvIdentificationRequestAsync(It.IsAny<AccessRequest>()),
+                service.PersistsImpersonationContextAsync(It.IsAny<AccessRequest>()),
                     Times.Once);
 
             this.identificationCoordinationServiceMock.VerifyNoOtherCalls();

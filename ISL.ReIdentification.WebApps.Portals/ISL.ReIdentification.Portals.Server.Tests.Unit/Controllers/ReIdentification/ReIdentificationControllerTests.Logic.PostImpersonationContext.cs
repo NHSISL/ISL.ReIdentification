@@ -15,12 +15,13 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.ReIdentific
     public partial class ReIdentificationControllerTests
     {
         [Fact]
-        public async Task ShouldReturnCreatedOnPostCsvAsync()
+        public async Task ShouldReturnCreatedOnPostImpersonationContextAsync()
         {
             // given
             AccessRequest randomAccessRequest = CreateRandomAccessRequest();
             AccessRequest inputAccessRequest = randomAccessRequest;
-            AccessRequest addedAccessRequest = inputAccessRequest.DeepClone();
+            AccessRequest updatedAccessRequest = inputAccessRequest.DeepClone();
+            AccessRequest addedAccessRequest = updatedAccessRequest.DeepClone();
             AccessRequest expectedAccessRequest = addedAccessRequest.DeepClone();
 
             var expectedObjectResult =
@@ -30,18 +31,18 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.ReIdentific
                 new ActionResult<AccessRequest>(expectedObjectResult);
 
             identificationCoordinationServiceMock
-                .Setup(service => service.PersistsCsvIdentificationRequestAsync(inputAccessRequest))
+                .Setup(service => service.PersistsImpersonationContextAsync(inputAccessRequest))
                     .ReturnsAsync(addedAccessRequest);
 
             // when
             ActionResult<AccessRequest> actualActionResult = await reIdentificationController
-                .PostCsvIdentificationRequestAsync(randomAccessRequest);
+                .PostImpersonationContextRequestAsync(randomAccessRequest);
 
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
             identificationCoordinationServiceMock
-               .Verify(service => service.PersistsCsvIdentificationRequestAsync(inputAccessRequest),
+               .Verify(service => service.PersistsImpersonationContextAsync(inputAccessRequest),
                    Times.Once);
 
             identificationCoordinationServiceMock.VerifyNoOtherCalls();

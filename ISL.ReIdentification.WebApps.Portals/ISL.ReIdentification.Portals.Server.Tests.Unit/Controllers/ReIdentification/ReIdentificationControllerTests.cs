@@ -80,7 +80,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.ReIdentific
             var filler = new Filler<AccessRequest>();
 
             filler.Setup()
-                .OnProperty(request => request.ImpersonationContextRequest).Use(CreateRandomImpersonationContext)
+                .OnProperty(request => request.ImpersonationContext).Use(CreateRandomImpersonationContext)
                 .OnProperty(request => request.CsvIdentificationRequest).Use(CreateRandomCsvIdentificationRequest)
 
                 .OnProperty(request => request.IdentificationRequest)
