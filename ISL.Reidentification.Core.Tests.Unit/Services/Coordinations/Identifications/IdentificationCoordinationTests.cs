@@ -5,6 +5,7 @@
 using System;
 using System.Linq.Expressions;
 using ISL.ReIdentification.Core.Brokers.Loggings;
+using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
@@ -48,6 +49,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
 
+        private static string GetRandomStringWithLengthOf(int length)
+        {
+            return new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length)
+                .GetValue();
+        }
+
         private static AccessRequest CreateRandomAccessRequest() =>
             CreateAccessRequestFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
 
@@ -85,6 +92,30 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use((DateTimeOffset?)default);
+
+            return filler;
+        }
+
+        private static CsvIdentificationRequest CreateRandomCsvIdentificationRequest() =>
+            CreateRandomCsvIdentificationRequest(dateTimeOffset: GetRandomDateTimeOffset());
+
+        private static CsvIdentificationRequest CreateRandomCsvIdentificationRequest(DateTimeOffset dateTimeOffset) =>
+            CreateCsvIdentificationRequestFiller(dateTimeOffset).Create();
+
+        private static Filler<CsvIdentificationRequest> CreateCsvIdentificationRequestFiller(DateTimeOffset dateTimeOffset)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<CsvIdentificationRequest>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+
+                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.IdentifierColumn)
+                    .Use(() => GetRandomStringWithLengthOf(10))
+
+                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.CreatedBy).Use(user)
+                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.UpdatedBy).Use(user);
 
             return filler;
         }
