@@ -20,6 +20,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             Guid randomId = Guid.NewGuid();
             Guid inputId = randomId;
             AccessRequest randomAccessRequest = CreateRandomAccessRequest();
+            randomAccessRequest.IdentificationRequest = null;
+            randomAccessRequest.ImpersonationContext = null;
             AccessRequest outputAccessRequest = randomAccessRequest;
             AccessRequest expectedAccessRequest = outputAccessRequest.DeepClone();
 

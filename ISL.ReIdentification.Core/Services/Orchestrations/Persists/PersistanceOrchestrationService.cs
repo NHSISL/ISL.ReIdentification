@@ -5,6 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Brokers.Loggings;
+using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts;
@@ -37,7 +38,12 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
         public ValueTask<AccessRequest> PersistCsvIdentificationRequestAsync(AccessRequest accessRequest) =>
             throw new NotImplementedException();
 
-        public ValueTask<AccessRequest> RetrieveCsvIdentificationRequestAsync(Guid csvIdentificationRequestId) =>
-            throw new NotImplementedException();
+        public async ValueTask<AccessRequest> RetrieveCsvIdentificationRequestAsync(Guid csvIdentificationRequestId)
+        {
+            CsvIdentificationRequest csvIdentificationRequest = await this.csvIdentificationRequestService
+                .RetrieveCsvIdentificationRequestByIdAsync(csvIdentificationRequestId);
+
+            return new AccessRequest { CsvIdentificationRequest = csvIdentificationRequest };
+        }
     }
 }
