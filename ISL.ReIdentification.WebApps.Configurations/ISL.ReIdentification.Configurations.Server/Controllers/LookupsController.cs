@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Foundations.Lookups;
 using ISL.ReIdentification.Core.Models.Foundations.Lookups.Exceptions;
 using ISL.ReIdentification.Core.Services.Foundations.Lookups;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
@@ -16,6 +17,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class LookupsController : RESTFulController
     {
         private readonly ILookupService lookupService;
