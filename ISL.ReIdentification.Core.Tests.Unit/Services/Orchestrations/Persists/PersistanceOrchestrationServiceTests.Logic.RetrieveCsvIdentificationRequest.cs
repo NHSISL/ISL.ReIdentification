@@ -32,7 +32,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             // when
             AccessRequest actualAccessRequest =
                 await this.persistanceOrchestrationService
-                    .RetrieveCsvIdentificationRequestAsync(inputId);
+                    .RetrieveCsvIdentificationRequestByIdAsync(inputId);
 
             // then
             actualAccessRequest.Should().BeEquivalentTo(expectedAccessRequest);

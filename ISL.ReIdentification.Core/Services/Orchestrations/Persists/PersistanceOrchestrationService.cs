@@ -38,7 +38,8 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
         public ValueTask<AccessRequest> PersistCsvIdentificationRequestAsync(AccessRequest accessRequest) =>
             throw new NotImplementedException();
 
-        public async ValueTask<AccessRequest> RetrieveCsvIdentificationRequestAsync(Guid csvIdentificationRequestId)
+        public async ValueTask<AccessRequest> RetrieveCsvIdentificationRequestByIdAsync(
+            Guid csvIdentificationRequestId)
         {
             CsvIdentificationRequest csvIdentificationRequest = await this.csvIdentificationRequestService
                 .RetrieveCsvIdentificationRequestByIdAsync(csvIdentificationRequestId);
