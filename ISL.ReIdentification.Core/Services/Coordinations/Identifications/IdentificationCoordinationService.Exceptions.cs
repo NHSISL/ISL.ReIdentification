@@ -9,6 +9,7 @@ using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Identifications.Exceptions;
+using ISL.ReIdentification.Core.Models.Orchestrations.Persists.Exceptions;
 using ISL.ReIdentification.Core.Services.Coordinations.Identifications;
 using Xeptions;
 
@@ -32,15 +33,9 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             {
                 throw await CreateAndLogValidationExceptionAsync(nullIdentificationRequestException);
             }
-            catch (IdentificationOrchestrationValidationException identificationOrchestrationValidationException)
+            catch (NullCsvIdentificationRequestException nullCsvIdentificationRequestException)
             {
-                throw await CreateAndLogDependencyValidationExceptionAsync(
-                    identificationOrchestrationValidationException);
-            }
-            catch (IdentificationOrchestrationDependencyValidationException identificationOrchestrationDependencyValidationException)
-            {
-                throw await CreateAndLogDependencyValidationExceptionAsync(
-                    identificationOrchestrationDependencyValidationException);
+                throw await CreateAndLogValidationExceptionAsync(nullCsvIdentificationRequestException);
             }
             catch (AccessOrchestrationValidationException accessOrchestrationValidationException)
             {
@@ -52,6 +47,27 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                 throw await CreateAndLogDependencyValidationExceptionAsync(
                     accessOrchestrationDependencyValidationException);
             }
+            catch (PersistanceOrchestrationValidationException persistanceOrchestrationValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    persistanceOrchestrationValidationException);
+            }
+            catch (PersistanceOrchestrationDependencyValidationException
+                persistanceOrchestrationDependencyValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    persistanceOrchestrationDependencyValidationException);
+            }
+            catch (IdentificationOrchestrationValidationException identificationOrchestrationValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    identificationOrchestrationValidationException);
+            }
+            catch (IdentificationOrchestrationDependencyValidationException identificationOrchestrationDependencyValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    identificationOrchestrationDependencyValidationException);
+            }
             catch (AccessOrchestrationServiceException accessOrchestrationServiceException)
             {
                 throw await CreateAndLogDependencyExceptionAsync(
@@ -61,6 +77,16 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             {
                 throw await CreateAndLogDependencyExceptionAsync(
                     accessOrchestrationDependencyException);
+            }
+            catch (PersistanceOrchestrationServiceException persistanceOrchestrationServiceException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(
+                    persistanceOrchestrationServiceException);
+            }
+            catch (PersistanceOrchestrationDependencyException persistanceOrchestrationDependencyException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(
+                    persistanceOrchestrationDependencyException);
             }
             catch (IdentificationOrchestrationServiceException identificationOrchestrationServiceException)
             {
