@@ -7,14 +7,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts.Exceptions;
-using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
 
 namespace ISL.ReIdentification.Configurations.Server.Controllers
 {
+    [Authorize(Roles = "Administrators")]
     [ApiController]
     [Route("api/[controller]")]
     public class ImpersonationContextsController : RESTFulController
@@ -59,15 +60,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
         }
 
         [HttpGet]
-#if !DEBUG
-        [EnableQuery(PageSize = 50)]
-#endif
-#if DEBUG
         [EnableQuery(PageSize = 25)]
-#endif
-#if RELEASE
-        [Authorize(Roles = "")]
-#endif
         public async ValueTask<ActionResult<IQueryable<ImpersonationContext>>> Get()
         {
             try

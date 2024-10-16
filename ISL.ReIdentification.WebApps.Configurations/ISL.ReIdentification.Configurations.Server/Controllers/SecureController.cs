@@ -8,9 +8,9 @@ using Microsoft.Extensions.Configuration;
 
 namespace ISL.ReIdentification.Configurations.Server.Controllers
 {
+    [Authorize(Roles = "NoAccess")]
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
     public class SecureController : Controller
     {
         private readonly IConfiguration configuration;

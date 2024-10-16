@@ -15,9 +15,9 @@ using RESTFulSense.Controllers;
 
 namespace ISL.ReIdentification.Configurations.Server.Controllers
 {
+    [Authorize(Roles = "Administrators")]
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
     public class LookupsController : RESTFulController
     {
         private readonly ILookupService lookupService;
@@ -59,15 +59,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
         }
 
         [HttpGet]
-#if !DEBUG
-        [EnableQuery(PageSize = 50)]
-#endif
-#if DEBUG
         [EnableQuery(PageSize = 25)]
-#endif
-#if RELEASE
-        [Authorize(Roles = "")]
-#endif
         public async ValueTask<ActionResult<IQueryable<Lookup>>> Get()
         {
             try
