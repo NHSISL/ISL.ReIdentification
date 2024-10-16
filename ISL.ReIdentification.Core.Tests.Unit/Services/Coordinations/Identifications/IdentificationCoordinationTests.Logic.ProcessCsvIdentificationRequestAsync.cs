@@ -45,7 +45,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             AccessRequest expectedAccessRequest = resultingAccessRequest.DeepClone();
 
             this.persistanceOrchestrationServiceMock.Setup(service =>
-                service.RetrieveCsvIdentificationRequestAsync(inputCsvIdentificationRequestId))
+                service.RetrieveCsvIdentificationRequestByIdAsync(inputCsvIdentificationRequestId))
                     .ReturnsAsync(outputPersistanceOrchestrationAccessRequest);
 
             this.csvHelperBrokerMock.Setup(broker =>
@@ -77,7 +77,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             actualAccessRequest.Should().BeEquivalentTo(expectedAccessRequest);
 
             this.persistanceOrchestrationServiceMock.Verify(service =>
-                service.RetrieveCsvIdentificationRequestAsync(inputCsvIdentificationRequestId),
+                service.RetrieveCsvIdentificationRequestByIdAsync(inputCsvIdentificationRequestId),
                     Times.Once);
 
             this.csvHelperBrokerMock.Verify(broker =>
