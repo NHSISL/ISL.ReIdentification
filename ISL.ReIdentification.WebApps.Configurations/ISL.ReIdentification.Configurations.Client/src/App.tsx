@@ -24,6 +24,8 @@ import { ImpersonationContext } from './pages/impersonationContext';
 import { ImpersonationContextDetailPage } from './pages/impersonationContextDetail';
 import { CsvIdentificationRequestDetailPage } from './pages/csvIdentificationRequestDetail';
 import { CsvIdentificationRequestPage } from './pages/csvIdentificationRequest';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { UserAccessNew } from './pages/userAccessNew';
 
 // TODO:
 //      - API Secured Routes
@@ -51,6 +53,10 @@ function App({ instance }: any) {
                 {
                     path: "userAccess",
                     element: <UserAccess />
+                },
+                {
+                    path: "userAccess/newUser",
+                    element: <UserAccessNew />
                 },
                 {
                     path: "userAccessDetail/:userDetailId",
@@ -113,6 +119,7 @@ function App({ instance }: any) {
             <MsalProvider instance={instance}>
                 <QueryClientProvider client={queryClientGlobalOptions}>
                     <RouterProvider router={router} />
+                    <ReactQueryDevtools initialIsOpen={false} />
                 </QueryClientProvider>
             </MsalProvider>
         </>

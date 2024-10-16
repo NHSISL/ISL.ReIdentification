@@ -23,10 +23,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
             PdsData storagePdsData = inputPdsData.DeepClone();
             PdsData updatedPdsData = inputPdsData;
             PdsData expectedPdsData = updatedPdsData.DeepClone();
-            long pdsDataRowId = inputPdsData.RowId;
+            Guid pdsDataId = inputPdsData.Id;
 
             this.reIdentificationStorageBroker.Setup(broker =>
-                broker.SelectPdsDataByIdAsync(pdsDataRowId))
+                broker.SelectPdsDataByIdAsync(pdsDataId))
                     .ReturnsAsync(storagePdsData);
 
             this.reIdentificationStorageBroker.Setup(broker =>
@@ -41,7 +41,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
             actualPdsData.Should().BeEquivalentTo(expectedPdsData);
 
             this.reIdentificationStorageBroker.Verify(broker =>
-                broker.SelectPdsDataByIdAsync(inputPdsData.RowId),
+                broker.SelectPdsDataByIdAsync(inputPdsData.Id),
                     Times.Once);
 
             this.reIdentificationStorageBroker.Verify(broker =>

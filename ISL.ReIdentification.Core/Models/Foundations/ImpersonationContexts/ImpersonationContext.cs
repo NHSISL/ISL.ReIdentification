@@ -15,17 +15,18 @@ namespace ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts
         public string RequesterDisplayName { get; set; } = string.Empty;
         public string RequesterEmail { get; set; } = string.Empty;
         public string RequesterJobTitle { get; set; } = string.Empty;
-        public Guid RecipientEntraUserId { get; set; } = Guid.Empty;
-        public string RecipientFirstName { get; set; } = string.Empty;
-        public string RecipientLastName { get; set; } = string.Empty;
-        public string RecipientDisplayName { get; set; } = string.Empty;
-        public string RecipientEmail { get; set; } = string.Empty;
-        public string RecipientJobTitle { get; set; } = string.Empty;
+        public Guid ResponsiblePersonEntraUserId { get; set; } = Guid.Empty;
+        public string ResponsiblePersonFirstName { get; set; } = string.Empty;
+        public string ResponsiblePersonLastName { get; set; } = string.Empty;
+        public string ResponsiblePersonDisplayName { get; set; } = string.Empty;
+        public string ResponsiblePersonEmail { get; set; } = string.Empty;
+        public string ResponsiblePersonJobTitle { get; set; } = string.Empty;
         public string Reason { get; set; } = string.Empty;
         public string Purpose { get; set; } = string.Empty;
         public string Organisation { get; set; } = string.Empty;
-        public string PipelineName { get; set; } = string.Empty;
-        public string ManagedIdentityName { get; set; } = string.Empty;
+        public string ProjectName { get; set; } = string.Empty;
+        public string ClientId { get; set; } = string.Empty;
+        public string ClientSecret { get; set; } = string.Empty;
         public bool IsApproved { get; set; }
         public string IdentifierColumn { get; set; } = string.Empty;
         public string CreatedBy { get; set; } = string.Empty;

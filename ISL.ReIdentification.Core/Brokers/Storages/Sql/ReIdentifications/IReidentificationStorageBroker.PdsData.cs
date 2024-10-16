@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Foundations.PdsDatas;
@@ -12,7 +13,7 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications
     {
         ValueTask<PdsData> InsertPdsDataAsync(PdsData pdsData);
         ValueTask<IQueryable<PdsData>> SelectAllPdsDatasAsync();
-        ValueTask<PdsData> SelectPdsDataByIdAsync(long pdsDataRowId);
+        ValueTask<PdsData> SelectPdsDataByIdAsync(Guid pdsDataRowId);
         ValueTask<PdsData> UpdatePdsDataAsync(PdsData pdsData);
         ValueTask<PdsData> DeletePdsDataAsync(PdsData pdsData);
     }

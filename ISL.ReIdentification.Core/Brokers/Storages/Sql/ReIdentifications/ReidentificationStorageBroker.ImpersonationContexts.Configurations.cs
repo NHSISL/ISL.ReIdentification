@@ -18,10 +18,10 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications
                 .HasMaxLength(320)
                 .IsRequired();
 
-            builder.Property(impersonationContext => impersonationContext.RecipientEntraUserId)
+            builder.Property(impersonationContext => impersonationContext.ResponsiblePersonEntraUserId)
                 .IsRequired();
 
-            builder.Property(impersonationContext => impersonationContext.RecipientEmail)
+            builder.Property(impersonationContext => impersonationContext.ResponsiblePersonEmail)
                 .HasMaxLength(320)
                 .IsRequired();
 
@@ -35,11 +35,11 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications
                 .HasMaxLength(255)
                 .IsRequired();
 
-            builder.Property(impersonationContext => impersonationContext.PipelineName)
+            builder.Property(impersonationContext => impersonationContext.ProjectName)
                 .HasMaxLength(255)
                 .IsRequired();
 
-            builder.HasIndex(impersonationContext => impersonationContext.PipelineName)
+            builder.HasIndex(impersonationContext => impersonationContext.ProjectName)
                 .IsUnique();
 
             builder.Property(impersonationContext => impersonationContext.IsApproved)
