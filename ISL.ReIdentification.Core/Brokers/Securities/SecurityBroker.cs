@@ -54,17 +54,16 @@ namespace ISL.ReIdentification.Core.Brokers.Securities
             var roles = user.FindAll(ClaimTypes.Role).Select(role => role.Value).ToList();
             var claimsList = user.Claims;
 
-            EntraUser entraUser = new EntraUser
-            {
-                EntraUserId = entraUserId,
-                GivenName = givenName,
-                Surname = surname,
-                DisplayName = displayName,
-                Email = email,
-                JobTitle = jobTitle,
-                Roles = roles,
-                Claims = claimsList
-            };
+            EntraUser entraUser = new EntraUser(
+
+                entraUserId: entraUserId,
+                givenName: givenName,
+                surname: surname,
+                displayName: displayName,
+                email: email,
+                jobTitle: jobTitle,
+                roles: roles,
+                claims: claimsList);
 
             return entraUser;
         }

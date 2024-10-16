@@ -3,7 +3,10 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Security.Claims;
 using ISL.ReIdentification.Core.Brokers.CsvHelpers;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Securities;
@@ -57,6 +60,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
+
+        private static int GetRandomNumber() =>
+            new IntRange(max: 15, min: 2).GetValue();
 
         private static string GetRandomStringWithLengthOf(int length)
         {
@@ -129,11 +135,30 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             return filler;
         }
 
-        private static EntraUser CreateRandomEntraUser() =>
-            CreateEntraUserFiller().Create();
+        private static EntraUser CreateRandomEntraUser()
+        {
+            string randomString = GetRandomString();
 
-        private static Filler<EntraUser> CreateEntraUserFiller() =>
-            new Filler<EntraUser>();
+            EntraUser entraUser = new EntraUser(
+                entraUserId: randomString,
+                givenName: randomString,
+                surname: randomString,
+                displayName: randomString,
+                email: randomString,
+                jobTitle: randomString,
+                roles: new List<string> { randomString },
+                claims: CreateRandomClaims());
+
+            return entraUser;
+        }
+
+        private static List<Claim> CreateRandomClaims()
+        {
+            string randomString = GetRandomString();
+
+            return Enumerable.Range(start: 1, count: GetRandomNumber())
+                .Select(_ => new Claim(type: randomString, value: randomString)).ToList();
+        }
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);

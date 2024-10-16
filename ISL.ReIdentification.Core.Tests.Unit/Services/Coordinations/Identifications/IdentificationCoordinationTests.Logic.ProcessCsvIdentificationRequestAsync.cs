@@ -42,6 +42,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             CsvIdentificationRequest createdCsvIdentificationRequest = CreateRandomCsvIdentificationRequest();
             AccessRequest resultingAccessRequest = CreateRandomAccessRequest();
             resultingAccessRequest.CsvIdentificationRequest = createdCsvIdentificationRequest;
+            resultingAccessRequest.IdentificationRequest = null;
+            resultingAccessRequest.ImpersonationContext = null;
             AccessRequest expectedAccessRequest = resultingAccessRequest.DeepClone();
 
             this.persistanceOrchestrationServiceMock.Setup(service =>
