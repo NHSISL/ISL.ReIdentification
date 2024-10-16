@@ -8,11 +8,14 @@ using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Foundations.PdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.PdsDatas.Exceptions;
 using ISL.ReIdentification.Core.Services.Foundations.PdsDatas;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
 
 namespace ISL.ReIdentification.Portals.Server.Controllers
 {
+    [Authorize(Roles = "Administrators")]
     [ApiController]
     [Route("api/[controller]")]
     public class PdsDataController : RESTFulController
@@ -23,6 +26,7 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             this.pdsDataService = pdsDataService;
 
         [HttpGet]
+        [EnableQuery(PageSize = 25)]
         public async ValueTask<ActionResult<IQueryable<PdsData>>> GetAsync()
         {
             try
