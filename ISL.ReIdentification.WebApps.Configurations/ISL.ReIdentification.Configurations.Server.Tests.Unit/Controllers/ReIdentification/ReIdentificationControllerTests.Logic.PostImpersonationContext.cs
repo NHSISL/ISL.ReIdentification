@@ -31,7 +31,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.ReId
                 new ActionResult<AccessRequest>(expectedObjectResult);
 
             identificationCoordinationServiceMock
-                .Setup(service => service.ProcessImpersonationContextRequestAsync(inputAccessRequest))
+                .Setup(service => service.PersistsImpersonationContextAsync(inputAccessRequest))
                     .ReturnsAsync(addedAccessRequest);
 
             // when
@@ -42,7 +42,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.ReId
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
             identificationCoordinationServiceMock
-               .Verify(service => service.ProcessImpersonationContextRequestAsync(inputAccessRequest),
+               .Verify(service => service.PersistsImpersonationContextAsync(inputAccessRequest),
                    Times.Once);
 
             identificationCoordinationServiceMock.VerifyNoOtherCalls();

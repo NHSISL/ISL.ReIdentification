@@ -173,7 +173,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
                 .OnType<DateTimeOffset?>().Use((DateTimeOffset?)default)
                 .OnProperty(accessRequest => accessRequest.IdentificationRequest)
                     .Use(CreateRandomIdentificationRequest())
-                .OnProperty(accessRequest => accessRequest.ImpersonationContextRequest)
+                .OnProperty(accessRequest => accessRequest.ImpersonationContext)
                     .Use(CreateRandomImpersonationContext());
 
             return filler;

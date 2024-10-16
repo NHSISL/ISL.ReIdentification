@@ -58,7 +58,6 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             return returnedAccessRequest;
         });
 
-
         public ValueTask<AccessRequest> PersistsCsvIdentificationRequestAsync(AccessRequest accessRequest) =>
         TryCatch(async () =>
         {

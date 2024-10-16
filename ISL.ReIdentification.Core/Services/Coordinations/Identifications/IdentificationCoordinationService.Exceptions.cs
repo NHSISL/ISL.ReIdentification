@@ -5,6 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications.Exceptions;
+using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses.Exceptions;
@@ -36,6 +37,10 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             catch (NullCsvIdentificationRequestException nullCsvIdentificationRequestException)
             {
                 throw await CreateAndLogValidationExceptionAsync(nullCsvIdentificationRequestException);
+            }
+            catch (NullImpersonationContextException nullImpersonationContextException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(nullImpersonationContextException);
             }
             catch (AccessOrchestrationValidationException accessOrchestrationValidationException)
             {

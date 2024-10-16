@@ -5,6 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Brokers.Loggings;
+using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts;
@@ -12,7 +13,7 @@ using ISL.ReIdentification.Core.Services.Foundations.Notifications;
 
 namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
 {
-    public class PersistanceOrchestrationService : IPersistanceOrchestrationService
+    public partial class PersistanceOrchestrationService : IPersistanceOrchestrationService
     {
         private readonly IImpersonationContextService impersonationContextService;
         private readonly ICsvIdentificationRequestService csvIdentificationRequestService;
@@ -22,20 +23,31 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
         public PersistanceOrchestrationService(
             IImpersonationContextService impersonationContextService,
             ICsvIdentificationRequestService csvIdentificationRequestService,
+            INotificationService notificationService,
             ILoggingBroker loggingBroker)
         {
             this.impersonationContextService = impersonationContextService;
             this.csvIdentificationRequestService = csvIdentificationRequestService;
+            this.notificationService = notificationService;
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<AccessRequest> PersistImpersonationContextRequestAsync(AccessRequest accessRequest) =>
+        public ValueTask<AccessRequest> PersistImpersonationContextAsync(AccessRequest accessRequest) =>
             throw new NotImplementedException();
 
         public ValueTask<AccessRequest> PersistCsvIdentificationRequestAsync(AccessRequest accessRequest) =>
             throw new NotImplementedException();
 
-        public ValueTask<AccessRequest> RetrieveCsvIdentificationRequestAsync(Guid csvIdentificationRequestId) =>
-            throw new NotImplementedException();
+        public ValueTask<AccessRequest> RetrieveCsvIdentificationRequestByIdAsync(
+            Guid csvIdentificationRequestId) =>
+        TryCatch(async () =>
+        {
+            ValidateOnRetrieveCsvIdentificationRequestByIdAsync(csvIdentificationRequestId);
+
+            CsvIdentificationRequest csvIdentificationRequest = await this.csvIdentificationRequestService
+                .RetrieveCsvIdentificationRequestByIdAsync(csvIdentificationRequestId);
+
+            return new AccessRequest { CsvIdentificationRequest = csvIdentificationRequest };
+        });
     }
 }

@@ -11,7 +11,7 @@ namespace ISL.ReIdentification.Core.Models.Orchestrations.Accesses
     public class AccessRequest
     {
         public IdentificationRequest IdentificationRequest { get; set; }
-        public ImpersonationContext ImpersonationContextRequest { get; set; }
         public CsvIdentificationRequest CsvIdentificationRequest { get; set; }
+        public ImpersonationContext ImpersonationContext { get; set; }
     }
 }

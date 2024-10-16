@@ -74,7 +74,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use((DateTimeOffset?)default)
-                .OnProperty(request => request.ImpersonationContextRequest).Use(CreateRandomImpersonationContext);
+                .OnProperty(request => request.ImpersonationContext).Use(CreateRandomImpersonationContext());
 
             return filler;
         }
