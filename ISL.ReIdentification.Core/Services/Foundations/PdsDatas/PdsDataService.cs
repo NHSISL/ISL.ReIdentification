@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Brokers.Loggings;
@@ -74,5 +75,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.PdsDatas
 
                 return await this.reIdentificationStorageBroker.DeletePdsDataAsync(maybePdsData);
             });
+
+        public ValueTask<bool> HasAccessToPatient(string pseudoNhsNumber, List<string> organisationCodes) =>
+            throw new NotImplementedException();
     }
 }
