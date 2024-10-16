@@ -15,23 +15,34 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
     public partial class OdsDataServiceTests
     {
         [Fact]
-        public async Task ShouldReturnOdsDatas()
+        public async Task ShouldRetrieveChildrenByParentIdAsync()
         {
             // given
-            List<OdsData> randomOdsDatas = CreateRandomOdsDatas();
-            IQueryable<OdsData> storageOdsDatas = randomOdsDatas.AsQueryable();
-            IQueryable<OdsData> expectedOdsDatas = storageOdsDatas.DeepClone();
+            OdsData randomOdsData = CreateRandomOdsData();
+            OdsData inputOdsData = randomOdsData;
+            OdsData storageOdsData = randomOdsData;
+            List<OdsData> randomOdsDatas = CreateRandomOdsDataChildren(storageOdsData.OdsHierarchy);
+            List<OdsData> childen = randomOdsDatas;
+            List<OdsData> expectedOdsDatas = childen.DeepClone();
+
+            this.reIdentificationStorageBroker.Setup(broker =>
+                broker.SelectOdsDataByIdAsync(inputOdsData.Id))
+                    .ReturnsAsync(storageOdsData);
 
             this.reIdentificationStorageBroker.Setup(broker =>
                 broker.SelectAllOdsDatasAsync())
-                    .ReturnsAsync(storageOdsDatas);
+                    .ReturnsAsync(childen.AsQueryable());
 
             // when
-            IQueryable<OdsData> actualOdsDatas =
-                await this.odsDataService.RetrieveAllOdsDatasAsync();
+            List<OdsData> actualOdsDatas =
+                await this.odsDataService.RetrieveChildrenByParentId(inputOdsData.Id);
 
             // then
             actualOdsDatas.Should().BeEquivalentTo(expectedOdsDatas);
+
+            this.reIdentificationStorageBroker.Verify(broker =>
+                broker.SelectOdsDataByIdAsync(inputOdsData.Id),
+                    Times.Once);
 
             this.reIdentificationStorageBroker.Verify(broker =>
                 broker.SelectAllOdsDatasAsync(),

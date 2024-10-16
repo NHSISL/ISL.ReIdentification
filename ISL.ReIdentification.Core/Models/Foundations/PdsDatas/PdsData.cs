@@ -8,14 +8,11 @@ namespace ISL.ReIdentification.Core.Models.Foundations.PdsDatas
 {
     public class PdsData
     {
-        public long RowId { get; set; }
-        public string? PseudoNhsNumber { get; set; }
-        public string? PrimaryCareProvider { get; set; }
-        public DateTimeOffset? PrimaryCareProviderBusinessEffectiveFromDate { get; set; }
-        public DateTimeOffset? PrimaryCareProviderBusinessEffectiveToDate { get; set; }
-        public string? CcgOfRegistration { get; set; }
-        public string? CurrentCcgOfRegistration { get; set; }
-        public string? IcbOfRegistration { get; set; }
-        public string? CurrentIcbOfRegistration { get; set; }
+        public Guid Id { get; set; }
+        public string PseudoNhsNumber { get; set; }
+        public string OrgCode { get; set; }
+        public string OrganisationName { get; set; }
+        public DateTimeOffset? RelationshipWithOrganisationEffectiveFromDate { get; set; }
+        public DateTimeOffset? RelationshipWithOrganisationEffectiveToDate { get; set; }
     }
 }

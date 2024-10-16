@@ -16,7 +16,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.PdsDatas
             ValidatePdsDataIsNotNull(pdsData);
 
             Validate(
-                (Rule: IsInvalid(pdsData.RowId), Parameter: nameof(PdsData.RowId)),
+                (Rule: IsInvalid(pdsData.Id), Parameter: nameof(PdsData.Id)),
                 (Rule: IsInvalid(pdsData.PseudoNhsNumber), Parameter: nameof(PdsData.PseudoNhsNumber)));
         }
 
@@ -25,14 +25,14 @@ namespace ISL.ReIdentification.Core.Services.Foundations.PdsDatas
             ValidatePdsDataIsNotNull(pdsData);
 
             Validate(
-                (Rule: IsInvalid(pdsData.RowId), Parameter: nameof(PdsData.RowId)),
+                (Rule: IsInvalid(pdsData.Id), Parameter: nameof(PdsData.Id)),
                 (Rule: IsInvalid(pdsData.PseudoNhsNumber), Parameter: nameof(PdsData.PseudoNhsNumber)));
         }
 
-        public static void ValidatePdsDataId(long pdsDataId) =>
-            Validate((Rule: IsInvalid(pdsDataId), Parameter: nameof(PdsData.RowId)));
+        public static void ValidatePdsDataId(Guid pdsDataId) =>
+            Validate((Rule: IsInvalid(pdsDataId), Parameter: nameof(PdsData.Id)));
 
-        private static void ValidateStoragePdsData(PdsData maybePdsData, long pdsDataId)
+        private static void ValidateStoragePdsData(PdsData maybePdsData, Guid pdsDataId)
         {
             if (maybePdsData is null)
             {

@@ -3,7 +3,6 @@
 // ---------------------------------------------------------
 
 using System;
-using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 
 namespace ISL.ReIdentification.Core.Models.Foundations.OdsDatas
@@ -14,8 +13,8 @@ namespace ISL.ReIdentification.Core.Models.Foundations.OdsDatas
         public HierarchyId? OdsHierarchy { get; set; }
         public string OrganisationCode { get; set; }
         public string OrganisationName { get; set; }
-        public DateTimeOffset? RelationshipStartDate { get; set; }
-        public DateTimeOffset? RelationshipEndDate { get; set; }
+        public DateTimeOffset? RelationshipWithParentStartDate { get; set; }
+        public DateTimeOffset? RelationshipWithParentEndDate { get; set; }
         public bool HasChildren { get; set; }
     }
 }

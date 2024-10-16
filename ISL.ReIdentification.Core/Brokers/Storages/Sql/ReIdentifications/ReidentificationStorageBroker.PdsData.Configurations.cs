@@ -11,51 +11,18 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications
     {
         private void AddPdsDataConfigurations(EntityTypeBuilder<PdsData> builder)
         {
-            builder.HasKey(pdsData => pdsData.RowId);
+            builder.HasKey(pdsData => pdsData.Id);
 
-            //builder.HasMany(pdsData => pdsData.OdsDatas)
-            //    .WithOne(odsData => odsData.PdsData)
-            //    .HasForeignKey(odsData => odsData.OrganisationCode_Root)
-            //    .HasPrincipalKey(pdsData => pdsData.CcgOfRegistration);
-
-            //builder.HasMany(pdsData => pdsData.OdsDatas)
-            //    .WithOne(odsData => odsData.PdsData)
-            //    .HasForeignKey(odsData => odsData.OrganisationCode_Root)
-            //    .HasPrincipalKey(pdsData => pdsData.CurrentCcgOfRegistration);
-
-            //builder.HasMany(pdsData => pdsData.OdsDatas)
-            //    .WithOne(odsData => odsData.PdsData)
-            //    .HasForeignKey(odsData => odsData.OrganisationCode_Root)
-            //    .HasPrincipalKey(pdsData => pdsData.IcbOfRegistration);
-
-            //builder.HasMany(pdsData => pdsData.OdsDatas)
-            //    .WithOne(odsData => odsData.PdsData)
-            //    .HasForeignKey(odsData => odsData.OrganisationCode_Root)
-            //    .HasPrincipalKey(pdsData => pdsData.CurrentIcbOfRegistration);
-
-            builder.Property(pdsData => pdsData.RowId)
+            builder.Property(pdsData => pdsData.Id)
                 .IsRequired();
 
             builder.Property(pdsData => pdsData.PseudoNhsNumber)
-                .HasMaxLength(15);
+                .HasMaxLength(10)
+                .IsRequired();
 
-            builder.Property(pdsData => pdsData.PrimaryCareProvider)
-                .HasMaxLength(8);
-
-            builder.Property(pdsData => pdsData.CcgOfRegistration)
-                .HasMaxLength(5);
-
-            builder
-                .Property(pdsData => pdsData.CurrentCcgOfRegistration)
-                .HasMaxLength(5);
-
-            builder
-                .Property(pdsData => pdsData.IcbOfRegistration)
-                .HasMaxLength(5);
-
-            builder
-                .Property(pdsData => pdsData.CurrentIcbOfRegistration)
-                .HasMaxLength(5);
+            builder.Property(pdsData => pdsData.OrgCode)
+                .HasMaxLength(15)
+                .IsRequired();
         }
     }
 }

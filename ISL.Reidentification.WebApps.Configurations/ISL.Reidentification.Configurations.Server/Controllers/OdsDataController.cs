@@ -3,9 +3,9 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ISL.ReIdentification.Core.Models.Foundations.Lookups;
 using ISL.ReIdentification.Core.Models.Foundations.OdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.OdsDatas.Exceptions;
 using ISL.ReIdentification.Core.Services.Foundations.OdsDatas;
@@ -53,10 +53,22 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
         }
 
         [HttpGet("GetChildren")]
-        public async ValueTask<ActionResult<IQueryable<OdsData>>> GetAllChildren(Guid id)
+        public async ValueTask<ActionResult<List<OdsData>>> GetAllChildren(Guid id)
         {
-           IQueryable<OdsData> retrievedOdsDatas = await this.odsDataService.GetChildren(id);
-            return Ok(retrievedOdsDatas);
+            try
+            {
+                List<OdsData> retrievedOdsDatas = await this.odsDataService.RetrieveChildrenByParentId(id);
+
+                return Ok(retrievedOdsDatas);
+            }
+            catch (OdsDataDependencyException odsDataDependencyException)
+            {
+                return InternalServerError(odsDataDependencyException);
+            }
+            catch (OdsDataServiceException odsDataServiceException)
+            {
+                return InternalServerError(odsDataServiceException);
+            }
         }
 
 

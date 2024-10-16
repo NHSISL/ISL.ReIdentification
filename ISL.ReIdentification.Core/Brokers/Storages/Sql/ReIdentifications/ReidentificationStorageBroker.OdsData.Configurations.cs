@@ -11,6 +11,10 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications
     {
         private void AddOdsDataConfigurations(EntityTypeBuilder<OdsData> builder)
         {
+            builder.Property(OdsData => OdsData.OrganisationCode)
+                .HasMaxLength(15)
+                .IsRequired();
+
             builder.Property(OdsData => OdsData.OrganisationName)
                 .HasMaxLength(30);
         }
