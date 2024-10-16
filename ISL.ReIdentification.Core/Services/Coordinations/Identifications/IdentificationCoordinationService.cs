@@ -3,13 +3,18 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Brokers.CsvHelpers;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Securities;
+using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
+using ISL.ReIdentification.Core.Models.Securities;
 using ISL.ReIdentification.Core.Services.Coordinations.Identifications;
 using ISL.ReIdentification.Core.Services.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Services.Orchestrations.Persists;
@@ -72,12 +77,16 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                 .RetrieveCsvIdentificationRequestByIdAsync(csvIdentificationRequestId);
 
             IdentificationRequest identificationRequest =
-                ConvertCsvIdentificationRequestToIdentificationRequest(maybeAccessRequest.CsvIdentificationRequest);
+                await ConvertCsvIdentificationRequestToIdentificationRequest(
+                    maybeAccessRequest.CsvIdentificationRequest);
 
             AccessRequest convertedAccessRequest = new AccessRequest();
-            convertedAccessRequest.IdentificationRequest = identificationRequest;
+            EntraUser currentUser = await this.securityBroker.GetCurrentUser();
 
-            // override UserIdentifier
+            IdentificationRequest currentUserIdentificationRequest =
+                OverrideIdentificationRequestUserDetails(identificationRequest, currentUser);
+
+            convertedAccessRequest.IdentificationRequest = currentUserIdentificationRequest;
 
             var returnedAccessRequest = await this.accessOrchestrationService
                     .ValidateAccessForIdentificationRequestAsync(convertedAccessRequest);
@@ -87,7 +96,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                     ProcessIdentificationRequestAsync(returnedAccessRequest.IdentificationRequest);
 
             CsvIdentificationRequest csvIdentificationRequest =
-                ConvertIdentificationRequestToCsvIdentificationRequest(
+                await ConvertIdentificationRequestToCsvIdentificationRequest(
                     returnedIdentificationOrchestrationIdentificationRequest);
 
             AccessRequest reIdentifiedAccessRequest = new AccessRequest();
@@ -106,20 +115,98 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
         public async ValueTask<AccessRequest> ProcessImpersonationContextRequestAsync(AccessRequest accessRequest) =>
             throw new System.NotImplementedException();
 
-        virtual internal IdentificationRequest ConvertCsvIdentificationRequestToIdentificationRequest(
+        virtual async internal ValueTask<IdentificationRequest> ConvertCsvIdentificationRequestToIdentificationRequest(
             CsvIdentificationRequest csvIdentificationRequest)
         {
-            // perform conversion
+            string data = Encoding.UTF8.GetString(csvIdentificationRequest.Data);
 
-            return new IdentificationRequest();
+            var mappedItems =
+                await this.csvHelperBroker.MapCsvToObjectAsync<dynamic>(
+                    data: data,
+                    hasHeaderRecord: false,
+                    fieldMappings: null);
+
+            var identificationItems = new List<IdentificationItem>();
+
+            foreach (var mappedItem in mappedItems)
+            {
+                var identificationItem = new IdentificationItem
+                {
+                    HasAccess = null,
+                    Identifier = mappedItem.Identifier,
+                    IsReidentified = false,
+                    Message = String.Empty,
+                    RowNumber = mappedItem.RowNumber
+                };
+
+                identificationItems.Add(identificationItem);
+            }
+
+            var identificationRequest = new IdentificationRequest();
+            identificationRequest.DisplayName = csvIdentificationRequest.RecipientDisplayName;
+            identificationRequest.Email = csvIdentificationRequest.RecipientEmail;
+            identificationRequest.EntraUserId = csvIdentificationRequest.RecipientEntraUserId;
+            identificationRequest.GivenName = csvIdentificationRequest.RecipientFirstName;
+            identificationRequest.JobTitle = csvIdentificationRequest.RecipientJobTitle;
+            identificationRequest.Organisation = csvIdentificationRequest.Organisation;
+            identificationRequest.Purpose = csvIdentificationRequest.Purpose;
+            identificationRequest.Reason = csvIdentificationRequest.Reason;
+            identificationRequest.Surname = csvIdentificationRequest.RecipientLastName;
+            identificationRequest.IdentificationItems = identificationItems;
+
+            return identificationRequest;
         }
 
-        virtual internal CsvIdentificationRequest ConvertIdentificationRequestToCsvIdentificationRequest(
+        virtual internal async ValueTask<CsvIdentificationRequest> ConvertIdentificationRequestToCsvIdentificationRequest(
             IdentificationRequest identificationRequest)
         {
-            // perform conversion
+            List<IdentificationItem> identificationItems = identificationRequest.IdentificationItems;
+            List<CsvIdentificationItem> identificationsData = identificationItems
+                .Select(identificationItem =>
+                {
+                    var csvIdentificationItem = new CsvIdentificationItem();
+                    csvIdentificationItem.RowNumber = identificationItem.RowNumber;
+                    csvIdentificationItem.Identifier = identificationItem.Identifier;
 
-            return new CsvIdentificationRequest();
+                    return csvIdentificationItem;
+                })
+                    .ToList();
+
+            string csvIdentificationRequestData =
+                await this.csvHelperBroker.MapObjectToCsvAsync(
+                    identificationsData,
+                    addHeaderRecord: false,
+                    fieldMappings: null,
+                    shouldAddTrailingComma: false);
+
+            byte[] csvIdentificationRequestDataByteArray = Encoding.UTF8.GetBytes(csvIdentificationRequestData);
+
+            var csvIdentificationRequest = new CsvIdentificationRequest();
+            csvIdentificationRequest.RecipientDisplayName = identificationRequest.DisplayName;
+            csvIdentificationRequest.RecipientEmail = identificationRequest.Email;
+            csvIdentificationRequest.RecipientEntraUserId = identificationRequest.EntraUserId;
+            csvIdentificationRequest.RecipientFirstName = identificationRequest.GivenName;
+            csvIdentificationRequest.RecipientJobTitle = identificationRequest.JobTitle;
+            csvIdentificationRequest.Organisation = identificationRequest.Organisation;
+            csvIdentificationRequest.Purpose = identificationRequest.Purpose;
+            csvIdentificationRequest.RecipientLastName = identificationRequest.Surname;
+            csvIdentificationRequest.Data = csvIdentificationRequestDataByteArray;
+
+            return csvIdentificationRequest;
+        }
+
+        virtual internal IdentificationRequest OverrideIdentificationRequestUserDetails(
+            IdentificationRequest identificationRequest,
+            EntraUser currentUser)
+        {
+            identificationRequest.EntraUserId = currentUser.EntraUserId;
+            identificationRequest.Email = currentUser.Email;
+            identificationRequest.JobTitle = currentUser.JobTitle;
+            identificationRequest.DisplayName = currentUser.DisplayName;
+            identificationRequest.GivenName = currentUser.GivenName;
+            identificationRequest.Surname = currentUser.Surname;
+
+            return identificationRequest;
         }
     }
 }
