@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -43,8 +44,10 @@ namespace ISL.ReIdentification.Core.Brokers.Securities
         {
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
 
-            var entraUserId = user.FindFirst("oid")?.Value
+            var entraUserIdString = user.FindFirst("oid")?.Value
                       ?? user.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value;
+
+            var entraUserId = Guid.Parse(entraUserIdString);
 
             var givenName = user.FindFirst(ClaimTypes.GivenName)?.Value;
             var surname = user.FindFirst(ClaimTypes.Surname)?.Value;

@@ -123,7 +123,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             var mappedItems =
                 await this.csvHelperBroker.MapCsvToObjectAsync<dynamic>(
                     data: data,
-                    hasHeaderRecord: false,
+                    hasHeaderRecord: true,
                     fieldMappings: null);
 
             var identificationItems = new List<IdentificationItem>();
@@ -175,7 +175,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             string csvIdentificationRequestData =
                 await this.csvHelperBroker.MapObjectToCsvAsync(
                     identificationsData,
-                    addHeaderRecord: false,
+                    addHeaderRecord: true,
                     fieldMappings: null,
                     shouldAddTrailingComma: false);
 
@@ -190,6 +190,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             csvIdentificationRequest.Organisation = identificationRequest.Organisation;
             csvIdentificationRequest.Purpose = identificationRequest.Purpose;
             csvIdentificationRequest.RecipientLastName = identificationRequest.Surname;
+            csvIdentificationRequest.Reason = identificationRequest.Reason;
             csvIdentificationRequest.Data = csvIdentificationRequestDataByteArray;
 
             return csvIdentificationRequest;

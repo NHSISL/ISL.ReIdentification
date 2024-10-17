@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
+using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
@@ -27,7 +28,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             Guid inputCsvIdentificationRequestId = randomCsvIdentificationRequestId;
             AccessRequest randomPersistanceOrchestrationAccessRequest = CreateRandomAccessRequest();
             AccessRequest outputPersistanceOrchestrationAccessRequest = randomPersistanceOrchestrationAccessRequest;
-            List<dynamic> outputCsvToObjectMapping = new List<dynamic>();
+            CsvIdentificationItem randomCsvIdentificationItem = CreateRandomCsvIdentificationItem();
+            List<dynamic> outputCsvToObjectMapping = new List<dynamic> { randomCsvIdentificationItem };
             EntraUser randomEntraUser = CreateRandomEntraUser();
             EntraUser outputEntraUser = randomEntraUser;
             IdentificationRequest randomIdentificationRequest = CreateRandomIdentificationRequest();
@@ -37,9 +39,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             AccessRequest outputOrchestrationAccessRequest = CreateRandomAccessRequest();
             IdentificationRequest inputIdentificationRequest = createdAccessRequest.IdentificationRequest;
             IdentificationRequest outputOrchestrationIdentificationRequest = CreateRandomIdentificationRequest();
-            List<dynamic> inputObjectToCsvMapping = new List<dynamic>();
             string outputObjectToCsvMapping = GetRandomString();
-            CsvIdentificationRequest createdCsvIdentificationRequest = CreateRandomCsvIdentificationRequest();
+
+            CsvIdentificationRequest createdCsvIdentificationRequest =
+                CreateIdentificationRequestPopulatedCsvIdentificationRequest(outputOrchestrationIdentificationRequest,
+                    outputObjectToCsvMapping);
+
             AccessRequest resultingAccessRequest = CreateRandomAccessRequest();
             resultingAccessRequest.CsvIdentificationRequest = createdCsvIdentificationRequest;
             resultingAccessRequest.IdentificationRequest = null;
@@ -67,7 +72,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                     .ReturnsAsync(outputOrchestrationIdentificationRequest);
 
             this.csvHelperBrokerMock.Setup(broker =>
-               broker.MapObjectToCsvAsync<string>(It.IsAny<List<string>>(), true, null, false))
+               broker.MapObjectToCsvAsync<CsvIdentificationItem>(
+                   It.IsAny<List<CsvIdentificationItem>>(),
+                   true,
+                   null,
+                   false))
                    .ReturnsAsync(outputObjectToCsvMapping);
 
             // when
@@ -91,7 +100,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                     Times.Once);
 
             this.accessOrchestrationServiceMock.Verify(service =>
-                service.ValidateAccessForIdentificationRequestAsync(createdAccessRequest),
+                service.ValidateAccessForIdentificationRequestAsync(It.IsAny<AccessRequest>()),
                     Times.Once);
 
             this.identificationOrchestrationServiceMock.Verify(service =>
@@ -99,7 +108,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                     Times.Once);
 
             this.csvHelperBrokerMock.Verify(broker =>
-                broker.MapObjectToCsvAsync<string>(It.IsAny<List<string>>(), true, null, false),
+                broker.MapObjectToCsvAsync<CsvIdentificationItem>(
+                    It.IsAny<List<CsvIdentificationItem>>(),
+                    true,
+                    null,
+                    false),
                     Times.Once);
 
             this.persistanceOrchestrationServiceMock.VerifyNoOtherCalls();

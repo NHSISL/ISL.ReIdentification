@@ -7,9 +7,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
+using System.Text;
 using ISL.ReIdentification.Core.Brokers.CsvHelpers;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Securities;
+using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
@@ -135,12 +137,33 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             return filler;
         }
 
+        private static CsvIdentificationRequest CreateIdentificationRequestPopulatedCsvIdentificationRequest(
+            IdentificationRequest identificationRequest,
+            string csvData)
+        {
+            var csvIdentificationRequest = new CsvIdentificationRequest();
+            csvIdentificationRequest.RecipientDisplayName = identificationRequest.DisplayName;
+            csvIdentificationRequest.RecipientEmail = identificationRequest.Email;
+            csvIdentificationRequest.RecipientEntraUserId = identificationRequest.EntraUserId;
+            csvIdentificationRequest.RecipientFirstName = identificationRequest.GivenName;
+            csvIdentificationRequest.RecipientJobTitle = identificationRequest.JobTitle;
+            csvIdentificationRequest.Organisation = identificationRequest.Organisation;
+            csvIdentificationRequest.Purpose = identificationRequest.Purpose;
+            csvIdentificationRequest.Reason = identificationRequest.Reason;
+            csvIdentificationRequest.RecipientLastName = identificationRequest.Surname;
+            byte[] csvIdentificationRequestDataByteArray = Encoding.UTF8.GetBytes(csvData);
+            csvIdentificationRequest.Data = csvIdentificationRequestDataByteArray;
+
+            return csvIdentificationRequest;
+        }
+
         private static EntraUser CreateRandomEntraUser()
         {
+            Guid randomId = Guid.NewGuid();
             string randomString = GetRandomString();
 
             EntraUser entraUser = new EntraUser(
-                entraUserId: randomString,
+                entraUserId: randomId,
                 givenName: randomString,
                 surname: randomString,
                 displayName: randomString,
@@ -159,6 +182,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             return Enumerable.Range(start: 1, count: GetRandomNumber())
                 .Select(_ => new Claim(type: randomString, value: randomString)).ToList();
         }
+
+        private static CsvIdentificationItem CreateRandomCsvIdentificationItem() =>
+            CreateCsvIdentificationItemFiller().Create();
+
+        private static Filler<CsvIdentificationItem> CreateCsvIdentificationItemFiller() =>
+            new Filler<CsvIdentificationItem>();
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);
