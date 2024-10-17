@@ -62,5 +62,54 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             this.identificationOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(DependencyExceptions))]
+        public async Task ShouldThrowDependencyExceptionOnProcessCsvIdentificationRequestAndLogItAsync(
+            Xeption dependencyException)
+        {
+            // given
+            Guid someCsvIdentificationRequestId = Guid.NewGuid();
+
+            this.persistanceOrchestrationServiceMock.Setup(service =>
+                service.RetrieveCsvIdentificationRequestByIdAsync(someCsvIdentificationRequestId))
+                    .ThrowsAsync(dependencyException);
+
+            var expectedIdentificationCoordinationDependencyException =
+                new IdentificationCoordinationDependencyException(
+                    message: "Identification coordination dependency error occurred, " +
+                        "fix the errors and try again.",
+                    innerException: dependencyException.InnerException as Xeption);
+
+            // when
+            ValueTask<AccessRequest> accessRequestTask =
+                this.identificationCoordinationService
+                    .ProcessCsvIdentificationRequestAsync(someCsvIdentificationRequestId);
+
+            IdentificationCoordinationDependencyException
+                actualIdentificationCoordinationDependencyException =
+                    await Assert.ThrowsAsync<IdentificationCoordinationDependencyException>(
+                        testCode: accessRequestTask.AsTask);
+
+            // then
+            actualIdentificationCoordinationDependencyException
+                .Should().BeEquivalentTo(expectedIdentificationCoordinationDependencyException);
+
+            this.persistanceOrchestrationServiceMock.Verify(service =>
+                service.RetrieveCsvIdentificationRequestByIdAsync(someCsvIdentificationRequestId),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
+                   expectedIdentificationCoordinationDependencyException))),
+                       Times.Once);
+
+            this.persistanceOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.accessOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.identificationOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
