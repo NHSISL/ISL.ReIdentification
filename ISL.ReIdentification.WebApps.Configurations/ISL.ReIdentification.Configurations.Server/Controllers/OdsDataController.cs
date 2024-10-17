@@ -3,18 +3,20 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ISL.ReIdentification.Core.Models.Foundations.Lookups;
 using ISL.ReIdentification.Core.Models.Foundations.OdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.OdsDatas.Exceptions;
 using ISL.ReIdentification.Core.Services.Foundations.OdsDatas;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
 
 namespace ISL.ReIdentification.Configurations.Server.Controllers
 {
+    [Authorize(Roles = "Administrators")]
     [ApiController]
     [Route("api/[controller]")]
     public class OdsDataController : RESTFulController
@@ -25,20 +27,31 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             this.odsDataService = odsDataService;
 
         [HttpGet]
-#if !DEBUG
-        [EnableQuery(PageSize = 50)]
-#endif
-#if DEBUG
         [EnableQuery(PageSize = 25)]
-#endif
-#if RELEASE
-        [Authorize(Roles = "")]
-#endif
         public async ValueTask<ActionResult<IQueryable<OdsData>>> Get()
         {
             try
             {
                 IQueryable<OdsData> retrievedOdsDatas = await this.odsDataService.RetrieveAllOdsDatasAsync();
+
+                return Ok(retrievedOdsDatas);
+            }
+            catch (OdsDataDependencyException odsDataDependencyException)
+            {
+                return InternalServerError(odsDataDependencyException);
+            }
+            catch (OdsDataServiceException odsDataServiceException)
+            {
+                return InternalServerError(odsDataServiceException);
+            }
+        }
+
+        [HttpGet("GetChildren")]
+        public async ValueTask<ActionResult<List<OdsData>>> GetAllChildren(Guid id)
+        {
+            try
+            {
+                List<OdsData> retrievedOdsDatas = await this.odsDataService.RetrieveChildrenByParentId(id);
 
                 return Ok(retrievedOdsDatas);
             }

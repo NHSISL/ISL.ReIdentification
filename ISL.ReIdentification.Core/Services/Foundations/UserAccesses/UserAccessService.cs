@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
@@ -79,7 +80,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
                 return await this.reIdentificationStorageBroker.DeleteUserAccessAsync(maybeUserAccess);
             });
 
-        public ValueTask<bool> HasAccessToPseudoIdentifier(string userEmail, string pseudoIdentifier) =>
+        public ValueTask<List<string>> HasAccessToOrganisations(Guid entraUserId) =>
             throw new NotImplementedException();
     }
 }

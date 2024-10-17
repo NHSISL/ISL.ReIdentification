@@ -1,6 +1,7 @@
 import { Container } from "react-bootstrap"
 import BreadCrumbBase from "../components/bases/layouts/BreadCrumb/BreadCrumbBase"
 import OdsTable from "../components/odsData/odsTable"
+import OdsTree from "../components/odsData/odsTree"
 
 export const OdsData = () => {
     return (
@@ -16,6 +17,8 @@ export const OdsData = () => {
                     <OdsTable />
                 </div>
             </section>
+
+            <OdsTree parentId="515A1642-65E6-4127-BC96-FA906987FB34"/>
         </Container>
     )
 }

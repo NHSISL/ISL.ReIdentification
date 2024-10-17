@@ -22,18 +22,18 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
             PdsData expectedPdsData = storagePdsData.DeepClone();
 
             this.reIdentificationStorageBroker.Setup(broker =>
-                broker.SelectPdsDataByIdAsync(inputPdsData.RowId))
+                broker.SelectPdsDataByIdAsync(inputPdsData.Id))
                     .ReturnsAsync(storagePdsData);
 
             // when
             PdsData actualPdsData =
-                await this.pdsDataService.RetrievePdsDataByIdAsync(inputPdsData.RowId);
+                await this.pdsDataService.RetrievePdsDataByIdAsync(inputPdsData.Id);
 
             // then
             actualPdsData.Should().BeEquivalentTo(expectedPdsData);
 
             this.reIdentificationStorageBroker.Verify(broker =>
-                broker.SelectPdsDataByIdAsync(inputPdsData.RowId),
+                broker.SelectPdsDataByIdAsync(inputPdsData.Id),
                     Times.Once);
 
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();

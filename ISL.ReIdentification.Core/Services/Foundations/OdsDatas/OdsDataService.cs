@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Brokers.Loggings;
@@ -25,54 +26,95 @@ namespace ISL.ReIdentification.Core.Services.Foundations.OdsDatas
         }
 
         public ValueTask<OdsData> AddOdsDataAsync(OdsData odsData) =>
-            TryCatch(async () =>
-            {
-                await ValidateOdsDataOnAddAsync(odsData);
+        TryCatch(async () =>
+        {
+            await ValidateOdsDataOnAddAsync(odsData);
 
-                return await this.reIdentificationStorageBroker.InsertOdsDataAsync(odsData);
-            });
+            return await this.reIdentificationStorageBroker.InsertOdsDataAsync(odsData);
+        });
 
         public ValueTask<IQueryable<OdsData>> RetrieveAllOdsDatasAsync() =>
-            TryCatch(this.reIdentificationStorageBroker.SelectAllOdsDatasAsync);
+         TryCatch(this.reIdentificationStorageBroker.SelectAllOdsDatasAsync);
 
         public ValueTask<OdsData> RetrieveOdsDataByIdAsync(Guid odsDataId) =>
-            TryCatch(async () =>
-            {
-                ValidateOdsDataId(odsDataId);
+        TryCatch(async () =>
+        {
+            ValidateOdsDataId(odsDataId);
 
-                OdsData maybeOdsData = await this.reIdentificationStorageBroker
-                    .SelectOdsDataByIdAsync(odsDataId);
+            OdsData maybeOdsData = await this.reIdentificationStorageBroker
+                .SelectOdsDataByIdAsync(odsDataId);
 
-                ValidateStorageOdsData(maybeOdsData, odsDataId);
+            ValidateStorageOdsData(maybeOdsData, odsDataId);
 
-                return maybeOdsData;
-            });
+            return maybeOdsData;
+        });
 
         public ValueTask<OdsData> ModifyOdsDataAsync(OdsData odsData) =>
-            TryCatch(async () =>
-            {
-                await ValidateOdsDataOnModifyAsync(odsData);
+        TryCatch(async () =>
+        {
+            await ValidateOdsDataOnModifyAsync(odsData);
 
-                OdsData maybeOdsData =
-                    await this.reIdentificationStorageBroker.SelectOdsDataByIdAsync(odsData.Id);
+            OdsData maybeOdsData =
+                await this.reIdentificationStorageBroker.SelectOdsDataByIdAsync(odsData.Id);
 
-                ValidateStorageOdsData(maybeOdsData, odsData.Id);
-                ValidateAgainstStorageOdsDataOnModify(inputOdsData: odsData, storageOdsData: maybeOdsData);
+            ValidateStorageOdsData(maybeOdsData, odsData.Id);
+            ValidateAgainstStorageOdsDataOnModify(inputOdsData: odsData, storageOdsData: maybeOdsData);
 
-                return await this.reIdentificationStorageBroker.UpdateOdsDataAsync(odsData);
-            });
+            return await this.reIdentificationStorageBroker.UpdateOdsDataAsync(odsData);
+        });
 
         public ValueTask<OdsData> RemoveOdsDataByIdAsync(Guid odsDataId) =>
-            TryCatch(async () =>
+        TryCatch(async () =>
+        {
+            ValidateOdsDataId(odsDataId);
+
+            OdsData maybeOdsData = await this.reIdentificationStorageBroker
+                .SelectOdsDataByIdAsync(odsDataId);
+
+            ValidateStorageOdsData(maybeOdsData, odsDataId);
+
+            return await this.reIdentificationStorageBroker.DeleteOdsDataAsync(maybeOdsData);
+        });
+
+        public ValueTask<List<OdsData>> RetrieveChildrenByParentId(Guid odsDataParentId) =>
+        TryCatch(async () =>
+        {
+            ValidateOdsDataId(odsDataParentId);
+
+            OdsData parentRecord = await this.reIdentificationStorageBroker
+                .SelectOdsDataByIdAsync(odsDataParentId);
+
+            ValidateStorageOdsData(parentRecord, odsDataParentId);
+
+            IQueryable<OdsData> query = await this.reIdentificationStorageBroker.SelectAllOdsDatasAsync();
+            query = query.Where(ods => ods.OdsHierarchy.GetAncestor(1) == parentRecord.OdsHierarchy);
+            List<OdsData> children = query.ToList();
+
+            return children;
+        });
+
+        public ValueTask<List<OdsData>> RetrieveAllDecendentsByParentId(Guid odsDataParentId) =>
+        TryCatch(async () =>
+        {
+            ValidateOdsDataId(odsDataParentId);
+            List<OdsData> descendants = new List<OdsData>();
+
+            OdsData parentRecord = await this.reIdentificationStorageBroker
+                .SelectOdsDataByIdAsync(odsDataParentId);
+
+            ValidateStorageOdsData(parentRecord, odsDataParentId);
+
+            IQueryable<OdsData> query = await this.reIdentificationStorageBroker.SelectAllOdsDatasAsync();
+            query = query.Where(ods => ods.OdsHierarchy.GetAncestor(1) == parentRecord.OdsHierarchy);
+            List<OdsData> children = query.ToList();
+
+            foreach (var child in children)
             {
-                ValidateOdsDataId(odsDataId);
+                descendants.Add(child);
+                descendants.AddRange(await RetrieveAllDecendentsByParentId(child.Id));
+            }
 
-                OdsData maybeOdsData = await this.reIdentificationStorageBroker
-                    .SelectOdsDataByIdAsync(odsDataId);
-
-                ValidateStorageOdsData(maybeOdsData, odsDataId);
-
-                return await this.reIdentificationStorageBroker.DeleteOdsDataAsync(maybeOdsData);
-            });
+            return descendants;
+        });
     }
 }

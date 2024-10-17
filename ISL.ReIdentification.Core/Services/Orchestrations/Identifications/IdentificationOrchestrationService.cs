@@ -72,7 +72,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                 if (item.HasAccess is false)
                 {
                     item.Identifier = "0000000000";
-                    item.Message = "Failed to Re-Identify, Access hasn't been granted.";
+                    item.Message = "Failed to Re-Identify. User do not have access to the organisation(s) associated with patient.";
                 }
             }
 

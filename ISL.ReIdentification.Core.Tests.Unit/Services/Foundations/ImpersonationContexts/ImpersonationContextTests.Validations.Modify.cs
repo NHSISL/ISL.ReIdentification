@@ -65,10 +65,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
             var invalidImpersonationContext = new ImpersonationContext
             {
                 RequesterEmail = invalidText,
-                RecipientEmail = invalidText,
+                ResponsiblePersonEmail = invalidText,
                 IdentifierColumn = invalidText,
-                PipelineName = invalidText,
-                ManagedIdentityName = invalidText,
+                ProjectName = invalidText,
             };
 
             var invalidImpersonationContextException = new InvalidImpersonationContextException(
@@ -87,11 +86,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
                 values: "Text is invalid");
 
             invalidImpersonationContextException.AddData(
-                key: nameof(ImpersonationContext.RecipientEntraUserId),
+                key: nameof(ImpersonationContext.ResponsiblePersonEntraUserId),
                 values: "Id is invalid");
 
             invalidImpersonationContextException.AddData(
-                key: nameof(ImpersonationContext.RecipientEmail),
+                key: nameof(ImpersonationContext.ResponsiblePersonEmail),
                 values: "Text is invalid");
 
             invalidImpersonationContextException.AddData(
@@ -99,11 +98,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
                 values: "Text is invalid");
 
             invalidImpersonationContextException.AddData(
-                key: nameof(ImpersonationContext.PipelineName),
-                values: "Text is invalid");
-
-            invalidImpersonationContextException.AddData(
-                key: nameof(ImpersonationContext.ManagedIdentityName),
+                key: nameof(ImpersonationContext.ProjectName),
                 values: "Text is invalid");
 
             invalidImpersonationContextException.AddData(
@@ -170,9 +165,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
             var invalidImpersonationContext = CreateRandomImpersonationContext(dateTimeOffset: randomDateTimeOffset);
             var username = GetRandomStringWithLengthOf(256);
             invalidImpersonationContext.RequesterEmail = GetRandomStringWithLengthOf(321);
-            invalidImpersonationContext.RecipientEmail = GetRandomStringWithLengthOf(321);
+            invalidImpersonationContext.ResponsiblePersonEmail = GetRandomStringWithLengthOf(321);
             invalidImpersonationContext.IdentifierColumn = GetRandomStringWithLengthOf(11);
-            invalidImpersonationContext.PipelineName = GetRandomStringWithLengthOf(256);
+            invalidImpersonationContext.ProjectName = GetRandomStringWithLengthOf(256);
             invalidImpersonationContext.CreatedBy = username;
             invalidImpersonationContext.UpdatedBy = username;
 
@@ -187,9 +182,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
 
 
             invalidImpersonationContextException.AddData(
-                key: nameof(ImpersonationContext.RecipientEmail),
+                key: nameof(ImpersonationContext.ResponsiblePersonEmail),
                 values: $"Text exceed max length of " +
-                    $"{invalidImpersonationContext.RecipientEmail.Length - 1} characters");
+                    $"{invalidImpersonationContext.ResponsiblePersonEmail.Length - 1} characters");
 
             invalidImpersonationContextException.AddData(
                 key: nameof(ImpersonationContext.IdentifierColumn),
@@ -197,9 +192,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
                     $"{invalidImpersonationContext.IdentifierColumn.Length - 1} characters");
 
             invalidImpersonationContextException.AddData(
-                key: nameof(ImpersonationContext.PipelineName),
+                key: nameof(ImpersonationContext.ProjectName),
                 values: $"Text exceed max length of " +
-                    $"{invalidImpersonationContext.PipelineName.Length - 1} characters");
+                    $"{invalidImpersonationContext.ProjectName.Length - 1} characters");
 
             invalidImpersonationContextException.AddData(
                 key: nameof(ImpersonationContext.CreatedBy),

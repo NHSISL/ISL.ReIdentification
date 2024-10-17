@@ -31,6 +31,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts
             TryCatch(async () =>
             {
                 await ValidateImpersonationContextOnAddAsync(impersonationContext);
+
                 return await this.reIdentificationStorageBroker.InsertImpersonationContextAsync(impersonationContext);
             });
 

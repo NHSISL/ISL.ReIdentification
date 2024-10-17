@@ -115,19 +115,19 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Accesses
             IQueryable<PdsData> pdsDatas =
                         await this.pdsDataService.RetrieveAllPdsDatasAsync();
 
-            bool userHasAccess =
-                pdsDatas
-                    .Where(pdsData =>
-                            pdsData.PseudoNhsNumber == identifier
-                        && (pdsData.PrimaryCareProviderBusinessEffectiveToDate == null
-                            || pdsData.PrimaryCareProviderBusinessEffectiveToDate > currentDateTime)
-                        && (pdsData.PrimaryCareProviderBusinessEffectiveFromDate <= currentDateTime)
-                        && (orgs.Contains(pdsData.CcgOfRegistration)
-                            || orgs.Contains(pdsData.CurrentCcgOfRegistration)
-                            || orgs.Contains(pdsData.CurrentIcbOfRegistration)
-                            || orgs.Contains(pdsData.IcbOfRegistration))
-                        )
-                    .Any();
+            bool userHasAccess = false;
+            //pdsDatas
+            //    .Where(pdsData =>
+            //            pdsData.PseudoNhsNumber == identifier
+            //        && (pdsData.PrimaryCareProviderBusinessEffectiveToDate == null
+            //            || pdsData.PrimaryCareProviderBusinessEffectiveToDate > currentDateTime)
+            //        && (pdsData.PrimaryCareProviderBusinessEffectiveFromDate <= currentDateTime)
+            //        && (orgs.Contains(pdsData.CcgOfRegistration)
+            //            || orgs.Contains(pdsData.CurrentCcgOfRegistration)
+            //            || orgs.Contains(pdsData.CurrentIcbOfRegistration)
+            //            || orgs.Contains(pdsData.IcbOfRegistration))
+            //        )
+            //    .Any();
 
             return userHasAccess;
         }

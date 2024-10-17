@@ -74,22 +74,10 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
 
-                .OnProperty(impersonationContext => impersonationContext.RequesterFirstName)
-                    .Use(() => GetRandomStringWithLengthOf(255))
-
-                .OnProperty(impersonationContext => impersonationContext.RequesterLastName)
-                    .Use(() => GetRandomStringWithLengthOf(255))
-
                 .OnProperty(impersonationContext => impersonationContext.RequesterEmail)
                     .Use(() => GetRandomStringWithLengthOf(320))
 
-                .OnProperty(impersonationContext => impersonationContext.RecipientFirstName)
-                    .Use(() => GetRandomStringWithLengthOf(255))
-
-                .OnProperty(impersonationContext => impersonationContext.RecipientLastName)
-                    .Use(() => GetRandomStringWithLengthOf(255))
-
-                .OnProperty(impersonationContext => impersonationContext.RecipientEmail)
+                .OnProperty(impersonationContext => impersonationContext.ResponsiblePersonEmail)
                     .Use(() => GetRandomStringWithLengthOf(320))
 
                 .OnProperty(impersonationContext => impersonationContext.IdentifierColumn)

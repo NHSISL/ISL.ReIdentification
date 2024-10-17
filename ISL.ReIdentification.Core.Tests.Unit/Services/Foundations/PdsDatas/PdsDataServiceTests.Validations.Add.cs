@@ -61,7 +61,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                     message: "Invalid pdsData. Please correct the errors and try again.");
 
             invalidPdsDataException.AddData(
-                key: nameof(PdsData.RowId),
+                key: nameof(PdsData.Id),
                 values: "Id is invalid");
 
             invalidPdsDataException.AddData(

@@ -25,20 +25,17 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts
                 (Rule: IsInvalid(impersonationContext.RequesterEmail),
                 Parameter: nameof(ImpersonationContext.RequesterEmail)),
 
-                (Rule: IsInvalid(impersonationContext.RecipientEntraUserId),
-                Parameter: nameof(ImpersonationContext.RecipientEntraUserId)),
+                (Rule: IsInvalid(impersonationContext.ResponsiblePersonEntraUserId),
+                Parameter: nameof(ImpersonationContext.ResponsiblePersonEntraUserId)),
 
-                (Rule: IsInvalid(impersonationContext.RecipientEmail),
-                Parameter: nameof(ImpersonationContext.RecipientEmail)),
+                (Rule: IsInvalid(impersonationContext.ResponsiblePersonEmail),
+                Parameter: nameof(ImpersonationContext.ResponsiblePersonEmail)),
 
                 (Rule: IsInvalid(impersonationContext.IdentifierColumn),
                 Parameter: nameof(ImpersonationContext.IdentifierColumn)),
 
-                (Rule: IsInvalid(impersonationContext.PipelineName),
-                Parameter: nameof(ImpersonationContext.PipelineName)),
-
-                (Rule: IsInvalid(impersonationContext.ManagedIdentityName),
-                Parameter: nameof(ImpersonationContext.ManagedIdentityName)),
+                (Rule: IsInvalid(impersonationContext.ProjectName),
+                Parameter: nameof(ImpersonationContext.ProjectName)),
 
                 (Rule: IsInvalid(impersonationContext.CreatedBy),
                 Parameter: nameof(ImpersonationContext.CreatedBy)),
@@ -52,14 +49,14 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts
                 (Rule: IsInvalid(impersonationContext.UpdatedDate),
                 Parameter: nameof(ImpersonationContext.UpdatedDate)),
 
-                (Rule: IsInvalidLength(impersonationContext.PipelineName, 255),
-                Parameter: nameof(ImpersonationContext.PipelineName)),
+                (Rule: IsInvalidLength(impersonationContext.ProjectName, 255),
+                Parameter: nameof(ImpersonationContext.ProjectName)),
 
                 (Rule: IsInvalidLength(impersonationContext.RequesterEmail, 320),
                 Parameter: nameof(ImpersonationContext.RequesterEmail)),
 
-                (Rule: IsInvalidLength(impersonationContext.RecipientEmail, 320),
-                Parameter: nameof(ImpersonationContext.RecipientEmail)),
+                (Rule: IsInvalidLength(impersonationContext.ResponsiblePersonEmail, 320),
+                Parameter: nameof(ImpersonationContext.ResponsiblePersonEmail)),
 
                 (Rule: IsInvalidLength(impersonationContext.IdentifierColumn, 10),
                 Parameter: nameof(ImpersonationContext.IdentifierColumn)),
@@ -101,20 +98,17 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts
                 (Rule: IsInvalid(impersonationContext.RequesterEmail),
                 Parameter: nameof(ImpersonationContext.RequesterEmail)),
 
-                (Rule: IsInvalid(impersonationContext.RecipientEntraUserId),
-                Parameter: nameof(ImpersonationContext.RecipientEntraUserId)),
+                (Rule: IsInvalid(impersonationContext.ResponsiblePersonEntraUserId),
+                Parameter: nameof(ImpersonationContext.ResponsiblePersonEntraUserId)),
 
-                (Rule: IsInvalid(impersonationContext.RecipientEmail),
-                Parameter: nameof(ImpersonationContext.RecipientEmail)),
+                (Rule: IsInvalid(impersonationContext.ResponsiblePersonEmail),
+                Parameter: nameof(ImpersonationContext.ResponsiblePersonEmail)),
 
                 (Rule: IsInvalid(impersonationContext.IdentifierColumn),
                 Parameter: nameof(ImpersonationContext.IdentifierColumn)),
 
-                (Rule: IsInvalid(impersonationContext.PipelineName),
-                Parameter: nameof(ImpersonationContext.PipelineName)),
-
-                (Rule: IsInvalid(impersonationContext.ManagedIdentityName),
-                Parameter: nameof(ImpersonationContext.ManagedIdentityName)),
+                (Rule: IsInvalid(impersonationContext.ProjectName),
+                Parameter: nameof(ImpersonationContext.ProjectName)),
 
                 (Rule: IsInvalid(impersonationContext.CreatedBy),
                 Parameter: nameof(ImpersonationContext.CreatedBy)),
@@ -128,14 +122,14 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts
                 (Rule: IsInvalid(impersonationContext.UpdatedDate),
                 Parameter: nameof(ImpersonationContext.UpdatedDate)),
 
-                (Rule: IsInvalidLength(impersonationContext.PipelineName, 255),
-                Parameter: nameof(ImpersonationContext.PipelineName)),
+                (Rule: IsInvalidLength(impersonationContext.ProjectName, 255),
+                Parameter: nameof(ImpersonationContext.ProjectName)),
 
                 (Rule: IsInvalidLength(impersonationContext.RequesterEmail, 320),
                 Parameter: nameof(ImpersonationContext.RequesterEmail)),
 
-                (Rule: IsInvalidLength(impersonationContext.RecipientEmail, 320),
-                Parameter: nameof(ImpersonationContext.RecipientEmail)),
+                (Rule: IsInvalidLength(impersonationContext.ResponsiblePersonEmail, 320),
+                Parameter: nameof(ImpersonationContext.ResponsiblePersonEmail)),
 
                 (Rule: IsInvalidLength(impersonationContext.IdentifierColumn, 10),
                 Parameter: nameof(ImpersonationContext.IdentifierColumn)),

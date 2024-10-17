@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
@@ -16,6 +17,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
         ValueTask<UserAccess> RetrieveUserAccessByIdAsync(Guid userAccessId);
         ValueTask<UserAccess> ModifyUserAccessAsync(UserAccess userAccess);
         ValueTask<UserAccess> RemoveUserAccessByIdAsync(Guid userAccessId);
-        ValueTask<bool> HasAccessToPseudoIdentifier(string userEmail, string pseudoIdentifier);
+        ValueTask<List<string>> HasAccessToOrganisations(Guid entraUserId);
     }
 }

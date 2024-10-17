@@ -8,11 +8,13 @@ using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits.Exceptions;
 using ISL.ReIdentification.Core.Services.Foundations.AccessAudits;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
 
 namespace ISL.ReIdentification.Portals.Server.Controllers
 {
+    [Authorize(Roles = "Administrators")]
     [ApiController]
     [Route("api/[controller]")]
     public class AccessAuditsController : RESTFulController
@@ -28,7 +30,7 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             try
             {
                 AccessAudit addedAccessAudit =
-                    await this.accessAuditService.AddAccessAuditAsync(accessAudit);
+                    await accessAuditService.AddAccessAuditAsync(accessAudit);
 
                 return Created(addedAccessAudit);
             }
@@ -61,7 +63,7 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             try
             {
                 IQueryable<AccessAudit> retrievedAccessAudits =
-                    await this.accessAuditService.RetrieveAllAccessAuditsAsync();
+                    await accessAuditService.RetrieveAllAccessAuditsAsync();
 
                 return Ok(retrievedAccessAudits);
             }
@@ -80,7 +82,7 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
         {
             try
             {
-                AccessAudit accessAudit = await this.accessAuditService.RetrieveAccessAuditByIdAsync(accessAuditId);
+                AccessAudit accessAudit = await accessAuditService.RetrieveAccessAuditByIdAsync(accessAuditId);
 
                 return Ok(accessAudit);
             }
@@ -113,7 +115,7 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             try
             {
                 AccessAudit modifiedAccessAudit =
-                    await this.accessAuditService.ModifyAccessAuditAsync(accessAudit);
+                    await accessAuditService.ModifyAccessAuditAsync(accessAudit);
 
                 return Ok(modifiedAccessAudit);
             }
@@ -151,7 +153,7 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             try
             {
                 AccessAudit deletedAccessAudit =
-                    await this.accessAuditService.RemoveAccessAuditByIdAsync(accessAuditId);
+                    await accessAuditService.RemoveAccessAuditByIdAsync(accessAuditId);
 
                 return Ok(deletedAccessAudit);
             }
