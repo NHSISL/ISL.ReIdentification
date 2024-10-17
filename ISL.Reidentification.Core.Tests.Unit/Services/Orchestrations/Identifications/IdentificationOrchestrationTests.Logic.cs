@@ -27,7 +27,14 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
 
             IdentificationRequest inputIdentificationRequest = randomIdentificationRequest.DeepClone();
             IdentificationRequest outputIdentificationRequest = inputIdentificationRequest.DeepClone();
-            outputIdentificationRequest.IdentificationItems.ForEach(item => item.Identifier = "0000000000");
+            //outputIdentificationRequest.IdentificationItems.ForEach(item => item.Identifier = "0000000000");
+
+            outputIdentificationRequest.IdentificationItems.ForEach(item =>
+            {
+                item.Identifier = "0000000000";
+                item.Message = "Failed to Re-Identify, Access hasn't been granted.";
+            });
+
             IdentificationRequest expectedIdentificationRequest = outputIdentificationRequest.DeepClone();
 
             this.identifierBrokerMock.Setup(broker =>
