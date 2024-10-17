@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Foundations.OdsDatas;
@@ -16,5 +17,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.OdsDatas
         ValueTask<OdsData> RetrieveOdsDataByIdAsync(Guid odsDataId);
         ValueTask<OdsData> ModifyOdsDataAsync(OdsData odsData);
         ValueTask<OdsData> RemoveOdsDataByIdAsync(Guid odsDataId);
+        ValueTask<List<OdsData>> RetrieveChildrenByParentId(Guid odsDataId);
+        ValueTask<List<OdsData>> RetrieveAllDecendentsByParentId(Guid odsDataId);
     }
 }

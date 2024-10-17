@@ -12,8 +12,14 @@ using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Notifications;
 using ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Brokers.Notifications;
+using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
+using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Foundations.Lookups;
+using ISL.ReIdentification.Core.Models.Foundations.OdsDatas;
+using ISL.ReIdentification.Core.Models.Foundations.PdsDatas;
+using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Services.Foundations.AccessAudits;
+using ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Services.Foundations.Lookups;
 using ISL.ReIdentification.Core.Services.Foundations.OdsDatas;
@@ -29,12 +35,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web;
 using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
-using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
-using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
-using ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationRequests;
-using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
-using ISL.ReIdentification.Core.Models.Foundations.OdsDatas;
-using ISL.ReIdentification.Core.Models.Foundations.PdsDatas;
 
 namespace ISL.ReIdentification.Configurations.Server
 {
@@ -42,9 +42,15 @@ namespace ISL.ReIdentification.Configurations.Server
     {
         public static void Main(string[] args)
         {
-            var builder =
-                WebApplication.CreateBuilder(args);
+            var builder = WebApplication.CreateBuilder(args);
+            ConfigureServices(builder, builder.Configuration);
+            var app = builder.Build();
+            ConfigurePipeline(app);
+            app.Run();
+        }
 
+        public static void ConfigureServices(WebApplicationBuilder builder, IConfiguration configuration)
+        {
             // Add services to the container.
             var azureAdOptions = builder.Configuration.GetSection("AzureAd");
 
@@ -83,24 +89,10 @@ namespace ISL.ReIdentification.Configurations.Server
                    options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
                    options.JsonSerializerOptions.WriteIndented = true;
                });
+        }
 
-            static IEdmModel GetEdmModel()
-            {
-                ODataConventionModelBuilder builder =
-                   new ODataConventionModelBuilder();
-
-                builder.EntitySet<Lookup>("Lookups");
-                builder.EntitySet<UserAccess>("UserAccesses");
-                builder.EntitySet<ImpersonationContext>("ImpersonationContexts");
-                builder.EntitySet<CsvIdentificationRequest>("CsvIdentificationRequests");
-                builder.EntitySet<OdsData>("OdsData");
-                //builder.EntitySet<PdsData>("PdsData");
-                builder.EnableLowerCamelCase();
-
-                return builder.GetEdmModel();
-            }
-
-            var app = builder.Build();
+        public static void ConfigurePipeline(WebApplication app)
+        {
             app.UseDefaultFiles();
             app.UseStaticFiles();
 
@@ -119,8 +111,22 @@ namespace ISL.ReIdentification.Configurations.Server
             app.MapControllers().WithOpenApi();
 
             app.MapFallbackToFile("/index.html");
+        }
 
-            app.Run();
+        private static IEdmModel GetEdmModel()
+        {
+            ODataConventionModelBuilder builder =
+               new ODataConventionModelBuilder();
+
+            builder.EntitySet<Lookup>("Lookups");
+            builder.EntitySet<UserAccess>("UserAccesses");
+            builder.EntitySet<ImpersonationContext>("ImpersonationContexts");
+            builder.EntitySet<CsvIdentificationRequest>("CsvIdentificationRequests");
+            builder.EntitySet<OdsData>("OdsData");
+            builder.EntitySet<PdsData>("PdsData");
+            builder.EnableLowerCamelCase();
+
+            return builder.GetEdmModel();
         }
 
         private static void AddProviders(IServiceCollection services, IConfiguration configuration)

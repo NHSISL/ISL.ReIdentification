@@ -2,9 +2,11 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Force.DeepCloner;
 using ISL.ReIdentification.Core.Models.Foundations.OdsDatas;
 using Moq;
 
@@ -16,9 +18,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
         public async Task ShouldReturnOdsDatas()
         {
             // given
-            IQueryable<OdsData> randomOdsDatas = CreateRandomOdsDatas();
-            IQueryable<OdsData> storageOdsDatas = randomOdsDatas;
-            IQueryable<OdsData> expectedOdsDatas = storageOdsDatas;
+            List<OdsData> randomOdsDatas = CreateRandomOdsDatas();
+            IQueryable<OdsData> storageOdsDatas = randomOdsDatas.AsQueryable();
+            IQueryable<OdsData> expectedOdsDatas = storageOdsDatas.DeepClone();
 
             this.reIdentificationStorageBroker.Setup(broker =>
                 broker.SelectAllOdsDatasAsync())

@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
@@ -17,6 +18,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.OdsDatas
     public partial class OdsDataService
     {
         private delegate ValueTask<OdsData> ReturningOdsDataFunction();
+        private delegate ValueTask<List<OdsData>> ReturningOdsDataListFunction();
         private delegate ValueTask<IQueryable<OdsData>> ReturningOdsDatasFunction();
 
         private async ValueTask<OdsData> TryCatch(ReturningOdsDataFunction returningOdsDataFunction)
@@ -99,6 +101,44 @@ namespace ISL.ReIdentification.Core.Services.Foundations.OdsDatas
             try
             {
                 return await returningOdsDatasFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedStorageOdsDataException =
+                    new FailedStorageOdsDataException(
+                        message: "Failed odsData storage error occurred, contact support.",
+                        innerException: sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedStorageOdsDataException);
+            }
+            catch (Exception exception)
+            {
+                var failedOdsDataServiceException =
+                    new FailedOdsDataServiceException(
+                        message: "Failed odsData service occurred, please contact support",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedOdsDataServiceException);
+            }
+        }
+
+        private async ValueTask<List<OdsData>> TryCatch(ReturningOdsDataListFunction returningOdsDataListFunction)
+        {
+            try
+            {
+                return await returningOdsDataListFunction();
+            }
+            catch (NullOdsDataException nullOdsDataException)
+            {
+                throw CreateAndLogValidationException(nullOdsDataException);
+            }
+            catch (InvalidOdsDataException invalidOdsDataException)
+            {
+                throw CreateAndLogValidationException(invalidOdsDataException);
+            }
+            catch (NotFoundOdsDataException notFoundOdsDataException)
+            {
+                throw CreateAndLogValidationException(notFoundOdsDataException);
             }
             catch (SqlException sqlException)
             {

@@ -1,5 +1,4 @@
-import { Guid } from "guid-typescript";
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "react-query";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import OdsDataBroker from "../../brokers/apiBroker.odsData";
 import { OdsData } from "../../models/odsData/odsData";
 
@@ -9,7 +8,7 @@ export const odsDataService = {
         const queryClient = useQueryClient();
 
         return useMutation({
-            muntationFn: (odsData: OdsData) => {
+            mutationFn: (odsData: OdsData) => {
                 return broker.PostOdsDataAsync(odsData);
             },
             onSuccess: (variables: OdsData) => {
@@ -76,4 +75,15 @@ export const odsDataService = {
             }
         });
     },
+
+    useGetOdsChildren: (id: string) => {
+        const broker = new OdsDataBroker();
+
+        return useQuery({
+            queryKey: ["OdsChildren", {query: id}],
+            queryFn: () => broker.GetOdsChildrenByIdAsync(id),
+            staleTime: Infinity
+        })
+
+    }
 }

@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.ReIdentification.Core.Models.Foundations.PdsDatas;
@@ -16,14 +17,14 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
         public async Task ShouldThrowValidationExceptionOnRemoveIfIdIsInvalidAndLogItAsync()
         {
             // given
-            long invalidPdsDataId = default;
+            Guid invalidPdsDataId = Guid.Empty;
 
             var invalidPdsDataException =
                 new InvalidPdsDataException(
                     message: "Invalid pdsData. Please correct the errors and try again.");
 
             invalidPdsDataException.AddData(
-                key: nameof(PdsData.RowId),
+                key: nameof(PdsData.Id),
                 values: "Id is invalid");
 
             var expectedPdsDataValidationException =

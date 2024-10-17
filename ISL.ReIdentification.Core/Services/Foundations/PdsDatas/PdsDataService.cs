@@ -2,6 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Brokers.Loggings;
@@ -34,15 +36,15 @@ namespace ISL.ReIdentification.Core.Services.Foundations.PdsDatas
         public ValueTask<IQueryable<PdsData>> RetrieveAllPdsDatasAsync() =>
             TryCatch(this.reIdentificationStorageBroker.SelectAllPdsDatasAsync);
 
-        public ValueTask<PdsData> RetrievePdsDataByIdAsync(long pdsDataRowId) =>
+        public ValueTask<PdsData> RetrievePdsDataByIdAsync(Guid pdsDataId) =>
             TryCatch(async () =>
             {
-                ValidatePdsDataId(pdsDataRowId);
+                ValidatePdsDataId(pdsDataId);
 
                 PdsData maybePdsData = await this.reIdentificationStorageBroker
-                    .SelectPdsDataByIdAsync(pdsDataRowId);
+                    .SelectPdsDataByIdAsync(pdsDataId);
 
-                ValidateStoragePdsData(maybePdsData, pdsDataRowId);
+                ValidateStoragePdsData(maybePdsData, pdsDataId);
 
                 return maybePdsData;
             });
@@ -53,25 +55,28 @@ namespace ISL.ReIdentification.Core.Services.Foundations.PdsDatas
                 await ValidatePdsDataOnModifyAsync(pdsData);
 
                 PdsData maybePdsData =
-                    await this.reIdentificationStorageBroker.SelectPdsDataByIdAsync(pdsData.RowId);
+                    await this.reIdentificationStorageBroker.SelectPdsDataByIdAsync(pdsData.Id);
 
-                ValidateStoragePdsData(maybePdsData, pdsData.RowId);
+                ValidateStoragePdsData(maybePdsData, pdsData.Id);
                 ValidateAgainstStoragePdsDataOnModify(inputPdsData: pdsData, storagePdsData: maybePdsData);
 
                 return await this.reIdentificationStorageBroker.UpdatePdsDataAsync(pdsData);
             });
 
-        public ValueTask<PdsData> RemovePdsDataByIdAsync(long pdsDataRowId) =>
+        public ValueTask<PdsData> RemovePdsDataByIdAsync(Guid pdsDataId) =>
             TryCatch(async () =>
             {
-                ValidatePdsDataId(pdsDataRowId);
+                ValidatePdsDataId(pdsDataId);
 
                 PdsData maybePdsData = await this.reIdentificationStorageBroker
-                    .SelectPdsDataByIdAsync(pdsDataRowId);
+                    .SelectPdsDataByIdAsync(pdsDataId);
 
-                ValidateStoragePdsData(maybePdsData, pdsDataRowId);
+                ValidateStoragePdsData(maybePdsData, pdsDataId);
 
                 return await this.reIdentificationStorageBroker.DeletePdsDataAsync(maybePdsData);
             });
+
+        public ValueTask<bool> HasAccessToPatient(string pseudoNhsNumber, List<string> organisationCodes) =>
+            throw new NotImplementedException();
     }
 }

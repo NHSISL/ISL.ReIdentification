@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.ReIdentification.Core.Models.Foundations.PdsDatas;
@@ -16,14 +17,14 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
         public async Task ShouldThrowValidationExceptionOnRetrieveByIdIfIdIsInvalidAndLogItAsync()
         {
             // given
-            long invalidPdsDataId = default;
+            Guid invalidPdsDataId = Guid.Empty;
 
             var invalidPdsDataException =
                 new InvalidPdsDataException(
                     message: "Invalid pdsData. Please correct the errors and try again.");
 
             invalidPdsDataException.AddData(
-                key: nameof(PdsData.RowId),
+                key: nameof(PdsData.Id),
                 values: "Id is invalid");
 
             var expectedPdsDataValidationException =
@@ -49,7 +50,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                         Times.Once);
 
             this.reIdentificationStorageBroker.Verify(broker =>
-                broker.SelectPdsDataByIdAsync(It.IsAny<long>()),
+                broker.SelectPdsDataByIdAsync(It.IsAny<Guid>()),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -60,7 +61,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
         public async Task ShouldThrowNotFoundExceptionOnRetrieveByIdIfPdsDataIsNotFoundAndLogItAsync()
         {
             //given
-            long somePdsDataId = GetRandomNumber();
+            Guid somePdsDataId = Guid.NewGuid();
             PdsData noPdsData = null;
             var notFoundPdsDataException =
                 new NotFoundPdsDataException(message: $"PdsData not found with Id: {somePdsDataId}");
@@ -71,7 +72,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                     innerException: notFoundPdsDataException);
 
             this.reIdentificationStorageBroker.Setup(broker =>
-                broker.SelectPdsDataByIdAsync(It.IsAny<long>()))
+                broker.SelectPdsDataByIdAsync(It.IsAny<Guid>()))
                     .ReturnsAsync(noPdsData);
 
             //when
@@ -86,7 +87,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
             actualPdsDataValidationException.Should().BeEquivalentTo(expectedPdsDataValidationException);
 
             this.reIdentificationStorageBroker.Verify(broker =>
-                broker.SelectPdsDataByIdAsync(It.IsAny<long>()),
+                broker.SelectPdsDataByIdAsync(It.IsAny<Guid>()),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>

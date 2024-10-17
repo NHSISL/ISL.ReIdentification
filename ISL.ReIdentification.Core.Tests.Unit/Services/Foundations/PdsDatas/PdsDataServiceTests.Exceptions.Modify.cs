@@ -34,7 +34,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                     innerException: failedStoragePdsDataException);
 
             this.reIdentificationStorageBroker.Setup(broker =>
-                broker.SelectPdsDataByIdAsync(randomPdsData.RowId))
+                broker.SelectPdsDataByIdAsync(randomPdsData.Id))
                     .ThrowsAsync(sqlException);
 
             // when
@@ -50,7 +50,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                 .BeEquivalentTo(expectedPdsDataDependencyException);
 
             this.reIdentificationStorageBroker.Verify(broker =>
-                broker.SelectPdsDataByIdAsync(randomPdsData.RowId),
+                broker.SelectPdsDataByIdAsync(randomPdsData.Id),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -88,7 +88,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                     innerException: invalidPdsDataReferenceException);
 
             this.reIdentificationStorageBroker.Setup(broker =>
-                broker.SelectPdsDataByIdAsync(somePdsData.RowId))
+                broker.SelectPdsDataByIdAsync(somePdsData.Id))
                     .ThrowsAsync(foreignKeyConstraintConflictException);
 
             // when
@@ -104,7 +104,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                 .BeEquivalentTo(expectedPdsDataDependencyValidationException);
 
             this.reIdentificationStorageBroker.Verify(broker =>
-                broker.SelectPdsDataByIdAsync(somePdsData.RowId),
+                broker.SelectPdsDataByIdAsync(somePdsData.Id),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -137,7 +137,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                     innerException: failedOperationPdsDataException);
 
             this.reIdentificationStorageBroker.Setup(broker =>
-                broker.SelectPdsDataByIdAsync(randomPdsData.RowId))
+                broker.SelectPdsDataByIdAsync(randomPdsData.Id))
                     .ThrowsAsync(databaseUpdateException);
 
             // when
@@ -153,7 +153,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                 .BeEquivalentTo(expectedPdsDataDependencyException);
 
             this.reIdentificationStorageBroker.Verify(broker =>
-                broker.SelectPdsDataByIdAsync(randomPdsData.RowId),
+                broker.SelectPdsDataByIdAsync(randomPdsData.Id),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -187,7 +187,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                     innerException: lockedPdsDataException);
 
             this.reIdentificationStorageBroker.Setup(broker =>
-                broker.SelectPdsDataByIdAsync(randomPdsData.RowId))
+                broker.SelectPdsDataByIdAsync(randomPdsData.Id))
                     .ThrowsAsync(databaseUpdateConcurrencyException);
 
             // when
@@ -203,7 +203,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                 .BeEquivalentTo(expectedPdsDataDependencyValidationException);
 
             this.reIdentificationStorageBroker.Verify(broker =>
-                broker.SelectPdsDataByIdAsync(randomPdsData.RowId),
+                broker.SelectPdsDataByIdAsync(randomPdsData.Id),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -237,7 +237,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                     innerException: failedPdsDataServiceException);
 
             this.reIdentificationStorageBroker.Setup(broker =>
-                broker.SelectPdsDataByIdAsync(randomPdsData.RowId))
+                broker.SelectPdsDataByIdAsync(randomPdsData.Id))
                     .ThrowsAsync(serviceException);
 
             // when
@@ -253,7 +253,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                 .BeEquivalentTo(expectedPdsDataServiceException);
 
             this.reIdentificationStorageBroker.Verify(broker =>
-                broker.SelectPdsDataByIdAsync(randomPdsData.RowId),
+                broker.SelectPdsDataByIdAsync(randomPdsData.Id),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
