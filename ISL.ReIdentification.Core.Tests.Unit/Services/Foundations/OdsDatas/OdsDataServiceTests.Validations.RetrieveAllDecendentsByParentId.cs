@@ -15,7 +15,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
     public partial class OdsDataServiceTests
     {
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnRetrieveChildrenByParentIdIsInvalidAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnRetrieveAllDecendentsByParentIdIsInvalidAndLogItAsync()
         {
             // given
             var invalidOdsDataId = Guid.Empty;
@@ -35,7 +35,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
 
             // when
             ValueTask<List<OdsData>> retrieveOdsDataByIdTask =
-                this.odsDataService.RetrieveChildrenByParentId(invalidOdsDataId);
+                this.odsDataService.RetrieveAllDecendentsByParentId(invalidOdsDataId);
 
             OdsDataValidationException actualOdsDataValidationException =
                 await Assert.ThrowsAsync<OdsDataValidationException>(
@@ -59,7 +59,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
         }
 
         [Fact]
-        public async Task ShouldThrowNotFoundExceptionOnRetrieveChildrenByParentIdIfOdsDataIsNotFoundAndLogItAsync()
+        public async Task ShouldThrowNotFoundExceptionOnRetrieveAllDecendentsByParentIdIfOdsDataIsNotFoundAndLogItAsync()
         {
             //given
             Guid someOdsDataId = Guid.NewGuid();
@@ -78,7 +78,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
 
             //when
             ValueTask<List<OdsData>> retrieveOdsDataByIdTask =
-                this.odsDataService.RetrieveChildrenByParentId(someOdsDataId);
+                this.odsDataService.RetrieveAllDecendentsByParentId(someOdsDataId);
 
             OdsDataValidationException actualOdsDataValidationException =
                 await Assert.ThrowsAsync<OdsDataValidationException>(
