@@ -84,8 +84,7 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
                                 value={pseudoCode}
                                 maxLength={10}
                                 onChange={handlePseudoCodeChange}
-                                required
-                            />
+                                required />
 
                             <Form.Label>Lookup:</Form.Label>
                             <Form.Select
@@ -107,16 +106,12 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
                                 value={purpose}
                                 onChange={handlePurposeChange}
                                 maxLength={255}
-                                required
-                            />
+                                required />
                         </Form.Group>
-
                         <br />
                         <Button type="submit">Get NHS Number</Button>
                     </Form>
                     <br />
-
-
                     {successfullAccessRequest !== null && (
                         <>
                             {successfullAccessRequest.identificationRequest ? (
