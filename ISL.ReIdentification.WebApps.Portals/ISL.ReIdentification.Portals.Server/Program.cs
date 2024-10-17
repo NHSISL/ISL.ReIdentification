@@ -35,6 +35,13 @@ using ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Models.Foundations.OdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.PdsDatas;
+using ISL.ReIdentification.Core.Services.Coordinations.Identifications;
+using ISL.ReIdentification.Core.Services.Orchestrations.Identifications;
+using ISL.ReIdentification.Core.Services.Orchestrations.Persists;
+using ISL.ReIdentification.Core.Services.Foundations.Notifications;
+using ISL.ReIdentification.Core.Services.Foundations.ReIdentifications;
+using ISL.ReIdentification.Core.Brokers.NECS;
+using ISL.ReIdentification.Core.Models.Brokers.NECS;
 
 namespace ISL.ReIdentification.Portals.Server
 {
@@ -60,7 +67,7 @@ namespace ISL.ReIdentification.Portals.Server
             builder.Services.AddSwaggerGen();
             builder.Services.AddControllers();
             AddProviders(builder.Services, builder.Configuration);
-            AddBrokers(builder.Services);
+            AddBrokers(builder.Services, builder.Configuration);
             AddFoundationServices(builder.Services);
             AddProcessingServices(builder.Services);
             AddOrchestrationServices(builder.Services);
@@ -140,13 +147,20 @@ namespace ISL.ReIdentification.Portals.Server
             services.AddTransient<INotificationProvider, GovukNotifyProvider>();
         }
 
-        private static void AddBrokers(IServiceCollection services)
+        private static void AddBrokers(IServiceCollection services, IConfiguration configuration)
         {
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
             services.AddTransient<ILoggingBroker, LoggingBroker>();
             services.AddTransient<IReIdentificationStorageBroker, ReIdentificationStorageBroker>();
             services.AddTransient<INotificationBroker, NotificationBroker>();
+
+            NECSConfiguration necsConfiguration = configuration
+                .GetSection("necsConfiguration")
+                    .Get<NECSConfiguration>();
+
+            services.AddSingleton(necsConfiguration);
+            services.AddTransient<INECSBroker, NECSBroker>();
         }
 
         private static void AddFoundationServices(IServiceCollection services)
@@ -159,6 +173,8 @@ namespace ISL.ReIdentification.Portals.Server
             services.AddTransient<IUserAccessService, UserAccessService>();
             services.AddTransient<IImpersonationContextService, ImpersonationContextService>();
             services.AddTransient<ICsvIdentificationRequestService, CsvIdentificationRequestService>();
+            services.AddTransient<INotificationService, NotificationService>();
+            services.AddTransient<IReIdentificationService, ReIdentificationService>();
         }
 
         private static void AddProcessingServices(IServiceCollection services)
@@ -167,9 +183,15 @@ namespace ISL.ReIdentification.Portals.Server
         private static void AddOrchestrationServices(IServiceCollection services)
         {
             services.AddTransient<IAccessOrchestrationService, AccessOrchestrationService>();
+            services.AddTransient<IPersistanceOrchestrationService, PersistanceOrchestrationService>();
+            services.AddTransient<IAccessOrchestrationService, AccessOrchestrationService>();
+            services.AddTransient<IIdentificationOrchestrationService, IdentificationOrchestrationService>();
+            services.AddTransient<ICsvIdentificationRequestService, CsvIdentificationRequestService>();
         }
 
         private static void AddCoordinationServices(IServiceCollection services)
-        { }
+        {
+            services.AddTransient<IIdentificationCoordinationService, IdentificationCoordinationService>();
+        }
     }
 }

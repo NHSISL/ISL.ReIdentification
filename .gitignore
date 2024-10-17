@@ -374,3 +374,5 @@ local.appsettings.json
 /LHDS.Core/appsettings.json
 /LHDS.Core.Tests.Integration.Addresses/Resources/Ordnance/0040176014-6414006-1.zip
 /LHDS.Core.Tests.Integration.EmisLandings/local.appsettings.json
+/ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Server/appsettings.Development.json
+/ISL.Reidentification.WebApps.Configurations/ISL.Reidentification.Configurations.Server/appsettings.Development.json

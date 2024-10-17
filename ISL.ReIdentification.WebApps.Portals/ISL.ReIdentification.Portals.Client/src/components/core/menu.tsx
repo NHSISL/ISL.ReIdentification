@@ -26,31 +26,17 @@ const MenuComponent: React.FC = () => {
             </ListGroup.Item>
 
             <ListGroup.Item
-                className={`bg-dark text-white ${activePath === '/' ? 'active' : ''}`}
-                onClick={() => handleItemClick('/')}>
+                className={`bg-dark text-white ${activePath === '/reIdentification' ? 'active' : ''}`}
+                onClick={() => handleItemClick('/reIdentification')}>
                 <FontAwesomeIcon icon={faHome} className="me-2 fa-icon" />
-                <SecuredLink to="/home">Product 3 - CSV Upload</SecuredLink>
+                <SecuredLink to="/reIdentification">Product 4 - Simple Re-Id</SecuredLink>
             </ListGroup.Item>
 
             <ListGroup.Item
-                className={`bg-dark text-white ${activePath === '/' ? 'active' : ''}`}
-                onClick={() => handleItemClick('/')}>
+                className={`bg-dark text-white ${activePath === '/csvReIdentification' ? 'active' : ''}`}
+                onClick={() => handleItemClick('/csvReIdentification')}>
                 <FontAwesomeIcon icon={faHome} className="me-2 fa-icon" />
-                <SecuredLink to="/home">Product 4 - Simple Re-Id</SecuredLink>
-            </ListGroup.Item>
-
-            <ListGroup.Item
-                className={`bg-dark text-white ${activePath === '/' ? 'active' : ''}`}
-                onClick={() => handleItemClick('/')}>
-                <FontAwesomeIcon icon={faHome} className="me-2 fa-icon" />
-                <SecuredLink to="/home">Product 5 - CSV ReId Storage</SecuredLink>
-            </ListGroup.Item>
-
-            <ListGroup.Item
-                className={`bg-dark text-white ${activePath === '/' ? 'active' : ''}`}
-                onClick={() => handleItemClick('/')}>
-                <FontAwesomeIcon icon={faHome} className="me-2 fa-icon" />
-                <SecuredLink to="/home">PowerBi Route (Hide)</SecuredLink>
+                <SecuredLink to="/csvReIdentification">Product 3 - CSV Upload</SecuredLink>
             </ListGroup.Item>
 
         </ListGroup>

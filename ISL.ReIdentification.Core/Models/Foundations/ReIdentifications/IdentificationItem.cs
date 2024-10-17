@@ -9,7 +9,7 @@ namespace ISL.ReIdentification.Core.Models.Foundations.ReIdentifications
         public string RowNumber { get; set; } = string.Empty;
         public string Identifier { get; set; } = string.Empty;
         public string Message { get; set; } = string.Empty;
-        public bool? HasAccess { get; set; } = null;
+        public bool HasAccess { get; set; } = false;
         public bool IsReidentified { get; set; } = false;
     }
 }

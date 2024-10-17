@@ -1,16 +1,16 @@
 export class CsvIdentificationRequest {
-    public id: string;
-    public requesterFirstName: string;
-    public requesterLastName: string;
-    public requesterEmail: string;
-    public recipientFirstName: string;
-    public recipientLastName: string;
-    public reason: string;
-    public purpose: string;
-    public organisation: string;
-    public data: Uint8Array;
-    public sha256Hash: string;
-    public identifierColumn: string;
+    public id?: string;
+    public requesterFirstName?: string;
+    public requesterLastName?: string;
+    public requesterEmail?: string;
+    public recipientFirstName?: string;
+    public recipientLastName?: string;
+    public reason?: string;
+    public purpose?: string;
+    public organisation?: string;
+    public data?: Uint8Array;
+    public sha256Hash?: string;
+    public identifierColumn?: string;
     public createdBy?: string;
     public createdDate?: Date | undefined;
     public updatedBy?: string;
