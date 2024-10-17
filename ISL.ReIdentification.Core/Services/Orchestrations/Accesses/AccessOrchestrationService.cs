@@ -107,27 +107,17 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Accesses
             return organisationsForUser;
         }
 
-        virtual internal async ValueTask<bool> UserHasAccessToPatientAsync(string identifier, List<string> orgs)
+        virtual internal async ValueTask<bool> UserHasAccessToPatientAsync(string identifier, List<string> organisationCodes)
         {
-            ValidateOnUserHasAccessToPatientAsync(identifier, orgs);
+            ValidateOnUserHasAccessToPatientAsync(identifier, organisationCodes);
+
             DateTimeOffset currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
             IQueryable<PdsData> pdsDatas =
                         await this.pdsDataService.RetrieveAllPdsDatasAsync();
 
-            bool userHasAccess = false;
-            //pdsDatas
-            //    .Where(pdsData =>
-            //            pdsData.PseudoNhsNumber == identifier
-            //        && (pdsData.PrimaryCareProviderBusinessEffectiveToDate == null
-            //            || pdsData.PrimaryCareProviderBusinessEffectiveToDate > currentDateTime)
-            //        && (pdsData.PrimaryCareProviderBusinessEffectiveFromDate <= currentDateTime)
-            //        && (orgs.Contains(pdsData.CcgOfRegistration)
-            //            || orgs.Contains(pdsData.CurrentCcgOfRegistration)
-            //            || orgs.Contains(pdsData.CurrentIcbOfRegistration)
-            //            || orgs.Contains(pdsData.IcbOfRegistration))
-            //        )
-            //    .Any();
+            bool userHasAccess = pdsDatas.Where(pdsData => 
+                pdsData.PseudoNhsNumber == identifier && organisationCodes.Contains(pdsData.OrgCode)).Any();
 
             return userHasAccess;
         }
