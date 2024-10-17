@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Microsoft.SqlServer.Types;
 
 #nullable disable
 
@@ -205,6 +206,14 @@ namespace ISL.ReIdentification.Core.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("ClientId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClientSecret")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -221,16 +230,12 @@ namespace ISL.ReIdentification.Core.Migrations
                     b.Property<bool>("IsApproved")
                         .HasColumnType("bit");
 
-                    b.Property<string>("ManagedIdentityName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Organisation")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<string>("PipelineName")
+                    b.Property<string>("ProjectName")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
@@ -240,30 +245,6 @@ namespace ISL.ReIdentification.Core.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Reason")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RecipientDisplayName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RecipientEmail")
-                        .IsRequired()
-                        .HasMaxLength(320)
-                        .HasColumnType("nvarchar(320)");
-
-                    b.Property<Guid>("RecipientEntraUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("RecipientFirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RecipientJobTitle")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RecipientLastName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -291,6 +272,30 @@ namespace ISL.ReIdentification.Core.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ResponsiblePersonDisplayName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResponsiblePersonEmail")
+                        .IsRequired()
+                        .HasMaxLength(320)
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<Guid>("ResponsiblePersonEntraUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ResponsiblePersonFirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResponsiblePersonJobTitle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResponsiblePersonLastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -301,7 +306,7 @@ namespace ISL.ReIdentification.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PipelineName")
+                    b.HasIndex("ProjectName")
                         .IsUnique();
 
                     b.ToTable("ImpersonationContexts");
@@ -354,89 +359,60 @@ namespace ISL.ReIdentification.Core.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Depth")
-                        .HasColumnType("int");
+                    b.Property<bool>("HasChildren")
+                        .HasColumnType("bit");
 
-                    b.Property<string>("OrganisationCode_Parent")
+                    b.Property<SqlHierarchyId?>("OdsHierarchy")
+                        .HasColumnType("hierarchyid");
+
+                    b.Property<string>("OrganisationCode")
                         .IsRequired()
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
 
-                    b.Property<string>("OrganisationCode_Root")
+                    b.Property<string>("OrganisationName")
                         .IsRequired()
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
-                    b.Property<string>("OrganisationPrimaryRole_Parent")
-                        .IsRequired()
-                        .HasMaxLength(5)
-                        .HasColumnType("nvarchar(5)");
-
-                    b.Property<string>("OrganisationPrimaryRole_Root")
-                        .IsRequired()
-                        .HasMaxLength(5)
-                        .HasColumnType("nvarchar(5)");
-
-                    b.Property<string>("Path")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<long>("PdsDataRowId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTimeOffset>("RelationshipEndDate")
+                    b.Property<DateTimeOffset?>("RelationshipWithParentEndDate")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<DateTimeOffset>("RelationshipStartDate")
+                    b.Property<DateTimeOffset?>("RelationshipWithParentStartDate")
                         .HasColumnType("datetimeoffset");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("PdsDataRowId");
 
                     b.ToTable("OdsDatas");
                 });
 
             modelBuilder.Entity("ISL.ReIdentification.Core.Models.Foundations.PdsDatas.PdsData", b =>
                 {
-                    b.Property<long>("RowId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                        .HasColumnType("uniqueidentifier");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("RowId"));
-
-                    b.Property<string>("CcgOfRegistration")
-                        .HasMaxLength(5)
-                        .HasColumnType("nvarchar(5)");
-
-                    b.Property<string>("CurrentCcgOfRegistration")
-                        .HasMaxLength(5)
-                        .HasColumnType("nvarchar(5)");
-
-                    b.Property<string>("CurrentIcbOfRegistration")
-                        .HasMaxLength(5)
-                        .HasColumnType("nvarchar(5)");
-
-                    b.Property<string>("IcbOfRegistration")
-                        .HasMaxLength(5)
-                        .HasColumnType("nvarchar(5)");
-
-                    b.Property<string>("PrimaryCareProvider")
-                        .HasMaxLength(8)
-                        .HasColumnType("nvarchar(8)");
-
-                    b.Property<DateTimeOffset?>("PrimaryCareProviderBusinessEffectiveFromDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<DateTimeOffset?>("PrimaryCareProviderBusinessEffectiveToDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("PseudoNhsNumber")
+                    b.Property<string>("OrgCode")
+                        .IsRequired()
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
 
-                    b.HasKey("RowId");
+                    b.Property<string>("OrganisationName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PseudoNhsNumber")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<DateTimeOffset?>("RelationshipWithOrganisationEffectiveFromDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("RelationshipWithOrganisationEffectiveToDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
 
                     b.ToTable("PdsDatas");
                 });
@@ -505,22 +481,6 @@ namespace ISL.ReIdentification.Core.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("UserAccesses");
-                });
-
-            modelBuilder.Entity("ISL.ReIdentification.Core.Models.Foundations.OdsDatas.OdsData", b =>
-                {
-                    b.HasOne("ISL.ReIdentification.Core.Models.Foundations.PdsDatas.PdsData", "PdsData")
-                        .WithMany("OdsDatas")
-                        .HasForeignKey("PdsDataRowId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("PdsData");
-                });
-
-            modelBuilder.Entity("ISL.ReIdentification.Core.Models.Foundations.PdsDatas.PdsData", b =>
-                {
-                    b.Navigation("OdsDatas");
                 });
 #pragma warning restore 612, 618
         }

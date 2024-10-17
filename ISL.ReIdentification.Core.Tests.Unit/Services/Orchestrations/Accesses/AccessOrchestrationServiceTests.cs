@@ -299,18 +299,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
             PdsData randomPdsData = CreateRandomPdsData(GetRandomPastDateTimeOffset());
             PdsData nullEffectiveToPdsData = randomPdsData.DeepClone();
             PdsData futureEffectiveToPdsData = randomPdsData.DeepClone();
-            nullEffectiveToPdsData.PrimaryCareProviderBusinessEffectiveToDate = null;
-            nullEffectiveToPdsData.CcgOfRegistration = organisation;
-            futureEffectiveToPdsData.PrimaryCareProviderBusinessEffectiveToDate = GetRandomFutureDateTimeOffset();
-            futureEffectiveToPdsData.CcgOfRegistration = organisation;
             PdsData basePdsData = randomPdsData.DeepClone();
-            basePdsData.PrimaryCareProviderBusinessEffectiveToDate = null;
             PdsData currentCcgOfRegistrationPdsData = basePdsData.DeepClone();
             PdsData currentIcbOfRegistration = basePdsData.DeepClone();
             PdsData icbOfRegistration = basePdsData.DeepClone();
-            currentCcgOfRegistrationPdsData.CurrentCcgOfRegistration = organisation;
-            currentIcbOfRegistration.CurrentIcbOfRegistration = organisation;
-            icbOfRegistration.IcbOfRegistration = organisation;
 
             return new TheoryData<PdsData, string>
             {
@@ -331,18 +323,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
             PdsData pastEffectiveToPdsData = randomPdsData.DeepClone();
             PdsData futureEffectiveFromPdsData = randomPdsData.DeepClone();
             PdsData notRegisteredPdsData = randomPdsData.DeepClone();
-            differentIdentifierPdsData.PrimaryCareProviderBusinessEffectiveToDate = null;
-            differentIdentifierPdsData.CcgOfRegistration = organisation;
-            pastEffectiveToPdsData.PrimaryCareProviderBusinessEffectiveToDate = GetRandomPastDateTimeOffset();
-            pastEffectiveToPdsData.CcgOfRegistration = organisation;
-            futureEffectiveFromPdsData.PrimaryCareProviderBusinessEffectiveFromDate = GetRandomFutureDateTimeOffset();
-            notRegisteredPdsData.PrimaryCareProviderBusinessEffectiveToDate = null;
-            notRegisteredPdsData.PrimaryCareProviderBusinessEffectiveFromDate = GetRandomPastDateTimeOffset();
             string differentOrganisation = GetRandomString();
-            notRegisteredPdsData.CcgOfRegistration = differentOrganisation;
-            notRegisteredPdsData.CurrentCcgOfRegistration = differentOrganisation;
-            notRegisteredPdsData.CurrentIcbOfRegistration = differentOrganisation;
-            notRegisteredPdsData.IcbOfRegistration = differentOrganisation;
 
             return new TheoryData<PdsData, string, bool>
             {

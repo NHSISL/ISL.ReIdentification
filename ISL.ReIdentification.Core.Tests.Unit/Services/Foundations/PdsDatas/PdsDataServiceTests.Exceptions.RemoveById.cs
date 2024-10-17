@@ -33,12 +33,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                     innerException: failedStoragePdsDataException);
 
             this.reIdentificationStorageBroker.Setup(broker =>
-                broker.SelectPdsDataByIdAsync(randomPdsData.RowId))
+                broker.SelectPdsDataByIdAsync(randomPdsData.Id))
                     .ThrowsAsync(sqlException);
 
             // when
             ValueTask<PdsData> addPdsDataTask =
-                this.pdsDataService.RemovePdsDataByIdAsync(randomPdsData.RowId);
+                this.pdsDataService.RemovePdsDataByIdAsync(randomPdsData.Id);
 
             PdsDataDependencyException actualPdsDataDependencyException =
                 await Assert.ThrowsAsync<PdsDataDependencyException>(
@@ -49,7 +49,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                 .BeEquivalentTo(expectedPdsDataDependencyException);
 
             this.reIdentificationStorageBroker.Verify(broker =>
-                broker.SelectPdsDataByIdAsync(randomPdsData.RowId),
+                broker.SelectPdsDataByIdAsync(randomPdsData.Id),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -69,7 +69,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
         public async Task ShouldThrowDependencyValidationOnRemoveIfDatabaseUpdateConcurrencyErrorOccursAndLogItAsync()
         {
             // given
-            long somePdsDataId = GetRandomNumber();
+            Guid somePdsDataId = Guid.NewGuid();
 
             var databaseUpdateConcurrencyException =
                 new DbUpdateConcurrencyException();
@@ -85,7 +85,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                     innerException: lockedPdsDataException);
 
             this.reIdentificationStorageBroker.Setup(broker =>
-                broker.SelectPdsDataByIdAsync(It.IsAny<long>()))
+                broker.SelectPdsDataByIdAsync(It.IsAny<Guid>()))
                     .ThrowsAsync(databaseUpdateConcurrencyException);
 
             // when
@@ -101,7 +101,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                 .BeEquivalentTo(expectedPdsDataDependencyValidationException);
 
             this.reIdentificationStorageBroker.Verify(broker =>
-                broker.SelectPdsDataByIdAsync(It.IsAny<long>()),
+                broker.SelectPdsDataByIdAsync(It.IsAny<Guid>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -121,7 +121,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
         public async Task ShouldThrowDependencyExceptionOnRemoveWhenSqlExceptionOccursAndLogItAsync()
         {
             // given
-            long somePdsDataId = GetRandomNumber();
+            Guid somePdsDataId = Guid.NewGuid();
             SqlException sqlException = CreateSqlException();
 
             var failedStoragePdsDataException =
@@ -135,7 +135,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                     innerException: failedStoragePdsDataException);
 
             this.reIdentificationStorageBroker.Setup(broker =>
-                broker.SelectPdsDataByIdAsync(It.IsAny<long>()))
+                broker.SelectPdsDataByIdAsync(It.IsAny<Guid>()))
                     .ThrowsAsync(sqlException);
 
             // when
@@ -151,7 +151,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                 .BeEquivalentTo(expectedPdsDataDependencyException);
 
             this.reIdentificationStorageBroker.Verify(broker =>
-                broker.SelectPdsDataByIdAsync(It.IsAny<long>()),
+                broker.SelectPdsDataByIdAsync(It.IsAny<Guid>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -167,7 +167,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
         public async Task ShouldThrowServiceExceptionOnRemoveIfServiceErrorOccursAndLogItAsync()
         {
             // given
-            long somePdsDataId = GetRandomNumber();
+            Guid somePdsDataId = Guid.NewGuid();
             var serviceException = new Exception();
 
             var failedPdsDataServiceException =
@@ -181,7 +181,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                     innerException: failedPdsDataServiceException);
 
             this.reIdentificationStorageBroker.Setup(broker =>
-                broker.SelectPdsDataByIdAsync(It.IsAny<long>()))
+                broker.SelectPdsDataByIdAsync(It.IsAny<Guid>()))
                     .ThrowsAsync(serviceException);
 
             // when
@@ -197,7 +197,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                 .BeEquivalentTo(expectedPdsDataServiceException);
 
             this.reIdentificationStorageBroker.Verify(broker =>
-                broker.SelectPdsDataByIdAsync(It.IsAny<long>()),
+                broker.SelectPdsDataByIdAsync(It.IsAny<Guid>()),
                         Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>

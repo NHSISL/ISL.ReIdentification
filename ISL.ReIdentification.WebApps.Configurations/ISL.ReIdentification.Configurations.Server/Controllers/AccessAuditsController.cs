@@ -8,11 +8,13 @@ using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits.Exceptions;
 using ISL.ReIdentification.Core.Services.Foundations.AccessAudits;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
 
 namespace ISL.ReIdentification.Configurations.Server.Controllers
 {
+    [Authorize(Roles = "Administrators")]
     [ApiController]
     [Route("api/[controller]")]
     public class AccessAuditsController : RESTFulController

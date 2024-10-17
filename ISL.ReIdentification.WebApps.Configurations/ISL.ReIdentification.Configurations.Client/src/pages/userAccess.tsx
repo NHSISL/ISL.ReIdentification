@@ -1,4 +1,4 @@
-import { Container } from "react-bootstrap"
+import { Button, Container } from "react-bootstrap"
 import BreadCrumbBase from "../components/bases/layouts/BreadCrumb/BreadCrumbBase"
 import UserAccessTable from "../components/userAccess/userAccessTable"
 
@@ -16,6 +16,7 @@ export const UserAccess = () => {
                     <p>Role Needs to be in Security Matrix and Azure AD against user.</p>
                     <UserAccessTable />
                 </div>
+                <Button href="userAccess/newUser">Add New User</Button>
             </section>
         </Container>
     )

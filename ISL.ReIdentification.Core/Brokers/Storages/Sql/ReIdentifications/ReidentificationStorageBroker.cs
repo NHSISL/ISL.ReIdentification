@@ -38,7 +38,7 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications
             string connectionString = configuration
                 .GetConnectionString(name: "ReIdentificationConnection") ?? string.Empty;
 
-            optionsBuilder.UseSqlServer(connectionString);
+            optionsBuilder.UseSqlServer(connectionString, config => config.UseHierarchyId());
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

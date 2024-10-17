@@ -44,6 +44,17 @@ class OdsDataBroker {
             .then(result => new OdsData(result.data));
     }
 
+    async GetOdsChildrenByIdAsync(id: string) {
+        const url = `${this.relativeOdsDataUrl}/GetChildren?id=${id}`;
+        
+        if(!id) {
+            return [];
+        }
+
+        return await this.apiBroker.GetAsync(url)
+            .then(result => result.data.map((odsData: any) => new OdsData(odsData)));
+    }
+
     async PutOdsDataAsync(odsData: OdsData) {
         return await this.apiBroker.PutAsync(this.relativeOdsDataUrl, odsData)
             .then(result => new OdsData(result.data));

@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
@@ -16,8 +17,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
         public async Task ShouldRemovePdsDataByIdAsync()
         {
             // given
-            long randomId = GetRandomNumber();
-            long inputPdsDataRowId = randomId;
+            Guid randomId = Guid.NewGuid();
+            Guid inputPdsDataId = randomId;
             PdsData randomPdsData = CreateRandomPdsData();
             PdsData storagePdsData = randomPdsData;
             PdsData expectedInputPdsData = storagePdsData;
@@ -25,7 +26,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
             PdsData expectedPdsData = deletedPdsData.DeepClone();
 
             this.reIdentificationStorageBroker.Setup(broker =>
-                broker.SelectPdsDataByIdAsync(inputPdsDataRowId))
+                broker.SelectPdsDataByIdAsync(inputPdsDataId))
                     .ReturnsAsync(storagePdsData);
 
             this.reIdentificationStorageBroker.Setup(broker =>
@@ -34,13 +35,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
 
             // when
             PdsData actualPdsData = await this.pdsDataService
-                .RemovePdsDataByIdAsync(inputPdsDataRowId);
+                .RemovePdsDataByIdAsync(inputPdsDataId);
 
             // then
             actualPdsData.Should().BeEquivalentTo(expectedPdsData);
 
             this.reIdentificationStorageBroker.Verify(broker =>
-                broker.SelectPdsDataByIdAsync(inputPdsDataRowId),
+                broker.SelectPdsDataByIdAsync(inputPdsDataId),
                     Times.Once);
 
             this.reIdentificationStorageBroker.Verify(broker =>

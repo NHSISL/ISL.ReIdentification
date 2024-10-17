@@ -2,16 +2,20 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Foundations.PdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.PdsDatas.Exceptions;
 using ISL.ReIdentification.Core.Services.Foundations.PdsDatas;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
 
 namespace ISL.ReIdentification.Configurations.Server.Controllers
 {
+    [Authorize(Roles = "Administrators")]
     [ApiController]
     [Route("api/[controller]")]
     public class PdsDataController : RESTFulController
@@ -22,6 +26,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             this.pdsDataService = pdsDataService;
 
         [HttpGet]
+        [EnableQuery(PageSize = 25)]
         public async ValueTask<ActionResult<IQueryable<PdsData>>> GetAsync()
         {
             try
@@ -41,7 +46,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
         }
 
         [HttpGet("{pdsDataId}")]
-        public async ValueTask<ActionResult<PdsData>> GetPdsDataByIdAsync(long pdsDataId)
+        public async ValueTask<ActionResult<PdsData>> GetPdsDataByIdAsync(Guid pdsDataId)
         {
             try
             {

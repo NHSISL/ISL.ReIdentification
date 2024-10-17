@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
@@ -11,6 +12,7 @@ using ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Foundations.OdsDatas;
 using ISL.ReIdentification.Core.Services.Foundations.OdsDatas;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
@@ -62,26 +64,59 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
             return randomOdsData;
         }
 
-        private static IQueryable<OdsData> CreateRandomOdsDatas()
+        private static List<OdsData> CreateRandomOdsDatas()
         {
             return CreateOdsDataFiller(dateTimeOffset: GetRandomDateTimeOffset())
                 .Create(count: GetRandomNumber())
-                    .AsQueryable();
+                    .ToList();
+        }
+
+        private static List<OdsData> CreateRandomOdsDataChildren(HierarchyId? parentHierarchyId)
+        {
+            if (parentHierarchyId == null)
+            {
+                parentHierarchyId = HierarchyId.Parse("/");
+            }
+
+            List<OdsData> children = CreateOdsDataFiller(dateTimeOffset: GetRandomDateTimeOffset())
+                .Create(count: GetRandomNumber())
+                    .ToList();
+
+            HierarchyId? lastChildHierarchy = null;
+
+            foreach (var child in children)
+            {
+                child.OdsHierarchy = parentHierarchyId.GetDescendant(lastChildHierarchy, null);
+                lastChildHierarchy = child.OdsHierarchy;
+            }
+
+            return children;
         }
 
         private static OdsData CreateRandomOdsData() =>
             CreateOdsDataFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
 
+        private static OdsData CreateRandomParentOdsData() =>
+            CreateOdsDataFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
+
         private static OdsData CreateRandomOdsData(DateTimeOffset dateTimeOffset) =>
             CreateOdsDataFiller(dateTimeOffset).Create();
 
-        private static Filler<OdsData> CreateOdsDataFiller(DateTimeOffset dateTimeOffset)
+        private static Filler<OdsData> CreateOdsDataFiller(
+            DateTimeOffset dateTimeOffset, HierarchyId? hierarchyId = null)
         {
             string user = Guid.NewGuid().ToString();
             var filler = new Filler<OdsData>();
 
+            if (hierarchyId == null)
+            {
+                hierarchyId = HierarchyId.Parse("/");
+            }
+
             filler.Setup()
-                .OnType<DateTimeOffset>().Use(dateTimeOffset);
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use((DateTimeOffset?)default)
+                .OnProperty(odsData => odsData.OdsHierarchy).Use(hierarchyId);
 
             return filler;
         }

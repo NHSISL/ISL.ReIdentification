@@ -2,11 +2,13 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 
 namespace ISL.ReIdentification.Portals.Server.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class FeaturesController : Controller
