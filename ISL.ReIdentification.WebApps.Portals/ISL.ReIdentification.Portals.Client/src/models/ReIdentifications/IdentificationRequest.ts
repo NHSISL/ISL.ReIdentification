@@ -15,7 +15,7 @@ export class IdentificationRequest {
 
     constructor(identificationRequest: IdentificationRequest) {
         this.id = identificationRequest.id || "";
-        this.identificationItems = identificationRequest.identificationItems || [];
+        this.identificationItems = identificationRequest.identificationItems || {};
         this.entraUserId = identificationRequest.entraUserId || "";
         this.givenName = identificationRequest.givenName || "";
         this.surname = identificationRequest.surname || "";

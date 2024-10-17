@@ -27,7 +27,7 @@ export class IdentificationRequestView {
         reason: string
     ) {
         this.id = id || "";
-        this.identificationItems = identificationItems || [];
+        this.identificationItems = identificationItems || {}
         this.entraUserId = entraUserId || "";
         this.givenName = givenName || "";
         this.surname = surname || "";
