@@ -2,7 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
+using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
@@ -53,7 +55,8 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
         {
             if (csvIdentificationRequest is null)
             {
-                throw new NullCsvIdentificationRequestException("CSV identification request is null.");
+                throw new Models.Foundations.ReIdentifications.Exceptions
+                    .NullCsvIdentificationRequestException("CSV identification request is null.");
             }
         }
 
@@ -63,6 +66,34 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             {
                 throw new NullImpersonationContextException("Impersonation context is null.");
             }
+        }
+
+        public static void ValidateCsvIdentificationRequestId(Guid csvIdentificationRequestId) =>
+            Validate((Rule: IsInvalid(csvIdentificationRequestId), Parameter: nameof(CsvIdentificationRequest.Id)));
+
+        private static dynamic IsInvalid(Guid id) => new
+        {
+            Condition = id == Guid.Empty,
+            Message = "Id is invalid"
+        };
+
+        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        {
+            var invalidCsvIdentificationRequestException =
+                new InvalidCsvIdentificationRequestException(
+                    message: "Invalid CSV identification request. Please correct the errors and try again.");
+
+            foreach ((dynamic rule, string parameter) in validations)
+            {
+                if (rule.Condition)
+                {
+                    invalidCsvIdentificationRequestException.UpsertDataList(
+                        key: parameter,
+                        value: rule.Message);
+                }
+            }
+
+            invalidCsvIdentificationRequestException.ThrowIfContainsErrors();
         }
     }
 }

@@ -71,39 +71,42 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             return await this.persistanceOrchestrationService.PersistCsvIdentificationRequestAsync(accessRequest);
         });
 
-        public async ValueTask<AccessRequest> ProcessCsvIdentificationRequestAsync(Guid csvIdentificationRequestId)
-        {
-            AccessRequest maybeAccessRequest = await this.persistanceOrchestrationService
-                .RetrieveCsvIdentificationRequestByIdAsync(csvIdentificationRequestId);
+        public ValueTask<AccessRequest> ProcessCsvIdentificationRequestAsync(Guid csvIdentificationRequestId) =>
+            TryCatch(async () =>
+            {
+                ValidateCsvIdentificationRequestId(csvIdentificationRequestId);
 
-            IdentificationRequest identificationRequest =
-                await ConvertCsvIdentificationRequestToIdentificationRequest(
-                    maybeAccessRequest.CsvIdentificationRequest);
+                AccessRequest maybeAccessRequest = await this.persistanceOrchestrationService
+                    .RetrieveCsvIdentificationRequestByIdAsync(csvIdentificationRequestId);
 
-            AccessRequest convertedAccessRequest = new AccessRequest();
-            EntraUser currentUser = await this.securityBroker.GetCurrentUser();
+                IdentificationRequest identificationRequest =
+                    await ConvertCsvIdentificationRequestToIdentificationRequest(
+                        maybeAccessRequest.CsvIdentificationRequest);
 
-            IdentificationRequest currentUserIdentificationRequest =
-                OverrideIdentificationRequestUserDetails(identificationRequest, currentUser);
+                AccessRequest convertedAccessRequest = new AccessRequest();
+                EntraUser currentUser = await this.securityBroker.GetCurrentUser();
 
-            convertedAccessRequest.IdentificationRequest = currentUserIdentificationRequest;
+                IdentificationRequest currentUserIdentificationRequest =
+                    OverrideIdentificationRequestUserDetails(identificationRequest, currentUser);
 
-            var returnedAccessRequest = await this.accessOrchestrationService
-                    .ValidateAccessForIdentificationRequestAsync(convertedAccessRequest);
+                convertedAccessRequest.IdentificationRequest = currentUserIdentificationRequest;
 
-            IdentificationRequest returnedIdentificationOrchestrationIdentificationRequest =
-                await this.identificationOrchestrationService.
-                    ProcessIdentificationRequestAsync(returnedAccessRequest.IdentificationRequest);
+                var returnedAccessRequest = await this.accessOrchestrationService
+                        .ValidateAccessForIdentificationRequestAsync(convertedAccessRequest);
 
-            CsvIdentificationRequest csvIdentificationRequest =
-                await ConvertIdentificationRequestToCsvIdentificationRequest(
-                    returnedIdentificationOrchestrationIdentificationRequest);
+                IdentificationRequest returnedIdentificationOrchestrationIdentificationRequest =
+                    await this.identificationOrchestrationService.
+                        ProcessIdentificationRequestAsync(returnedAccessRequest.IdentificationRequest);
 
-            AccessRequest reIdentifiedAccessRequest = new AccessRequest();
-            reIdentifiedAccessRequest.CsvIdentificationRequest = csvIdentificationRequest;
+                CsvIdentificationRequest csvIdentificationRequest =
+                    await ConvertIdentificationRequestToCsvIdentificationRequest(
+                        returnedIdentificationOrchestrationIdentificationRequest);
 
-            return reIdentifiedAccessRequest;
-        }
+                AccessRequest reIdentifiedAccessRequest = new AccessRequest();
+                reIdentifiedAccessRequest.CsvIdentificationRequest = csvIdentificationRequest;
+
+                return reIdentifiedAccessRequest;
+            });
 
         public ValueTask<AccessRequest> PersistsImpersonationContextAsync(AccessRequest accessRequest) =>
         TryCatch(async () =>
