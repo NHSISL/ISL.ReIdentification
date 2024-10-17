@@ -32,7 +32,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             outputIdentificationRequest.IdentificationItems.ForEach(item =>
             {
                 item.Identifier = "0000000000";
-                item.Message = "Failed to Re-Identify, Access hasn't been granted.";
+                item.Message = "Failed to Re-Identify. User do not have access to the organisation(s) associated with patient.";
             });
 
             IdentificationRequest expectedIdentificationRequest = outputIdentificationRequest.DeepClone();
