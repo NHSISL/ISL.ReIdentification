@@ -72,8 +72,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                 if (item.HasAccess is false)
                 {
                     item.Identifier = "0000000000";
-                    //TODO: Think of a good message.
-                    //item.Message = "Failed to Re-Identify, Access hasnt been granted.";
+                    item.Message = "Failed to Re-Identify, Access hasn't been granted.";
                 }
             }
 
