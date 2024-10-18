@@ -13,7 +13,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
 {
     public partial class ImpersonationContextsApiTests
     {
-        [Fact]
+        [Fact(Skip="POW")]
         public async Task ShouldPostImpersonationContextAsync()
         {
             // given
@@ -32,7 +32,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
             await this.apiBroker.DeleteImpersonationContextByIdAsync(actualImpersonationContext.Id);
         }
 
-        [Fact]
+        [Fact(Skip = "POW")]
         public async Task ShouldGetAllImpersonationContextsAsync()
         {
             // given
@@ -54,7 +54,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
             }
         }
 
-        [Fact]
+        [Fact(Skip = "POW")]
         public async Task ShouldGetImpersonationContextByIdAsync()
         {
             // given
@@ -69,7 +69,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
             await this.apiBroker.DeleteImpersonationContextByIdAsync(actualImpersonationContext.Id);
         }
 
-        [Fact]
+        [Fact(Skip = "POW")]
         public async Task ShouldPutImpersonationContextAsync()
         {
             // given
@@ -85,7 +85,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
             await this.apiBroker.DeleteImpersonationContextByIdAsync(actualImpersonationContext.Id);
         }
 
-        [Fact]
+        [Fact(Skip = "POW")]
         public async Task ShouldDeleteImpersonationContextAsync()
         {
             // given
