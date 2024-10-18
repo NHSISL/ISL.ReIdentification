@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
-using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using Moq;
 
@@ -21,11 +20,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             // given
             var invalidCsvIdentificationRequestId = Guid.Empty;
 
-            var invalidCsvIdentificationRequestException =
-                new InvalidCsvIdentificationRequestException(
-                    message: "Invalid CSV identification request. Please correct the errors and try again.");
+            var invalidIdentificationCoordinationException =
+                new InvalidIdentificationCoordinationException(
+                    message: "Invalid identification coordination exception. Please correct the errors and try again.");
 
-            invalidCsvIdentificationRequestException.AddData(
+            invalidIdentificationCoordinationException.AddData(
                 key: nameof(CsvIdentificationRequest.Id),
                 values: "Id is invalid");
 
@@ -33,7 +32,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 new IdentificationCoordinationValidationException(
                     message: "Identification coordination validation error occurred, " +
                         "fix the errors and try again.",
-                    innerException: invalidCsvIdentificationRequestException);
+                    innerException: invalidIdentificationCoordinationException);
 
             // when
             ValueTask<AccessRequest> processCsvIdentificationRequestTask =
