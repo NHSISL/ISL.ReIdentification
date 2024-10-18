@@ -3,12 +3,11 @@
 // ---------------------------------------------------------
 
 using System;
-using ISL.ReIdentification.Core.Models;
 
-namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.AccessAudits
+namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.AccessAudit
 {
 
-    public class AccessAudit : IKey, IAudit
+    public class AccessAudit
     {
         public Guid Id { get; set; }
         public string PseudoIdentifier { get; set; }
