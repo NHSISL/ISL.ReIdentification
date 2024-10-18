@@ -3,15 +3,14 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Models.Securities;
+using ISL.ReIdentification.Core.Services.Orchestrations.Identifications;
 using Moq;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifications
@@ -22,31 +21,24 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
         public async Task ShouldProcessCsvIdentificationRequestAsync()
         {
             // given
-            string randomCsvData = GetRandomString();
-            string inputCsvData = randomCsvData;
-            Guid randomCsvIdentificationRequestId = Guid.NewGuid();
-            Guid inputCsvIdentificationRequestId = randomCsvIdentificationRequestId;
-            AccessRequest randomPersistanceOrchestrationAccessRequest = CreateRandomAccessRequest();
-            AccessRequest outputPersistanceOrchestrationAccessRequest = randomPersistanceOrchestrationAccessRequest;
-            CsvIdentificationItem randomCsvIdentificationItem = CreateRandomCsvIdentificationItem();
-            List<dynamic> outputCsvToObjectMapping = new List<dynamic> { randomCsvIdentificationItem };
-            EntraUser randomEntraUser = CreateRandomEntraUser();
-            EntraUser outputEntraUser = randomEntraUser;
-            IdentificationRequest randomIdentificationRequest = CreateRandomIdentificationRequest();
-            AccessRequest randomAccessRequest = CreateRandomAccessRequest();
-            AccessRequest createdAccessRequest = randomAccessRequest;
-            createdAccessRequest.IdentificationRequest = randomIdentificationRequest;
+            var identificationCoordinationServiceMock = new Mock<IdentificationCoordinationService>
+                (this.accessOrchestrationServiceMock.Object,
+                this.persistanceOrchestrationServiceMock.Object,
+                this.identificationOrchestrationServiceMock.Object,
+                this.csvHelperBrokerMock.Object,
+                this.securityBrokerMock.Object,
+                this.loggingBrokerMock.Object)
+            { CallBase = true };
+
+            Guid inputCsvIdentificationRequestId = Guid.NewGuid();
+            AccessRequest outputPersistanceOrchestrationAccessRequest = CreateRandomAccessRequest(); ;
+            IdentificationRequest outputConversionIdentificationRequest = CreateRandomIdentificationRequest();
+            EntraUser outputEntraUser = CreateRandomEntraUser();
             AccessRequest outputOrchestrationAccessRequest = CreateRandomAccessRequest();
-            IdentificationRequest inputIdentificationRequest = createdAccessRequest.IdentificationRequest;
             IdentificationRequest outputOrchestrationIdentificationRequest = CreateRandomIdentificationRequest();
-            string outputObjectToCsvMapping = GetRandomString();
-
-            CsvIdentificationRequest createdCsvIdentificationRequest =
-                CreateIdentificationRequestPopulatedCsvIdentificationRequest(outputOrchestrationIdentificationRequest,
-                    outputObjectToCsvMapping);
-
+            CsvIdentificationRequest outputConversionCsvIdentificationRequest = CreateRandomCsvIdentificationRequest();
             AccessRequest resultingAccessRequest = CreateRandomAccessRequest();
-            resultingAccessRequest.CsvIdentificationRequest = createdCsvIdentificationRequest;
+            resultingAccessRequest.CsvIdentificationRequest = outputConversionCsvIdentificationRequest;
             resultingAccessRequest.IdentificationRequest = null;
             resultingAccessRequest.ImpersonationContext = null;
             AccessRequest expectedAccessRequest = resultingAccessRequest.DeepClone();
@@ -55,9 +47,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 service.RetrieveCsvIdentificationRequestByIdAsync(inputCsvIdentificationRequestId))
                     .ReturnsAsync(outputPersistanceOrchestrationAccessRequest);
 
-            this.csvHelperBrokerMock.Setup(broker =>
-               broker.MapCsvToObjectAsync<dynamic>(It.IsAny<string>(), true, null))
-                   .ReturnsAsync(outputCsvToObjectMapping);
+            identificationCoordinationServiceMock.Setup(service =>
+                service.ConvertCsvIdentificationRequestToIdentificationRequest(
+                    outputPersistanceOrchestrationAccessRequest.CsvIdentificationRequest))
+                .ReturnsAsync(outputConversionIdentificationRequest);
 
             this.securityBrokerMock.Setup(broker =>
                 broker.GetCurrentUser())
@@ -71,17 +64,17 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 service.ProcessIdentificationRequestAsync(It.IsAny<IdentificationRequest>()))
                     .ReturnsAsync(outputOrchestrationIdentificationRequest);
 
-            this.csvHelperBrokerMock.Setup(broker =>
-               broker.MapObjectToCsvAsync<CsvIdentificationItem>(
-                   It.IsAny<List<CsvIdentificationItem>>(),
-                   true,
-                   null,
-                   false))
-                   .ReturnsAsync(outputObjectToCsvMapping);
+            identificationCoordinationServiceMock.Setup(service =>
+                service.ConvertIdentificationRequestToCsvIdentificationRequest(
+                    outputOrchestrationIdentificationRequest))
+                .ReturnsAsync(outputConversionCsvIdentificationRequest);
+
+            IdentificationCoordinationService identificationCoordinationService =
+                identificationCoordinationServiceMock.Object;
 
             // when
             AccessRequest actualAccessRequest =
-                await this.identificationCoordinationService
+                await identificationCoordinationService
                     .ProcessCsvIdentificationRequestAsync(inputCsvIdentificationRequestId);
 
             // then
@@ -91,8 +84,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 service.RetrieveCsvIdentificationRequestByIdAsync(inputCsvIdentificationRequestId),
                     Times.Once);
 
-            this.csvHelperBrokerMock.Verify(broker =>
-                broker.MapCsvToObjectAsync<dynamic>(It.IsAny<string>(), true, null),
+            identificationCoordinationServiceMock.Verify(service =>
+                service.ConvertCsvIdentificationRequestToIdentificationRequest(
+                    outputPersistanceOrchestrationAccessRequest.CsvIdentificationRequest),
                     Times.Once);
 
             this.securityBrokerMock.Verify(broker =>
@@ -107,19 +101,16 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 service.ProcessIdentificationRequestAsync(outputOrchestrationAccessRequest.IdentificationRequest),
                     Times.Once);
 
-            this.csvHelperBrokerMock.Verify(broker =>
-                broker.MapObjectToCsvAsync<CsvIdentificationItem>(
-                    It.IsAny<List<CsvIdentificationItem>>(),
-                    true,
-                    null,
-                    false),
+            identificationCoordinationServiceMock.Verify(service =>
+                service.ConvertIdentificationRequestToCsvIdentificationRequest(
+                    outputOrchestrationIdentificationRequest),
                     Times.Once);
 
+            identificationCoordinationServiceMock.VerifyNoOtherCalls();
             this.persistanceOrchestrationServiceMock.VerifyNoOtherCalls();
             this.accessOrchestrationServiceMock.VerifyNoOtherCalls();
             this.identificationOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
         }
     }
