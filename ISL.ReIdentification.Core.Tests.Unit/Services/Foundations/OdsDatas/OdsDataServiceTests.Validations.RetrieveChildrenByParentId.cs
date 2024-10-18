@@ -15,7 +15,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
     public partial class OdsDataServiceTests
     {
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnRetrieveChildrenByParentIdIsInvalidAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnRetrieveChildrenByParentIdIfIdIsInvalidAndLogItAsync()
         {
             // given
             var invalidOdsDataId = Guid.Empty;
@@ -51,7 +51,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
                         Times.Once);
 
             this.reIdentificationStorageBroker.Verify(broker =>
-                broker.SelectAllOdsDatasAsync(),
+                broker.SelectOdsDataByIdAsync(It.IsAny<Guid>()),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -77,8 +77,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
                     .ReturnsAsync(noOdsData);
 
             //when
-            ValueTask<OdsData> retrieveOdsDataByIdTask =
-                this.odsDataService.RetrieveOdsDataByIdAsync(someOdsDataId);
+            ValueTask<List<OdsData>> retrieveOdsDataByIdTask =
+                this.odsDataService.RetrieveChildrenByParentId(someOdsDataId);
 
             OdsDataValidationException actualOdsDataValidationException =
                 await Assert.ThrowsAsync<OdsDataValidationException>(

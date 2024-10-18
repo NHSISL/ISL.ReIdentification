@@ -13,7 +13,7 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications
     {
         ValueTask<PdsData> InsertPdsDataAsync(PdsData pdsData);
         ValueTask<IQueryable<PdsData>> SelectAllPdsDatasAsync();
-        ValueTask<PdsData> SelectPdsDataByIdAsync(Guid pdsDataRowId);
+        ValueTask<PdsData> SelectPdsDataByIdAsync(Guid pdsDataId);
         ValueTask<PdsData> UpdatePdsDataAsync(PdsData pdsData);
         ValueTask<PdsData> DeletePdsDataAsync(PdsData pdsData);
     }
