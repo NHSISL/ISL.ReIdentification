@@ -3,7 +3,7 @@ import { ImpersonationContext } from "../impersonationContext/impersonationConte
 import { IdentificationRequest } from "../ReIdentifications/IdentificationRequest";
 
 export class AccessRequest {
-    public identificationRequest: IdentificationRequest;
+    public identificationRequest?: IdentificationRequest;
     public csvIdentificationRequest?: CsvIdentificationRequest;
     public impersonationContext?: ImpersonationContext;
 

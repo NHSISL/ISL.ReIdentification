@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace ISL.ReIdentification.Portals.Server.Controllers
 {
-    [Authorize(Roles = "NoAccess")]
+    //[Authorize(Roles = "NoAccess")]
     [ApiController]
     [Route("api/[controller]")]
     public class SecureController : Controller

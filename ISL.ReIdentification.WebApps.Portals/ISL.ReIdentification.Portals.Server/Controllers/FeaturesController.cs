@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace ISL.ReIdentification.Portals.Server.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class FeaturesController : Controller

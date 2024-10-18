@@ -13,7 +13,7 @@ using RESTFulSense.Controllers;
 
 namespace ISL.ReIdentification.Portals.Server.Controllers
 {
-    [Authorize(Roles = "Administrators")]
+    //[Authorize(Roles = "Administrators")]
     [ApiController]
     [Route("api/[controller]")]
     public class ReIdentificationController : RESTFulController
