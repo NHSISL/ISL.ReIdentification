@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
@@ -39,6 +40,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
         private static string GetRandomString() =>
             new MnemonicString(wordCount: GetRandomNumber()).GetValue();
 
+        private static List<string> GetRandomStringsWithLengthOf(int length) =>
+            Enumerable.Range(start: 0, count: GetRandomNumber())
+                .Select(selector: _ => GetRandomStringWithLengthOf(length))
+                .ToList();
+
         private static string GetRandomStringWithLengthOf(int length) =>
             new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
 
@@ -62,11 +68,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
             return PandomPdsData;
         }
 
-        private static IQueryable<PdsData> CreateRandomPdsDatas()
+        private static List<PdsData> CreateRandomPdsDatas()
         {
             return CreatePdsDataFiller(dateTimeOffset: GetRandomDateTimeOffset())
                 .Create(count: GetRandomNumber())
-                    .AsQueryable();
+                    .ToList();
         }
 
         private static PdsData CreateRandomPdsData() =>
