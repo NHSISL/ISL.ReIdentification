@@ -76,7 +76,15 @@ namespace ISL.ReIdentification.Core.Services.Foundations.PdsDatas
                 return await this.reIdentificationStorageBroker.DeletePdsDataAsync(maybePdsData);
             });
 
-        public ValueTask<bool> HasAccessToPatient(string pseudoNhsNumber, List<string> organisationCodes) =>
-            throw new NotImplementedException();
+        public async ValueTask<bool> OrganisationsHaveAccessToThisPatient(string pseudoNhsNumber, List<string> organisationCodes)
+        {
+            var query = await this.reIdentificationStorageBroker.SelectAllPdsDatasAsync();
+
+            bool hasAccess = query.Any(
+                pdsData => pdsData.PseudoNhsNumber == pseudoNhsNumber
+                && organisationCodes.Contains(pdsData.OrgCode));
+
+            return hasAccess;
+        }
     }
 }
