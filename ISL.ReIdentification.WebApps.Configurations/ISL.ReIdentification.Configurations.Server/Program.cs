@@ -6,11 +6,13 @@ using System.Text.Json;
 using ISL.Providers.Notifications.Abstractions;
 using ISL.Providers.Notifications.GovukNotify.Models;
 using ISL.Providers.Notifications.GovukNotify.Providers.Notifications;
+using ISL.ReIdentification.Core.Brokers.CsvHelpers;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Identifiers;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.NECS;
 using ISL.ReIdentification.Core.Brokers.Notifications;
+using ISL.ReIdentification.Core.Brokers.Securities;
 using ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Brokers.NECS;
 using ISL.ReIdentification.Core.Models.Brokers.Notifications;
@@ -158,6 +160,8 @@ namespace ISL.ReIdentification.Configurations.Server
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
             services.AddTransient<ILoggingBroker, LoggingBroker>();
+            services.AddTransient<ICsvHelperBroker, CsvHelperBroker>();
+            services.AddTransient<ISecurityBroker, SecurityBroker>();
             services.AddTransient<IReIdentificationStorageBroker, ReIdentificationStorageBroker>();
             services.AddTransient<INotificationBroker, NotificationBroker>();
 
