@@ -5,7 +5,6 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications.Exceptions;
-using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses.Exceptions;
 using Moq;
@@ -61,14 +60,19 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             AccessRequest inputAccessRequest = randomAccessRequest;
             inputAccessRequest.IdentificationRequest = null;
 
-            var nullIdentificationRequestException =
-                new NullIdentificationRequestException(message: "Identification request is null.");
+            var invalidIdentificationCoordinationException =
+                new InvalidIdentificationCoordinationException(
+                    message: "Invalid identification coordination exception. Please correct the errors and try again.");
+
+            invalidIdentificationCoordinationException.AddData(
+                key: nameof(AccessRequest.IdentificationRequest),
+                values: "Object is invalid");
 
             var expectedIdentificationCoordinationValidationException =
                 new IdentificationCoordinationValidationException(
                     message: "Identification coordination validation error occurred, " +
                         "fix the errors and try again.",
-                    innerException: nullIdentificationRequestException);
+                    innerException: invalidIdentificationCoordinationException);
 
             // when
             ValueTask<AccessRequest> accessRequestTask =

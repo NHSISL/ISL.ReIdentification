@@ -20,7 +20,7 @@ export class PdsDataView {
         ccgOfRegistration: string,
         currentCcgOfRegistration: string,
         icbOfRegistration?: string,
-        currentIcbOfRegistration?: string;
+        currentIcbOfRegistration?: string,
     ) {
         this.rowId = rowId;
         this.pseudoNhsNumber = pseudoNhsNumber;

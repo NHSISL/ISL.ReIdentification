@@ -17,6 +17,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
         {
             // given
             AccessRequest randomAccessRequest = CreateRandomAccessRequest();
+            randomAccessRequest.IdentificationRequest = null;
+            randomAccessRequest.ImpersonationContext = null;
             AccessRequest inputAccessRequest = randomAccessRequest;
             AccessRequest outputAccessRequest = inputAccessRequest.DeepClone();
             AccessRequest expectedAccessRequest = outputAccessRequest.DeepClone();

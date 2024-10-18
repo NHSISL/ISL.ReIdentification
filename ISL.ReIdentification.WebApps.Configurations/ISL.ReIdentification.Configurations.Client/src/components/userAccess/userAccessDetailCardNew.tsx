@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useState } from "react";
 import EntraUserSearch from "../EntraUserSearch/entraUserSearch";
 import { entraUser } from "../../models/views/components/entraUsers/entraUsers";
-import { Button, Card, CardFooter } from "react-bootstrap";
+import { Button, Card } from "react-bootstrap";
 
 type UserAccessDetailCardNewProps = {
 };

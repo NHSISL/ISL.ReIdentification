@@ -14,6 +14,8 @@ import { queryClientGlobalOptions } from './brokers/apiBroker.globals';
 import { Page4 } from './pages/page4';
 import { Page5 } from './pages/page5';
 import { Home } from './pages/home';
+import { ReIdentificationPage } from './pages/reIdentification';
+import { CsvReIdentificationPage } from './pages/csvReIdentification';
 
 function App({ instance }: any) {
 
@@ -32,8 +34,12 @@ function App({ instance }: any) {
                     element: <Page1 />
                 },
                 {
-                    path: "page2",
-                    element: <SecuredRoute allowedRoles={securityPoints.page2.view}><Page2 /></SecuredRoute>
+                    path: "reIdentification",
+                    element: <SecuredRoute allowedRoles={securityPoints.reIdentification.view}><ReIdentificationPage /></SecuredRoute>
+                },
+                {
+                    path: "csvReIdentification",
+                    element: <CsvReIdentificationPage />
                 },
                 {
                     path: "page3",
