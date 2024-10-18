@@ -60,6 +60,16 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
+        public static TheoryData<List<string>> Organisations()
+        {
+            return new TheoryData<List<string>>
+            {
+                GetRandomStringsWithLengthOf(10),
+                new List<string>(),
+            };
+        }
+
+
         private static PdsData CreateRandomModifyPdsData(DateTimeOffset dateTimeOffset)
         {
             int randomDaysInPast = GetRandomNegativeNumber();

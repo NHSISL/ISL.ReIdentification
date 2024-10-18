@@ -28,7 +28,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.PdsDatas
         public ValueTask<PdsData> AddPdsDataAsync(PdsData pdsData) =>
             TryCatch(async () =>
             {
-                await ValidatePdsDataOnAddAsync(pdsData);
+                ValidatePdsDataOnAdd(pdsData);
 
                 return await this.reIdentificationStorageBroker.InsertPdsDataAsync(pdsData);
             });
@@ -52,7 +52,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.PdsDatas
         public ValueTask<PdsData> ModifyPdsDataAsync(PdsData pdsData) =>
             TryCatch(async () =>
             {
-                await ValidatePdsDataOnModifyAsync(pdsData);
+                ValidatePdsDataOnModify(pdsData);
 
                 PdsData maybePdsData =
                     await this.reIdentificationStorageBroker.SelectPdsDataByIdAsync(pdsData.Id);
@@ -76,15 +76,20 @@ namespace ISL.ReIdentification.Core.Services.Foundations.PdsDatas
                 return await this.reIdentificationStorageBroker.DeletePdsDataAsync(maybePdsData);
             });
 
-        public async ValueTask<bool> OrganisationsHaveAccessToThisPatient(string pseudoNhsNumber, List<string> organisationCodes)
-        {
-            var query = await this.reIdentificationStorageBroker.SelectAllPdsDatasAsync();
+        public ValueTask<bool> OrganisationsHaveAccessToThisPatient(
+            string pseudoNhsNumber,
+            List<string> organisationCodes) =>
+            TryCatch(async () =>
+            {
+                ValidateOnOrganisationsHaveAccessToThisPatient(pseudoNhsNumber, organisationCodes);
 
-            bool hasAccess = query.Any(
-                pdsData => pdsData.PseudoNhsNumber == pseudoNhsNumber
-                && organisationCodes.Contains(pdsData.OrgCode));
+                var query = await this.reIdentificationStorageBroker.SelectAllPdsDatasAsync();
 
-            return hasAccess;
-        }
+                bool hasAccess = query.Any(
+                    pdsData => pdsData.PseudoNhsNumber == pseudoNhsNumber
+                    && organisationCodes.Contains(pdsData.OrgCode));
+
+                return hasAccess;
+            });
     }
 }

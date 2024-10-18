@@ -76,8 +76,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
-        [Fact]
-        public async Task ShouldNotHaveAccessOnCheckIfOrganisationsHaveAccessToThisPatientWithInvalidOrganisationsAsync()
+        [Theory]
+        [MemberData(nameof(Organisations))]
+        public async Task ShouldNotHaveAccessOnCheckIfOrganisationsHaveAccessToThisPatientWithInvalidOrganisationsAsync(
+            List<string> organisations)
         {
             // given
             string randomPseudoNhsNumber = GetRandomString();
@@ -85,7 +87,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
             List<PdsData> randomPdsDatas = CreateRandomPdsDatas();
             randomPdsDatas.ForEach(pdsData => pdsData.PseudoNhsNumber = inputPseudoNhsNumber);
             List<PdsData> storagePdsDatas = randomPdsDatas;
-            List<string> inputOrganisationCodes = GetRandomStringsWithLengthOf(10);
+            List<string> inputOrganisationCodes = organisations;
             bool expectedResult = false;
 
             this.reIdentificationStorageBroker.Setup(broker =>
