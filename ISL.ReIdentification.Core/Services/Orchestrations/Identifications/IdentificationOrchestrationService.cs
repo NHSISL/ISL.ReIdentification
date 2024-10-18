@@ -59,7 +59,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                     Purpose = identificationRequest.Purpose,
                     Reason = identificationRequest.Reason,
                     Organisation = identificationRequest.Organisation,
-                    HasAccess = item.HasAccess ?? false,
+                    HasAccess = item.HasAccess,
                     Message = item.Message,
                     CreatedBy = "System",
                     CreatedDate = now,
@@ -72,6 +72,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                 if (item.HasAccess is false)
                 {
                     item.Identifier = "0000000000";
+                    item.Message = "Failed to Re-Identify. User do not have access to the organisation(s) associated with patient.";
                 }
             }
 
@@ -79,7 +80,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                 identificationRequest.IdentificationItems
                     .FindAll(x => x.HasAccess == true).ToList();
 
-            if (hasAccessIdentificationItems.IsNullOrEmpty())
+            if (hasAccessIdentificationItems.Count() == 0)
             {
                 return identificationRequest;
             }
