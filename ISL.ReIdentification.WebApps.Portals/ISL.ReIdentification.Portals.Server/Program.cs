@@ -101,7 +101,6 @@ namespace ISL.ReIdentification.Portals.Server
                 builder.EntitySet<ImpersonationContext>("ImpersonationContexts");
                 builder.EntitySet<CsvIdentificationRequest>("CsvIdentificationRequests");
                 builder.EntitySet<OdsData>("OdsData");
-                //builder.EntitySet<PdsData>("PdsData");
                 builder.EnableLowerCamelCase();
 
                 return builder.GetEdmModel();
@@ -155,10 +154,18 @@ namespace ISL.ReIdentification.Portals.Server
             services.AddTransient<IReIdentificationStorageBroker, ReIdentificationStorageBroker>();
             services.AddTransient<INotificationBroker, NotificationBroker>();
 
-            NECSConfiguration necsConfiguration = configuration
+            NECSConfiguration necsConfigurations = configuration
                 .GetSection("necsConfiguration")
                     .Get<NECSConfiguration>();
 
+            NECSConfiguration necsConfiguration = new NECSConfiguration
+            {
+                ApiUrl = necsConfigurations.ApiUrl,
+                ApiKey = necsConfigurations.ApiKey,
+                ApiMaxBatchSize = necsConfigurations.ApiMaxBatchSize,
+            };
+
+            services.AddSingleton(necsConfigurations);
             services.AddSingleton(necsConfiguration);
             services.AddTransient<INECSBroker, NECSBroker>();
         }
