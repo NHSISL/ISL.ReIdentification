@@ -161,10 +161,18 @@ namespace ISL.ReIdentification.Configurations.Server
             services.AddTransient<IReIdentificationStorageBroker, ReIdentificationStorageBroker>();
             services.AddTransient<INotificationBroker, NotificationBroker>();
 
-            NECSConfiguration necsConfiguration = configuration
+            NECSConfiguration necsConfigurations = configuration
                 .GetSection("necsConfiguration")
                     .Get<NECSConfiguration>();
 
+            NECSConfiguration necsConfiguration = new NECSConfiguration
+            {
+                ApiUrl = necsConfigurations.ApiUrl,
+                ApiKey = necsConfigurations.ApiKey,
+                ApiMaxBatchSize = necsConfigurations.ApiMaxBatchSize,
+            };
+
+            services.AddSingleton(necsConfigurations);
             services.AddSingleton(necsConfiguration);
             services.AddTransient<INECSBroker, NECSBroker>();
         }
