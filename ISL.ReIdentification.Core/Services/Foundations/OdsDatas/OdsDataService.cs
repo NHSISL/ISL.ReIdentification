@@ -97,7 +97,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.OdsDatas
         TryCatch(async () =>
         {
             ValidateOdsDataId(odsDataParentId);
-            List<OdsData> descendants = new List<OdsData>();
 
             OdsData parentRecord = await this.reIdentificationStorageBroker
                 .SelectOdsDataByIdAsync(odsDataParentId);
@@ -105,14 +104,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.OdsDatas
             ValidateStorageOdsData(parentRecord, odsDataParentId);
 
             IQueryable<OdsData> query = await this.reIdentificationStorageBroker.SelectAllOdsDatasAsync();
-            query = query.Where(ods => ods.OdsHierarchy.GetAncestor(1) == parentRecord.OdsHierarchy);
-            List<OdsData> children = query.ToList();
-
-            foreach (var child in children)
-            {
-                descendants.Add(child);
-                descendants.AddRange(await RetrieveAllDecendentsByParentId(child.Id));
-            }
+            query = query.Where(ods => ods.OdsHierarchy.IsDescendantOf(parentRecord.OdsHierarchy));
+            List<OdsData> descendants = query.ToList();
 
             return descendants;
         });
