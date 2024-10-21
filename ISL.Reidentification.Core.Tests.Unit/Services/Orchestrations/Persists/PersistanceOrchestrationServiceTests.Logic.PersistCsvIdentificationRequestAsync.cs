@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -30,7 +31,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             inputAccessRequest.CsvIdentificationRequest.Sha256Hash = returnedHash;
             AccessRequest outputAccessRequest = randomAccessRequest.DeepClone();
             CsvIdentificationRequest inputCsvIdentificationRequest = randomCsvIdentificationRequest.DeepClone();
-            CsvIdentificationRequest outputCsvIdentificationRequest = randomCsvIdentificationRequest.DeepClone();
+            CsvIdentificationRequest outputCsvIdentificationRequest = inputCsvIdentificationRequest.DeepClone();
             outputAccessRequest.CsvIdentificationRequest = outputCsvIdentificationRequest;
             AccessRequest expectedAccessRequest = outputAccessRequest.DeepClone();
 
@@ -41,7 +42,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                 emptyRetrieveAllCsvIdentificationRequests.DeepClone();
 
             this.hashBrokerMock.Setup(broker =>
-                broker.GenerateSha256Hash(new MemoryStream(inputAccessRequest.CsvIdentificationRequest.Data)))
+                broker.GenerateSha256Hash(It.IsAny<MemoryStream>()))
                     .Returns(returnedHash);
 
             this.csvIdentificationRequestServiceMock.Setup(service =>
@@ -60,6 +61,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             // then
             actualAccessRequest.Should().BeEquivalentTo(expectedAccessRequest);
 
+            this.hashBrokerMock.Verify(broker =>
+                broker.GenerateSha256Hash(It.IsAny<MemoryStream>()),
+                    Times.Once);
+
             this.csvIdentificationRequestServiceMock.Verify(service =>
                 service.RetrieveAllCsvIdentificationRequestsAsync(),
                     Times.Once);
@@ -76,8 +81,74 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             this.impersonationContextServiceMock.VerifyNoOtherCalls();
             this.notificationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
         }
 
+        [Fact]
+        public async Task ShouldReturnAccessRequestOnPersistCsvIdentificationRequestIfExistsAsync()
+        {
+            // given
+            string randomString = GetRandomString();
+            string returnedHash = randomString;
+            Guid randomGuid = Guid.NewGuid();
+            Guid randomId = randomGuid;
+            AccessRequest randomAccessRequest = CreateRandomAccessRequest();
+            CsvIdentificationRequest randomCsvIdentificationRequest = CreateRandomCsvIdentificationRequest();
+            AccessRequest inputAccessRequest = randomAccessRequest.DeepClone();
+            CsvIdentificationRequest returnedCsvIdentificationRequest = randomCsvIdentificationRequest.DeepClone();
+            returnedCsvIdentificationRequest.Sha256Hash = returnedHash;
+            inputAccessRequest.IdentificationRequest = null;
+            inputAccessRequest.ImpersonationContext = null;
+            inputAccessRequest.CsvIdentificationRequest.Sha256Hash = returnedHash;
+            inputAccessRequest.CsvIdentificationRequest.RecipientEntraUserId = randomId;
+            returnedCsvIdentificationRequest.RecipientEntraUserId = randomId;
+            AccessRequest outputAccessRequest = inputAccessRequest.DeepClone();
+            outputAccessRequest.CsvIdentificationRequest = returnedCsvIdentificationRequest;
+            AccessRequest expectedAccessRequest = outputAccessRequest.DeepClone();
 
+            IQueryable<CsvIdentificationRequest> emptyRetrieveAllCsvIdentificationRequests =
+                Enumerable.Empty<CsvIdentificationRequest>().AsQueryable();
+
+            IQueryable<CsvIdentificationRequest> outputRetrieveAllCsvIdentificationRequests =
+                emptyRetrieveAllCsvIdentificationRequests.Append(returnedCsvIdentificationRequest);
+
+            this.hashBrokerMock.Setup(broker =>
+                broker.GenerateSha256Hash(It.IsAny<MemoryStream>()))
+                    .Returns(returnedHash);
+
+            this.csvIdentificationRequestServiceMock.Setup(service =>
+                service.RetrieveAllCsvIdentificationRequestsAsync())
+                    .ReturnsAsync(outputRetrieveAllCsvIdentificationRequests);
+
+            // when
+            AccessRequest actualAccessRequest =
+                await this.persistanceOrchestrationService
+                    .PersistCsvIdentificationRequestAsync(inputAccessRequest);
+
+            // then
+            actualAccessRequest.Should().BeEquivalentTo(expectedAccessRequest);
+
+            this.hashBrokerMock.Verify(broker =>
+                broker.GenerateSha256Hash(It.IsAny<MemoryStream>()),
+                    Times.Once);
+
+            this.csvIdentificationRequestServiceMock.Verify(service =>
+                service.RetrieveAllCsvIdentificationRequestsAsync(),
+                    Times.Once);
+
+            this.csvIdentificationRequestServiceMock.Verify(service =>
+                service.AddCsvIdentificationRequestAsync(inputAccessRequest.CsvIdentificationRequest),
+                    Times.Never);
+
+            this.notificationServiceMock.Verify(service =>
+                service.SendPendingApprovalNotificationAsync(It.IsAny<AccessRequest>()),
+                    Times.Never);
+
+            this.csvIdentificationRequestServiceMock.VerifyNoOtherCalls();
+            this.impersonationContextServiceMock.VerifyNoOtherCalls();
+            this.notificationServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

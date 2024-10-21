@@ -51,8 +51,8 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
 
             IQueryable<CsvIdentificationRequest> matchedCsvIdentificationRequests =
                 returnedCsvIdentificationRequests.Where(request =>
-                    accessRequest.CsvIdentificationRequest.RecipientEntraUserId == request.RecipientEntraUserId &&
-                    accessRequest.CsvIdentificationRequest.Sha256Hash == outputHash);
+                    request.RecipientEntraUserId == accessRequest.CsvIdentificationRequest.RecipientEntraUserId
+                    && outputHash == accessRequest.CsvIdentificationRequest.Sha256Hash);
 
             if (matchedCsvIdentificationRequests.Any())
             {
@@ -67,6 +67,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
 
             var returnedAccessRequest = new AccessRequest { CsvIdentificationRequest = outputCsvIdentificationRequest };
             await this.notificationService.SendPendingApprovalNotificationAsync(returnedAccessRequest);
+
             return returnedAccessRequest;
         }
 
