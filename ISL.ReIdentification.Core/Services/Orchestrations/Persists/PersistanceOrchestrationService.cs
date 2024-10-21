@@ -41,10 +41,12 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
         public ValueTask<AccessRequest> PersistImpersonationContextAsync(AccessRequest accessRequest) =>
             throw new NotImplementedException();
 
-        public async ValueTask<AccessRequest> PersistCsvIdentificationRequestAsync(AccessRequest accessRequest)
+        public ValueTask<AccessRequest> PersistCsvIdentificationRequestAsync(AccessRequest accessRequest) =>
+        TryCatch(async () =>
         {
+            ValidateAccessRequestIsNotNull(accessRequest);
             string outputHash =
-                this.hashBroker.GenerateSha256Hash(new MemoryStream(accessRequest.CsvIdentificationRequest.Data));
+            this.hashBroker.GenerateSha256Hash(new MemoryStream(accessRequest.CsvIdentificationRequest.Data));
 
             IQueryable<CsvIdentificationRequest> returnedCsvIdentificationRequests =
                 await this.csvIdentificationRequestService.RetrieveAllCsvIdentificationRequestsAsync();
@@ -69,7 +71,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
             await this.notificationService.SendPendingApprovalNotificationAsync(returnedAccessRequest);
 
             return returnedAccessRequest;
-        }
+        });
 
         public ValueTask<AccessRequest> RetrieveCsvIdentificationRequestByIdAsync(
             Guid csvIdentificationRequestId) =>

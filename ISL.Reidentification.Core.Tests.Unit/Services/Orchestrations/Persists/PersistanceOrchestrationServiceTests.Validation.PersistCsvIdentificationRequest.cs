@@ -13,13 +13,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
 {
     public partial class PersistanceOrchestrationServiceTests
     {
-        [Theory]
-        [InlineData(null)]
+        [Fact]
         public async Task
-            ShouldThrowValidationExceptionOnPersistCsvIdentificationRequestWhenAccessRequestIsNullAndLogItAsync(
-                AccessRequest invalidAccessRequest)
+            ShouldThrowValidationExceptionOnPersistCsvIdentificationRequestWhenAccessRequestIsNullAndLogItAsync()
         {
             // given
+            AccessRequest invalidAccessRequest = null;
+
             var nullAccessRequestPersistanceOrchestrationException =
                 new NullAccessRequestException(
                     message: "Access request is null.");
