@@ -165,6 +165,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             return new List<CsvIdentificationItem> { csvIdentificationItem };
         }
 
+        private static string CsvDataString() =>
+            "Um93TnVtYmVyLElkZW50aWZpZXIKVGVzdFJvd051bWJlcixUZXN0SWRlbnRpZmllcg==";
+
         private static List<Claim> CreateRandomClaims()
         {
             string randomString = GetRandomString();
@@ -305,5 +308,65 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             };
         }
 
+        public static TheoryData<IdentificationRequest, CsvIdentificationRequest> InputIdentificationRequest()
+        {
+            Guid entraId = Guid.NewGuid();
+
+            IdentificationItem identificationItem = new IdentificationItem
+            {
+                HasAccess = null,
+                Identifier = "TestIdentifier",
+                IsReidentified = false,
+                Message = String.Empty,
+                RowNumber = "TestRowNumber"
+            };
+
+            IdentificationRequest identificationRequest = new IdentificationRequest
+            {
+                DisplayName = nameof(CsvIdentificationRequest.RecipientDisplayName),
+                Email = nameof(CsvIdentificationRequest.RecipientEmail),
+                EntraUserId = entraId,
+                GivenName = nameof(CsvIdentificationRequest.RecipientFirstName),
+                Id = Guid.Empty,
+                IdentificationItems = new List<IdentificationItem> { identificationItem },
+                JobTitle = nameof(CsvIdentificationRequest.RecipientJobTitle),
+                Organisation = nameof(IdentificationRequest.Organisation),
+                Purpose = nameof(IdentificationRequest.Purpose),
+                Reason = nameof(IdentificationRequest.Reason),
+                Surname = nameof(CsvIdentificationRequest.RecipientLastName)
+            };
+
+            CsvIdentificationRequest csvIdentificationRequest = new CsvIdentificationRequest
+            {
+                CreatedBy = nameof(CsvIdentificationRequest.CreatedBy),
+                CreatedDate = DateTimeOffset.UtcNow,
+                Data = Convert.FromBase64String("Um93TnVtYmVyLElkZW50aWZpZXIKVGVzdFJvd051bWJlcixUZXN0SWRlbnRpZmllcg=="),
+                Id = Guid.NewGuid(),
+                IdentifierColumn = nameof(CsvIdentificationRequest.IdentifierColumn),
+                Organisation = nameof(CsvIdentificationRequest.Organisation),
+                Purpose = nameof(CsvIdentificationRequest.Purpose),
+                Reason = nameof(CsvIdentificationRequest.Reason),
+                RecipientDisplayName = nameof(CsvIdentificationRequest.RecipientDisplayName),
+                RecipientEmail = nameof(CsvIdentificationRequest.RecipientEmail),
+                RecipientEntraUserId = entraId,
+                RecipientFirstName = nameof(CsvIdentificationRequest.RecipientFirstName),
+                RecipientJobTitle = nameof(CsvIdentificationRequest.RecipientJobTitle),
+                RecipientLastName = nameof(CsvIdentificationRequest.RecipientLastName),
+                RequesterDisplayName = nameof(CsvIdentificationRequest.RequesterDisplayName),
+                RequesterEmail = nameof(CsvIdentificationRequest.RequesterEmail),
+                RequesterEntraUserId = Guid.NewGuid(),
+                RequesterFirstName = nameof(CsvIdentificationRequest.RequesterFirstName),
+                RequesterJobTitle = nameof(CsvIdentificationRequest.RequesterJobTitle),
+                RequesterLastName = nameof(CsvIdentificationRequest.RequesterLastName),
+                Sha256Hash = nameof(CsvIdentificationRequest.Sha256Hash),
+                UpdatedBy = nameof(CsvIdentificationRequest.UpdatedBy),
+                UpdatedDate = DateTimeOffset.UtcNow
+            };
+
+            return new TheoryData<IdentificationRequest, CsvIdentificationRequest>
+            {
+                { identificationRequest, csvIdentificationRequest }
+            };
+        }
     }
 }
