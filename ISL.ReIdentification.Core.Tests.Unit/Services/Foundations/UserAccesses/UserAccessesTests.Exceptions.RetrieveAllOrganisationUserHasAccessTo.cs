@@ -37,7 +37,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             // when
             ValueTask<List<string>> retrieveAllOrganisationUserHasAccessToTask =
-                this.userAccessService.RetrieveAllOrganisationUserHasAccessTo(randomUserAccessId);
+                this.userAccessService.RetrieveAllOrganisationsUserHasAccessTo(randomUserAccessId);
 
             UserAccessDependencyException actualUserAccessDependencyException =
                 await Assert.ThrowsAsync<UserAccessDependencyException>(
@@ -86,7 +86,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             // when
             ValueTask<List<string>> retrieveAllOrganisationUserHasAccessToTask =
-                this.userAccessService.RetrieveAllOrganisationUserHasAccessTo(randomUserAccessId);
+                this.userAccessService.RetrieveAllOrganisationsUserHasAccessTo(randomUserAccessId);
 
             UserAccessServiceException actualUserAccessServiceExcpetion =
                 await Assert.ThrowsAsync<UserAccessServiceException>(
