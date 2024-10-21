@@ -15,7 +15,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
     public partial class UserAccessesTests
     {
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnRetrieveAllOrganisationUserHasAccessToWhenArgsInvalidAsync()
+        public async Task ShouldThrowValidationExceptionOnRetrieveAllOrganisationsUserHasAccessToWhenArgsInvalidAsync()
         {
             // given
             Guid invalidUserAccessId = Guid.Empty;

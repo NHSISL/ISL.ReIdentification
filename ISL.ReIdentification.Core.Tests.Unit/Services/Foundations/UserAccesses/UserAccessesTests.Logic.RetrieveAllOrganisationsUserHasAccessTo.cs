@@ -17,7 +17,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
     public partial class UserAccessesTests
     {
         [Fact]
-        public async Task ShouldRetrieveAllOrganisationUserHasAccessToAsync()
+        public async Task ShouldRetrieveAllOrganisationsUserHasAccessToAsync()
         {
             // given
             Guid randomEntraUserId = Guid.NewGuid();

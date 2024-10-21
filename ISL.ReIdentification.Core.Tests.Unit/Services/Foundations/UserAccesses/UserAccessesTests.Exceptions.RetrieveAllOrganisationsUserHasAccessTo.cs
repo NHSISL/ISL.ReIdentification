@@ -15,7 +15,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
     public partial class UserAccessesTests
     {
         [Fact]
-        public async Task ShouldThrowCriticalDependencyExceptionOnRetrieveAllOrganisationUserHasAccessToAsync()
+        public async Task ShouldThrowCriticalDependencyExceptionOnRetrieveAllOrganisationsUserHasAccessToAsync()
         {
             // given
             Guid randomUserAccessId = Guid.NewGuid();
@@ -66,7 +66,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
         }
 
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnRetrieveAllOrganisationUserHasAccessToAsync()
+        public async Task ShouldThrowServiceExceptionOnRetrieveAllOrganisationsUserHasAccessToAsync()
         {
             // given
             Guid randomUserAccessId = Guid.NewGuid();
