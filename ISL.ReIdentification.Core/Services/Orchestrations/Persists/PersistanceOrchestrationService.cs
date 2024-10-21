@@ -4,6 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
+using ISL.ReIdentification.Core.Brokers.Hashing;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
@@ -19,23 +20,48 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
         private readonly ICsvIdentificationRequestService csvIdentificationRequestService;
         private readonly INotificationService notificationService;
         private readonly ILoggingBroker loggingBroker;
+        private readonly IHashBroker hashBroker;
 
         public PersistanceOrchestrationService(
             IImpersonationContextService impersonationContextService,
             ICsvIdentificationRequestService csvIdentificationRequestService,
             INotificationService notificationService,
-            ILoggingBroker loggingBroker)
+            ILoggingBroker loggingBroker,
+            IHashBroker hashBroker)
         {
             this.impersonationContextService = impersonationContextService;
             this.csvIdentificationRequestService = csvIdentificationRequestService;
             this.notificationService = notificationService;
             this.loggingBroker = loggingBroker;
+            this.hashBroker = hashBroker;
         }
 
         public ValueTask<AccessRequest> PersistImpersonationContextAsync(AccessRequest accessRequest) =>
             throw new NotImplementedException();
 
         public ValueTask<AccessRequest> PersistCsvIdentificationRequestAsync(AccessRequest accessRequest) =>
+            // Validate the AccessRequest is not null
+
+            // validate AccessRequest.CsvIdentificationRequest is not null
+
+            // Call IHashBroker GenerateSha256Hash
+
+            // Call csvIdentificationRequestService.RetrieveAllCsvIdentificationRequestsAsync filter on RecipientEntraUserId and Sha256Hash and
+
+            // if exists, return new AccessRequest with CsvIdentificationRequest
+
+            // if not populate CsvIdentificationRequest.Sha256Hash with generated hash
+
+            // Call csvIdentificationRequestService.AddCsvIdentificationRequestAsync passing in AccessRequest.CsvIdentificationRequest
+
+            // Create new AccessRequest with returned CsvIdentificationRequest
+
+            // Call notificationService.SendPendingApprovalNotificationAsync
+
+            // Return AccessRequest
+
+            // Handle exceptions
+
             throw new NotImplementedException();
 
         public ValueTask<AccessRequest> RetrieveCsvIdentificationRequestByIdAsync(
