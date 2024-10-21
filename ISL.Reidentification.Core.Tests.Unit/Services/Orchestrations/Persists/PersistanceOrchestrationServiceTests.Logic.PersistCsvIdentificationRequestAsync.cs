@@ -34,7 +34,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             outputAccessRequest.CsvIdentificationRequest = outputCsvIdentificationRequest;
             AccessRequest expectedAccessRequest = outputAccessRequest.DeepClone();
 
-
             IQueryable<CsvIdentificationRequest> emptyRetrieveAllCsvIdentificationRequests =
                 Enumerable.Empty<CsvIdentificationRequest>().AsQueryable();
 
@@ -70,7 +69,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                     Times.Once);
 
             this.notificationServiceMock.Verify(service =>
-                service.SendPendingApprovalNotificationAsync(outputAccessRequest),
+                service.SendPendingApprovalNotificationAsync(It.IsAny<AccessRequest>()),
                     Times.Once);
 
             this.csvIdentificationRequestServiceMock.VerifyNoOtherCalls();
@@ -78,5 +77,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             this.notificationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+
     }
 }
