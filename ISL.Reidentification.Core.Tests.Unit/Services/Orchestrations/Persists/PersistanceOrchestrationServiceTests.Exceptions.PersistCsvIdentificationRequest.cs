@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -101,6 +102,58 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             this.loggingBrokerMock.Verify(broker =>
                broker.LogErrorAsync(It.Is(SameExceptionAs(
                    expectedPersistanceOrchestrationDependencyException))),
+                       Times.Once);
+
+            this.csvIdentificationRequestServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.impersonationContextServiceMock.VerifyNoOtherCalls();
+            this.notificationServiceMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task
+            ShouldThrowServiceExceptionOnPersistCsvIdentificationRequestIfServiceErrorOccurredAndLogItAsync()
+        {
+            // given
+            AccessRequest someAccessRequest = CreateRandomAccessRequest();
+            var serviceException = new Exception();
+
+            var failedServicePersistanceOrchestrationException =
+                new FailedServicePersistanceOrchestrationException(
+                    message: "Failed service persistance orchestration error occurred, contact support.",
+                    innerException: serviceException);
+
+            var expectedPersistanceOrchestrationServiceException =
+                new PersistanceOrchestrationServiceException(
+                    message: "Persistance orchestration service error occurred, contact support.",
+                    innerException: failedServicePersistanceOrchestrationException);
+
+            this.hashBrokerMock.Setup(broker =>
+                broker.GenerateSha256Hash(It.IsAny<MemoryStream>()))
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<AccessRequest> persistCsvIdentificationRequestAsyncTask =
+                this.persistanceOrchestrationService.PersistCsvIdentificationRequestAsync(
+                    accessRequest: someAccessRequest);
+
+            PersistanceOrchestrationServiceException
+                actualPersistanceOrchestrationValidationException =
+                await Assert.ThrowsAsync<PersistanceOrchestrationServiceException>(
+                    testCode: persistCsvIdentificationRequestAsyncTask.AsTask);
+
+            // then
+            actualPersistanceOrchestrationValidationException.Should().BeEquivalentTo(
+                expectedPersistanceOrchestrationServiceException);
+
+            this.hashBrokerMock.Verify(broker =>
+                broker.GenerateSha256Hash(It.IsAny<MemoryStream>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
+                   expectedPersistanceOrchestrationServiceException))),
                        Times.Once);
 
             this.csvIdentificationRequestServiceMock.VerifyNoOtherCalls();
