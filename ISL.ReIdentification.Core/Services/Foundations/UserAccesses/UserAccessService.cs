@@ -31,60 +31,61 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
         }
 
         public ValueTask<UserAccess> AddUserAccessAsync(UserAccess userAccess) =>
-            TryCatch(async () =>
-            {
-                await ValidateUserAccessOnAddAsync(userAccess);
+        TryCatch(async () =>
+        {
+            await ValidateUserAccessOnAddAsync(userAccess);
 
-                return await this.reIdentificationStorageBroker.InsertUserAccessAsync(userAccess);
-            });
+            return await this.reIdentificationStorageBroker.InsertUserAccessAsync(userAccess);
+        });
 
         public ValueTask<IQueryable<UserAccess>> RetrieveAllUserAccessesAsync() =>
-            TryCatch(this.reIdentificationStorageBroker.SelectAllUserAccessesAsync);
+        TryCatch(this.reIdentificationStorageBroker.SelectAllUserAccessesAsync);
 
         public ValueTask<UserAccess> RetrieveUserAccessByIdAsync(Guid userAccessId) =>
-            TryCatch(async () =>
-            {
-                ValidateUserAccessOnRetrieveById(userAccessId);
+        TryCatch(async () =>
+        {
+            ValidateUserAccessOnRetrieveById(userAccessId);
 
-                var maybeUserAccess = await this.reIdentificationStorageBroker
-                    .SelectUserAccessByIdAsync(userAccessId);
+            var maybeUserAccess = await this.reIdentificationStorageBroker
+                .SelectUserAccessByIdAsync(userAccessId);
 
-                ValidateStorageUserAccess(maybeUserAccess, userAccessId);
+            ValidateStorageUserAccess(maybeUserAccess, userAccessId);
 
-                return maybeUserAccess;
-            });
+            return maybeUserAccess;
+        });
 
         public ValueTask<UserAccess> ModifyUserAccessAsync(UserAccess userAccess) =>
-            TryCatch(async () =>
-            {
-                await ValidateUserAccessOnModifyAsync(userAccess);
+        TryCatch(async () =>
+        {
+            await ValidateUserAccessOnModifyAsync(userAccess);
 
-                var maybeUserAccess = await this.reIdentificationStorageBroker
-                    .SelectUserAccessByIdAsync(userAccess.Id);
+            var maybeUserAccess = await this.reIdentificationStorageBroker
+                .SelectUserAccessByIdAsync(userAccess.Id);
 
-                ValidateStorageUserAccess(maybeUserAccess, userAccess.Id);
-                ValidateAgainstStorageUserAccessOnModify(userAccess, maybeUserAccess);
+            ValidateStorageUserAccess(maybeUserAccess, userAccess.Id);
+            ValidateAgainstStorageUserAccessOnModify(userAccess, maybeUserAccess);
 
-                return await this.reIdentificationStorageBroker.UpdateUserAccessAsync(userAccess);
-            });
+            return await this.reIdentificationStorageBroker.UpdateUserAccessAsync(userAccess);
+        });
 
         public ValueTask<UserAccess> RemoveUserAccessByIdAsync(Guid userAccessId) =>
-            TryCatch(async () =>
-            {
-                ValidateUserAccessOnRemoveById(userAccessId);
-
-                var maybeUserAccess = await this.reIdentificationStorageBroker
-                    .SelectUserAccessByIdAsync(userAccessId);
-
-                ValidateStorageUserAccess(maybeUserAccess, userAccessId);
-
-                return await this.reIdentificationStorageBroker.DeleteUserAccessAsync(maybeUserAccess);
-            });
-
-        public async ValueTask<List<string>> RetrieveAllOrganisationUserHasAccessTo(Guid entraUserId)
+        TryCatch(async () =>
         {
-            List<string> organisations = new List<string>();
+            ValidateUserAccessOnRemoveById(userAccessId);
 
+            var maybeUserAccess = await this.reIdentificationStorageBroker
+                .SelectUserAccessByIdAsync(userAccessId);
+
+            ValidateStorageUserAccess(maybeUserAccess, userAccessId);
+
+            return await this.reIdentificationStorageBroker.DeleteUserAccessAsync(maybeUserAccess);
+        });
+
+        public ValueTask<List<string>> RetrieveAllOrganisationUserHasAccessTo(Guid entraUserId) =>
+        TryCatch(async () =>
+        {
+            ValidateOnRetrieveAllOrganisationUserHasAccessTo(entraUserId);
+            List<string> organisations = new List<string>();
             var userAccessQuery = await this.reIdentificationStorageBroker.SelectAllUserAccessesAsync();
 
             List<string> userOrganisations = userAccessQuery
@@ -117,6 +118,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
             }
 
             return organisations.Distinct().ToList();
-        }
+        });
     }
 }
