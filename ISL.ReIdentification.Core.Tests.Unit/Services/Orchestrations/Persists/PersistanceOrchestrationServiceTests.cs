@@ -88,20 +88,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                 actualException.SameExceptionAs(expectedException);
         }
 
-        public static TheoryData<AccessRequest> InvalidAccessRequestOnPersist()
-        {
-            AccessRequest randomAccessRequest = CreateRandomAccessRequest();
-            AccessRequest invalidAccessRequest = randomAccessRequest;
-            invalidAccessRequest.CsvIdentificationRequest = null;
-
-            return new TheoryData<AccessRequest>
-            {
-                null
-                //invalidAccessRequest
-
-            };
-        }
-
         public static TheoryData<Xeption> DependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
