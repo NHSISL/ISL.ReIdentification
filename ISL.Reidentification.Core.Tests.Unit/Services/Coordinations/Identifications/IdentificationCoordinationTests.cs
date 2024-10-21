@@ -281,7 +281,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
             IdentificationItem identificationItem = new IdentificationItem
             {
-                HasAccess = null,
+                HasAccess = false,
                 Identifier = "TestIdentifier",
                 IsReidentified = false,
                 Message = String.Empty,
@@ -315,7 +315,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
             IdentificationItem identificationItem = new IdentificationItem
             {
-                HasAccess = null,
+                HasAccess = false,
                 Identifier = "TestIdentifier",
                 IsReidentified = false,
                 Message = String.Empty,

@@ -135,7 +135,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             {
                 var identificationItem = new IdentificationItem
                 {
-                    HasAccess = null,
+                    HasAccess = false,
                     Identifier = mappedItem.Identifier,
                     IsReidentified = false,
                     Message = String.Empty,
