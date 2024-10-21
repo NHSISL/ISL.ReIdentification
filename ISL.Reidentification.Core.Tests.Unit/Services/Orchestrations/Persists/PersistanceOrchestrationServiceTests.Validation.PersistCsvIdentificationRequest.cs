@@ -68,8 +68,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                         "please correct the errors and try again.");
 
             invalidArgumentPersistanceOrchestrationException.AddData(
-                key: "csvIdentificationRequestId",
-                values: "Id is invalid");
+                key: "csvIdentificationRequest",
+                values: "AccessRequest is invalid");
 
             var expectedPersistanceOrchestrationValidationException =
             new PersistanceOrchestrationValidationException(

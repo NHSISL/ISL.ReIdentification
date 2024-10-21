@@ -45,6 +45,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
         TryCatch(async () =>
         {
             ValidateAccessRequestIsNotNull(accessRequest);
+            ValidateOnPersistCsvIdentificationRequestAsync(accessRequest.CsvIdentificationRequest);
             string outputHash =
             this.hashBroker.GenerateSha256Hash(new MemoryStream(accessRequest.CsvIdentificationRequest.Data));
 
