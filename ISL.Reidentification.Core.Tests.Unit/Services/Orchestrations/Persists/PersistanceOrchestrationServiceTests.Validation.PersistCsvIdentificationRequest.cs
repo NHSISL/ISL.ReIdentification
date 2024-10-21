@@ -72,9 +72,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                 values: "AccessRequest is invalid");
 
             var expectedPersistanceOrchestrationValidationException =
-            new PersistanceOrchestrationValidationException(
-                message: "Persistance orchestration validation error occurred, please fix errors and try again.",
-                innerException: invalidArgumentPersistanceOrchestrationException);
+                new PersistanceOrchestrationValidationException(
+                    message: "Persistance orchestration validation error occurred, please fix errors and try again.",
+                    innerException: invalidArgumentPersistanceOrchestrationException);
 
             // when
             ValueTask<AccessRequest> persistCsvIdentificationRequestAsyncTask =

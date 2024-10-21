@@ -21,16 +21,16 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
         {
             // given
             string randomString = GetRandomString();
-            string returnedHash = randomString;
             AccessRequest randomAccessRequest = CreateRandomAccessRequest();
             CsvIdentificationRequest randomCsvIdentificationRequest = CreateRandomCsvIdentificationRequest();
-            randomCsvIdentificationRequest.Sha256Hash = returnedHash;
-            randomAccessRequest.IdentificationRequest = null;
-            randomAccessRequest.ImpersonationContext = null;
-            AccessRequest inputAccessRequest = randomAccessRequest.DeepClone();
-            inputAccessRequest.CsvIdentificationRequest.Sha256Hash = returnedHash;
-            AccessRequest outputAccessRequest = randomAccessRequest.DeepClone();
+            string returnedHash = randomString;
             CsvIdentificationRequest inputCsvIdentificationRequest = randomCsvIdentificationRequest.DeepClone();
+            AccessRequest inputAccessRequest = randomAccessRequest.DeepClone();
+            inputCsvIdentificationRequest.Sha256Hash = returnedHash;
+            inputAccessRequest.IdentificationRequest = null;
+            inputAccessRequest.ImpersonationContext = null;
+            inputAccessRequest.CsvIdentificationRequest.Sha256Hash = returnedHash;
+            AccessRequest outputAccessRequest = inputAccessRequest.DeepClone();
             CsvIdentificationRequest outputCsvIdentificationRequest = inputCsvIdentificationRequest.DeepClone();
             outputAccessRequest.CsvIdentificationRequest = outputCsvIdentificationRequest;
             AccessRequest expectedAccessRequest = outputAccessRequest.DeepClone();
