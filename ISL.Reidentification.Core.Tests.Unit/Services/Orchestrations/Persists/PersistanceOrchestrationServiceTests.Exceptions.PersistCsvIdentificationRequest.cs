@@ -17,7 +17,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
         public async Task ShouldThrowDependencyValidationOnPersistCsvIdentificationRequestAndLogItAsync(
-                    Xeption dependencyValidationException)
+            Xeption dependencyValidationException)
         {
             // given
             AccessRequest someAccessRequest = CreateRandomAccessRequest();
@@ -59,6 +59,55 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.impersonationContextServiceMock.VerifyNoOtherCalls();
             this.notificationServiceMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(DependencyExceptions))]
+        public async Task ShouldThrowDependencyOnPersistCsvIdentificationRequestAndLogItAsync(
+            Xeption dependencyException)
+        {
+            // given
+            AccessRequest someAccessRequest = CreateRandomAccessRequest();
+
+            this.hashBrokerMock.Setup(broker =>
+                broker.GenerateSha256Hash(It.IsAny<MemoryStream>()))
+                    .Throws(dependencyException);
+
+            var expectedPersistanceOrchestrationDependencyException =
+                new PersistanceOrchestrationDependencyException(
+                    message: "Persistance orchestration dependency error occurred, " +
+                        "fix the errors and try again.",
+                    innerException: dependencyException.InnerException as Xeption);
+
+            // when
+            ValueTask<AccessRequest> persistCsvIdentificationRequestAsyncTask =
+                this.persistanceOrchestrationService.PersistCsvIdentificationRequestAsync(
+                    accessRequest: someAccessRequest);
+
+            PersistanceOrchestrationDependencyException
+                actualPersistanceOrchestrationDependencyException =
+                await Assert.ThrowsAsync<PersistanceOrchestrationDependencyException>(
+                    testCode: persistCsvIdentificationRequestAsyncTask.AsTask);
+
+            // then
+            actualPersistanceOrchestrationDependencyException
+                .Should().BeEquivalentTo(expectedPersistanceOrchestrationDependencyException);
+
+            this.hashBrokerMock.Verify(broker =>
+                broker.GenerateSha256Hash(It.IsAny<MemoryStream>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
+                   expectedPersistanceOrchestrationDependencyException))),
+                       Times.Once);
+
+            this.csvIdentificationRequestServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.impersonationContextServiceMock.VerifyNoOtherCalls();
+            this.notificationServiceMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
         }
     }
 }
