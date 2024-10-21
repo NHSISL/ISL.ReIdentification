@@ -82,7 +82,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
                     .AddCsvIdentificationRequestAsync(accessRequest.CsvIdentificationRequest);
 
             var returnedAccessRequest = new AccessRequest { CsvIdentificationRequest = outputCsvIdentificationRequest };
-            await this.notificationService.SendPendingApprovalNotificationAsync(returnedAccessRequest);
+            await this.notificationService.SendCsvPendingApprovalNotificationAsync(returnedAccessRequest);
 
             return returnedAccessRequest;
         });
