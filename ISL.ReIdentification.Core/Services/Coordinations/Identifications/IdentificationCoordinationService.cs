@@ -3,10 +3,13 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Brokers.CsvHelpers;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Securities;
+using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
@@ -115,7 +118,46 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             throw new System.NotImplementedException();
 
         virtual async internal ValueTask<IdentificationRequest> ConvertCsvIdentificationRequestToIdentificationRequest(
-            CsvIdentificationRequest csvIdentificationRequest) => throw new NotImplementedException();
+            CsvIdentificationRequest csvIdentificationRequest)
+        {
+            string data = Encoding.UTF8.GetString(csvIdentificationRequest.Data);
+
+            var mappedItems =
+                await this.csvHelperBroker.MapCsvToObjectAsync<CsvIdentificationItem>(
+                    data: data,
+                    hasHeaderRecord: true,
+                    fieldMappings: null);
+
+            var identificationItems = new List<IdentificationItem>();
+
+            foreach (var mappedItem in mappedItems)
+            {
+                var identificationItem = new IdentificationItem
+                {
+                    HasAccess = null,
+                    Identifier = mappedItem.Identifier,
+                    IsReidentified = false,
+                    Message = String.Empty,
+                    RowNumber = mappedItem.RowNumber
+                };
+
+                identificationItems.Add(identificationItem);
+            }
+
+            var identificationRequest = new IdentificationRequest();
+            identificationRequest.DisplayName = csvIdentificationRequest.RecipientDisplayName;
+            identificationRequest.Email = csvIdentificationRequest.RecipientEmail;
+            identificationRequest.EntraUserId = csvIdentificationRequest.RecipientEntraUserId;
+            identificationRequest.GivenName = csvIdentificationRequest.RecipientFirstName;
+            identificationRequest.JobTitle = csvIdentificationRequest.RecipientJobTitle;
+            identificationRequest.Organisation = csvIdentificationRequest.Organisation;
+            identificationRequest.Purpose = csvIdentificationRequest.Purpose;
+            identificationRequest.Reason = csvIdentificationRequest.Reason;
+            identificationRequest.Surname = csvIdentificationRequest.RecipientLastName;
+            identificationRequest.IdentificationItems = identificationItems;
+
+            return identificationRequest;
+        }
 
         virtual internal async ValueTask<CsvIdentificationRequest> ConvertIdentificationRequestToCsvIdentificationRequest(
             IdentificationRequest identificationRequest) => throw new NotImplementedException();
