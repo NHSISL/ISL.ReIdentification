@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications;
+using ISL.ReIdentification.Core.Models.Foundations.OdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 
 namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
@@ -80,8 +81,42 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
                 return await this.reIdentificationStorageBroker.DeleteUserAccessAsync(maybeUserAccess);
             });
 
-        public async ValueTask<List<string>> RetrieveAllOrganisationUserHasAccessTo(Guid entraUserId) =>
-            throw new NotImplementedException();
+        public async ValueTask<List<string>> RetrieveAllOrganisationUserHasAccessTo(Guid entraUserId)
+        {
+            List<string> organisations = new List<string>();
 
+            var userAccessQuery = await this.reIdentificationStorageBroker.SelectAllUserAccessesAsync();
+
+            List<string> userOrganisations = userAccessQuery
+                .Where(userAccess => userAccess.EntraUserId == entraUserId)
+                    .Select(userAccess => userAccess.OrgCode).ToList();
+
+            foreach (var userOrganisation in userOrganisations)
+            {
+                IQueryable<OdsData> odsParentRecord =
+                    await this.reIdentificationStorageBroker.SelectAllOdsDatasAsync();
+
+                OdsData? parentRecord = odsParentRecord
+                    .FirstOrDefault(ods => ods.OrganisationCode == userOrganisation);
+
+                if (parentRecord != null)
+                {
+                    organisations.Add(parentRecord.OrganisationCode);
+
+                    IQueryable<OdsData> odsDataQuery =
+                        await this.reIdentificationStorageBroker.SelectAllOdsDatasAsync();
+
+                    odsDataQuery = odsDataQuery
+                        .Where(ods => ods.OdsHierarchy.IsDescendantOf(parentRecord.OdsHierarchy));
+
+                    List<string> descendants = odsDataQuery.ToList()
+                        .Select(odsData => odsData.OrganisationCode).ToList();
+
+                    organisations.AddRange(descendants);
+                }
+            }
+
+            return organisations.Distinct().ToList();
+        }
     }
 }
