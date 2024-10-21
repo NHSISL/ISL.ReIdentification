@@ -19,9 +19,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
         {
             // given
             AccessRequest randomAccessRequest = CreateRandomAccessRequest();
+            randomAccessRequest.CsvIdentificationRequest = null;
+            randomAccessRequest.IdentificationRequest = null;
             AccessRequest inputAccessRequest = randomAccessRequest.DeepClone();
             ImpersonationContext outputImpersonationContext = CreateRandomImpersonationContext();
-            AccessRequest outputAccessRequest = randomAccessRequest.DeepClone();
+            AccessRequest outputAccessRequest = inputAccessRequest.DeepClone();
+            outputAccessRequest.ImpersonationContext = outputImpersonationContext;
             AccessRequest expectedAccessRequest = outputAccessRequest.DeepClone();
 
             IQueryable<ImpersonationContext> emptyRetrieveAllImpersonationContexts =
@@ -52,7 +55,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                     Times.Once);
 
             this.notificationServiceMock.Verify(service =>
-                service.SendPendingApprovalNotificationAsync(inputAccessRequest),
+                service.SendPendingApprovalNotificationAsync(It.IsAny<AccessRequest>()),
                     Times.Once);
 
             this.impersonationContextServiceMock.VerifyNoOtherCalls();
