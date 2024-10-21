@@ -80,7 +80,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
                 return await this.reIdentificationStorageBroker.DeleteUserAccessAsync(maybeUserAccess);
             });
 
-        public ValueTask<List<string>> HasAccessToOrganisations(Guid entraUserId) =>
+        public async ValueTask<List<string>> RetrieveAllOrganisationUserHasAccessTo(Guid entraUserId) =>
             throw new NotImplementedException();
+
     }
 }
