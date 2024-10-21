@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Brokers.CsvHelpers;
@@ -160,7 +161,43 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
         }
 
         virtual internal async ValueTask<CsvIdentificationRequest> ConvertIdentificationRequestToCsvIdentificationRequest(
-            IdentificationRequest identificationRequest) => throw new NotImplementedException();
+            IdentificationRequest identificationRequest)
+        {
+            List<IdentificationItem> identificationItems = identificationRequest.IdentificationItems;
+            List<CsvIdentificationItem> identificationsData = identificationItems
+                .Select(identificationItem =>
+                {
+                    var csvIdentificationItem = new CsvIdentificationItem();
+                    csvIdentificationItem.RowNumber = identificationItem.RowNumber;
+                    csvIdentificationItem.Identifier = identificationItem.Identifier;
+
+                    return csvIdentificationItem;
+                })
+                    .ToList();
+
+            string csvIdentificationRequestData =
+                await this.csvHelperBroker.MapObjectToCsvAsync(
+                    identificationsData,
+                    addHeaderRecord: true,
+                    fieldMappings: null,
+                    shouldAddTrailingComma: false);
+
+            byte[] csvIdentificationRequestDataByteArray = Encoding.UTF8.GetBytes(csvIdentificationRequestData);
+
+            var csvIdentificationRequest = new CsvIdentificationRequest();
+            csvIdentificationRequest.RecipientDisplayName = identificationRequest.DisplayName;
+            csvIdentificationRequest.RecipientEmail = identificationRequest.Email;
+            csvIdentificationRequest.RecipientEntraUserId = identificationRequest.EntraUserId;
+            csvIdentificationRequest.RecipientFirstName = identificationRequest.GivenName;
+            csvIdentificationRequest.RecipientJobTitle = identificationRequest.JobTitle;
+            csvIdentificationRequest.Organisation = identificationRequest.Organisation;
+            csvIdentificationRequest.Purpose = identificationRequest.Purpose;
+            csvIdentificationRequest.RecipientLastName = identificationRequest.Surname;
+            csvIdentificationRequest.Reason = identificationRequest.Reason;
+            csvIdentificationRequest.Data = csvIdentificationRequestDataByteArray;
+
+            return csvIdentificationRequest;
+        }
 
         private IdentificationRequest OverrideIdentificationRequestUserDetails(
             IdentificationRequest identificationRequest,

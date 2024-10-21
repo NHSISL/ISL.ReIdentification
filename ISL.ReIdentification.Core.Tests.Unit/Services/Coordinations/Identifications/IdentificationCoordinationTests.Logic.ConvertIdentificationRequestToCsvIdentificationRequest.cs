@@ -2,9 +2,11 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
 using Moq;
@@ -23,7 +25,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             string csvDataString = Encoding.UTF8.GetString(csvIdentificationRequest.Data);
 
             this.csvHelperBrokerMock.Setup(broker =>
-                broker.MapObjectToCsvAsync(RandomCsvIdentificationItems(), true, null, false))
+                broker.MapObjectToCsvAsync(It.IsAny<List<CsvIdentificationItem>>(), true, null, false))
                     .ReturnsAsync(CsvDataString);
 
             // when
@@ -34,7 +36,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             actualResult.Should().BeEquivalentTo(csvIdentificationRequest);
 
             this.csvHelperBrokerMock.Verify(service =>
-                service.MapObjectToCsvAsync(RandomCsvIdentificationItems(), true, null, false),
+                service.MapObjectToCsvAsync(It.IsAny<List<CsvIdentificationItem>>(), true, null, false),
                     Times.Once);
 
             this.csvHelperBrokerMock.VerifyNoOtherCalls();

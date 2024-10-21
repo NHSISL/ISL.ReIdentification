@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
+using System.Text;
 using ISL.ReIdentification.Core.Brokers.CsvHelpers;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Securities;
@@ -338,11 +339,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
             CsvIdentificationRequest csvIdentificationRequest = new CsvIdentificationRequest
             {
-                CreatedBy = nameof(CsvIdentificationRequest.CreatedBy),
-                CreatedDate = DateTimeOffset.UtcNow,
-                Data = Convert.FromBase64String("Um93TnVtYmVyLElkZW50aWZpZXIKVGVzdFJvd051bWJlcixUZXN0SWRlbnRpZmllcg=="),
-                Id = Guid.NewGuid(),
-                IdentifierColumn = nameof(CsvIdentificationRequest.IdentifierColumn),
+                Data = Encoding.UTF8.GetBytes(CsvDataString()),
+                Id = Guid.Empty,
                 Organisation = nameof(CsvIdentificationRequest.Organisation),
                 Purpose = nameof(CsvIdentificationRequest.Purpose),
                 Reason = nameof(CsvIdentificationRequest.Reason),
@@ -352,15 +350,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 RecipientFirstName = nameof(CsvIdentificationRequest.RecipientFirstName),
                 RecipientJobTitle = nameof(CsvIdentificationRequest.RecipientJobTitle),
                 RecipientLastName = nameof(CsvIdentificationRequest.RecipientLastName),
-                RequesterDisplayName = nameof(CsvIdentificationRequest.RequesterDisplayName),
-                RequesterEmail = nameof(CsvIdentificationRequest.RequesterEmail),
-                RequesterEntraUserId = Guid.NewGuid(),
-                RequesterFirstName = nameof(CsvIdentificationRequest.RequesterFirstName),
-                RequesterJobTitle = nameof(CsvIdentificationRequest.RequesterJobTitle),
-                RequesterLastName = nameof(CsvIdentificationRequest.RequesterLastName),
-                Sha256Hash = nameof(CsvIdentificationRequest.Sha256Hash),
-                UpdatedBy = nameof(CsvIdentificationRequest.UpdatedBy),
-                UpdatedDate = DateTimeOffset.UtcNow
             };
 
             return new TheoryData<IdentificationRequest, CsvIdentificationRequest>
