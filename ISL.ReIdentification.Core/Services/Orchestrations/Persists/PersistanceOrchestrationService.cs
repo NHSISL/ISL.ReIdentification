@@ -43,13 +43,34 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
             var maybeImpersonationContexts = await this.impersonationContextService
                 .RetrieveAllImpersonationContextsAsync();
 
-            IQueryable<ImpersonationContext> matchedImpersonationContexts = maybeImpersonationContexts
+            ImpersonationContext? matchedImpersonationContext = maybeImpersonationContexts
                 .Where(impersonationContext =>
-                    impersonationContext.Id == accessRequest.ImpersonationContext.Id);
+                    impersonationContext.Id == accessRequest.ImpersonationContext.Id)
+                .FirstOrDefault();
 
-            if (matchedImpersonationContexts.Any())
+            if (matchedImpersonationContext is not null)
             {
-                throw new NotImplementedException();
+                if (accessRequest.ImpersonationContext.IsApproved == matchedImpersonationContext.IsApproved)
+                {
+                    return accessRequest;
+                }
+
+                if (accessRequest.ImpersonationContext.IsApproved == true)
+                {
+                    var modifiedImpersonationContext = await this.impersonationContextService
+                        .ModifyImpersonationContextAsync(accessRequest.ImpersonationContext);
+
+                    var returnedAccessRequest =
+                        new AccessRequest { ImpersonationContext = modifiedImpersonationContext };
+
+                    await this.notificationService.SendApprovedNotificationAsync(returnedAccessRequest);
+
+                    return returnedAccessRequest;
+                }
+                else
+                {
+                    throw new NotImplementedException();
+                }
             }
             else
             {
