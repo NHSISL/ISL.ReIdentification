@@ -8,6 +8,7 @@ using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests.Exc
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.Notifications.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
+using ISL.ReIdentification.Core.Models.Orchestrations.Accesses.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Persists.Exceptions;
 using Xeptions;
 
@@ -22,6 +23,10 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
             try
             {
                 return await returningAccessRequestFunction();
+            }
+            catch (NullAccessRequestException nullAccessRequestException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(nullAccessRequestException);
             }
             catch (InvalidArgumentPersistanceOrchestrationException invalidArgumentPersistanceOrchestrationException)
             {
