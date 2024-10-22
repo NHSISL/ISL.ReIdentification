@@ -43,6 +43,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
         TryCatch(async () =>
         {
             ValidateAccessRequestIsNotNull(accessRequest);
+            ValidateOnPersistImpersonationContextAsync(accessRequest.ImpersonationContext);
             var maybeImpersonationContexts = await this.impersonationContextService
                 .RetrieveAllImpersonationContextsAsync();
 
