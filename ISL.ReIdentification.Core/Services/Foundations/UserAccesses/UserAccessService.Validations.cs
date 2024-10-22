@@ -4,7 +4,6 @@
 
 using System;
 using System.Threading.Tasks;
-using ISL.ReIdentification.Core.Models.Foundations.UserAccesses.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses.Exceptions;
 
@@ -84,6 +83,9 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
         }
 
         private static void ValidateUserAccessOnRemoveById(Guid userAccessId) =>
+            Validate((Rule: IsInvalid(userAccessId), Parameter: nameof(UserAccess.Id)));
+
+        private static void ValidateOnRetrieveAllOrganisationUserHasAccessTo(Guid userAccessId) =>
             Validate((Rule: IsInvalid(userAccessId), Parameter: nameof(UserAccess.Id)));
 
         private static void ValidateStorageUserAccess(UserAccess maybeUserAccess, Guid maybeId)
