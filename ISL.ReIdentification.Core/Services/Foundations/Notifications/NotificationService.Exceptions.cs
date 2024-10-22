@@ -5,7 +5,6 @@
 using System;
 using System.Threading.Tasks;
 using ISL.Providers.Notifications.Abstractions.Models.Exceptions;
-using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.Notifications.Exceptions;
 using Xeptions;
 
@@ -51,7 +50,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
             {
                 var failedServiceNotificationException =
                     new FailedServiceNotificationException(
-                        message: "Failed service access audit error occurred, contact support.",
+                        message: "Failed service notification error occurred, contact support.",
                         innerException: exception,
                         data: exception.Data);
 
@@ -98,7 +97,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
         private async ValueTask<NotificationServiceException> CreateAndLogServiceExceptionAsync(Xeption exception)
         {
             var notificationServiceException = new NotificationServiceException(
-                message: "Service error occurred, contact support.",
+                message: "Notification service error occurred, contact support.",
                 innerException: exception);
 
             await this.loggingBroker.LogErrorAsync(notificationServiceException);

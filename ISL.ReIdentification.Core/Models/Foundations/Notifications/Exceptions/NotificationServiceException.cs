@@ -4,7 +4,7 @@
 
 using Xeptions;
 
-namespace ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests.Exceptions
+namespace ISL.ReIdentification.Core.Models.Foundations.Notifications.Exceptions
 {
     public class NotificationServiceException : Xeption
     {
