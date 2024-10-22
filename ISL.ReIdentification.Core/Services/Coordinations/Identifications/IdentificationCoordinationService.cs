@@ -111,12 +111,18 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
         public ValueTask<AccessRequest> PersistsImpersonationContextAsync(AccessRequest accessRequest) =>
         TryCatch(async () =>
         {
-            ValidateOnPersistsImpersonationContext(accessRequest);
+            ValidateImpersonationContext(accessRequest);
             return await this.persistanceOrchestrationService.PersistImpersonationContextAsync(accessRequest);
         });
 
-        public async ValueTask<AccessRequest> ProcessImpersonationContextRequestAsync(AccessRequest accessRequest) =>
-            await this.accessOrchestrationService.ProcessImpersonationContextRequestAsync(accessRequest);
+        public ValueTask<AccessRequest> ProcessImpersonationContextRequestAsync(AccessRequest accessRequest) =>
+        TryCatch(async () =>
+        {
+            ValidateImpersonationContext(accessRequest);
+            return await this.accessOrchestrationService.ProcessImpersonationContextRequestAsync(accessRequest);
+        });
+
+
 
         virtual async internal ValueTask<IdentificationRequest> ConvertCsvIdentificationRequestToIdentificationRequest(
             CsvIdentificationRequest csvIdentificationRequest)

@@ -27,7 +27,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                 Parameter: nameof(AccessRequest.CsvIdentificationRequest)));
         }
 
-        private static void ValidateOnPersistsImpersonationContext(AccessRequest accessRequest)
+        private static void ValidateImpersonationContext(AccessRequest accessRequest)
         {
             ValidateAccessRequestIsNotNull(accessRequest);
             Validate((Rule: IsInvalid(accessRequest.ImpersonationContext),
