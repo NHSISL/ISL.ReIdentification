@@ -10,7 +10,6 @@ using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Notifications;
 using ISL.ReIdentification.Core.Models.Brokers.Notifications;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
-using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Services.Foundations.Notifications;
 using KellermanSoftware.CompareNetObjects;
@@ -88,33 +87,33 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Notification
 
         public static TheoryData<Xeption> DependencyValidationExceptions()
         {
-            string randomMessage = GetRandomString();
-            string exceptionMessage = randomMessage;
-            var innerException = new Xeption(exceptionMessage);
+            var innerException = new Xeption(message: GetRandomString());
 
             return new TheoryData<Xeption>
             {
                 new NotificationProviderValidationException(
-                    message: randomMessage,
-                    innerException)
+                    message: GetRandomString(),
+                    innerException,
+                    data: innerException.Data),
             };
         }
 
         public static TheoryData<Xeption> DependencyExceptions()
         {
             string randomMessage = GetRandomString();
-            string exceptionMessage = randomMessage;
-            var innerException = new Xeption(exceptionMessage);
+            var innerException = new Xeption(message: GetRandomString());
 
             return new TheoryData<Xeption>
             {
                 new NotificationProviderDependencyException(
                     message: randomMessage,
-                    innerException),
+                    innerException,
+                    data: innerException.Data),
 
-                new ImpersonationContextServiceException(
+                new NotificationProviderServiceException(
                     message: randomMessage,
-                    innerException)
+                    innerException,
+                    data: innerException.Data)
             };
         }
     }

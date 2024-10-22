@@ -93,7 +93,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Notification
                 innerException: dependencyException,
                 data: dependencyException.Data);
 
-            var expectedNotificationDependencyException = new NotificationDependencyException(
+            var expectedNotificationDependencyException =
+                new NotificationDependencyException(
                 message: "Notification dependency error occurred, contact support.",
                 innerException: serverNotificationException);
 

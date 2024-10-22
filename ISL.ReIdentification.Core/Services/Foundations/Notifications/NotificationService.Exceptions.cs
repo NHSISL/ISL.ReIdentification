@@ -40,7 +40,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
                     innerException: notificationProviderDependencyException,
                     data: notificationProviderDependencyException.Data);
 
-                throw await CreateAndLogDependencyExceptionAsync(notificationProviderDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(serverNotificationException);
             }
             catch (NotificationProviderServiceException notificationProviderServiceException)
             {
@@ -49,7 +49,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
                     innerException: notificationProviderServiceException,
                     data: notificationProviderServiceException.Data);
 
-                throw await CreateAndLogDependencyExceptionAsync(notificationProviderServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(serverNotificationException);
             }
             catch (Exception exception)
             {
