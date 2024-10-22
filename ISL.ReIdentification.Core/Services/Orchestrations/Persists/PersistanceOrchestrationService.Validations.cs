@@ -3,6 +3,9 @@
 // ---------------------------------------------------------
 
 using System;
+using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
+using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
+using ISL.ReIdentification.Core.Models.Orchestrations.Accesses.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Persists.Exceptions;
 
 namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
@@ -16,10 +19,31 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
                 (Rule: IsInvalid(csvIdentificationRequestId), Parameter: nameof(csvIdentificationRequestId)));
         }
 
+        private static void ValidateAccessRequestIsNotNull(AccessRequest accessRequest)
+        {
+            if (accessRequest is null)
+            {
+                throw new NullAccessRequestException("Access request is null.");
+            }
+        }
+
+        private static void ValidateOnPersistCsvIdentificationRequestAsync(
+             CsvIdentificationRequest csvIdentificationRequest)
+        {
+            Validate(
+                (Rule: IsInvalid(csvIdentificationRequest), Parameter: nameof(csvIdentificationRequest)));
+        }
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,
             Message = "Id is invalid"
+        };
+
+        private static dynamic IsInvalid(CsvIdentificationRequest csvIdentificationRequest) => new
+        {
+            Condition = csvIdentificationRequest == null,
+            Message = "AccessRequest is invalid"
         };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)

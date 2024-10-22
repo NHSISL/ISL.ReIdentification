@@ -8,6 +8,7 @@ using ISL.Providers.Notifications.GovukNotify.Models;
 using ISL.Providers.Notifications.GovukNotify.Providers.Notifications;
 using ISL.ReIdentification.Core.Brokers.CsvHelpers;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
+using ISL.ReIdentification.Core.Brokers.Hashing;
 using ISL.ReIdentification.Core.Brokers.Identifiers;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.NECS;
@@ -156,6 +157,7 @@ namespace ISL.ReIdentification.Portals.Server
             services.AddTransient<ISecurityBroker, SecurityBroker>();
             services.AddTransient<IReIdentificationStorageBroker, ReIdentificationStorageBroker>();
             services.AddTransient<INotificationBroker, NotificationBroker>();
+            services.AddTransient<IHashBroker, HashBroker>();
 
             NECSConfiguration necsConfigurations = configuration
                 .GetSection("necsConfiguration")
