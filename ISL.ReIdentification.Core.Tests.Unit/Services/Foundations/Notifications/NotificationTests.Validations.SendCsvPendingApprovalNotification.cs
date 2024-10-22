@@ -29,11 +29,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Notification
 
             invalidArgumentsNotificationException.AddData(
                 key: nameof(AccessRequest),
-                values: "AccessRequest is invalid");
+                values: $"{nameof(AccessRequest)} is invalid");
 
             invalidArgumentsNotificationException.AddData(
                 key: nameof(NotificationConfigurations),
-                values: "AccessRequest is invalid");
+                values: $"{nameof(NotificationConfigurations)} is invalid");
 
             var expectedNotificationValidationException =
                 new NotificationValidationException(

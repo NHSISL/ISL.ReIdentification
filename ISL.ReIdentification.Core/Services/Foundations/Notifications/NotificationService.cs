@@ -11,7 +11,7 @@ using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 
 namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
 {
-    public class NotificationService : INotificationService
+    public partial class NotificationService : INotificationService
     {
         private readonly NotificationConfigurations notificationConfigurations;
         private readonly INotificationBroker notificationBroker;
@@ -27,8 +27,11 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask SendCsvPendingApprovalNotificationAsync(AccessRequest accessRequest)
+        public ValueTask SendCsvPendingApprovalNotificationAsync(AccessRequest accessRequest) =>
+        TryCatch(async () =>
         {
+            ValidateOnSendCsvPendingApprovalNotificationAsync(accessRequest, this.notificationConfigurations);
+
             string toEmail = accessRequest.CsvIdentificationRequest.RecipientEmail;
             string subject = "Pending Approval";
             string body = "Your request is pending approval";
@@ -58,7 +61,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
             };
 
             await this.notificationBroker.SendEmailAsync(toEmail, subject, body, personalisation);
-        }
+        });
 
         public ValueTask SendCsvApprovedNotificationAsync(AccessRequest accessRequest) =>
             throw new System.NotImplementedException();
