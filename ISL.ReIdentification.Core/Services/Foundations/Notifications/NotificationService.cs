@@ -26,13 +26,22 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask SendPendingApprovalNotificationAsync(AccessRequest accessRequest) =>
+        public ValueTask SendCsvPendingApprovalNotificationAsync(AccessRequest accessRequest) =>
             throw new System.NotImplementedException();
 
-        public ValueTask SendApprovedNotificationAsync(AccessRequest accessRequest) =>
+        public ValueTask SendCsvApprovedNotificationAsync(AccessRequest accessRequest) =>
             throw new System.NotImplementedException();
 
-        public ValueTask SendDeniedNotificationAsync(AccessRequest accessRequest) =>
+        public ValueTask SendCsvDeniedNotificationAsync(AccessRequest accessRequest) =>
+            throw new System.NotImplementedException();
+
+        public ValueTask SendImpersonationPendingApprovalNotificationAsync(AccessRequest accessRequest) =>
+            throw new System.NotImplementedException();
+
+        public ValueTask SendImpersonationApprovedNotificationAsync(AccessRequest accessRequest) =>
+            throw new System.NotImplementedException();
+
+        public ValueTask SendImpersonationDeniedNotificationAsync(AccessRequest accessRequest) =>
             throw new System.NotImplementedException();
     }
 }

@@ -9,8 +9,11 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
 {
     public interface INotificationService
     {
-        ValueTask SendPendingApprovalNotificationAsync(AccessRequest accessRequest);
-        ValueTask SendApprovedNotificationAsync(AccessRequest accessRequest);
-        ValueTask SendDeniedNotificationAsync(AccessRequest accessRequest);
+        ValueTask SendCsvPendingApprovalNotificationAsync(AccessRequest accessRequest);
+        ValueTask SendCsvApprovedNotificationAsync(AccessRequest accessRequest);
+        ValueTask SendCsvDeniedNotificationAsync(AccessRequest accessRequest);
+        ValueTask SendImpersonationPendingApprovalNotificationAsync(AccessRequest accessRequest);
+        ValueTask SendImpersonationApprovedNotificationAsync(AccessRequest accessRequest);
+        ValueTask SendImpersonationDeniedNotificationAsync(AccessRequest accessRequest);
     }
 }

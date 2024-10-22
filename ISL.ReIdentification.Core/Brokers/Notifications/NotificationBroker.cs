@@ -11,7 +11,6 @@ namespace ISL.ReIdentification.Core.Brokers.Notifications
 {
     public class NotificationBroker : INotificationBroker
     {
-        private readonly NotificationConfigurations notificationConfigurations;
         private readonly INotificationAbstractionProvider notificationAbstractionProvider;
 
         public NotificationBroker(
@@ -19,7 +18,6 @@ namespace ISL.ReIdentification.Core.Brokers.Notifications
             NotificationConfigurations notificationConfigurations)
         {
             this.notificationAbstractionProvider = notificationAbstractionProvider;
-            this.notificationConfigurations = notificationConfigurations;
         }
 
         /// <summary>
