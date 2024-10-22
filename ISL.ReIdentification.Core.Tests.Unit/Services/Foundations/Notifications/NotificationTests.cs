@@ -4,10 +4,12 @@
 
 using System;
 using System.Linq.Expressions;
+using ISL.Providers.Notifications.Abstractions.Models.Exceptions;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Notifications;
 using ISL.ReIdentification.Core.Models.Brokers.Notifications;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
+using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Services.Foundations.Notifications;
 using Moq;
@@ -70,6 +72,38 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Notification
                 .OnProperty(csvIdentificationRequest => csvIdentificationRequest.UpdatedBy).Use(user);
 
             return filler;
+        }
+
+        public static TheoryData<Xeption> DependencyValidationExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new NotificationProviderValidationException(
+                    message: randomMessage,
+                    innerException)
+            };
+        }
+
+        public static TheoryData<Xeption> DependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new NotificationProviderDependencyException(
+                    message: randomMessage,
+                    innerException),
+
+                new ImpersonationContextServiceException(
+                    message: randomMessage,
+                    innerException)
+            };
         }
     }
 }
