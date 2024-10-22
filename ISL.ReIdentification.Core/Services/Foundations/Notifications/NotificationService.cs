@@ -57,8 +57,10 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
                 { "identifierColumn", accessRequest.CsvIdentificationRequest.IdentifierColumn },
                 { "templateId", this.notificationConfigurations.CsvPendingApprovalRequestTemplateId },
                 { "configurationBaseUrl", this.notificationConfigurations.ConfigurationBaseUrl },
-                { "portalBaseUrl", this.notificationConfigurations.ConfigurationBaseUrl },
+                { "portalBaseUrl", this.notificationConfigurations.PortalBaseUrl },
             };
+
+            //ValidateInputsOnSendCsvPendingApprovalNotificationAsync(toEmail, subject, body, personalisation);
 
             await this.notificationBroker.SendEmailAsync(toEmail, subject, body, personalisation);
         });

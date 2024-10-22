@@ -80,16 +80,32 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Notification
         public async Task ShouldThrowValidationExceptionOnSendPendingApprovalNotificationIfCsvItemIsInvalidAndLogItAsync()
         {
             // given
-            AccessRequest invalidAccessRequest = null;
-            NotificationConfigurations invalidNotificationConfigurations = null;
+            AccessRequest invalidAccessRequest = new AccessRequest();
+            NotificationConfigurations invalidNotificationConfigurations = new NotificationConfigurations();
 
             var invalidArgumentsNotificationException =
                 new InvalidArgumentsNotificationException(
                     message: "Invalid notification arguments. Please correct the errors and try again.");
 
             invalidArgumentsNotificationException.AddData(
-                key: nameof(CsvIdentificationRequest),
+                key: $"{nameof(AccessRequest)}." +
+                    $"{nameof(AccessRequest.CsvIdentificationRequest)}",
                 values: $"{nameof(CsvIdentificationRequest)} is invalid");
+
+            invalidArgumentsNotificationException.AddData(
+                key: $"{nameof(NotificationConfigurations)}." +
+                    $"{nameof(NotificationConfigurations.CsvPendingApprovalRequestTemplateId)}",
+                values: "Text is invalid");
+
+            invalidArgumentsNotificationException.AddData(
+                key: $"{nameof(NotificationConfigurations)}." +
+                    $"{nameof(NotificationConfigurations.ConfigurationBaseUrl)}",
+                values: "Text is invalid");
+
+            invalidArgumentsNotificationException.AddData(
+                key: $"{nameof(NotificationConfigurations)}." +
+                    $"{nameof(NotificationConfigurations.PortalBaseUrl)}",
+                values: "Text is invalid");
 
             var expectedNotificationValidationException =
                 new NotificationValidationException(
