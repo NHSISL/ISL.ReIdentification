@@ -74,12 +74,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             randomAccessRequest.IdentificationRequest = null;
             AccessRequest inputAccessRequest = randomAccessRequest.DeepClone();
             inputAccessRequest.ImpersonationContext.IsApproved = true;
-            ImpersonationContext returnedImpersonationContext = inputAccessRequest.ImpersonationContext;
+            ImpersonationContext returnedImpersonationContext = inputAccessRequest.ImpersonationContext.DeepClone();
             returnedImpersonationContext.IsApproved = false;
-            ImpersonationContext updatedImpersonationContext = returnedImpersonationContext.DeepClone();
-            updatedImpersonationContext.IsApproved = true;
+            ImpersonationContext outputImpersonationContext = returnedImpersonationContext.DeepClone();
             AccessRequest outputAccessRequest = inputAccessRequest.DeepClone();
-            outputAccessRequest.ImpersonationContext = updatedImpersonationContext;
+            outputAccessRequest.ImpersonationContext = outputImpersonationContext;
             AccessRequest expectedAccessRequest = outputAccessRequest.DeepClone();
 
             IQueryable<ImpersonationContext> randomImpersonationContexts =
@@ -90,8 +89,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                     .ReturnsAsync(randomImpersonationContexts);
 
             this.impersonationContextServiceMock.Setup(service =>
-                service.ModifyImpersonationContextAsync(updatedImpersonationContext))
-                    .ReturnsAsync(updatedImpersonationContext);
+                service.ModifyImpersonationContextAsync(inputAccessRequest.ImpersonationContext))
+                    .ReturnsAsync(outputImpersonationContext);
 
             // when
             AccessRequest actualAccessRequest =
@@ -106,7 +105,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                     Times.Once);
 
             this.impersonationContextServiceMock.Verify(service =>
-                service.ModifyImpersonationContextAsync(updatedImpersonationContext),
+                service.ModifyImpersonationContextAsync(inputAccessRequest.ImpersonationContext),
                     Times.Once);
 
             this.notificationServiceMock.Verify(service =>
