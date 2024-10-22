@@ -24,12 +24,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             var failedUserAccessStorageException =
                 new FailedStorageUserAccessException(
                     message: "Failed user access storage error occurred, contact support.",
-                        innerException: sqlException);
+                    innerException: sqlException);
 
             var expectedUserAccessDependencyException =
                 new UserAccessDependencyException(
                     message: "UserAccess dependency error occurred, contact support.",
-                        innerException: failedUserAccessStorageException);
+                    innerException: failedUserAccessStorageException);
 
             this.reIdentificationStorageBroker.Setup(broker =>
                 broker.SelectAllUserAccessesAsync())
