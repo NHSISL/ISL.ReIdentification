@@ -37,12 +37,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Notification
                 { "recipientEmail", accessRequest.CsvIdentificationRequest.RecipientEmail },
                 { "recipientJobTitle", accessRequest.CsvIdentificationRequest.RecipientJobTitle },
                 { "reason", accessRequest.CsvIdentificationRequest.Reason },
-                { "purpose", accessRequest.CsvIdentificationRequest.Purpose },
                 { "organisation", accessRequest.CsvIdentificationRequest.Organisation },
                 { "identifierColumn", accessRequest.CsvIdentificationRequest.IdentifierColumn },
                 { "templateId", this.notificationConfigurations.CsvPendingApprovalRequestTemplateId },
                 { "configurationBaseUrl", this.notificationConfigurations.ConfigurationBaseUrl },
-                { "portalBaseUrl", this.notificationConfigurations.ConfigurationBaseUrl },
+                { "portalBaseUrl", this.notificationConfigurations.PortalBaseUrl },
             };
 
             this.notificationBrokerMock.Setup(broker =>
@@ -54,7 +53,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Notification
 
             // then
             this.notificationBrokerMock.Verify(broker =>
-                broker.SendEmailAsync(toEmail, subject, body, personalisation),
+                broker.SendEmailAsync(toEmail, subject, body, It.Is(SameDictionaryAs(personalisation))),
                     Times.Once);
 
             this.notificationBrokerMock.VerifyNoOtherCalls();

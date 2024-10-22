@@ -89,12 +89,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Notification
             NotificationConfigurations invalidNotificationConfigurations = this.notificationConfigurations;
 
             ServerNotificationException serverNotificationException = new ServerNotificationException(
-            message: "Server notification error occurred, contact support.",
-            innerException: dependencyException,
+                message: "Server notification error occurred, contact support.",
+                innerException: dependencyException,
                 data: dependencyException.Data);
 
-            var expectedNotificationDependencyException =
-                new NotificationDependencyException(
+            var expectedNotificationDependencyException = new NotificationDependencyException(
                 message: "Notification dependency error occurred, contact support.",
                 innerException: serverNotificationException);
 

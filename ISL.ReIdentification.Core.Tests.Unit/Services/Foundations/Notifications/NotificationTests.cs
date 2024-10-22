@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using ISL.Providers.Notifications.Abstractions.Models.Exceptions;
 using ISL.ReIdentification.Core.Brokers.Loggings;
@@ -12,6 +13,7 @@ using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Services.Foundations.Notifications;
+using KellermanSoftware.CompareNetObjects;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
@@ -24,11 +26,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Notification
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly NotificationConfigurations notificationConfigurations;
         private readonly NotificationService notificationService;
+        private readonly CompareLogic compareLogic;
 
         public NotificationTests()
         {
             this.notificationBrokerMock = new Mock<INotificationBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
+            this.compareLogic = new CompareLogic();
 
             this.notificationConfigurations = new NotificationConfigurations
             {
@@ -72,6 +76,14 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Notification
                 .OnProperty(csvIdentificationRequest => csvIdentificationRequest.UpdatedBy).Use(user);
 
             return filler;
+        }
+
+        private Expression<Func<Dictionary<string, dynamic>, bool>> SameDictionaryAs(
+            Dictionary<string, dynamic> expectedDictionary)
+        {
+            return actualDictionary =>
+                this.compareLogic.Compare(expectedDictionary, actualDictionary)
+                    .AreEqual;
         }
 
         public static TheoryData<Xeption> DependencyValidationExceptions()

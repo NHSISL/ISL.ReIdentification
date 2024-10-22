@@ -44,6 +44,11 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
             }
             catch (NotificationProviderServiceException notificationProviderServiceException)
             {
+                ServerNotificationException serverNotificationException = new ServerNotificationException(
+                    message: "Server notification error occurred, contact support.",
+                    innerException: notificationProviderServiceException,
+                    data: notificationProviderServiceException.Data);
+
                 throw await CreateAndLogDependencyExceptionAsync(notificationProviderServiceException);
             }
             catch (Exception exception)
