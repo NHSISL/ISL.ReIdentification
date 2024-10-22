@@ -3,23 +3,24 @@
 // ---------------------------------------------------------
 
 using System.Threading.Tasks;
+using FluentAssertions;
 
 namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
 {
     public partial class FeaturesApiTests
     {
 
-        [Fact]
+        [Fact(Skip = "Need To Check")]
         public async Task ShouldGetFeaturesAsync()
         {
-            //// Given
-            //string expectedResult = "[\"Configuration\",\"Test\"]";
+            // Given
+            string expectedResult = "[\"Configuration\",\"Test\"]";
 
-            //// When
-            //string actualResult = await this.apiBroker.GetFeaturesAsync();
+            // When
+            string actualResult = await this.apiBroker.GetFeaturesAsync();
 
-            //// Then
-            //actualResult.Should().BeEquivalentTo(expectedResult);
+            // Then
+            actualResult.Should().BeEquivalentTo(expectedResult);
 
         }
     }

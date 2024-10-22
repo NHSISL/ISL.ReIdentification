@@ -6,11 +6,16 @@ using System.Text.Json;
 using ISL.Providers.Notifications.Abstractions;
 using ISL.Providers.Notifications.GovukNotify.Models;
 using ISL.Providers.Notifications.GovukNotify.Providers.Notifications;
+using ISL.ReIdentification.Core.Brokers.CsvHelpers;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
+using ISL.ReIdentification.Core.Brokers.Hashing;
 using ISL.ReIdentification.Core.Brokers.Identifiers;
 using ISL.ReIdentification.Core.Brokers.Loggings;
+using ISL.ReIdentification.Core.Brokers.NECS;
 using ISL.ReIdentification.Core.Brokers.Notifications;
+using ISL.ReIdentification.Core.Brokers.Securities;
 using ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications;
+using ISL.ReIdentification.Core.Models.Brokers.NECS;
 using ISL.ReIdentification.Core.Models.Brokers.Notifications;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
@@ -18,14 +23,19 @@ using ISL.ReIdentification.Core.Models.Foundations.Lookups;
 using ISL.ReIdentification.Core.Models.Foundations.OdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.PdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
+using ISL.ReIdentification.Core.Services.Coordinations.Identifications;
 using ISL.ReIdentification.Core.Services.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Services.Foundations.Lookups;
+using ISL.ReIdentification.Core.Services.Foundations.Notifications;
 using ISL.ReIdentification.Core.Services.Foundations.OdsDatas;
 using ISL.ReIdentification.Core.Services.Foundations.PdsDatas;
+using ISL.ReIdentification.Core.Services.Foundations.ReIdentifications;
 using ISL.ReIdentification.Core.Services.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Services.Orchestrations.Accesses;
+using ISL.ReIdentification.Core.Services.Orchestrations.Identifications;
+using ISL.ReIdentification.Core.Services.Orchestrations.Persists;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.OData;
@@ -66,7 +76,7 @@ namespace ISL.ReIdentification.Configurations.Server
             builder.Services.AddSwaggerGen();
             builder.Services.AddControllers();
             AddProviders(builder.Services, builder.Configuration);
-            AddBrokers(builder.Services);
+            AddBrokers(builder.Services, builder.Configuration);
             AddFoundationServices(builder.Services);
             AddProcessingServices(builder.Services);
             AddOrchestrationServices(builder.Services);
@@ -146,13 +156,31 @@ namespace ISL.ReIdentification.Configurations.Server
             services.AddTransient<INotificationProvider, GovukNotifyProvider>();
         }
 
-        private static void AddBrokers(IServiceCollection services)
+        private static void AddBrokers(IServiceCollection services, IConfiguration configuration)
         {
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
             services.AddTransient<ILoggingBroker, LoggingBroker>();
+            services.AddTransient<ICsvHelperBroker, CsvHelperBroker>();
+            services.AddTransient<ISecurityBroker, SecurityBroker>();
             services.AddTransient<IReIdentificationStorageBroker, ReIdentificationStorageBroker>();
             services.AddTransient<INotificationBroker, NotificationBroker>();
+            services.AddTransient<IHashBroker, HashBroker>();
+
+            NECSConfiguration necsConfigurations = configuration
+                .GetSection("necsConfiguration")
+                    .Get<NECSConfiguration>();
+
+            NECSConfiguration necsConfiguration = new NECSConfiguration
+            {
+                ApiUrl = necsConfigurations.ApiUrl,
+                ApiKey = necsConfigurations.ApiKey,
+                ApiMaxBatchSize = necsConfigurations.ApiMaxBatchSize,
+            };
+
+            services.AddSingleton(necsConfigurations);
+            services.AddSingleton(necsConfiguration);
+            services.AddTransient<INECSBroker, NECSBroker>();
         }
 
         private static void AddFoundationServices(IServiceCollection services)
@@ -165,6 +193,8 @@ namespace ISL.ReIdentification.Configurations.Server
             services.AddTransient<IUserAccessService, UserAccessService>();
             services.AddTransient<IImpersonationContextService, ImpersonationContextService>();
             services.AddTransient<ICsvIdentificationRequestService, CsvIdentificationRequestService>();
+            services.AddTransient<INotificationService, NotificationService>();
+            services.AddTransient<IReIdentificationService, ReIdentificationService>();
         }
 
         private static void AddProcessingServices(IServiceCollection services)
@@ -173,9 +203,15 @@ namespace ISL.ReIdentification.Configurations.Server
         private static void AddOrchestrationServices(IServiceCollection services)
         {
             services.AddTransient<IAccessOrchestrationService, AccessOrchestrationService>();
+            services.AddTransient<IPersistanceOrchestrationService, PersistanceOrchestrationService>();
+            services.AddTransient<IAccessOrchestrationService, AccessOrchestrationService>();
+            services.AddTransient<IIdentificationOrchestrationService, IdentificationOrchestrationService>();
+            services.AddTransient<ICsvIdentificationRequestService, CsvIdentificationRequestService>();
         }
 
         private static void AddCoordinationServices(IServiceCollection services)
-        { }
+        {
+            services.AddTransient<IIdentificationCoordinationService, IdentificationCoordinationService>();
+        }
     }
 }

@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Brokers;
-using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Brokers;
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.Lookups;
 using Tynamix.ObjectFiller;
 
@@ -20,11 +19,18 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
         public LookupsApiTests(ApiBroker apiBroker) =>
             this.apiBroker = apiBroker;
 
-        private int GetRandomNumber() =>
+        private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
         private static DateTimeOffset GetRandomDateTime() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static string GetRandomString()
+        {
+            int length = GetRandomNumber();
+
+            return new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+        }
 
         private static string GetRandomStringWithLengthOf(int length) =>
             new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
@@ -73,7 +79,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
-                .OnProperty(lookup => lookup.Name).Use(() => GetRandomStringWithLengthOf(450))
+                .OnProperty(lookup => lookup.Name).Use(() => GetRandomString())
                 .OnProperty(lookup => lookup.CreatedDate).Use(now)
                 .OnProperty(lookup => lookup.CreatedBy).Use(user)
                 .OnProperty(lookup => lookup.UpdatedDate).Use(now)

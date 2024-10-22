@@ -12,8 +12,13 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.AccessAudi
     {
         public Guid Id { get; set; }
         public string PseudoIdentifier { get; set; }
-        public string UserEmail { get; set; }
+        public Guid EntraUserId { get; set; }
+        public string GivenName { get; set; }
+        public string Surname { get; set; }
+        public string Email { get; set; }
+        public string Purpose { get; set; }
         public string Reason { get; set; }
+        public string Organisation { get; set; }
         public bool HasAccess { get; set; }
         public string Message { get; set; }
         public string CreatedBy { get; set; }

@@ -3,7 +3,6 @@
 // ---------------------------------------------------------
 
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Brokers;
-using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Brokers;
 
 namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
 {

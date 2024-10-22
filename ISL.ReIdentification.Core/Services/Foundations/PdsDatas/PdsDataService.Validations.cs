@@ -3,7 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Threading.Tasks;
+using System.Collections.Generic;
 using ISL.ReIdentification.Core.Models.Foundations.PdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.PdsDatas.Exceptions;
 
@@ -11,7 +11,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.PdsDatas
 {
     public partial class PdsDataService
     {
-        private async ValueTask ValidatePdsDataOnAddAsync(PdsData pdsData)
+        private static void ValidatePdsDataOnAdd(PdsData pdsData)
         {
             ValidatePdsDataIsNotNull(pdsData);
 
@@ -20,13 +20,22 @@ namespace ISL.ReIdentification.Core.Services.Foundations.PdsDatas
                 (Rule: IsInvalid(pdsData.PseudoNhsNumber), Parameter: nameof(PdsData.PseudoNhsNumber)));
         }
 
-        private async ValueTask ValidatePdsDataOnModifyAsync(PdsData pdsData)
+        private static void ValidatePdsDataOnModify(PdsData pdsData)
         {
             ValidatePdsDataIsNotNull(pdsData);
 
             Validate(
                 (Rule: IsInvalid(pdsData.Id), Parameter: nameof(PdsData.Id)),
                 (Rule: IsInvalid(pdsData.PseudoNhsNumber), Parameter: nameof(PdsData.PseudoNhsNumber)));
+        }
+
+        private static void ValidateOnOrganisationsHaveAccessToThisPatient(
+            string pseudoNhsNumber,
+            List<string> organisationCodes)
+        {
+            Validate(
+                (Rule: IsInvalid(pseudoNhsNumber), Parameter: nameof(pseudoNhsNumber)),
+                (Rule: IsInvalid(organisationCodes), Parameter: nameof(organisationCodes)));
         }
 
         public static void ValidatePdsDataId(Guid pdsDataId) =>
@@ -55,6 +64,12 @@ namespace ISL.ReIdentification.Core.Services.Foundations.PdsDatas
         {
             Condition = id == Guid.Empty,
             Message = "Id is invalid"
+        };
+
+        private static dynamic IsInvalid(List<string>? organisationCodes) => new
+        {
+            Condition = organisationCodes is null || organisationCodes.Count == 0,
+            Message = "Items is invalid"
         };
 
         private static dynamic IsInvalid(long id) => new

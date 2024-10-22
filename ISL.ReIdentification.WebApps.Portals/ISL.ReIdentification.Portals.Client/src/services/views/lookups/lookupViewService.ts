@@ -48,7 +48,8 @@ export const lookupViewService = {
         }, [response.data]);
 
         return {
-            mappedLookups, ...response
+            mappedLookups,
+            ...response
         }
     },
 

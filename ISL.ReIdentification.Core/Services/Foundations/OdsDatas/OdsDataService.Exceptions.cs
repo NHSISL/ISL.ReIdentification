@@ -128,6 +128,18 @@ namespace ISL.ReIdentification.Core.Services.Foundations.OdsDatas
             {
                 return await returningOdsDataListFunction();
             }
+            catch (NullOdsDataException nullOdsDataException)
+            {
+                throw CreateAndLogValidationException(nullOdsDataException);
+            }
+            catch (InvalidOdsDataException invalidOdsDataException)
+            {
+                throw CreateAndLogValidationException(invalidOdsDataException);
+            }
+            catch (NotFoundOdsDataException notFoundOdsDataException)
+            {
+                throw CreateAndLogValidationException(notFoundOdsDataException);
+            }
             catch (SqlException sqlException)
             {
                 var failedStorageOdsDataException =
