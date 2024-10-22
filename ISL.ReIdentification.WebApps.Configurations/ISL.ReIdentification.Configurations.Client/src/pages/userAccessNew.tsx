@@ -4,11 +4,18 @@ import EntraUserSearch from "../components/EntraUserSearch/entraUserSearch"
 import { useState } from "react"
 import { entraUser } from "../models/views/components/entraUsers/entraUsers"
 import OdsTree from "../components/odsData/odsTree"
+import { OdsData } from "../models/odsData/odsData"
 
 export const UserAccessNew = () => {
 
     const [selectedUser, setSelectedUser] = useState<entraUser | undefined>();
-    const [selectedOdsRecords, setSelectedOdsRecords] = useState<string[]>([]);
+    const [selectedOdsRecords, setSelectedOdsRecords] = useState<OdsData[]>([]);
+
+    const saveRecord = () => {
+        console.log("saving");
+        console.log(selectedUser);
+        console.log(selectedOdsRecords);
+    }
 
     return (
         <Container fluid className="mt-4">
@@ -46,8 +53,11 @@ export const UserAccessNew = () => {
                             
                             <CardFooter>
                                 <ButtonGroup>
-                                    <Button onClick={() => setSelectedUser(undefined)}>Save</Button>
-                                    <Button onClick={() => setSelectedUser(undefined)} variant="secondary">Clear</Button>
+                                    <Button onClick={saveRecord}>Save</Button>
+                                    <Button onClick={() => {
+                                        setSelectedUser(undefined)
+                                        setSelectedOdsRecords([]);
+                                    } } variant="secondary">Clear</Button>
                                 </ButtonGroup>
                             </CardFooter>
                         </Card>
