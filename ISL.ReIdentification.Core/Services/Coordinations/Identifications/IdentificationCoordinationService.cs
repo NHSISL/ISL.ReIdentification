@@ -3,10 +3,14 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Brokers.CsvHelpers;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Securities;
+using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
@@ -115,10 +119,85 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             throw new System.NotImplementedException();
 
         virtual async internal ValueTask<IdentificationRequest> ConvertCsvIdentificationRequestToIdentificationRequest(
-            CsvIdentificationRequest csvIdentificationRequest) => throw new NotImplementedException();
+            CsvIdentificationRequest csvIdentificationRequest)
+        {
+            string data = Encoding.UTF8.GetString(csvIdentificationRequest.Data);
+
+            var mappedItems =
+                await this.csvHelperBroker.MapCsvToObjectAsync<CsvIdentificationItem>(
+                    data: data,
+                    hasHeaderRecord: true,
+                    fieldMappings: null);
+
+            var identificationItems = new List<IdentificationItem>();
+
+            foreach (var mappedItem in mappedItems)
+            {
+                var identificationItem = new IdentificationItem
+                {
+                    HasAccess = false,
+                    Identifier = mappedItem.Identifier,
+                    IsReidentified = false,
+                    Message = String.Empty,
+                    RowNumber = mappedItem.RowNumber
+                };
+
+                identificationItems.Add(identificationItem);
+            }
+
+            var identificationRequest = new IdentificationRequest();
+            identificationRequest.DisplayName = csvIdentificationRequest.RecipientDisplayName;
+            identificationRequest.Email = csvIdentificationRequest.RecipientEmail;
+            identificationRequest.EntraUserId = csvIdentificationRequest.RecipientEntraUserId;
+            identificationRequest.GivenName = csvIdentificationRequest.RecipientFirstName;
+            identificationRequest.JobTitle = csvIdentificationRequest.RecipientJobTitle;
+            identificationRequest.Organisation = csvIdentificationRequest.Organisation;
+            identificationRequest.Purpose = csvIdentificationRequest.Purpose;
+            identificationRequest.Reason = csvIdentificationRequest.Reason;
+            identificationRequest.Surname = csvIdentificationRequest.RecipientLastName;
+            identificationRequest.IdentificationItems = identificationItems;
+
+            return identificationRequest;
+        }
 
         virtual internal async ValueTask<CsvIdentificationRequest> ConvertIdentificationRequestToCsvIdentificationRequest(
-            IdentificationRequest identificationRequest) => throw new NotImplementedException();
+            IdentificationRequest identificationRequest)
+        {
+            List<IdentificationItem> identificationItems = identificationRequest.IdentificationItems;
+            List<CsvIdentificationItem> identificationsData = identificationItems
+                .Select(identificationItem =>
+                {
+                    var csvIdentificationItem = new CsvIdentificationItem();
+                    csvIdentificationItem.RowNumber = identificationItem.RowNumber;
+                    csvIdentificationItem.Identifier = identificationItem.Identifier;
+
+                    return csvIdentificationItem;
+                })
+                    .ToList();
+
+            string csvIdentificationRequestData =
+                await this.csvHelperBroker.MapObjectToCsvAsync(
+                    identificationsData,
+                    addHeaderRecord: true,
+                    fieldMappings: null,
+                    shouldAddTrailingComma: false);
+
+            byte[] csvIdentificationRequestDataByteArray = Encoding.UTF8.GetBytes(csvIdentificationRequestData);
+
+            var csvIdentificationRequest = new CsvIdentificationRequest();
+            csvIdentificationRequest.RecipientDisplayName = identificationRequest.DisplayName;
+            csvIdentificationRequest.RecipientEmail = identificationRequest.Email;
+            csvIdentificationRequest.RecipientEntraUserId = identificationRequest.EntraUserId;
+            csvIdentificationRequest.RecipientFirstName = identificationRequest.GivenName;
+            csvIdentificationRequest.RecipientJobTitle = identificationRequest.JobTitle;
+            csvIdentificationRequest.Organisation = identificationRequest.Organisation;
+            csvIdentificationRequest.Purpose = identificationRequest.Purpose;
+            csvIdentificationRequest.RecipientLastName = identificationRequest.Surname;
+            csvIdentificationRequest.Reason = identificationRequest.Reason;
+            csvIdentificationRequest.Data = csvIdentificationRequestDataByteArray;
+
+            return csvIdentificationRequest;
+        }
 
         private IdentificationRequest OverrideIdentificationRequestUserDetails(
             IdentificationRequest identificationRequest,
