@@ -43,10 +43,13 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
         }
 
         private static void ValidateOnPersistImpersonationContextAsync(
-             ImpersonationContext impersonationContext)
+             AccessRequest accessRequest)
         {
+            ValidateAccessRequestIsNotNull(accessRequest);
+
             Validate(
-                (Rule: IsInvalid(impersonationContext), Parameter: nameof(impersonationContext)));
+                (Rule: IsInvalid(accessRequest.ImpersonationContext),
+                    Parameter: nameof(accessRequest.ImpersonationContext)));
         }
 
         private static dynamic IsInvalid(Guid id) => new
