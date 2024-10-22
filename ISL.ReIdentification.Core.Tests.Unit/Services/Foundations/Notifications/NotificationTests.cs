@@ -32,7 +32,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Notification
             {
                 CsvPendingApprovalRequestTemplateId = GetRandomString(),
                 CsvApprovedRequestTemplateId = GetRandomString(),
-                CsvDeniedRequestTemplateId = GetRandomString()
+                CsvDeniedRequestTemplateId = GetRandomString(),
+                ConfigurationBaseUrl = GetRandomString(),
+                PortalBaseUrl = GetRandomString()
             };
 
             this.notificationService = new NotificationService(

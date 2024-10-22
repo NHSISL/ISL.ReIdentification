@@ -52,7 +52,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
                 { "recipientEmail", accessRequest.CsvIdentificationRequest.RecipientEmail },
                 { "recipientJobTitle", accessRequest.CsvIdentificationRequest.RecipientJobTitle },
                 { "reason", accessRequest.CsvIdentificationRequest.Reason },
-                { "purpose", accessRequest.CsvIdentificationRequest.Purpose },
                 { "organisation", accessRequest.CsvIdentificationRequest.Organisation },
                 { "identifierColumn", accessRequest.CsvIdentificationRequest.IdentifierColumn },
                 { "templateId", this.notificationConfigurations.CsvPendingApprovalRequestTemplateId },
@@ -60,7 +59,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
                 { "portalBaseUrl", this.notificationConfigurations.PortalBaseUrl },
             };
 
-            //ValidateInputsOnSendCsvPendingApprovalNotificationAsync(toEmail, subject, body, personalisation);
+            ValidateInputsOnSendCsvPendingApprovalNotificationAsync(toEmail, subject, body, personalisation);
 
             await this.notificationBroker.SendEmailAsync(toEmail, subject, body, personalisation);
         });

@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using ISL.ReIdentification.Core.Models.Brokers.Notifications;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.Notifications.Exceptions;
@@ -37,6 +38,19 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
                     $"{nameof(NotificationConfigurations.PortalBaseUrl)}"));
         }
 
+        private static void ValidateInputsOnSendCsvPendingApprovalNotificationAsync(
+            string toEmail,
+            string subject,
+            string body,
+            Dictionary<string, dynamic> personalisation)
+        {
+            Validate(
+                (Rule: IsInvalid(toEmail), Parameter: nameof(toEmail)),
+                (Rule: IsInvalid(subject), Parameter: nameof(subject)),
+                (Rule: IsInvalid(body), Parameter: nameof(body)),
+                (Rule: IsInvalid(personalisation), Parameter: nameof(personalisation)));
+        }
+
         private static dynamic IsInvalid(AccessRequest? accessRequest) => new
         {
             Condition = accessRequest is null,
@@ -53,6 +67,12 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
         {
             Condition = csvIdentificationRequest is null,
             Message = $"{nameof(CsvIdentificationRequest)} is invalid"
+        };
+
+        private static dynamic IsInvalid(Dictionary<string, dynamic> personalisation) => new
+        {
+            Condition = personalisation is null,
+            Message = $"Dictionary is invalid"
         };
 
         private static dynamic IsInvalid(string name) => new
