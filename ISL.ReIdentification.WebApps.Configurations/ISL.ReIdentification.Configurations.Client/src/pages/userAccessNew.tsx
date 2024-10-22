@@ -5,16 +5,28 @@ import { useState } from "react"
 import { entraUser } from "../models/views/components/entraUsers/entraUsers"
 import OdsTree from "../components/odsData/odsTree"
 import { OdsData } from "../models/odsData/odsData"
+import { userAccessService } from "../services/foundations/userAccessService"
+import { UserAccess } from "../models/userAccess/userAccess"
 
 export const UserAccessNew = () => {
 
     const [selectedUser, setSelectedUser] = useState<entraUser | undefined>();
     const [selectedOdsRecords, setSelectedOdsRecords] = useState<OdsData[]>([]);
+    const {mutate} = userAccessService.useCreateUserAccess();
 
     const saveRecord = () => {
-        console.log("saving");
-        console.log(selectedUser);
-        console.log(selectedOdsRecords);
+        const ua = new UserAccess({});
+
+        if(selectedUser){
+            ua.displayName = selectedUser.displayName; 
+            ua.userEmail = selectedUser.mail;
+            ua.jobTitle = selectedUser.jobTitle;
+            ua.entraGuid = selectedUser.id;
+            ua.entraUpn = selectedUser.userPrincipalName;
+            ua.orgCodes = selectedOdsRecords.map(o => o.organisationCode);
+        }
+
+        mutate(ua);
     }
 
     return (
