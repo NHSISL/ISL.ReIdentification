@@ -101,7 +101,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             };
 
             var reIdentifiedIdentificationRequest =
-                await this.reIdentificationService.ProcessReidentificationRequest(
+                await this.reIdentificationService.ProcessReIdentificationRequest(
                     hasAccessIdentificationRequest);
 
             foreach (IdentificationItem item in reIdentifiedIdentificationRequest.IdentificationItems)

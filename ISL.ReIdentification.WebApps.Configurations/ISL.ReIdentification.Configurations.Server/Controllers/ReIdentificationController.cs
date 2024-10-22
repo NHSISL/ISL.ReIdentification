@@ -115,7 +115,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             }
         }
 
-        [HttpGet("{csvreidentification}")]
+        [HttpGet("{csvreIdentification}")]
         public async ValueTask<ActionResult> GetCsvIdentificationRequestByIdAsync(
             Guid csvIdentificationRequestId)
         {
