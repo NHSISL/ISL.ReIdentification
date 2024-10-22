@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Linq.Expressions;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Notifications;
 using ISL.ReIdentification.Core.Models.Brokers.Notifications;
@@ -11,6 +12,7 @@ using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Services.Foundations.Notifications;
 using Moq;
 using Tynamix.ObjectFiller;
+using Xeptions;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Notifications
 {
@@ -38,6 +40,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Notification
                 notificationBroker: notificationBrokerMock.Object,
                 loggingBroker: loggingBrokerMock.Object);
         }
+        private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
+            actualException => actualException.SameExceptionAs(expectedException);
 
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
