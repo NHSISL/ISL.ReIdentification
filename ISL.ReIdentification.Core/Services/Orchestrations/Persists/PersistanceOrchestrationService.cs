@@ -55,22 +55,22 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
                     return accessRequest;
                 }
 
-                if (accessRequest.ImpersonationContext.IsApproved == true)
-                {
-                    var modifiedImpersonationContext = await this.impersonationContextService
+                var modifiedImpersonationContext = await this.impersonationContextService
                         .ModifyImpersonationContextAsync(accessRequest.ImpersonationContext);
 
-                    var returnedAccessRequest =
-                        new AccessRequest { ImpersonationContext = modifiedImpersonationContext };
+                var returnedAccessRequest =
+                    new AccessRequest { ImpersonationContext = modifiedImpersonationContext };
 
+                if (accessRequest.ImpersonationContext.IsApproved == true)
+                {
                     await this.notificationService.SendApprovedNotificationAsync(returnedAccessRequest);
-
-                    return returnedAccessRequest;
                 }
                 else
                 {
-                    throw new NotImplementedException();
+                    await this.notificationService.SendDeniedNotificationAsync(returnedAccessRequest);
                 }
+
+                return returnedAccessRequest;
             }
             else
             {
