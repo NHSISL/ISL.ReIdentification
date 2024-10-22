@@ -109,5 +109,56 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             this.notificationServiceMock.VerifyNoOtherCalls();
             this.hashBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRetrieveImpersonationContextIfServiceErrorOccurredAndLogItAsync()
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+            var serviceException = new Exception();
+
+            var failedServicePersistanceOrchestrationException =
+                new FailedServicePersistanceOrchestrationException(
+                    message: "Failed service persistance orchestration error occurred, contact support.",
+                    innerException: serviceException);
+
+            var expectedPersistanceOrchestrationServiceException =
+                new PersistanceOrchestrationServiceException(
+                    message: "Persistance orchestration service error occurred, contact support.",
+                    innerException: failedServicePersistanceOrchestrationException);
+
+            this.impersonationContextServiceMock.Setup(service =>
+                service.RetrieveImpersonationContextByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask<AccessRequest> retrieveImpersonationContextByIdTask =
+                this.persistanceOrchestrationService
+                    .RetrieveImpersonationContextByIdAsync(someId);
+
+            PersistanceOrchestrationServiceException
+                actualPersistanceOrchestrationValidationException =
+                await Assert.ThrowsAsync<PersistanceOrchestrationServiceException>(
+                    testCode: retrieveImpersonationContextByIdTask.AsTask);
+
+            // then
+            actualPersistanceOrchestrationValidationException.Should().BeEquivalentTo(
+                expectedPersistanceOrchestrationServiceException);
+
+            this.impersonationContextServiceMock.Verify(service =>
+                service.RetrieveImpersonationContextByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
+                   expectedPersistanceOrchestrationServiceException))),
+                       Times.Once);
+
+            this.csvIdentificationRequestServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.impersonationContextServiceMock.VerifyNoOtherCalls();
+            this.notificationServiceMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
