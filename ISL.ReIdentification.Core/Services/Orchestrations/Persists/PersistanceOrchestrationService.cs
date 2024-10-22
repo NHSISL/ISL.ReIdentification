@@ -39,8 +39,10 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
             this.hashBroker = hashBroker;
         }
 
-        public async ValueTask<AccessRequest> PersistImpersonationContextAsync(AccessRequest accessRequest)
+        public ValueTask<AccessRequest> PersistImpersonationContextAsync(AccessRequest accessRequest) =>
+        TryCatch(async () =>
         {
+            ValidateAccessRequestIsNotNull(accessRequest);
             var maybeImpersonationContexts = await this.impersonationContextService
                 .RetrieveAllImpersonationContextsAsync();
 
@@ -83,7 +85,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
 
                 return returnedAccessRequest;
             }
-        }
+        });
 
         public ValueTask<AccessRequest> PersistCsvIdentificationRequestAsync(AccessRequest accessRequest) =>
         TryCatch(async () =>
