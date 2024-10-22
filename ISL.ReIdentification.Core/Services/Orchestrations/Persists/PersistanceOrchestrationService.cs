@@ -42,13 +42,16 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
         public ValueTask<AccessRequest> PersistImpersonationContextAsync(AccessRequest accessRequest) =>
             throw new NotImplementedException();
 
-        public async ValueTask<AccessRequest> RetrieveImpersonationContextByIdAsync(Guid impersonationContextId)
+        public ValueTask<AccessRequest> RetrieveImpersonationContextByIdAsync(Guid impersonationContextId) =>
+        TryCatch(async () =>
         {
+            ValidateOnRetrieveImpersonationContextByIdAsync(impersonationContextId);
+
             ImpersonationContext impersonationContext = await this.impersonationContextService
                 .RetrieveImpersonationContextByIdAsync(impersonationContextId);
 
             return new AccessRequest { ImpersonationContext = impersonationContext };
-        }
+        });
 
         public ValueTask<AccessRequest> PersistCsvIdentificationRequestAsync(AccessRequest accessRequest) =>
         TryCatch(async () =>
