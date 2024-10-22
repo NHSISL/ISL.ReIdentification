@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
@@ -101,6 +102,59 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             this.loggingBrokerMock.Verify(broker =>
                broker.LogErrorAsync(It.Is(SameExceptionAs(
                    expectedPersistanceOrchestrationDependencyException))),
+                       Times.Once);
+
+            this.impersonationContextServiceMock.VerifyNoOtherCalls();
+            this.csvIdentificationRequestServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.impersonationContextServiceMock.VerifyNoOtherCalls();
+            this.notificationServiceMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task
+            ShouldThrowServiceExceptionOnPersistImpersonationContextIfServiceErrorOccurredAndLogItAsync()
+        {
+            // given
+            AccessRequest someAccessRequest = CreateRandomAccessRequest();
+            var serviceException = new Exception();
+
+            var failedServicePersistanceOrchestrationException =
+                new FailedServicePersistanceOrchestrationException(
+                    message: "Failed service persistance orchestration error occurred, contact support.",
+                    innerException: serviceException);
+
+            var expectedPersistanceOrchestrationServiceException =
+                new PersistanceOrchestrationServiceException(
+                    message: "Persistance orchestration service error occurred, contact support.",
+                    innerException: failedServicePersistanceOrchestrationException);
+
+            this.impersonationContextServiceMock.Setup(service =>
+                service.RetrieveAllImpersonationContextsAsync())
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<AccessRequest> persistImpersonationContextAsyncTask =
+                this.persistanceOrchestrationService.PersistImpersonationContextAsync(
+                    accessRequest: someAccessRequest);
+
+            PersistanceOrchestrationServiceException
+                actualPersistanceOrchestrationValidationException =
+                await Assert.ThrowsAsync<PersistanceOrchestrationServiceException>(
+                    testCode: persistImpersonationContextAsyncTask.AsTask);
+
+            // then
+            actualPersistanceOrchestrationValidationException.Should().BeEquivalentTo(
+                expectedPersistanceOrchestrationServiceException);
+
+            this.impersonationContextServiceMock.Verify(service =>
+                service.RetrieveAllImpersonationContextsAsync(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
+                   expectedPersistanceOrchestrationServiceException))),
                        Times.Once);
 
             this.impersonationContextServiceMock.VerifyNoOtherCalls();
