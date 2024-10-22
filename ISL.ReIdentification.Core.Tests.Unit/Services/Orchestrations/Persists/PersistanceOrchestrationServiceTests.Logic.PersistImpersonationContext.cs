@@ -170,5 +170,52 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.csvIdentificationRequestServiceMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldNotUpdateRequestWhenPersistUnchangedImpersonationContextAsync()
+        {
+            // given
+            AccessRequest randomAccessRequest = CreateRandomAccessRequest();
+            randomAccessRequest.CsvIdentificationRequest = null;
+            randomAccessRequest.IdentificationRequest = null;
+            AccessRequest inputAccessRequest = randomAccessRequest.DeepClone();
+            ImpersonationContext returnedImpersonationContext = inputAccessRequest.ImpersonationContext.DeepClone();
+            ImpersonationContext outputImpersonationContext = returnedImpersonationContext.DeepClone();
+            AccessRequest outputAccessRequest = inputAccessRequest.DeepClone();
+            outputAccessRequest.ImpersonationContext = outputImpersonationContext;
+            AccessRequest expectedAccessRequest = outputAccessRequest.DeepClone();
+
+            IQueryable<ImpersonationContext> randomImpersonationContexts =
+                new List<ImpersonationContext> { returnedImpersonationContext }.AsQueryable();
+
+            this.impersonationContextServiceMock.Setup(service =>
+                service.RetrieveAllImpersonationContextsAsync())
+                    .ReturnsAsync(randomImpersonationContexts);
+
+            // when
+            AccessRequest actualAccessRequest =
+                await this.persistanceOrchestrationService
+                    .PersistImpersonationContextAsync(inputAccessRequest);
+
+            // then
+            actualAccessRequest.Should().BeEquivalentTo(expectedAccessRequest);
+
+            this.impersonationContextServiceMock.Verify(service =>
+                service.RetrieveAllImpersonationContextsAsync(),
+                    Times.Once);
+
+            this.impersonationContextServiceMock.Verify(service =>
+                service.ModifyImpersonationContextAsync(inputAccessRequest.ImpersonationContext),
+                    Times.Never);
+
+            this.notificationServiceMock.Verify(service =>
+                service.SendPendingApprovalNotificationAsync(It.IsAny<AccessRequest>()),
+                    Times.Never);
+
+            this.impersonationContextServiceMock.VerifyNoOtherCalls();
+            this.notificationServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.csvIdentificationRequestServiceMock.VerifyNoOtherCalls();
+        }
     }
 }
