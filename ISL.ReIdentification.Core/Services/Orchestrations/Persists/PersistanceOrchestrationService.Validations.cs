@@ -13,6 +13,13 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
 {
     public partial class PersistanceOrchestrationService
     {
+        private static void ValidateOnRetrieveImpersonationContextByIdAsync(
+            Guid impersonationContextId)
+        {
+            Validate(
+                (Rule: IsInvalid(impersonationContextId), Parameter: nameof(impersonationContextId)));
+        }
+
         private static void ValidateOnRetrieveCsvIdentificationRequestByIdAsync(
             Guid csvIdentificationRequestId)
         {

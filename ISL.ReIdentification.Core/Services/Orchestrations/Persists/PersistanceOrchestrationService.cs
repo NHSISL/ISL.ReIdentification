@@ -83,6 +83,17 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
             return createdAccessRequest;
         });
 
+        public ValueTask<AccessRequest> RetrieveImpersonationContextByIdAsync(Guid impersonationContextId) =>
+        TryCatch(async () =>
+        {
+            ValidateOnRetrieveImpersonationContextByIdAsync(impersonationContextId);
+
+            ImpersonationContext impersonationContext = await this.impersonationContextService
+                .RetrieveImpersonationContextByIdAsync(impersonationContextId);
+
+            return new AccessRequest { ImpersonationContext = impersonationContext };
+        });
+
         public ValueTask<AccessRequest> PersistCsvIdentificationRequestAsync(AccessRequest accessRequest) =>
         TryCatch(async () =>
         {
