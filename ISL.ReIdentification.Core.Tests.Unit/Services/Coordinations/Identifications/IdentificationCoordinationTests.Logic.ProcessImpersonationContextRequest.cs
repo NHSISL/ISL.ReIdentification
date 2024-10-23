@@ -73,7 +73,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             identificationCoordinationServiceMock.Setup(service =>
                 service.ConvertIdentificationRequestToCsvIdentificationRequest(
                     outputOrchestrationIdentificationRequest))
-                .ReturnsAsync(outputConversionCsvIdentificationRequest);
+                        .ReturnsAsync(outputConversionCsvIdentificationRequest);
 
             IdentificationCoordinationService identificationCoordinationService =
                 identificationCoordinationServiceMock.Object;

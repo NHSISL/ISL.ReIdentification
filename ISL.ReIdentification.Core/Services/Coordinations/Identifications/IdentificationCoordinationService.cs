@@ -117,8 +117,11 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             return await this.persistanceOrchestrationService.PersistImpersonationContextAsync(accessRequest);
         });
 
-        public async ValueTask<AccessRequest> ProcessImpersonationContextRequestAsync(AccessRequest accessRequest)
+        public ValueTask<AccessRequest> ProcessImpersonationContextRequestAsync(AccessRequest accessRequest) =>
+        TryCatch(async () =>
         {
+            ValidateImpersonationContext(accessRequest);
+
             IdentificationRequest identificationRequest =
                 await ConvertCsvIdentificationRequestToIdentificationRequest(
                     accessRequest.CsvIdentificationRequest);
@@ -160,7 +163,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             await this.identificationOrchestrationService.AddDocumentAsync(csvData, fileName, container);
 
             return reIdentifiedAccessRequest;
-        }
+        });
 
 
         virtual async internal ValueTask<IdentificationRequest> ConvertCsvIdentificationRequestToIdentificationRequest(
