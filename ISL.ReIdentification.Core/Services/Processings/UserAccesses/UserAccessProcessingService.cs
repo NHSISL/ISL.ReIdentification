@@ -22,8 +22,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<UserAccess> AddUserAccessAsync(UserAccess userAccess) =>
-            throw new NotImplementedException();
+        public async ValueTask<UserAccess> AddUserAccessAsync(UserAccess userAccess) =>
+            await this.userAccessService.AddUserAccessAsync(userAccess);
 
         public ValueTask<IQueryable<UserAccess>> RetrieveAllUserAccessesAsync() =>
             throw new NotImplementedException();

@@ -32,9 +32,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
             // then
             actualUserAccess.Should().BeEquivalentTo(expectedUserAccess);
 
-            this.userAccessServiceMock.Setup(service =>
-                service.AddUserAccessAsync(inputUserAccess))
-                    .ReturnsAsync(storageUserAccess);
+            this.userAccessServiceMock.Verify(service =>
+                service.AddUserAccessAsync(inputUserAccess),
+                    Times.Once);
 
             this.userAccessServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

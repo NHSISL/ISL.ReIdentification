@@ -39,6 +39,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use((DateTimeOffset?)default)
                 .OnProperty(userAccess => userAccess.CreatedBy).Use(user)
                 .OnProperty(userAccess => userAccess.UpdatedBy).Use(user);
 
