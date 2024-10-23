@@ -14,13 +14,19 @@ namespace ISL.ReIdentification.Core.Services.Foundations.OdsDatas
         private async ValueTask ValidateOdsDataOnAddAsync(OdsData odsData)
         {
             ValidateOdsDataIsNotNull(odsData);
-            Validate((Rule: IsInvalid(odsData.Id), Parameter: nameof(OdsData.Id)));
+
+            Validate(
+                (Rule: IsInvalid(odsData.Id), Parameter: nameof(OdsData.Id)),
+                (Rule: IsInvalid(odsData.OrganisationCode), Parameter: nameof(OdsData.OrganisationCode)));
         }
 
         private async ValueTask ValidateOdsDataOnModifyAsync(OdsData odsData)
         {
             ValidateOdsDataIsNotNull(odsData);
-            Validate((Rule: IsInvalid(odsData.Id), Parameter: nameof(OdsData.Id)));
+
+            Validate(
+                (Rule: IsInvalid(odsData.Id), Parameter: nameof(OdsData.Id)),
+                (Rule: IsInvalid(odsData.OrganisationCode), Parameter: nameof(OdsData.OrganisationCode)));
         }
 
         public static void ValidateOdsDataId(Guid odsDataId) =>

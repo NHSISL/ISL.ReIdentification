@@ -3,7 +3,7 @@ export class UserAccessView {
     public firstName: string;
     public lastName: string;
     public userEmail: string;
-    public orgCode: string;
+    public orgCodes: string[];
     public activeFrom?: Date;
     public activeTo?: Date;
     public createdBy?: string;
@@ -16,7 +16,7 @@ export class UserAccessView {
         firstName: string,
         lastName: string,
         userEmail: string,
-        orgCode: string,
+        orgCodes: string[],
         activeFrom?: Date,
         activeTo?: Date,
         createdBy?: string,
@@ -28,7 +28,7 @@ export class UserAccessView {
         this.firstName = firstName || "";
         this.lastName = lastName || "";
         this.userEmail = userEmail || "";
-        this.orgCode = orgCode || "";
+        this.orgCodes = orgCodes || [];
         this.activeFrom = activeFrom;
         this.activeTo = activeTo;
         this.createdBy = createdBy !== undefined ? createdBy : '';

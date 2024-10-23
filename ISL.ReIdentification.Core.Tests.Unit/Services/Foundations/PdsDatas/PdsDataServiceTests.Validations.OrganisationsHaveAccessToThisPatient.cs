@@ -20,7 +20,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
         [InlineData("", emptyList)]
         [InlineData(" ", emptyList)]
         public async Task ShouldThrowValidationExceptionOnOrganisationsHaveAccessToThisPatientAndLogItAsync(
-            string? invalidPseudoNumber, List<string> invalidList)
+            string invalidPseudoNumber,
+            List<string> invalidList)
         {
             // given
             var invalidPdsDataException =

@@ -29,7 +29,6 @@ class ApiBroker {
 
         let authResult;
         try {
-            console.log(request);
             authResult = await this.msalInstance.acquireTokenSilent(request);
         } catch (error) {
             if (error instanceof InteractionRequiredAuthError) {

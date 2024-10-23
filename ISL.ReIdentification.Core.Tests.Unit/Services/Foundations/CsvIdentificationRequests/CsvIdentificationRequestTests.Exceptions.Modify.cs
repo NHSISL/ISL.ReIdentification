@@ -134,8 +134,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            
-            CsvIdentificationRequest randomCsvIdentificationRequest = 
+
+            CsvIdentificationRequest randomCsvIdentificationRequest =
                 CreateRandomCsvIdentificationRequest(randomDateTimeOffset);
 
             var dbUpdateConcurrencyException =

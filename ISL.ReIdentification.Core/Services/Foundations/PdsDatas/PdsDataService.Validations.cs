@@ -66,7 +66,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.PdsDatas
             Message = "Id is invalid"
         };
 
-        private static dynamic IsInvalid(List<string>? organisationCodes) => new
+        private static dynamic IsInvalid(List<string> organisationCodes) => new
         {
             Condition = organisationCodes is null || organisationCodes.Count == 0,
             Message = "Items is invalid"
@@ -78,7 +78,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.PdsDatas
             Message = "Id is invalid"
         };
 
-        private static dynamic IsInvalid(string? name) => new
+        private static dynamic IsInvalid(string name) => new
         {
             Condition = String.IsNullOrWhiteSpace(name),
             Message = "Text is invalid"

@@ -8,6 +8,10 @@ class EntraUsersBroker {
     private apiBroker: ApiBroker = new ApiBroker(this.scope);
 
     async FilterUsersAsync(emailAddressFragment: string) {
+        if(!emailAddressFragment) {
+            return [];
+        }
+
         const url = `${this.absoluteUrl}?$filter=startswith(mail,'${emailAddressFragment}')`;
 
         return await this.apiBroker.GetAsyncAbsolute(url)
