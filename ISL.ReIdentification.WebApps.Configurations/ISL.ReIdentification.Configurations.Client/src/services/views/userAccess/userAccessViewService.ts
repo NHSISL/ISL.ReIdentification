@@ -41,10 +41,9 @@ export const userAccessViewService = {
                     page.data.forEach((userAccess: UserAccess) => {
                         userAccesses.push(new UserAccessView(
                             userAccess.id,
-                            userAccess.firstName,
-                            userAccess.lastName,
+                            userAccess.displayName,
                             userAccess.userEmail,
-                            userAccess.orgCode,
+                            userAccess.orgCodes,
                             userAccess.activeFrom,
                             userAccess.activeTo,
                             userAccess.createdBy,

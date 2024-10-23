@@ -66,10 +66,8 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
                     new AccessRequest { ImpersonationContext = modifiedImpersonationContext };
 
                 await (accessRequest.ImpersonationContext.IsApproved
-                    ?
-                        this.notificationService.SendImpersonationApprovedNotificationAsync(modifiedAccessRequest)
-                    :
-                        this.notificationService.SendImpersonationDeniedNotificationAsync(modifiedAccessRequest));
+                    ? this.notificationService.SendImpersonationApprovedNotificationAsync(modifiedAccessRequest)
+                    : this.notificationService.SendImpersonationDeniedNotificationAsync(modifiedAccessRequest));
 
                 return modifiedAccessRequest;
             }

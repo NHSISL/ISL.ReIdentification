@@ -26,6 +26,8 @@ import { CsvIdentificationRequestDetailPage } from './pages/csvIdentificationReq
 import { CsvIdentificationRequestPage } from './pages/csvIdentificationRequest';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { UserAccessNew } from './pages/userAccessNew';
+import "react-toastify/dist/ReactToastify.css";
+import ToastBroker from './brokers/toastBroker';
 
 // TODO:
 //      - API Secured Routes
@@ -121,6 +123,7 @@ function App({ instance }: any) {
                     <RouterProvider router={router} />
                     <ReactQueryDevtools initialIsOpen={false} />
                 </QueryClientProvider>
+                <ToastBroker.Container />
             </MsalProvider>
         </>
     );
