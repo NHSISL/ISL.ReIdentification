@@ -3,11 +3,13 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Linq.Expressions;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Services.Foundations.UserAccesses;
 using Moq;
 using Tynamix.ObjectFiller;
+using Xeptions;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
 {
@@ -26,6 +28,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
                 userAccessService: this.userAccessServiceMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object
             );
+        }
+
+        private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException)
+        {
+            return actualException =>
+                actualException.SameExceptionAs(expectedException);
         }
 
         private static UserAccess CreateRandomUserAccess() =>
