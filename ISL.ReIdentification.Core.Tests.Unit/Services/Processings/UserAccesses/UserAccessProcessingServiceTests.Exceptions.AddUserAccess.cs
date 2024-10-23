@@ -65,10 +65,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
             UserAccess someUserAccess = CreateRandomUserAccess();
             UserAccess inputUserAccess = someUserAccess;
 
-            var expectedUserAccessProcessingDependencyException =
-                new UserAccessProcessingDependencyException(
-                    message: "User access processing dependency error occurred, please try again.",
-                    innerException: dependencyException.InnerException as Xeption);
+            var expectedUserAccessProcessingDependencyException = new UserAccessProcessingDependencyException(
+                message: "User access processing dependency error occurred, please try again.",
+                innerException: dependencyException.InnerException as Xeption);
 
             this.userAccessServiceMock.Setup(service =>
                 service.AddUserAccessAsync(inputUserAccess))
@@ -106,15 +105,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
 
             var serviceException = new Exception();
 
-            var failedUserAccessProcessingServiceException =
-                new FailedUserAccessProcessingServiceException(
-                    message: "Failed user access processing service error occurred, please contact support.",
-                    innerException: serviceException);
+            var failedUserAccessProcessingServiceException = new FailedUserAccessProcessingServiceException(
+                message: "Failed user access processing service error occurred, please contact support.",
+                innerException: serviceException);
 
-            var expectedUserAccessProcessingServiveException =
-                new UserAccessProcessingServiceException(
-                    message: "User access processing service error occurred, please contact support.",
-                    innerException: failedUserAccessProcessingServiceException);
+            var expectedUserAccessProcessingServiveException = new UserAccessProcessingServiceException(
+                message: "User access processing service error occurred, please contact support.",
+                innerException: failedUserAccessProcessingServiceException);
 
             this.userAccessServiceMock.Setup(service =>
                 service.AddUserAccessAsync(inputUserAccess))

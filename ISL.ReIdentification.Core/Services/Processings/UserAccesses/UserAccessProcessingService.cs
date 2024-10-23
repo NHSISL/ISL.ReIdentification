@@ -23,12 +23,12 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
         }
 
         public ValueTask<UserAccess> AddUserAccessAsync(UserAccess userAccess) =>
-            TryCatch(async () =>
-            {
-                await ValidateOnAddUserAccessAsync(userAccess);
+        TryCatch(async () =>
+        {
+            await ValidateOnAddUserAccessAsync(userAccess);
 
-                return await this.userAccessService.AddUserAccessAsync(userAccess);
-            });
+            return await this.userAccessService.AddUserAccessAsync(userAccess);
+        });
 
         public ValueTask<IQueryable<UserAccess>> RetrieveAllUserAccessesAsync() =>
             throw new NotImplementedException();
