@@ -15,7 +15,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
     public partial class UserAccessesTests
     {
         [Fact]
-        public async Task ShouldThrowCriticalDependencyExceptionOnRetrieveAllOrganisationsUserHasAccessToAsync()
+        public async Task ShouldThrowCriticalDependencyExceptionOnRetrieveAllActiveOrganisationsUserHasAccessToAsync()
         {
             // given
             Guid randomUserAccessId = Guid.NewGuid();
@@ -36,12 +36,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
                     .ThrowsAsync(sqlException);
 
             // when
-            ValueTask<List<string>> retrieveAllOrganisationUserHasAccessToTask =
-                this.userAccessService.RetrieveAllOrganisationsUserHasAccessTo(randomUserAccessId);
+            ValueTask<List<string>> retrieveAllActiveOrganisationUserHasAccessToTask =
+                this.userAccessService.RetrieveAllActiveOrganisationsUserHasAccessTo(randomUserAccessId);
 
             UserAccessDependencyException actualUserAccessDependencyException =
                 await Assert.ThrowsAsync<UserAccessDependencyException>(
-                    testCode: retrieveAllOrganisationUserHasAccessToTask.AsTask);
+                    testCode: retrieveAllActiveOrganisationUserHasAccessToTask.AsTask);
 
             // then
             actualUserAccessDependencyException.Should().BeEquivalentTo(
@@ -66,7 +66,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
         }
 
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnRetrieveAllOrganisationsUserHasAccessToAsync()
+        public async Task ShouldThrowServiceExceptionOnRetrieveAllActiveOrganisationsUserHasAccessToAsync()
         {
             // given
             Guid randomUserAccessId = Guid.NewGuid();
@@ -85,12 +85,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
                     .ThrowsAsync(serviceError);
 
             // when
-            ValueTask<List<string>> retrieveAllOrganisationUserHasAccessToTask =
-                this.userAccessService.RetrieveAllOrganisationsUserHasAccessTo(randomUserAccessId);
+            ValueTask<List<string>> retrieveAllActiveOrganisationUserHasAccessToTask =
+                this.userAccessService.RetrieveAllActiveOrganisationsUserHasAccessTo(randomUserAccessId);
 
             UserAccessServiceException actualUserAccessServiceExcpetion =
                 await Assert.ThrowsAsync<UserAccessServiceException>(
-                    testCode: retrieveAllOrganisationUserHasAccessToTask.AsTask);
+                    testCode: retrieveAllActiveOrganisationUserHasAccessToTask.AsTask);
 
             // then
             actualUserAccessServiceExcpetion.Should().BeEquivalentTo(expectedUserAccessServiceException);

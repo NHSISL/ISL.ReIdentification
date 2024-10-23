@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using Force.DeepCloner;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications;
@@ -42,6 +43,24 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static DateTimeOffset GetRandomPastDateTimeOffset()
+        {
+            DateTime now = DateTimeOffset.UtcNow.Date;
+            int randomDaysInPast = GetRandomNegativeNumber();
+            DateTime pastDateTime = now.AddDays(randomDaysInPast).Date;
+
+            return new DateTimeRange(earliestDate: pastDateTime, latestDate: now).GetValue();
+        }
+
+        private static DateTimeOffset GetRandomFutureDateTimeOffset()
+        {
+            DateTime futureStartDate = DateTimeOffset.UtcNow.AddDays(1).Date;
+            int randomDaysInFuture = GetRandomNumber();
+            DateTime futureEndDate = futureStartDate.AddDays(randomDaysInFuture).Date;
+
+            return new DateTimeRange(earliestDate: futureStartDate, latestDate: futureEndDate).GetValue();
+        }
 
         private static UserAccess CreateRandomUserAccess() =>
             CreateRandomUserAccess(dateTimeOffset: GetRandomDateTimeOffset());
@@ -134,7 +153,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             return odsDatas;
         }
 
-
         private static OdsData CreateRandomOdsData(string organisationCode) =>
             CreateOdsDataFiller(organisationCode).Create();
 
@@ -164,6 +182,41 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
         {
             return actualException =>
                 actualException.SameExceptionAs(expectedException);
+        }
+
+        public static TheoryData<List<UserAccess>, List<OdsData>, List<string>> OrganisationListsAndExpectedOutputs()
+        {
+            UserAccess futureActiveFromUserAccess = CreateRandomUserAccess(GetRandomFutureDateTimeOffset());
+            UserAccess pastActiveToUserAccess = CreateRandomUserAccess(GetRandomPastDateTimeOffset());
+            UserAccess currentActiveToUserAccess = CreateRandomUserAccess();
+            currentActiveToUserAccess.ActiveFrom = DateTimeOffset.UtcNow;
+            currentActiveToUserAccess.ActiveTo = GetRandomFutureDateTimeOffset();
+
+            List<UserAccess> userAccesses = new List<UserAccess> {
+                futureActiveFromUserAccess,
+                pastActiveToUserAccess,
+                currentActiveToUserAccess
+            };
+
+            List<string> randomUserOrganisations = new List<string> { currentActiveToUserAccess.OrgCode };
+
+            List<OdsData> randomOdsDataItems = CreateRandomOdsDatas(randomUserOrganisations);
+            List<OdsData> storageOdsDataItems = randomOdsDataItems.DeepClone();
+            List<string> allUserOrganisation = randomUserOrganisations;
+
+            foreach (OdsData odsData in randomOdsDataItems)
+            {
+                List<OdsData> randomOdsDatas = CreateRandomOdsDataChildren(odsData.OdsHierarchy);
+                allUserOrganisation.AddRange(randomOdsDatas.Select(odsData => odsData.OrganisationCode));
+                storageOdsDataItems.AddRange(randomOdsDatas);
+            }
+
+            List<string> expectedOrganisations = allUserOrganisation.Distinct().ToList();
+
+            return new TheoryData<List<UserAccess>, List<OdsData>, List<string>>
+            {
+                { userAccesses, storageOdsDataItems, expectedOrganisations }
+            };
         }
     }
 }

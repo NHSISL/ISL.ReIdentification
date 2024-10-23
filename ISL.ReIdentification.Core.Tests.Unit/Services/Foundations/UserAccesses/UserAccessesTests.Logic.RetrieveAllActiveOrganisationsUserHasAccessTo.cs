@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Force.DeepCloner;
 using ISL.ReIdentification.Core.Models.Foundations.OdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 using Moq;
@@ -16,43 +15,38 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 {
     public partial class UserAccessesTests
     {
-        [Fact]
-        public async Task ShouldRetrieveAllOrganisationsUserHasAccessToAsync()
+        [Theory]
+        [MemberData(nameof(OrganisationListsAndExpectedOutputs))]
+        public async Task ShouldRetrieveAllActiveOrganisationsUserHasAccessToAsync(
+            List<UserAccess> userAccesses,
+            List<OdsData> odsDataItems,
+            List<string> expectedOrganisations)
         {
             // given
             Guid randomEntraUserId = Guid.NewGuid();
             Guid inputEntraUserId = randomEntraUserId;
-            List<UserAccess> randomUserAccess = CreateRandomUserAccesses();
-            randomUserAccess.ForEach(userAccess => userAccess.EntraUserId = inputEntraUserId);
-            List<UserAccess> storageUserAccess = randomUserAccess;
+            userAccesses.ForEach(userAccess => userAccess.EntraUserId = inputEntraUserId);
+            List<UserAccess> storageUserAccess = userAccesses;
 
-            List<string> randomUserOrganisations = randomUserAccess
-                .Select(randomUserAccess => randomUserAccess.OrgCode).ToList();
-
-            List<OdsData> randomOdsDataItems = CreateRandomOdsDatas(randomUserOrganisations);
-            List<OdsData> storageOdsDataItems = randomOdsDataItems.DeepClone();
-            List<string> allUserOrganisation = randomUserOrganisations;
-
-            foreach (OdsData odsData in randomOdsDataItems)
-            {
-                List<OdsData> randomOdsDatas = CreateRandomOdsDataChildren(odsData.OdsHierarchy);
-                allUserOrganisation.AddRange(randomOdsDatas.Select(odsData => odsData.OrganisationCode));
-                storageOdsDataItems.AddRange(randomOdsDatas);
-            }
-
-            List<string> expectedOrganisations = allUserOrganisation.Distinct().ToList();
+            List<UserAccess> activeUserAccesses = storageUserAccess.Where(userAccess =>
+                userAccess.ActiveFrom <= DateTimeOffset.UtcNow
+                    && (userAccess.ActiveTo == null || userAccess.ActiveTo > DateTimeOffset.UtcNow)).ToList();
 
             this.reIdentificationStorageBroker.Setup(broker =>
                 broker.SelectAllUserAccessesAsync())
                     .ReturnsAsync(storageUserAccess.AsQueryable());
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(DateTimeOffset.UtcNow);
+
             this.reIdentificationStorageBroker.Setup(broker =>
                 broker.SelectAllOdsDatasAsync())
-                    .ReturnsAsync(storageOdsDataItems.AsQueryable());
+                    .ReturnsAsync(odsDataItems.AsQueryable());
 
             // when
             List<string> actualOrganisations = await this.userAccessService
-                .RetrieveAllOrganisationsUserHasAccessTo(inputEntraUserId);
+                .RetrieveAllActiveOrganisationsUserHasAccessTo(inputEntraUserId);
 
             // then
             actualOrganisations.Should().BeEquivalentTo(expectedOrganisations);
@@ -63,7 +57,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             this.reIdentificationStorageBroker.Verify(broker =>
                 broker.SelectAllOdsDatasAsync(),
-                    Times.Exactly(storageUserAccess.Count() * 2));
+                    Times.Exactly(activeUserAccesses.Count() * 2));
 
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
