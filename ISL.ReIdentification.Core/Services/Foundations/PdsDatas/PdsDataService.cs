@@ -88,6 +88,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.PdsDatas
                 ValidateOnOrganisationsHaveAccessToThisPatient(pseudoNhsNumber, organisationCodes);
 
                 var query = await this.reIdentificationStorageBroker.SelectAllPdsDatasAsync();
+                DateTimeOffset currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
                 bool hasAccess = query.Any(
                     pdsData => pdsData.PseudoNhsNumber == pseudoNhsNumber

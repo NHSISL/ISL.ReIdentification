@@ -148,5 +148,50 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldNoHaveAccessToThisPatientIfRelationshipIsInactiveAsync()
+        {
+            // given
+            string randomPseudoNhsNumber = GetRandomString();
+            string inputPseudoNhsNumber = randomPseudoNhsNumber;
+            List<PdsData> randomPdsDatas = CreateRandomPdsDatas();
+            randomPdsDatas.ForEach(pdsData =>
+            {
+                pdsData.PseudoNhsNumber = inputPseudoNhsNumber;
+                pdsData.RelationshipWithOrganisationEffectiveFromDate = GetRandomFutureDateTimeOffset();
+            });
+            List<PdsData> storagePdsDatas = randomPdsDatas;
+            List<string> inputOrganisationCodes = randomPdsDatas.Select(pdsData => pdsData.OrgCode).ToList();
+            bool expectedResult = false;
+
+            this.reIdentificationStorageBroker.Setup(broker =>
+                broker.SelectAllPdsDatasAsync())
+                    .ReturnsAsync(storagePdsDatas.AsQueryable());
+
+            this.dateTimeBroker.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(DateTimeOffset.UtcNow);
+
+            // when
+            bool actualResult =
+                await this.pdsDataService.OrganisationsHaveAccessToThisPatient(
+                    pseudoNhsNumber: inputPseudoNhsNumber, organisationCodes: inputOrganisationCodes);
+
+            // then
+            actualResult.Should().Be(expectedResult);
+
+            this.reIdentificationStorageBroker.Verify(broker =>
+                broker.SelectAllPdsDatasAsync(),
+                    Times.Once);
+
+            this.dateTimeBroker.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
+            this.dateTimeBroker.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
