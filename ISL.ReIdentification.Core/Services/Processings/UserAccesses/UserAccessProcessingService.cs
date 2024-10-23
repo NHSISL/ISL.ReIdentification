@@ -44,8 +44,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
             return await this.userAccessService.RetrieveUserAccessByIdAsync(userAccessId);
         });
 
-        public ValueTask<UserAccess> ModifyUserAccessAsync(UserAccess userAccess) =>
-            throw new NotImplementedException();
+        public async ValueTask<UserAccess> ModifyUserAccessAsync(UserAccess userAccess) =>
+            await this.userAccessService.ModifyUserAccessAsync(userAccess);
 
         public ValueTask<UserAccess> RemoveUserAccessByIdAsync(Guid userAccessId) =>
             throw new NotImplementedException();
