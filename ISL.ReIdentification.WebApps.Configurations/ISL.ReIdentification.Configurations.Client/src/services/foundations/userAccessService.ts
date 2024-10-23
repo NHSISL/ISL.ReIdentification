@@ -41,15 +41,15 @@ export const userAccessService = {
         const userAccessBroker = new UserAccessBroker();
         return useInfiniteQuery({
             queryKey: ["UserAccessGetAll", { query: query }],
-            queryFn: ({ pageParam = null }) => {
+            queryFn: ({ pageParam  }) => {
                 if (!pageParam) {
                     return userAccessBroker.GetUserAccessFirstPagesAsync(query);
                 }
                 return userAccessBroker.GetUserAccessSubsequentPagesAsync(pageParam);
             },
-            initialPageParam: 0,
+            initialPageParam: "",
             staleTime: Infinity,
-            getNextPageParam: (lastPage: any) => lastPage.nextPage ?? null,
+            getNextPageParam: (lastPage) => lastPage.nextPage ?? null,
         });
     },
 

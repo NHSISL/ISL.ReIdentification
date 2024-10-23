@@ -3,13 +3,18 @@ import { Guid } from "guid-typescript";
 import ApiBroker from "./apiBroker";
 import { UserAccess } from "../models/userAccess/userAccess";
 
+type UserAccessOdataResponse = {
+    data: UserAccess[],
+    nextPage: string
+}
+
 class UserAccessBroker {
     relativeUserAccessUrl = '/api/userAccesses';
     relativeUserAccessOdataUrl = '/odata/userAccesses'
 
     private apiBroker: ApiBroker = new ApiBroker();
 
-    private processOdataResult = (result: AxiosResponse) => {
+    private processOdataResult = (result: AxiosResponse) : UserAccessOdataResponse => {
         const data = result.data.value.map((userAccess: any) => new UserAccess(userAccess));
 
         const nextPage = result.data['@odata.nextLink'];

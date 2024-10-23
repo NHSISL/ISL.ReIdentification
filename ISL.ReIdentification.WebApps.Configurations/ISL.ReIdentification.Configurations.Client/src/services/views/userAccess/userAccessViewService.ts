@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Guid } from "guid-typescript";
 import { UserAccessView } from "../../../models/views/components/userAccess/userAccessView";
 import { userAccessService } from "../../foundations/userAccessService";
 import { UserAccess } from "../../../models/userAccess/userAccess";
@@ -32,7 +31,7 @@ export const userAccessViewService = {
 
         const response = userAccessService.useRetrieveAllUserAccessPages(query);
         const [mappedUserAccess, setMappedUserAccess] = useState<Array<UserAccessView>>();
-        const [pages, setPages] = useState<any>([]);
+        const [pages, setPages] = useState([]);
 
         useEffect(() => {
             if (response.data && response.data.pages) {
