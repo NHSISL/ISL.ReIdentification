@@ -55,6 +55,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
         public ValueTask<UserAccess> RemoveUserAccessByIdAsync(Guid userAccessId) =>
         TryCatch(async () =>
         {
+            await ValidateOnRemoveUserAccessByIdAsync(userAccessId);
+
             return await this.userAccessService.RemoveUserAccessByIdAsync(userAccessId);
         });
 
