@@ -28,8 +28,12 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
         private static UserAccess CreateRandomUserAccess() =>
             CreateRandomUserAccessFiller().Create();
 
-        private static string GetRandomStringWithLengthOf(int length) =>
-            new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+        private static string GetRandomStringWithLengthOf(int length)
+        {
+            string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+
+            return result.Length > length ? result.Substring(0, length) : result;
+        }
 
         private static Filler<UserAccess> CreateRandomUserAccessFiller()
         {
