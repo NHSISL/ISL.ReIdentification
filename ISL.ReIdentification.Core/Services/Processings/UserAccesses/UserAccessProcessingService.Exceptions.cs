@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses.Exceptions;
@@ -14,6 +15,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
     public partial class UserAccessProcessingService
     {
         private delegate ValueTask<UserAccess> ReturningUserAccessFunction();
+        private delegate ValueTask<IQueryable<UserAccess>> ReturningUserAccessesFunction();
 
         private async ValueTask<UserAccess> TryCatch(ReturningUserAccessFunction returningUserAccessFunction)
         {
@@ -24,6 +26,40 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
             catch (NullUserAccessProcessingException nullUserAccessProcessingException)
             {
                 throw await CreateAndLogValidationExceptionAsync(nullUserAccessProcessingException);
+            }
+            catch (UserAccessValidationException userAccessValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(userAccessValidationException);
+            }
+            catch (UserAccessDependencyValidationException userAccessDependencyValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(userAccessDependencyValidationException);
+            }
+            catch (UserAccessDependencyException userAccessDependencyException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(userAccessDependencyException);
+            }
+            catch (UserAccessServiceException userAccessServiceException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(userAccessServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedUserAccessProcessingServiceException =
+                    new FailedUserAccessProcessingServiceException(
+                        message: "Failed user access processing service error occurred, please contact support.",
+                        innerException: exception);
+
+                throw await CreateAndLogServiceExceptionAsync(failedUserAccessProcessingServiceException);
+            }
+        }
+
+        private async ValueTask<IQueryable<UserAccess>> TryCatch(ReturningUserAccessesFunction
+            returningUserAccessesFunction)
+        {
+            try
+            {
+                return await returningUserAccessesFunction();
             }
             catch (UserAccessValidationException userAccessValidationException)
             {
