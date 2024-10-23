@@ -13,19 +13,19 @@ export class UserAccess {
     public updatedBy?: string;
     public updatedDate?: Date | undefined;
 
-    constructor(user: any) {
-        this.id = user.id ? user.id : crypto.randomUUID();
-        this.entraGuid = user.entraGuid || "";
-        this.entraUpn = user.entraUpn || "";
-        this.displayName = user.displayName || "";
-        this.userEmail = user.userEmail || "";
-        this.orgCodes = user.orgCodes || "";
-        this.jobTitle = user.jobTitle || "";
-        this.activeFrom = user.activeFrom;
-        this.activeTo = user.activeTo;
-        this.createdDate = user.createdDate ? new Date(user.createdDate) : undefined;
-        this.createdBy = user.createdBy || "";
-        this.updatedDate = user.updatedDate ? new Date(user.updatedDate) : undefined;
-        this.updatedBy = user.updatedBy || "";
+    constructor(user?: UserAccess) {
+        this.id = user && user.id ? user.id : crypto.randomUUID();
+        this.entraGuid = user && user.entraGuid || "";
+        this.entraUpn = user && user.entraUpn || "";
+        this.displayName = user && user.displayName || "";
+        this.userEmail = user && user.userEmail || "";
+        this.orgCodes = user && user.orgCodes || [];
+        this.jobTitle = user && user.jobTitle || "";
+        this.activeFrom = user && user.activeFrom;
+        this.activeTo = user && user.activeTo;
+        this.createdDate = user && user.createdDate ? new Date(user.createdDate) : undefined;
+        this.createdBy = user && user.createdBy || "";
+        this.updatedDate = user && user.updatedDate ? new Date(user.updatedDate) : undefined;
+        this.updatedBy = user && user.updatedBy || "";
     }
 }

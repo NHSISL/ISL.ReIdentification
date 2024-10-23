@@ -1,7 +1,7 @@
 import { FunctionComponent } from "react";
 import { Button } from "react-bootstrap";
 
-type PdsRowProps = {}
+type PdsRowProps = object
 
 const PdsRow: FunctionComponent<PdsRowProps> = () => {
 

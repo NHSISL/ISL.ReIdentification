@@ -11,7 +11,7 @@ import { impersonationContextViewService } from "../../services/views/impersonat
 import SearchBase from "../bases/inputs/SearchBase";
 import ImpersonationContextRow from "./impersonationContextRow";
 
-type ImpersonationContextTableProps = {};
+type ImpersonationContextTableProps = object;
 
 const ImpersonationContextTable: FunctionComponent<ImpersonationContextTableProps> = () => {
     const [searchTerm, setSearchTerm] = useState<string>("");

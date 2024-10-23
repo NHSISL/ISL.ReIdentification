@@ -5,7 +5,7 @@ import { loginRequest, msalConfig } from '../authConfig';
 
 class ApiBroker {
     msalInstance = new PublicClientApplication(msalConfig);
-    scope: any;
+    scope: string[];
 
     constructor(scope?: string) {
         this.scope = scope ? [scope] : loginRequest.scopes;

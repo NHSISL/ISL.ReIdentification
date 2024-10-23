@@ -1,7 +1,7 @@
 import { FunctionComponent } from "react";
 import OdsRowView from "./odsRowView";
 
-type OdsRowProps = {};
+type OdsRowProps = object;
 
 const OdsRow: FunctionComponent<OdsRowProps> = () => {
     return (

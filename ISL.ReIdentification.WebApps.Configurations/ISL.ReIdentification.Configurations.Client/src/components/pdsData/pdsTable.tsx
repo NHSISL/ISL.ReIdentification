@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAddressBook } from "@fortawesome/free-solid-svg-icons";
 import PdsRow from "./pdsRow";
 
-type PdsTableProps = {};
+type PdsTableProps = object;
 
 const PdsTable: FunctionComponent<PdsTableProps> = () => {
     return (
