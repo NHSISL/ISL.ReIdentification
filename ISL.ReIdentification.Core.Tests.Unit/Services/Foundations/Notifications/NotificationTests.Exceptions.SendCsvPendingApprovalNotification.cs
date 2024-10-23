@@ -31,8 +31,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Notification
                 innerException: dependencyValidationException,
                 data: dependencyValidationException.Data);
 
-            var expectedNotificationDependencyValidationException =
-                new NotificationDependencyValidationException(
+            var expectedNotificationDependencyValidationException = new NotificationDependencyValidationException(
                 message: "Notification dependency validation error occurred, fix errors and try again.",
                 innerException: clientNotificationException);
 
@@ -44,11 +43,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Notification
                     It.IsAny<Dictionary<string, dynamic>>()))
                         .ThrowsAsync(dependencyValidationException);
 
-            NotificationService notificationService =
-                new NotificationService(
-                    notificationConfigurations: invalidNotificationConfigurations,
-                    notificationBroker: this.notificationBrokerMock.Object,
-                    loggingBroker: this.loggingBrokerMock.Object);
+            NotificationService notificationService = new NotificationService(
+                notificationConfigurations: invalidNotificationConfigurations,
+                notificationBroker: this.notificationBrokerMock.Object,
+                loggingBroker: this.loggingBrokerMock.Object);
 
             // when
             ValueTask sendCsvPendingApprovalNotificationTask =
@@ -93,8 +91,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Notification
                 innerException: dependencyException,
                 data: dependencyException.Data);
 
-            var expectedNotificationDependencyException =
-                new NotificationDependencyException(
+            var expectedNotificationDependencyException = new NotificationDependencyException(
                 message: "Notification dependency error occurred, contact support.",
                 innerException: serverNotificationException);
 
@@ -155,8 +152,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Notification
                     innerException: someException,
                     data: someException.Data);
 
-            var expectedNotificationServiceException =
-                new NotificationServiceException(
+            var expectedNotificationServiceException = new NotificationServiceException(
                 message: "Notification service error occurred, contact support.",
                 innerException: failedServiceNotificationException);
 
