@@ -12,6 +12,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
     {
         ValueTask<IdentificationRequest> ProcessIdentificationRequestAsync(
             IdentificationRequest identificationRequest);
+            
         ValueTask AddDocumentAsync(Stream input, string fileName, string container);
         ValueTask RetrieveDocumentByFileNameAsync(Stream output, string fileName, string container);
         ValueTask RemoveDocumentByFileNameAsync(string filename, string container);

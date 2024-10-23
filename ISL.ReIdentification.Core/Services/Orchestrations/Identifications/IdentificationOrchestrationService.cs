@@ -123,6 +123,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
 
         public ValueTask RetrieveDocumentByFileNameAsync(Stream output, string fileName, string container) =>
             throw new NotImplementedException();
+            
         public ValueTask RemoveDocumentByFileNameAsync(string filename, string container) =>
             throw new NotImplementedException();
     }
