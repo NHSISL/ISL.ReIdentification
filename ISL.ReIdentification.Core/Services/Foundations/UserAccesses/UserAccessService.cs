@@ -111,7 +111,11 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
                         await this.reIdentificationStorageBroker.SelectAllOdsDatasAsync();
 
                     odsDataQuery = odsDataQuery
-                        .Where(ods => ods.OdsHierarchy.IsDescendantOf(parentRecord.OdsHierarchy));
+                        .Where(ods => ods.OdsHierarchy.IsDescendantOf(parentRecord.OdsHierarchy)
+                            && (ods.RelationshipWithParentStartDate == null
+                                || ods.RelationshipWithParentStartDate <= currentDateTime)
+                            && (ods.RelationshipWithParentEndDate == null ||
+                                ods.RelationshipWithParentEndDate > currentDateTime));
 
                     List<string> descendants = odsDataQuery.ToList()
                         .Select(odsData => odsData.OrganisationCode).ToList();
