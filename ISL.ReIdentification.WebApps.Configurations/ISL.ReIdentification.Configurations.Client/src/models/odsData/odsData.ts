@@ -1,4 +1,3 @@
-import { PdsData } from "../pds/pdsData";
 export class OdsData {
     public id: string;
     public organisationCode: string;
@@ -7,7 +6,7 @@ export class OdsData {
     public relationshipEndDate?: Date | undefined;
     public hasChildren: boolean;
 
-    constructor(ods: any) {
+    constructor(ods: OdsData) {
         this.id = ods.id ?? crypto.randomUUID();
         this.organisationCode = ods.organisationCode || "";
         this.organisationName = ods.organisationName || "";

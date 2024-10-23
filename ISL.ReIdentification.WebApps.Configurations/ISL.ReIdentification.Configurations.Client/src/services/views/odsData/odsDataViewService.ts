@@ -37,15 +37,11 @@ export const odsDataViewService = {
                     x.data.forEach((odsData: OdsDataView) => {
                         odsDataes.push(new OdsDataView(
                             odsData.id,
-                            odsData.organisationCode_Root,
-                            odsData.organisationPrimaryRole_Root,
-                            odsData.organisationCode_Parent,
-                            odsData.organisationPrimaryRole_Parent,
+                            odsData.organisationCode,
+                            odsData.organisationName,
+                            odsData.hasChildren,
                             odsData.relationshipStartDate,
                             odsData.relationshipEndDate,
-                            odsData.path,
-                            odsData.depth,
-                            odsData.pdsData
                         ));
                     });
                 });
@@ -77,15 +73,11 @@ export const odsDataViewService = {
                 const odsData = response.data.pages[0].data[0];
                 const odsDataView = new OdsDataView(
                     odsData.id,
-                    odsData.organisationCode_Root,
-                    odsData.organisationPrimaryRole_Root,
-                    odsData.organisationCode_Parent,
-                    odsData.organisationPrimaryRole_Parent,
+                    odsData.organisationCode,
+                    odsData.organisationName,
+                    odsData.hasChildren,
                     odsData.relationshipStartDate,
                     odsData.relationshipEndDate,
-                    odsData.path,
-                    odsData.depth,
-                    odsData.pdsData
                 );
 
                 setMappedOdsData(odsDataView);

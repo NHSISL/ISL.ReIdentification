@@ -59,7 +59,7 @@ export const lookupService = {
                 return lookupBroker.PutLookupAsync(lookup);
             },
 
-            onSuccess: (data: { id: any }) => {
+            onSuccess: (data: { id: string }) => {
                 queryClient.invalidateQueries({ queryKey: ["LookupGetAll"] });
                 queryClient.invalidateQueries({ queryKey: ["LookupGetById", { id: data.id }] });
             }
