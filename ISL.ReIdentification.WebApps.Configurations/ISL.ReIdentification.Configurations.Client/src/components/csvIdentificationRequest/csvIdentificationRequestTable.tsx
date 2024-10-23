@@ -1,5 +1,5 @@
 import { debounce } from "lodash";
-import React, { FunctionComponent, useMemo, useState } from "react";
+import { FunctionComponent, useMemo, useState } from "react";
 import { SpinnerBase } from "../bases/spinner/SpinnerBase";
 import { Card, Container, Table } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -11,12 +11,12 @@ import { csvIdentificationRequestViewService } from "../../services/views/csvIde
 import SearchBase from "../bases/inputs/SearchBase";
 import CsvIdentificationRequestRow from "./csvIdentificationRequestRow";
 
-type CsvIdentificationRequestTableProps = {};
+type CsvIdentificationRequestTableProps = object;
 
-const CsvIdentificationRequestTable: FunctionComponent<CsvIdentificationRequestTableProps> = (props) => {
+const CsvIdentificationRequestTable: FunctionComponent<CsvIdentificationRequestTableProps> = () => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [debouncedTerm, setDebouncedTerm] = useState<string>("");
-    const [showSpinner, setShowSpinner] = useState(false);
+    const [showSpinner] = useState(false);
 
 
     const {
@@ -25,7 +25,6 @@ const CsvIdentificationRequestTable: FunctionComponent<CsvIdentificationRequestT
         fetchNextPage,
         isFetchingNextPage,
         hasNextPage,
-        data,
     } = csvIdentificationRequestViewService.useGetAllCsvIdentificationRequests(
         debouncedTerm
     );
@@ -44,7 +43,8 @@ const CsvIdentificationRequestTable: FunctionComponent<CsvIdentificationRequestT
     );
 
     const hasNoMorePages = () => {
-        return !isLoading && data?.pages.at(-1)?.nextPage === undefined;
+        return true;
+        //return !isLoading && data?.pages.at(-1)?.nextPage === undefined;
     };
 
     return (

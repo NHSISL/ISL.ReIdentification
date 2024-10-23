@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useState } from "react";
-import { ImpersonationContextView } from "../../models/views/components/impersonationContext/impersonationContextView";
 import { Card } from "react-bootstrap";
 import ImpersonationContextDetailCardView from "./impersonationContextDetailCardView";
+import { ImpersonationContextView } from "../../models/views/components/impersonationContext/ImpersonationContextView";
 
 interface ImpersonationContextDetailCardProps {
     impersonationContext: ImpersonationContextView;

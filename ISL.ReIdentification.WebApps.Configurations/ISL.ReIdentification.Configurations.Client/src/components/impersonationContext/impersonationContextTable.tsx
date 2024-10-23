@@ -4,7 +4,7 @@ import { SpinnerBase } from "../bases/spinner/SpinnerBase";
 import { Card, Container, Table } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDatabase } from "@fortawesome/free-solid-svg-icons";
-import { ImpersonationContextView } from "../../models/views/components/impersonationContext/impersonationContextView";
+import { ImpersonationContextView } from "../../models/views/components/impersonationContext/ImpersonationContextView";
 import InfiniteScroll from "../bases/pagers/InfiniteScroll";
 import InfiniteScrollLoader from "../bases/pagers/InfiniteScroll.Loader";
 import { impersonationContextViewService } from "../../services/views/impersonationContext/impersonationContextViewService";
@@ -25,7 +25,6 @@ const ImpersonationContextTable: FunctionComponent<ImpersonationContextTableProp
         fetchNextPage,
         isFetchingNextPage,
         hasNextPage,
-        data,
     } = impersonationContextViewService.useGetAllImpersonationContexts(
         debouncedTerm
     );
@@ -44,7 +43,8 @@ const ImpersonationContextTable: FunctionComponent<ImpersonationContextTableProp
     );
 
     const hasNoMorePages = () => {
-        return !isLoading && data?.pages.at(-1)?.nextPage === undefined;
+        return false;
+        //return !isLoading && data?.pages.at(-1)?.nextPage === undefined;
     };
 
     return (
