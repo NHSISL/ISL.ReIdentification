@@ -11,7 +11,7 @@ using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 
 namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
 {
-    public class UserAccessProcessingService : IUserAccessProcessingService
+    public partial class UserAccessProcessingService : IUserAccessProcessingService
     {
         private readonly IUserAccessService userAccessService;
         private readonly ILoggingBroker loggingBroker;
@@ -22,8 +22,13 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<UserAccess> AddUserAccessAsync(UserAccess userAccess) =>
-            await this.userAccessService.AddUserAccessAsync(userAccess);
+        public ValueTask<UserAccess> AddUserAccessAsync(UserAccess userAccess) =>
+            TryCatch(async () =>
+            {
+                await ValidateOnAddUserAccessAsync(userAccess);
+
+                return await this.userAccessService.AddUserAccessAsync(userAccess);
+            });
 
         public ValueTask<IQueryable<UserAccess>> RetrieveAllUserAccessesAsync() =>
             throw new NotImplementedException();
