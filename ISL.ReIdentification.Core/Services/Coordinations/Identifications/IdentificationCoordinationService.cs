@@ -165,7 +165,6 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             return reIdentifiedAccessRequest;
         });
 
-
         virtual async internal ValueTask<IdentificationRequest> ConvertCsvIdentificationRequestToIdentificationRequest(
             CsvIdentificationRequest csvIdentificationRequest)
         {
