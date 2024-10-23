@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
@@ -10,7 +11,6 @@ using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
-using ISL.ReIdentification.Core.Models.Securities;
 using ISL.ReIdentification.Core.Services.Orchestrations.Identifications;
 using Moq;
 
@@ -22,21 +22,19 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
         public async Task ShouldProcessImpersonationContextRequestAsync()
         {
             // given
-            var identificationCoordinationServiceMock = new Mock<IdentificationCoordinationService>
-                (this.accessOrchestrationServiceMock.Object,
-                this.persistanceOrchestrationServiceMock.Object,
-                this.identificationOrchestrationServiceMock.Object,
-                this.csvHelperBrokerMock.Object,
-                this.securityBrokerMock.Object,
-                this.loggingBrokerMock.Object)
-            { CallBase = true };
-
+            Guid randomGuid = Guid.NewGuid();
+            Guid contextId = randomGuid;
+            string contextIdString = contextId.ToString();
+            string randomString = GetRandomString();
+            string container = GetRandomString();
+            string fileName = randomString + ".csv";
+            string filepath = $"/{container}/{contextIdString}/outbox/{fileName}";
             AccessRequest inputAccessRequest = CreateRandomAccessRequest();
+            inputAccessRequest.CsvIdentificationRequest.Filepath = filepath;
             AccessRequest outputPersistanceOrchestrationAccessRequest = CreateRandomAccessRequest();
             ImpersonationContext outputImpersonationContext = CreateRandomImpersonationContext();
             outputPersistanceOrchestrationAccessRequest.ImpersonationContext = outputImpersonationContext;
             IdentificationRequest outputConversionIdentificationRequest = CreateRandomIdentificationRequest();
-            EntraUser outputEntraUser = CreateRandomEntraUser();
             AccessRequest outputOrchestrationAccessRequest = CreateRandomAccessRequest();
             IdentificationRequest outputOrchestrationIdentificationRequest = CreateRandomIdentificationRequest();
             CsvIdentificationRequest outputConversionCsvIdentificationRequest = CreateRandomCsvIdentificationRequest();
@@ -46,13 +44,22 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             resultingAccessRequest.ImpersonationContext = null;
             AccessRequest expectedAccessRequest = resultingAccessRequest.DeepClone();
 
+            var identificationCoordinationServiceMock = new Mock<IdentificationCoordinationService>
+                (this.accessOrchestrationServiceMock.Object,
+                this.persistanceOrchestrationServiceMock.Object,
+                this.identificationOrchestrationServiceMock.Object,
+                this.csvHelperBrokerMock.Object,
+                this.securityBrokerMock.Object,
+                this.loggingBrokerMock.Object)
+            { CallBase = true };
+
             identificationCoordinationServiceMock.Setup(service =>
                 service.ConvertCsvIdentificationRequestToIdentificationRequest(
-                    outputPersistanceOrchestrationAccessRequest.CsvIdentificationRequest))
+                    inputAccessRequest.CsvIdentificationRequest))
                         .ReturnsAsync(outputConversionIdentificationRequest);
 
             this.persistanceOrchestrationServiceMock.Setup(service =>
-                service.RetrieveImpersonationContextByIdAsync(It.IsAny<Guid>()))
+                service.RetrieveImpersonationContextByIdAsync(contextId))
                     .ReturnsAsync(outputPersistanceOrchestrationAccessRequest);
 
             this.accessOrchestrationServiceMock.Setup(service =>
@@ -81,11 +88,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
             identificationCoordinationServiceMock.Verify(service =>
                 service.ConvertCsvIdentificationRequestToIdentificationRequest(
-                    outputPersistanceOrchestrationAccessRequest.CsvIdentificationRequest),
+                    inputAccessRequest.CsvIdentificationRequest),
                     Times.Once);
 
             this.persistanceOrchestrationServiceMock.Verify(service =>
-                service.RetrieveImpersonationContextByIdAsync(It.IsAny<Guid>()),
+                service.RetrieveImpersonationContextByIdAsync(contextId),
                     Times.Once);
 
             this.accessOrchestrationServiceMock.Verify(service =>
@@ -99,6 +106,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             identificationCoordinationServiceMock.Verify(service =>
                 service.ConvertIdentificationRequestToCsvIdentificationRequest(
                     outputOrchestrationIdentificationRequest),
+                    Times.Once);
+
+            this.identificationOrchestrationServiceMock.Verify(service =>
+                service.AddDocumentAsync(It.IsAny<Stream>(), fileName, container),
                     Times.Once);
 
             identificationCoordinationServiceMock.VerifyNoOtherCalls();

@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Securities;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
+using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Models.Securities;
@@ -115,8 +117,51 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             return await this.persistanceOrchestrationService.PersistImpersonationContextAsync(accessRequest);
         });
 
-        public ValueTask<AccessRequest> ProcessImpersonationContextRequestAsync(AccessRequest accessRequest) =>
-            throw new NotImplementedException();
+        public async ValueTask<AccessRequest> ProcessImpersonationContextRequestAsync(AccessRequest accessRequest)
+        {
+            IdentificationRequest identificationRequest =
+                await ConvertCsvIdentificationRequestToIdentificationRequest(
+                    accessRequest.CsvIdentificationRequest);
+
+            AccessRequest convertedAccessRequest = new AccessRequest();
+            string filepath = accessRequest.CsvIdentificationRequest.Filepath;
+            string[] filepathParts = filepath.Split('/');
+            string container = filepathParts[1];
+            Guid impersonationContextId = Guid.Parse(filepathParts[2]);
+            string fileName = filepathParts[4];
+
+            AccessRequest returnedAccessRequestWithImpersonationContext =
+                await this.persistanceOrchestrationService
+                    .RetrieveImpersonationContextByIdAsync(impersonationContextId);
+
+            IdentificationRequest currentIdentificationRequest =
+                OverrideIdentificationRequestUserDetails(
+                    identificationRequest, returnedAccessRequestWithImpersonationContext.ImpersonationContext);
+
+            convertedAccessRequest.IdentificationRequest = currentIdentificationRequest;
+
+            AccessRequest returnedAccessRequest =
+                await this.accessOrchestrationService
+                    .ValidateAccessForIdentificationRequestAsync(convertedAccessRequest);
+
+            IdentificationRequest returnedIdentificationRequest =
+                await this.identificationOrchestrationService
+                    .ProcessIdentificationRequestAsync(returnedAccessRequest.IdentificationRequest);
+
+            CsvIdentificationRequest reIdentifiedCsvIdentificationRequest =
+                await ConvertIdentificationRequestToCsvIdentificationRequest(returnedIdentificationRequest);
+
+            AccessRequest reIdentifiedAccessRequest = new AccessRequest
+            {
+                CsvIdentificationRequest = reIdentifiedCsvIdentificationRequest
+            };
+
+            MemoryStream csvData = new MemoryStream(reIdentifiedCsvIdentificationRequest.Data);
+            await this.identificationOrchestrationService.AddDocumentAsync(csvData, fileName, container);
+
+            return reIdentifiedAccessRequest;
+        }
+
 
         virtual async internal ValueTask<IdentificationRequest> ConvertCsvIdentificationRequestToIdentificationRequest(
             CsvIdentificationRequest csvIdentificationRequest)
@@ -209,6 +254,20 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             identificationRequest.DisplayName = currentUser.DisplayName;
             identificationRequest.GivenName = currentUser.GivenName;
             identificationRequest.Surname = currentUser.Surname;
+
+            return identificationRequest;
+        }
+
+        private IdentificationRequest OverrideIdentificationRequestUserDetails(
+            IdentificationRequest identificationRequest,
+            ImpersonationContext impersonationContext)
+        {
+            identificationRequest.EntraUserId = impersonationContext.RequesterEntraUserId;
+            identificationRequest.Email = impersonationContext.RequesterEmail;
+            identificationRequest.JobTitle = impersonationContext.RequesterJobTitle;
+            identificationRequest.DisplayName = impersonationContext.RequesterDisplayName;
+            identificationRequest.GivenName = impersonationContext.RequesterFirstName;
+            identificationRequest.Surname = impersonationContext.RequesterLastName;
 
             return identificationRequest;
         }
