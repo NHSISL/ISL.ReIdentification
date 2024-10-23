@@ -16,15 +16,15 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
     {
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
-        public async Task ShouldThrowDependencyValidationOnProcessPersistanceRequestAndLogItAsync(
-                    Xeption dependencyValidationException)
+        public async Task ShouldThrowDependencyValidationOnPersistImpersonationContextAndLogItAsync(
+            Xeption dependencyValidationException)
         {
             // given
-            Guid someId = Guid.NewGuid();
+            AccessRequest someAccessRequest = CreateRandomAccessRequest();
 
-            this.csvIdentificationRequestServiceMock.Setup(service =>
-                service.RetrieveCsvIdentificationRequestByIdAsync(It.IsAny<Guid>()))
-                    .ThrowsAsync(dependencyValidationException);
+            this.impersonationContextServiceMock.Setup(service =>
+                service.RetrieveAllImpersonationContextsAsync())
+                    .Throws(dependencyValidationException);
 
             var expectedPersistanceOrchestrationDependencyValidationException =
                 new PersistanceOrchestrationDependencyValidationException(
@@ -33,21 +33,21 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             // when
-            ValueTask<AccessRequest> retrieveCsvPersistanceRequestByIdTask =
-                this.persistanceOrchestrationService
-                    .RetrieveCsvIdentificationRequestByIdAsync(csvIdentificationRequestId: someId);
+            ValueTask<AccessRequest> persistImpersonationContextAsyncTask =
+                this.persistanceOrchestrationService.PersistImpersonationContextAsync(
+                    accessRequest: someAccessRequest);
 
             PersistanceOrchestrationDependencyValidationException
                 actualPersistanceOrchestrationDependencyValidationException =
                 await Assert.ThrowsAsync<PersistanceOrchestrationDependencyValidationException>(
-                    testCode: retrieveCsvPersistanceRequestByIdTask.AsTask);
+                    testCode: persistImpersonationContextAsyncTask.AsTask);
 
             // then
             actualPersistanceOrchestrationDependencyValidationException
                 .Should().BeEquivalentTo(expectedPersistanceOrchestrationDependencyValidationException);
 
-            this.csvIdentificationRequestServiceMock.Verify(service =>
-                service.RetrieveCsvIdentificationRequestByIdAsync(It.IsAny<Guid>()),
+            this.impersonationContextServiceMock.Verify(service =>
+                service.RetrieveAllImpersonationContextsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -55,47 +55,47 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                    expectedPersistanceOrchestrationDependencyValidationException))),
                        Times.Once);
 
+            this.impersonationContextServiceMock.VerifyNoOtherCalls();
             this.csvIdentificationRequestServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.impersonationContextServiceMock.VerifyNoOtherCalls();
             this.notificationServiceMock.VerifyNoOtherCalls();
             this.hashBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
-        public async Task ShouldThrowDependencyOnProcessPersistanceRequestAndLogItAsync(
-            Xeption dependencyValidationException)
+        public async Task ShouldThrowDependencyOnPersistImpersonationContextAndLogItAsync(
+            Xeption dependencyException)
         {
             // given
-            Guid someId = Guid.NewGuid();
+            AccessRequest someAccessRequest = CreateRandomAccessRequest();
 
-            this.csvIdentificationRequestServiceMock.Setup(service =>
-                service.RetrieveCsvIdentificationRequestByIdAsync(It.IsAny<Guid>()))
-                    .ThrowsAsync(dependencyValidationException);
+            this.impersonationContextServiceMock.Setup(service =>
+                service.RetrieveAllImpersonationContextsAsync())
+                    .Throws(dependencyException);
 
             var expectedPersistanceOrchestrationDependencyException =
                 new PersistanceOrchestrationDependencyException(
                     message: "Persistance orchestration dependency error occurred, " +
                         "fix the errors and try again.",
-                    innerException: dependencyValidationException.InnerException as Xeption);
+                    innerException: dependencyException.InnerException as Xeption);
 
             // when
-            ValueTask<AccessRequest> retrieveCsvPersistanceRequestByIdTask =
-                this.persistanceOrchestrationService
-                    .RetrieveCsvIdentificationRequestByIdAsync(someId);
+            ValueTask<AccessRequest> persistImpersonationContextAsyncTask =
+                this.persistanceOrchestrationService.PersistImpersonationContextAsync(
+                    accessRequest: someAccessRequest);
 
             PersistanceOrchestrationDependencyException
                 actualPersistanceOrchestrationDependencyException =
                 await Assert.ThrowsAsync<PersistanceOrchestrationDependencyException>(
-                    testCode: retrieveCsvPersistanceRequestByIdTask.AsTask);
+                    testCode: persistImpersonationContextAsyncTask.AsTask);
 
             // then
             actualPersistanceOrchestrationDependencyException
                 .Should().BeEquivalentTo(expectedPersistanceOrchestrationDependencyException);
 
-            this.csvIdentificationRequestServiceMock.Verify(service =>
-                service.RetrieveCsvIdentificationRequestByIdAsync(It.IsAny<Guid>()),
+            this.impersonationContextServiceMock.Verify(service =>
+                service.RetrieveAllImpersonationContextsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -103,18 +103,19 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                    expectedPersistanceOrchestrationDependencyException))),
                        Times.Once);
 
+            this.impersonationContextServiceMock.VerifyNoOtherCalls();
             this.csvIdentificationRequestServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.impersonationContextServiceMock.VerifyNoOtherCalls();
             this.notificationServiceMock.VerifyNoOtherCalls();
             this.hashBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnAddIfServiceErrorOccurredAndLogItAsync()
+        public async Task
+            ShouldThrowServiceExceptionOnPersistImpersonationContextIfServiceErrorOccurredAndLogItAsync()
         {
             // given
-            Guid someId = Guid.NewGuid();
+            AccessRequest someAccessRequest = CreateRandomAccessRequest();
             var serviceException = new Exception();
 
             var failedServicePersistanceOrchestrationException =
@@ -127,26 +128,26 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                     message: "Persistance orchestration service error occurred, contact support.",
                     innerException: failedServicePersistanceOrchestrationException);
 
-            this.csvIdentificationRequestServiceMock.Setup(service =>
-                service.RetrieveCsvIdentificationRequestByIdAsync(It.IsAny<Guid>()))
-                    .ThrowsAsync(serviceException);
+            this.impersonationContextServiceMock.Setup(service =>
+                service.RetrieveAllImpersonationContextsAsync())
+                    .Throws(serviceException);
 
             // when
-            ValueTask<AccessRequest> retrieveCsvPersistanceRequestByIdTask =
-                this.persistanceOrchestrationService
-                    .RetrieveCsvIdentificationRequestByIdAsync(someId);
+            ValueTask<AccessRequest> persistImpersonationContextAsyncTask =
+                this.persistanceOrchestrationService.PersistImpersonationContextAsync(
+                    accessRequest: someAccessRequest);
 
             PersistanceOrchestrationServiceException
                 actualPersistanceOrchestrationValidationException =
                 await Assert.ThrowsAsync<PersistanceOrchestrationServiceException>(
-                    testCode: retrieveCsvPersistanceRequestByIdTask.AsTask);
+                    testCode: persistImpersonationContextAsyncTask.AsTask);
 
             // then
             actualPersistanceOrchestrationValidationException.Should().BeEquivalentTo(
                 expectedPersistanceOrchestrationServiceException);
 
-            this.csvIdentificationRequestServiceMock.Verify(service =>
-                service.RetrieveCsvIdentificationRequestByIdAsync(It.IsAny<Guid>()),
+            this.impersonationContextServiceMock.Verify(service =>
+                service.RetrieveAllImpersonationContextsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -154,9 +155,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                    expectedPersistanceOrchestrationServiceException))),
                        Times.Once);
 
+            this.impersonationContextServiceMock.VerifyNoOtherCalls();
             this.csvIdentificationRequestServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.impersonationContextServiceMock.VerifyNoOtherCalls();
             this.notificationServiceMock.VerifyNoOtherCalls();
             this.hashBrokerMock.VerifyNoOtherCalls();
         }

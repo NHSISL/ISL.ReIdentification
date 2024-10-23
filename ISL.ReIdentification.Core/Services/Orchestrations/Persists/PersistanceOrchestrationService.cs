@@ -40,7 +40,48 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
         }
 
         public ValueTask<AccessRequest> PersistImpersonationContextAsync(AccessRequest accessRequest) =>
-            throw new NotImplementedException();
+        TryCatch(async () =>
+        {
+            ValidateOnPersistImpersonationContextAsync(accessRequest);
+
+            var maybeImpersonationContexts = await this.impersonationContextService
+                .RetrieveAllImpersonationContextsAsync();
+
+            ImpersonationContext? matchedImpersonationContext = maybeImpersonationContexts
+                .Where(impersonationContext =>
+                    impersonationContext.Id == accessRequest.ImpersonationContext.Id)
+                .FirstOrDefault();
+
+            if (matchedImpersonationContext is not null)
+            {
+                if (accessRequest.ImpersonationContext.IsApproved == matchedImpersonationContext.IsApproved)
+                {
+                    return accessRequest;
+                }
+
+                var modifiedImpersonationContext = await this.impersonationContextService
+                    .ModifyImpersonationContextAsync(accessRequest.ImpersonationContext);
+
+                var modifiedAccessRequest =
+                    new AccessRequest { ImpersonationContext = modifiedImpersonationContext };
+
+                await (accessRequest.ImpersonationContext.IsApproved
+                    ?
+                        this.notificationService.SendApprovedNotificationAsync(modifiedAccessRequest)
+                    :
+                        this.notificationService.SendDeniedNotificationAsync(modifiedAccessRequest));
+
+                return modifiedAccessRequest;
+            }
+
+            var createdImpersonationContext = await this.impersonationContextService
+                .AddImpersonationContextAsync(accessRequest.ImpersonationContext);
+
+            var createdAccessRequest = new AccessRequest { ImpersonationContext = createdImpersonationContext };
+            await this.notificationService.SendPendingApprovalNotificationAsync(createdAccessRequest);
+
+            return createdAccessRequest;
+        });
 
         public ValueTask<AccessRequest> RetrieveImpersonationContextByIdAsync(Guid impersonationContextId) =>
         TryCatch(async () =>

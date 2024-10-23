@@ -4,6 +4,7 @@
 
 using System;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
+using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Persists.Exceptions;
@@ -41,6 +42,16 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
                 (Rule: IsInvalid(csvIdentificationRequest), Parameter: nameof(csvIdentificationRequest)));
         }
 
+        private static void ValidateOnPersistImpersonationContextAsync(
+             AccessRequest accessRequest)
+        {
+            ValidateAccessRequestIsNotNull(accessRequest);
+
+            Validate(
+                (Rule: IsInvalid(accessRequest.ImpersonationContext),
+                    Parameter: nameof(accessRequest.ImpersonationContext)));
+        }
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,
@@ -50,6 +61,12 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
         private static dynamic IsInvalid(CsvIdentificationRequest csvIdentificationRequest) => new
         {
             Condition = csvIdentificationRequest == null,
+            Message = "AccessRequest is invalid"
+        };
+
+        private static dynamic IsInvalid(ImpersonationContext impersonationContext) => new
+        {
+            Condition = impersonationContext == null,
             Message = "AccessRequest is invalid"
         };
 
