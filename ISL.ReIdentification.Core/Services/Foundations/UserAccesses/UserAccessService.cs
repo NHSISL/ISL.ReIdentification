@@ -87,9 +87,12 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
             ValidateOnRetrieveAllOrganisationUserHasAccessTo(entraUserId);
             List<string> organisations = new List<string>();
             var userAccessQuery = await this.reIdentificationStorageBroker.SelectAllUserAccessesAsync();
+            DateTimeOffset currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
             List<string> userOrganisations = userAccessQuery
-                .Where(userAccess => userAccess.EntraUserId == entraUserId)
+                .Where(userAccess => userAccess.EntraUserId == entraUserId
+                    && userAccess.ActiveFrom <= currentDateTime
+                    && (userAccess.ActiveTo == null || userAccess.ActiveTo > currentDateTime))
                     .Select(userAccess => userAccess.OrgCode).ToList();
 
             foreach (var userOrganisation in userOrganisations)
