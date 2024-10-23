@@ -150,7 +150,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
         }
 
         [Fact]
-        public async Task ShouldNoHaveAccessToThisPatientIfRelationshipIsInactiveAsync()
+        public async Task ShouldNotHaveAccessToThisPatientIfRelationshipIsInactiveAsync()
         {
             // given
             string randomPseudoNhsNumber = GetRandomString();

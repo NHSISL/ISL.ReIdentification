@@ -92,7 +92,11 @@ namespace ISL.ReIdentification.Core.Services.Foundations.PdsDatas
 
                 bool hasAccess = query.Any(
                     pdsData => pdsData.PseudoNhsNumber == pseudoNhsNumber
-                    && organisationCodes.Contains(pdsData.OrgCode));
+                    && organisationCodes.Contains(pdsData.OrgCode)
+                    && (pdsData.RelationshipWithOrganisationEffectiveFromDate == null
+                        || pdsData.RelationshipWithOrganisationEffectiveFromDate <= currentDateTime)
+                    && (pdsData.RelationshipWithOrganisationEffectiveToDate == null ||
+                        pdsData.RelationshipWithOrganisationEffectiveToDate > currentDateTime));
 
                 return hasAccess;
             });
