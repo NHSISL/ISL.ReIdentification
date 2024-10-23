@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Brokers.Hashing;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
+using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts;
@@ -42,7 +43,15 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
             throw new NotImplementedException();
 
         public ValueTask<AccessRequest> RetrieveImpersonationContextByIdAsync(Guid impersonationContextId) =>
-            throw new NotImplementedException();
+        TryCatch(async () =>
+        {
+            ValidateOnRetrieveImpersonationContextByIdAsync(impersonationContextId);
+
+            ImpersonationContext impersonationContext = await this.impersonationContextService
+                .RetrieveImpersonationContextByIdAsync(impersonationContextId);
+
+            return new AccessRequest { ImpersonationContext = impersonationContext };
+        });
 
         public ValueTask<AccessRequest> PersistCsvIdentificationRequestAsync(AccessRequest accessRequest) =>
         TryCatch(async () =>
