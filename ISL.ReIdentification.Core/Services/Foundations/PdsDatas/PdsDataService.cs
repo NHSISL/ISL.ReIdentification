@@ -91,5 +91,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.PdsDatas
 
                 return hasAccess;
             });
+
+        public ValueTask<bool> UserHasAccessToThisPatient(string pseudoNhsNumber, List<string> organisationCodes) =>
+            throw new NotImplementedException();
     }
 }

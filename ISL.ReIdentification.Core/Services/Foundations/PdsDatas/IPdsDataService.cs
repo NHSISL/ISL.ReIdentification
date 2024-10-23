@@ -18,5 +18,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.PdsDatas
         ValueTask<PdsData> ModifyPdsDataAsync(PdsData pdsData);
         ValueTask<PdsData> RemovePdsDataByIdAsync(Guid pdsDataId);
         ValueTask<bool> OrganisationsHaveAccessToThisPatient(string pseudoNhsNumber, List<string> organisationCodes);
+        ValueTask<bool> UserHasAccessToThisPatient(string pseudoNhsNumber, List<string> organisationCodes);
     }
 }
