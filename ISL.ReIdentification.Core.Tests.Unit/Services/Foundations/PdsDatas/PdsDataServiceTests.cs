@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Foundations.PdsDatas;
@@ -21,16 +22,19 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
     public partial class PdsDataServiceTests
     {
         private readonly Mock<IReIdentificationStorageBroker> reIdentificationStorageBroker;
+        private readonly Mock<IDateTimeBroker> dateTimeBroker;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly PdsDataService pdsDataService;
 
         public PdsDataServiceTests()
         {
             this.reIdentificationStorageBroker = new Mock<IReIdentificationStorageBroker>();
+            this.dateTimeBroker = new Mock<IDateTimeBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
             this.pdsDataService = new PdsDataService(
                 reIdentificationStorageBroker: this.reIdentificationStorageBroker.Object,
+                dateTimeBroker: this.dateTimeBroker.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
         }
 
