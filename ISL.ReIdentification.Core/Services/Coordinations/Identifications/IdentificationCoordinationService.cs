@@ -116,13 +116,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
         });
 
         public ValueTask<AccessRequest> ProcessImpersonationContextRequestAsync(AccessRequest accessRequest) =>
-        TryCatch(async () =>
-        {
-            ValidateImpersonationContext(accessRequest);
-            return await this.accessOrchestrationService.ProcessImpersonationContextRequestAsync(accessRequest);
-        });
-
-
+            throw new NotImplementedException();
 
         virtual async internal ValueTask<IdentificationRequest> ConvertCsvIdentificationRequestToIdentificationRequest(
             CsvIdentificationRequest csvIdentificationRequest)
