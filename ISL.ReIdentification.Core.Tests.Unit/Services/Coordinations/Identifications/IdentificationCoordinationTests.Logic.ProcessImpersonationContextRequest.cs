@@ -89,7 +89,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             identificationCoordinationServiceMock.Verify(service =>
                 service.ConvertCsvIdentificationRequestToIdentificationRequest(
                     inputAccessRequest.CsvIdentificationRequest),
-                    Times.Once);
+                        Times.Once);
 
             this.persistanceOrchestrationServiceMock.Verify(service =>
                 service.RetrieveImpersonationContextByIdAsync(contextId),
@@ -106,7 +106,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             identificationCoordinationServiceMock.Verify(service =>
                 service.ConvertIdentificationRequestToCsvIdentificationRequest(
                     outputOrchestrationIdentificationRequest),
-                    Times.Once);
+                        Times.Once);
 
             this.identificationOrchestrationServiceMock.Verify(service =>
                 service.AddDocumentAsync(It.IsAny<Stream>(), fileName, container),
