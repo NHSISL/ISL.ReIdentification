@@ -3,6 +3,8 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
@@ -40,6 +42,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
 
+        private static int GetRandomNumber() =>
+            new IntRange(max: 15, min: 2).GetValue();
+
         public static TheoryData<Xeption> DependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
@@ -71,6 +76,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
                     message : "User access service error occurred, please contact support.", innerException)
             };
         }
+
+        private static List<UserAccess> CreateRandomUserAccesses() =>
+            CreateUserAccessesFiller().Create(GetRandomNumber()).ToList();
 
         private static UserAccess CreateRandomUserAccess() =>
             CreateUserAccessesFiller().Create();
