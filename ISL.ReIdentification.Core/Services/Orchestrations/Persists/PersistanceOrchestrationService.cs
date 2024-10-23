@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Brokers.Hashing;
@@ -66,9 +67,9 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
 
                 await (accessRequest.ImpersonationContext.IsApproved
                     ?
-                        this.notificationService.SendApprovedNotificationAsync(modifiedAccessRequest)
+                        this.notificationService.SendImpersonationApprovedNotificationAsync(modifiedAccessRequest)
                     :
-                        this.notificationService.SendDeniedNotificationAsync(modifiedAccessRequest));
+                        this.notificationService.SendImpersonationDeniedNotificationAsync(modifiedAccessRequest));
 
                 return modifiedAccessRequest;
             }
@@ -77,7 +78,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
                 .AddImpersonationContextAsync(accessRequest.ImpersonationContext);
 
             var createdAccessRequest = new AccessRequest { ImpersonationContext = createdImpersonationContext };
-            await this.notificationService.SendPendingApprovalNotificationAsync(createdAccessRequest);
+            await this.notificationService.SendImpersonationPendingApprovalNotificationAsync(createdAccessRequest);
 
             return createdAccessRequest;
         });
