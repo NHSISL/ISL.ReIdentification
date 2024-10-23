@@ -16,6 +16,11 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
             ValidateUserAccessIsNotNull(userAccess);
         }
 
+        private async ValueTask ValidateOnModifyUserAccessAsync(UserAccess userAccess)
+        {
+            ValidateUserAccessIsNotNull(userAccess);
+        }
+
         private static void ValidateUserAccessIsNotNull(UserAccess userAccess)
         {
             if (userAccess is null)
