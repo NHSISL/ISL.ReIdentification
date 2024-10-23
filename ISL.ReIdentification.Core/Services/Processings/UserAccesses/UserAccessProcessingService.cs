@@ -53,7 +53,10 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
         });
 
         public ValueTask<UserAccess> RemoveUserAccessByIdAsync(Guid userAccessId) =>
-            throw new NotImplementedException();
+        TryCatch(async () =>
+        {
+            return await this.userAccessService.RemoveUserAccessByIdAsync(userAccessId);
+        });
 
         public ValueTask<List<string>> RetrieveAllActiveOrganisationsUserHasAccessTo(Guid entraUserId) =>
             throw new NotImplementedException();
