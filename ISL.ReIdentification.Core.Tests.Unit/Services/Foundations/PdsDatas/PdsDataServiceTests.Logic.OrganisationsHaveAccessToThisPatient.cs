@@ -70,6 +70,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                 broker.SelectAllPdsDatasAsync())
                     .ReturnsAsync(storagePdsDatas.AsQueryable());
 
+            this.dateTimeBroker.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(DateTimeOffset.UtcNow);
+
             // when
             bool actualResult =
                 await this.pdsDataService.OrganisationsHaveAccessToThisPatient(
@@ -82,7 +86,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                 broker.SelectAllPdsDatasAsync(),
                     Times.Once);
 
+            this.dateTimeBroker.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
+            this.dateTimeBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -102,6 +111,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                 broker.SelectAllPdsDatasAsync())
                     .ReturnsAsync(storagePdsDatas.AsQueryable());
 
+            this.dateTimeBroker.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(DateTimeOffset.UtcNow);
+
             // when
             bool actualResult =
                 await this.pdsDataService.OrganisationsHaveAccessToThisPatient(
@@ -114,7 +127,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                 broker.SelectAllPdsDatasAsync(),
                     Times.Once);
 
+            this.dateTimeBroker.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
+            this.dateTimeBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -133,6 +151,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                 broker.SelectAllPdsDatasAsync())
                     .ReturnsAsync(storagePdsDatas.AsQueryable());
 
+            this.dateTimeBroker.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(DateTimeOffset.UtcNow);
+
             // when
             bool actualResult =
                 await this.pdsDataService.OrganisationsHaveAccessToThisPatient(
@@ -145,7 +167,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                 broker.SelectAllPdsDatasAsync(),
                     Times.Once);
 
+            this.dateTimeBroker.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
+            this.dateTimeBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
