@@ -38,13 +38,10 @@ export const pdsDataViewService = {
                         pdsDataes.push(new PdsDataView(
                             pdsData.rowId,
                             pdsData.pseudoNhsNumber,
-                            pdsData.primaryCareProvider,
-                            pdsData.primaryCareProviderBusinessEffectiveFromDate,
-                            pdsData.primaryCareProviderBusinessEffectiveToDate,
-                            pdsData.ccgOfRegistration,
-                            pdsData.currentCcgOfRegistration,
-                            pdsData.icbOfRegistration,
-                            pdsData.currentIcbOfRegistration,
+                            pdsData.OrgCode,
+                            pdsData.OrganisationName,
+                            pdsData.RelationshipWithOrganisationEffectiveFromDate,
+                            pdsData.RelationshipWithOrganisationEffectiveToDate
                         ));
                     });
                 });
@@ -77,13 +74,10 @@ export const pdsDataViewService = {
                 const pdsDataView = new PdsDataView(
                     pdsData.rowId,
                     pdsData.pseudoNhsNumber,
-                    pdsData.primaryCareProvider,
-                    pdsData.primaryCareProviderBusinessEffectiveFromDate,
-                    pdsData.primaryCareProviderBusinessEffectiveToDate,
-                    pdsData.ccgOfRegistration,
-                    pdsData.currentCcgOfRegistration,
-                    pdsData.icbOfRegistration,
-                    pdsData.currentIcbOfRegistration,
+                    pdsData.OrgCode,
+                    pdsData.OrganisationName,
+                    pdsData.RelationshipWithOrganisationEffectiveFromDate,
+                    pdsData.RelationshipWithOrganisationEffectiveToDate
                 );
 
                 setMappedPdsData(pdsDataView);

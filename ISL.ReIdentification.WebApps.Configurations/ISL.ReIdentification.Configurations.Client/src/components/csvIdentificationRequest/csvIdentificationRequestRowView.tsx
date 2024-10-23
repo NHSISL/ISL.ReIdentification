@@ -1,9 +1,6 @@
-import React, { FunctionComponent } from "react";
+import { FunctionComponent } from "react";
 import { Link } from 'react-router-dom';
 import { Button } from "react-bootstrap";
-import moment from "moment";
-import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { CsvIdentificationRequest } from "../../models/csvIdentificationRequest/csvIdentificationRequest";
 
 type CsvIdentificationRequestRowProps = {

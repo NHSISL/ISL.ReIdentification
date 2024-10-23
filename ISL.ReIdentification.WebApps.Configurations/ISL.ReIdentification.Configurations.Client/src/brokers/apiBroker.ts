@@ -6,7 +6,6 @@ class ApiBroker {
     msalInstance = new PublicClientApplication(msalConfig);
     scope: any;
 
-    constructor();
     constructor(scope?: string) {
         this.scope = scope ? [scope] : loginRequest.scopes;
     }

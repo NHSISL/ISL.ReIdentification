@@ -26,7 +26,6 @@ const CsvIdentificationRequestTable: FunctionComponent<CsvIdentificationRequestT
         isFetchingNextPage,
         hasNextPage,
         data,
-        refetch
     } = csvIdentificationRequestViewService.useGetAllCsvIdentificationRequests(
         debouncedTerm
     );

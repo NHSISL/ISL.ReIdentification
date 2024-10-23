@@ -1,4 +1,4 @@
-import React, { FunctionComponent, ChangeEvent } from "react";
+import { FunctionComponent, ChangeEvent } from "react";
 import { Label, Radios } from 'nhsuk-react-components'
 import { InputGroup, Form } from "react-bootstrap"
 

@@ -1,7 +1,6 @@
-import React, { FunctionComponent } from "react";
+import { FunctionComponent } from "react";
 import { Link } from 'react-router-dom';
 import { Button } from "react-bootstrap";
-import moment from "moment";
 import { ImpersonationContext } from "../../models/impersonationContext.ts/impersonationContext";
 import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

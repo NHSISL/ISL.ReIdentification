@@ -1,5 +1,5 @@
 import { debounce } from "lodash";
-import React, { FunctionComponent, useMemo, useState } from "react";
+import { FunctionComponent, useMemo, useState } from "react";
 import { SpinnerBase } from "../bases/spinner/SpinnerBase";
 import { Card, Container, Table } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -16,7 +16,7 @@ type UserAccessTableProps = {};
 const UserAccessTable: FunctionComponent<UserAccessTableProps> = (props) => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [debouncedTerm, setDebouncedTerm] = useState<string>("");
-    const [showSpinner, setShowSpinner] = useState(false);
+    const [showSpinner] = useState(false);
 
 
     const {
@@ -26,7 +26,6 @@ const UserAccessTable: FunctionComponent<UserAccessTableProps> = (props) => {
         isFetchingNextPage,
         hasNextPage,
         data,
-        refetch
     } = userAccessViewService.useGetAllUserAccess(
         debouncedTerm
     );

@@ -1,4 +1,4 @@
-import React, { FunctionComponent, ChangeEvent } from "react";
+import { FunctionComponent, ChangeEvent } from "react";
 import { DateInput } from 'nhsuk-react-components'
 
 interface DateTimeBaseProps {

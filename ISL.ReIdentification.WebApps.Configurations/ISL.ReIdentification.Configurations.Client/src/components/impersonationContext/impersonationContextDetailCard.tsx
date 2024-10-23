@@ -16,10 +16,6 @@ const ImpersonationContextDetailCard: FunctionComponent<ImpersonationContextDeta
     const {
         impersonationContext,
         mode,
-        onAdd,
-        onUpdate,
-        onDelete,
-        children
     } = props;
 
     const [displayMode, setDisplayMode] = useState<string>(mode);

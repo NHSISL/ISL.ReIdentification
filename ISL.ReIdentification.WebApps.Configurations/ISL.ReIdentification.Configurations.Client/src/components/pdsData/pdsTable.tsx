@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from "react";
+import { FunctionComponent } from "react";
 import { Card, Table } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAddressBook } from "@fortawesome/free-solid-svg-icons";
@@ -6,7 +6,7 @@ import PdsRow from "./pdsRow";
 
 type PdsTableProps = {};
 
-const PdsTable: FunctionComponent<PdsTableProps> = (props) => {
+const PdsTable: FunctionComponent<PdsTableProps> = () => {
     return (
         <div className="infiniteScrollContainer">
             <Card>

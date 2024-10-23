@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from "react";
+import { FunctionComponent } from "react";
 import { Card, Table } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserDoctor } from "@fortawesome/free-solid-svg-icons";
@@ -6,7 +6,7 @@ import OdsRow from "./odsRow";
 
 type OdsTableProps = {};
 
-const OdsTable: FunctionComponent<OdsTableProps> = (props) => {
+const OdsTable: FunctionComponent<OdsTableProps> = () => {
     return (
         <div className="infiniteScrollContainer">
             <Card>

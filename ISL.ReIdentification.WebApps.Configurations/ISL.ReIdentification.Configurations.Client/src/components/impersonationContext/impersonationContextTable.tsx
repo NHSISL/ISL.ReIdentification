@@ -1,5 +1,5 @@
 import { debounce } from "lodash";
-import React, { FunctionComponent, useMemo, useState } from "react";
+import { FunctionComponent, useMemo, useState } from "react";
 import { SpinnerBase } from "../bases/spinner/SpinnerBase";
 import { Card, Container, Table } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -13,10 +13,10 @@ import ImpersonationContextRow from "./impersonationContextRow";
 
 type ImpersonationContextTableProps = {};
 
-const ImpersonationContextTable: FunctionComponent<ImpersonationContextTableProps> = (props) => {
+const ImpersonationContextTable: FunctionComponent<ImpersonationContextTableProps> = () => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [debouncedTerm, setDebouncedTerm] = useState<string>("");
-    const [showSpinner, setShowSpinner] = useState(false);
+    const [showSpinner] = useState(false);
 
 
     const {
@@ -26,7 +26,6 @@ const ImpersonationContextTable: FunctionComponent<ImpersonationContextTableProp
         isFetchingNextPage,
         hasNextPage,
         data,
-        refetch
     } = impersonationContextViewService.useGetAllImpersonationContexts(
         debouncedTerm
     );

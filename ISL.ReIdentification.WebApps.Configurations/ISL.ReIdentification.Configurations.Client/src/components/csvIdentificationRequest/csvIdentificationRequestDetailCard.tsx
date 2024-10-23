@@ -16,10 +16,6 @@ const CsvIdentificationRequestDetailCard: FunctionComponent<CsvIdentificationReq
     const {
         csvIdentificationRequest,
         mode,
-        onAdd,
-        onUpdate,
-        onDelete,
-        children
     } = props;
 
     const [displayMode, setDisplayMode] = useState<string>(mode);

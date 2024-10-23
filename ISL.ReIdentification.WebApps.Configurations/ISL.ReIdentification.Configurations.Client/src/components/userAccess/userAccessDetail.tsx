@@ -33,7 +33,7 @@ const UserAccessDetail: FunctionComponent<UserAccessDetailProps> = (props) => {
             setMode('VIEW');
         }
         if (userDetailId === "" || userDetailId === undefined) {
-            setUserAccess(new UserAccessView(crypto.randomUUID(), "", "", "", "", new Date(), new Date()))
+            setUserAccess(new UserAccessView(crypto.randomUUID(), "", "", "", [], new Date(), new Date()))
             setMode('ADD');
         }
     }, [userDetailId, userAccessRetrieved]);

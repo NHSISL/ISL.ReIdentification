@@ -1,9 +1,9 @@
 import { Validation } from "../models/validations/validation";
-import { it } from '@jest/globals'
+import { expect, it } from '@jest/globals'
 import "@testing-library/jest-dom/extend-expect";
 import { ValidationProcessor } from "./validationProcessor";
-import { ApiValidationError } from "../errors/validationError";
 import { ValidationMessages } from "./validationMessages";
+import { ApiValidationError } from "../errors/validationError";
 
 type TestErrors = {
     test: string
@@ -35,7 +35,7 @@ it("Disabled validation returns no message", () => {
         isRequired: true
     }]
 
-    let validationErrors = ValidationProcessor<TestErrors>().validate(errorObject, validation, valuesDefinition, false);
+    const validationErrors = ValidationProcessor<TestErrors>().validate(errorObject, validation, valuesDefinition, false);
 
     expect(validationErrors.test).toBe("");
 })
@@ -48,7 +48,7 @@ it("No validation requirement returns empty message", async () => {
         isRequired: false
     }]
 
-    let validationErrors = ValidationProcessor<TestErrors>().validate(errorObject, validation, valuesDefinition, true);
+    const validationErrors = ValidationProcessor<TestErrors>().validate(errorObject, validation, valuesDefinition, true);
 
     expect(validationErrors.test).toBe("");
 })
@@ -61,7 +61,7 @@ it("Is Required validation returns correct message", async () => {
         isRequired: true
     }]
 
-    let validationErrors = ValidationProcessor<TestErrors>().validate(errorObject, validation, valuesDefinition, true);
+    const validationErrors = ValidationProcessor<TestErrors>().validate(errorObject, validation, valuesDefinition, true);
 
     expect(validationErrors.test).not.toBe(null);
     expect(validationErrors.test).toBe(`${validation[0].friendlyName} ${ValidationMessages.requiredMessage()}.`);
@@ -77,7 +77,7 @@ it("Min length validation returns correct message", async () => {
 
     const values = { ...valuesDefinition, test: "1" };
 
-    let validationErrors = ValidationProcessor<TestErrors>().validate(errorObject, validation, values, true);
+    const validationErrors = ValidationProcessor<TestErrors>().validate(errorObject, validation, values, true);
 
     expect(validationErrors.test).toBe(`${validation[0].friendlyName} ${ValidationMessages.minimumLengthMessage(2)}.`);
 })
@@ -92,7 +92,7 @@ it("Max length validation returns correct message", async () => {
 
     const values = { ...valuesDefinition, test: "123" };
 
-    let validationErrors = ValidationProcessor<TestErrors>().validate(errorObject, validation, values, true);
+    const validationErrors = ValidationProcessor<TestErrors>().validate(errorObject, validation, values, true);
 
     expect(validationErrors.test).toBe(`${validation[0].friendlyName} ${ValidationMessages.maximumLengthMessage(2)}.`);
 })
@@ -107,7 +107,7 @@ it("Min value validation returns correct message", async () => {
 
     const values = { ...valuesDefinition, test: 1 };
 
-    let validationErrors = ValidationProcessor<TestErrors>().validate(errorObject, validation, values, true);
+    const validationErrors = ValidationProcessor<TestErrors>().validate(errorObject, validation, values, true);
 
     expect(validationErrors.test).toBe(`${validation[0].friendlyName} ${ValidationMessages.minimumValueMessage(2)}.`);
 })
@@ -122,7 +122,7 @@ it("Min value validation returns correct message", async () => {
 
     const values = { ...valuesDefinition, test: 3 };
 
-    let validationErrors = ValidationProcessor<TestErrors>().validate(errorObject, validation, values, true);
+    const validationErrors = ValidationProcessor<TestErrors>().validate(errorObject, validation, values, true);
 
     expect(validationErrors.test).toBe(`${validation[0].friendlyName} ${ValidationMessages.maximumValueMessage(2)}.`);
 })
@@ -139,7 +139,7 @@ it("Multiple validation errors returns correct message", async () => {
 
     const values = { ...valuesDefinition };
 
-    let validationErrors = ValidationProcessor<TestErrors>().validate(errorObject, validation, values, true);
+    const validationErrors = ValidationProcessor<TestErrors>().validate(errorObject, validation, values, true);
 
     expect(validationErrors.test).toBe(`${validation[0].friendlyName} ${ValidationMessages.requiredMessage()} and ${ValidationMessages.minimumLengthMessage(3)}.`);
 })
@@ -153,7 +153,7 @@ it("API error object is processed correctly", async () => {
         }
     }
 
-    let validationErrors = ValidationProcessor<TestErrors>().processApiErrors(apiErrors, errorObject);
+    const validationErrors = ValidationProcessor<TestErrors>().processApiErrors(apiErrors, errorObject);
     expect(validationErrors.hasErrors).toBe(true);
     expect(validationErrors.errors.test).toBe(apiErrors.errors.test[0])
 })
@@ -168,7 +168,7 @@ it("API complex error object is processed correctly", async () => {
         }
     }
 
-    let validationErrors = ValidationProcessor<TestErrors>().processApiErrors(apiErrors, errorObject);
+    const validationErrors = ValidationProcessor<TestErrors>().processApiErrors(apiErrors, errorObject);
     expect(validationErrors.hasErrors).toBe(true);
     expect(validationErrors.errors.test).toBe(`${apiErrors.errors.test[0]}, ${apiErrors.errors.test[1]}`)
     expect(validationErrors.errors.test2).toBe(`${apiErrors.errors.test2[0]}, ${apiErrors.errors.test2[1]}`)

@@ -1,12 +1,8 @@
-import { faFileLines, faHome, faCog, faUser, faAddressBook, faUserDoctor, faChartBar,v } from '@fortawesome/free-solid-svg-icons';
+import { faHome, faCog, faUser, faAddressBook, faUserDoctor } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState } from 'react';
 import { ListGroup } from 'react-bootstrap';
-import { Link, useLocation } from 'react-router-dom';
-import { FeatureDefinitions } from '../../featureDefinitions';
-import { FeatureSwitch } from '../accessControls/featureSwitch';
-import { SecuredComponent } from '../securitys/securedComponents';
-import securityPoints from '../../securityMatrix';
+import { useLocation } from 'react-router-dom';
 import { SecuredLink } from '../securitys/securedLinks';
 import { faUserFriends } from '@fortawesome/free-solid-svg-icons/faUserFriends';
 import { faIdBadge } from '@fortawesome/free-solid-svg-icons/faIdBadge';

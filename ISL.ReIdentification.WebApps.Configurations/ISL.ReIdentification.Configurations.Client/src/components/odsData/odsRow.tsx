@@ -1,9 +1,9 @@
-import React, { FunctionComponent } from "react";
+import { FunctionComponent } from "react";
 import OdsRowView from "./odsRowView";
 
 type OdsRowProps = {};
 
-const OdsRow: FunctionComponent<OdsRowProps> = (props) => {
+const OdsRow: FunctionComponent<OdsRowProps> = () => {
     return (
         <OdsRowView />
     );
