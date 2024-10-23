@@ -14,10 +14,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
     public partial class PersistanceOrchestrationServiceTests
     {
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnRetrieveCsvIdentificationRequestWhenInvalidAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnRetrieveImpersonationContextWhenInvalidAndLogItAsync()
         {
             // given
-            var invalidCsvIdentificationRequestId = Guid.Empty;
+            var invalidImpersonationContextId = Guid.Empty;
 
             var invalidArgumentPersistanceOrchestrationException =
                 new InvalidArgumentPersistanceOrchestrationException(
@@ -25,7 +25,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                         "please correct the errors and try again.");
 
             invalidArgumentPersistanceOrchestrationException.AddData(
-                key: "csvIdentificationRequestId",
+                key: "impersonationContextId",
                 values: "Id is invalid");
 
             var expectedPersistanceOrchestrationValidationException =
@@ -34,16 +34,16 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                 innerException: invalidArgumentPersistanceOrchestrationException);
 
             // when
-            ValueTask<AccessRequest> retrieveCsvIdentificationRequestByIdTask =
-                this.persistanceOrchestrationService.RetrieveCsvIdentificationRequestByIdAsync(
-                    invalidCsvIdentificationRequestId);
+            ValueTask<AccessRequest> retrieveImpersonationContextByIdTask =
+                this.persistanceOrchestrationService.RetrieveImpersonationContextByIdAsync(
+                    invalidImpersonationContextId);
 
-            PersistanceOrchestrationValidationException actualCsvIdentificationRequestValidationException =
+            PersistanceOrchestrationValidationException actualImpersonationContextValidationException =
                 await Assert.ThrowsAsync<PersistanceOrchestrationValidationException>(
-                    testCode: retrieveCsvIdentificationRequestByIdTask.AsTask);
+                    testCode: retrieveImpersonationContextByIdTask.AsTask);
 
             // then
-            actualCsvIdentificationRequestValidationException.Should().BeEquivalentTo(
+            actualImpersonationContextValidationException.Should().BeEquivalentTo(
                 expectedPersistanceOrchestrationValidationException);
 
             this.loggingBrokerMock.Verify(broker =>

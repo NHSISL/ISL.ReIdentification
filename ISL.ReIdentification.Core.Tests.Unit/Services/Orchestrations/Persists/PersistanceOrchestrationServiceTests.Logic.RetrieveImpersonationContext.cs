@@ -14,31 +14,31 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
     public partial class PersistanceOrchestrationServiceTests
     {
         [Fact]
-        public async Task ShouldRetrieveCsvIdentificationRequestAsync()
+        public async Task ShouldRetrieveImpersonationContextRequestAsync()
         {
             // given
             Guid randomId = Guid.NewGuid();
             Guid inputId = randomId;
             AccessRequest randomAccessRequest = CreateRandomAccessRequest();
             randomAccessRequest.IdentificationRequest = null;
-            randomAccessRequest.ImpersonationContext = null;
+            randomAccessRequest.CsvIdentificationRequest = null;
             AccessRequest outputAccessRequest = randomAccessRequest;
             AccessRequest expectedAccessRequest = outputAccessRequest.DeepClone();
 
-            this.csvIdentificationRequestServiceMock.Setup(service =>
-                service.RetrieveCsvIdentificationRequestByIdAsync(inputId))
-                    .ReturnsAsync(outputAccessRequest.CsvIdentificationRequest);
+            this.impersonationContextServiceMock.Setup(service =>
+                service.RetrieveImpersonationContextByIdAsync(inputId))
+                    .ReturnsAsync(outputAccessRequest.ImpersonationContext);
 
             // when
             AccessRequest actualAccessRequest =
                 await this.persistanceOrchestrationService
-                    .RetrieveCsvIdentificationRequestByIdAsync(inputId);
+                    .RetrieveImpersonationContextByIdAsync(inputId);
 
             // then
             actualAccessRequest.Should().BeEquivalentTo(expectedAccessRequest);
 
-            this.csvIdentificationRequestServiceMock.Verify(service =>
-                service.RetrieveCsvIdentificationRequestByIdAsync(inputId),
+            this.impersonationContextServiceMock.Verify(service =>
+                service.RetrieveImpersonationContextByIdAsync(inputId),
                     Times.Once);
 
             this.csvIdentificationRequestServiceMock.VerifyNoOtherCalls();

@@ -9,6 +9,7 @@ using ISL.ReIdentification.Core.Brokers.Hashing;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests.Exceptions;
+using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationRequests;
@@ -50,11 +51,23 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
 
+        private static string GetRandomStringWithLengthOf(int length)
+        {
+            return new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length)
+                .GetValue();
+        }
+
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
         private static AccessRequest CreateRandomAccessRequest() =>
             CreateAccessRequestFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
+
+        private static ImpersonationContext CreateRandomImpersonationContext() =>
+            CreateRandomImpersonationContext(dateTimeOffset: GetRandomDateTimeOffset());
+
+        private static ImpersonationContext CreateRandomImpersonationContext(DateTimeOffset dateTimeOffset) =>
+            CreateImpersonationContextsFiller(dateTimeOffset).Create();
 
         private static Filler<AccessRequest> CreateAccessRequestFiller(DateTimeOffset dateTimeOffset)
         {
@@ -77,6 +90,24 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use((DateTimeOffset?)default);
+
+            return filler;
+        }
+
+        private static Filler<ImpersonationContext> CreateImpersonationContextsFiller(DateTimeOffset dateTimeOffset)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<ImpersonationContext>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+
+                .OnProperty(impersonationContext => impersonationContext.IdentifierColumn)
+                    .Use(() => GetRandomStringWithLengthOf(10))
+
+                .OnProperty(impersonationContext => impersonationContext.CreatedBy).Use(user)
+                .OnProperty(impersonationContext => impersonationContext.UpdatedBy).Use(user);
 
             return filler;
         }
