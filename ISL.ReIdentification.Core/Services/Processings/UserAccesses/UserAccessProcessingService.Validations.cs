@@ -5,7 +5,6 @@
 using System;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
-using ISL.ReIdentification.Core.Models.Foundations.UserAccesses.Exceptions;
 using ISL.ReIdentification.Core.Models.Processings.UserAccesses.Exceptions;
 
 namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
@@ -39,21 +38,21 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidUserAccessException =
-                new InvalidUserAccessException(
+            var invalidUserAccessProcessingException =
+                new InvalidUserAccessProcessingException(
                     message: "Invalid user access. Please correct the errors and try again.");
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidUserAccessException.UpsertDataList(
+                    invalidUserAccessProcessingException.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidUserAccessException.ThrowIfContainsErrors();
+            invalidUserAccessProcessingException.ThrowIfContainsErrors();
         }
     }
 }

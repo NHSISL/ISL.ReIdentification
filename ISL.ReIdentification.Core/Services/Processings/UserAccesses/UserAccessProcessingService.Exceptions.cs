@@ -27,6 +27,10 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
             {
                 throw await CreateAndLogValidationExceptionAsync(nullUserAccessProcessingException);
             }
+            catch (InvalidUserAccessProcessingException invalidUserAccessProcessingException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(invalidUserAccessProcessingException);
+            }
             catch (UserAccessValidationException userAccessValidationException)
             {
                 throw await CreateAndLogDependencyValidationExceptionAsync(userAccessValidationException);

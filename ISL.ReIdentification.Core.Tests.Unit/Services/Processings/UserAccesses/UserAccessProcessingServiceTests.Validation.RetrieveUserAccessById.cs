@@ -28,7 +28,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
 
             var expectedUserAccessProcessingValidationException =
                 new UserAccessProcessingValidationException(
-                    message: "UserAccess validation error occurred, please fix errors and try again.",
+                    message: "User access processing validation error occurred, please fix errors and try again.",
                     innerException: invalidUserAccessProcessingException);
 
             // when
