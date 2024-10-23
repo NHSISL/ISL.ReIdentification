@@ -76,5 +76,68 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             this.identificationOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(DependencyExceptions))]
+        public async Task ShouldThrowDependencyExceptionOnProcessImpersonationContextRequestAndLogItAsync(
+            Xeption dependencyException)
+        {
+            // given
+            AccessRequest someAccessRequest = CreateRandomAccessRequest();
+
+            var identificationCoordinationServiceMock = new Mock<IdentificationCoordinationService>
+                (this.accessOrchestrationServiceMock.Object,
+                this.persistanceOrchestrationServiceMock.Object,
+                this.identificationOrchestrationServiceMock.Object,
+                this.csvHelperBrokerMock.Object,
+                this.securityBrokerMock.Object,
+                this.loggingBrokerMock.Object)
+            { CallBase = true };
+
+            identificationCoordinationServiceMock.Setup(service =>
+                service.ConvertCsvIdentificationRequestToIdentificationRequest(
+                    someAccessRequest.CsvIdentificationRequest))
+                        .ThrowsAsync(dependencyException);
+
+            var expectedIdentificationCoordinationDependencyException =
+                new IdentificationCoordinationDependencyException(
+                    message: "Identification coordination dependency error occurred, " +
+                        "fix the errors and try again.",
+                    innerException: dependencyException.InnerException as Xeption);
+
+            IdentificationCoordinationService identificationCoordinationService =
+                identificationCoordinationServiceMock.Object;
+
+            // when
+            ValueTask<AccessRequest> accessRequestTask =
+                identificationCoordinationService
+                    .ProcessImpersonationContextRequestAsync(someAccessRequest);
+
+            IdentificationCoordinationDependencyException
+                actualIdentificationCoordinationDependencyException =
+                    await Assert.ThrowsAsync<IdentificationCoordinationDependencyException>(
+                        testCode: accessRequestTask.AsTask);
+
+            // then
+            actualIdentificationCoordinationDependencyException
+                .Should().BeEquivalentTo(expectedIdentificationCoordinationDependencyException);
+
+            identificationCoordinationServiceMock.Verify(service =>
+                service.ConvertCsvIdentificationRequestToIdentificationRequest(
+                    someAccessRequest.CsvIdentificationRequest),
+                        Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
+                   expectedIdentificationCoordinationDependencyException))),
+                       Times.Once);
+
+            this.persistanceOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.accessOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.identificationOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
