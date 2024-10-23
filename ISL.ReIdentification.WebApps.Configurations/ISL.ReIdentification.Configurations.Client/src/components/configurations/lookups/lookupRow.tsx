@@ -1,8 +1,8 @@
-import React, { FunctionComponent, useState } from "react";
-import { LookupView } from "../../models/views/components/lookups/lookupView";
+import { FunctionComponent, useState } from "react";
 import LookupRowView from "./lookupRowView";
 import LookupRowEdit from "./lookupRowEdit";
 import LookupRowDelete from "./lookupRowDelete";
+import { LookupView } from "../../../models/views/components/lookups/lookupView";
 
 type LookupRowProps = {
     lookup: LookupView;

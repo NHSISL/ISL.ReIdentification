@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useMemo, useState } from "react";
+import { FunctionComponent, useMemo, useState } from "react";
 import { debounce } from "lodash";
 import { Card, Container, Table } from "react-bootstrap";
 import LookupRow from "./lookupRow";

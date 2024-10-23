@@ -1,12 +1,11 @@
-import React, { FunctionComponent } from "react";
-import { Guid } from "guid-typescript";
+import { FunctionComponent } from "react";
 import { LookupView } from "../../../models/views/components/lookups/lookupView";
 import { toastSuccess } from "../../../brokers/toastBroker";
 import { Button } from "react-bootstrap";
 
 interface LookupRowDeleteProps {
     lookup: LookupView;
-    onCancel: (id: Guid) => void;
+    onCancel: (id: string) => void;
     onDelete: (lookup: LookupView) => void;
 }
 

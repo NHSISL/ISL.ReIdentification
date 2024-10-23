@@ -1,4 +1,4 @@
-import React, { FunctionComponent, ChangeEvent, useState, useEffect } from "react";
+import { FunctionComponent, ChangeEvent, useState, useEffect } from "react";
 import { LookupView } from "../../../models/views/components/lookups/lookupView";
 import { lookupErrors } from "./lookupErrors";
 import { lookupValidations } from "./lookupValidations";

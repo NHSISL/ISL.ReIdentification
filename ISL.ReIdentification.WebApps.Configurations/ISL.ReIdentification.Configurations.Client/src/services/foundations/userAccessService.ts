@@ -1,5 +1,4 @@
 import { useMsal } from "@azure/msal-react";
-import { Guid } from "guid-typescript";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import UserAccessBroker from "../../brokers/apiBroker.userAccess";
 import { UserAccess } from "../../models/userAccess/userAccess";
@@ -79,11 +78,11 @@ export const userAccessService = {
         const queryClient = useQueryClient();
 
         return useMutation({
-            mutationFn: (id: Guid) => {
+            mutationFn: (id: string) => {
                 return broker.DeleteUserAccessByIdAsync(id);
             },
 
-            onSuccess: (data: { id: Guid }) => {
+            onSuccess: (data: { id: string }) => {
                 queryClient.invalidateQueries({ queryKey: ["UserAccessGetAll"] });
                 queryClient.invalidateQueries({ queryKey: ["UserAccessGetById", { id: data.id }] });
             }

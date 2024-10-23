@@ -19,8 +19,8 @@ const UserAccessDetail: FunctionComponent<UserAccessDetailProps> = (props) => {
 
     let userAccessRetrieved: UserAccessView | undefined
 
-    if (userDetailId !== "") {
-        let { mappedUserAccess } = userAccessViewService.useGetUserAccessById(userDetailId);
+    if (userDetailId) {
+        const { mappedUserAccess } = userAccessViewService.useGetUserAccessById(userDetailId);
         userAccessRetrieved = mappedUserAccess
     }
 
@@ -33,7 +33,7 @@ const UserAccessDetail: FunctionComponent<UserAccessDetailProps> = (props) => {
             setMode('VIEW');
         }
         if (userDetailId === "" || userDetailId === undefined) {
-            setUserAccess(new UserAccessView(crypto.randomUUID(), "", "", "", [], new Date(), new Date()))
+            setUserAccess(new UserAccessView(crypto.randomUUID(), "", "", "","","",[], new Date(), new Date()))
             setMode('ADD');
         }
     }, [userDetailId, userAccessRetrieved]);

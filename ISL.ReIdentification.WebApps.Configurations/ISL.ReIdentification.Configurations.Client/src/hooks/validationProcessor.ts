@@ -79,6 +79,8 @@ export function ValidationProcessor<T>() {
             return;
         }
 
+        console.log(message);
+
         var reg = new RegExp(regex);
 
         if (reg.test(values[key]) === false) {

@@ -11,9 +11,9 @@ import { userAccessViewService } from "../../services/views/userAccess/userAcces
 import SearchBase from "../bases/inputs/SearchBase";
 import UserAccessRow from "./userAccessRow";
 
-type UserAccessTableProps = {};
+type UserAccessTableProps = object;
 
-const UserAccessTable: FunctionComponent<UserAccessTableProps> = (props) => {
+const UserAccessTable: FunctionComponent<UserAccessTableProps> = () => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [debouncedTerm, setDebouncedTerm] = useState<string>("");
     const [showSpinner] = useState(false);
@@ -24,8 +24,7 @@ const UserAccessTable: FunctionComponent<UserAccessTableProps> = (props) => {
         isLoading,
         fetchNextPage,
         isFetchingNextPage,
-        hasNextPage,
-        data,
+        hasNextPage
     } = userAccessViewService.useGetAllUserAccess(
         debouncedTerm
     );
@@ -44,7 +43,8 @@ const UserAccessTable: FunctionComponent<UserAccessTableProps> = (props) => {
     );
 
     const hasNoMorePages = () => {
-        return !isLoading && data?.pages.at(-1)?.nextPage === undefined;
+        return false;
+        //return !isLoading && data?.pages.at(-1)?.nextPage === undefined;
     };
 
     return (
