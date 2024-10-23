@@ -14,8 +14,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
     public partial class NotificationService
     {
         private static void ValidateOnSendCsvPendingApprovalNotificationAsync(
-            AccessRequest? accessRequest,
-            NotificationConfigurations? notificationConfigurations)
+            AccessRequest accessRequest,
+            NotificationConfigurations notificationConfigurations)
         {
             Validate(
                 (Rule: IsInvalid(accessRequest), Parameter: nameof(AccessRequest)),
@@ -51,19 +51,19 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
                 (Rule: IsInvalid(personalisation), Parameter: nameof(personalisation)));
         }
 
-        private static dynamic IsInvalid(AccessRequest? accessRequest) => new
+        private static dynamic IsInvalid(AccessRequest accessRequest) => new
         {
             Condition = accessRequest is null,
             Message = $"{nameof(AccessRequest)} is invalid"
         };
 
-        private static dynamic IsInvalid(NotificationConfigurations? notificationConfigurations) => new
+        private static dynamic IsInvalid(NotificationConfigurations notificationConfigurations) => new
         {
             Condition = notificationConfigurations is null,
             Message = $"{nameof(NotificationConfigurations)} is invalid"
         };
 
-        private static dynamic IsInvalid(CsvIdentificationRequest? csvIdentificationRequest) => new
+        private static dynamic IsInvalid(CsvIdentificationRequest csvIdentificationRequest) => new
         {
             Condition = csvIdentificationRequest is null,
             Message = $"{nameof(CsvIdentificationRequest)} is invalid"

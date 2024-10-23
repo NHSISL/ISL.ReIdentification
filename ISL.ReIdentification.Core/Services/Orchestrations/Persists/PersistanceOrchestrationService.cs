@@ -47,7 +47,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
             var maybeImpersonationContexts = await this.impersonationContextService
                 .RetrieveAllImpersonationContextsAsync();
 
-            ImpersonationContext? matchedImpersonationContext = maybeImpersonationContexts
+            ImpersonationContext matchedImpersonationContext = maybeImpersonationContexts
                 .Where(impersonationContext =>
                     impersonationContext.Id == accessRequest.ImpersonationContext.Id)
                 .FirstOrDefault();
