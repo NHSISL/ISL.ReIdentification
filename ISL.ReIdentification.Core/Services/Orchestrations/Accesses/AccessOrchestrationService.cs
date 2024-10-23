@@ -116,7 +116,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Accesses
             IQueryable<PdsData> pdsDatas =
                         await this.pdsDataService.RetrieveAllPdsDatasAsync();
 
-            bool userHasAccess = pdsDatas.Where(pdsData => 
+            bool userHasAccess = pdsDatas.Where(pdsData =>
                 pdsData.PseudoNhsNumber == identifier && organisationCodes.Contains(pdsData.OrgCode)).Any();
 
             return userHasAccess;

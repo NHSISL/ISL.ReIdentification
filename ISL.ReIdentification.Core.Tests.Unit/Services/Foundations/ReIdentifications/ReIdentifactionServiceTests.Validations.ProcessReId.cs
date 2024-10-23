@@ -30,7 +30,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
 
             // when
             ValueTask<IdentificationRequest> processdentificationRequestTask =
-                this.reIdentificationService.ProcessReidentificationRequest(nullIdentificationRequest);
+                this.reIdentificationService.ProcessReIdentificationRequest(nullIdentificationRequest);
 
             IdentificationRequestValidationException actualIdentificationRequestValidationException =
                 await Assert.ThrowsAsync<IdentificationRequestValidationException>(
@@ -45,7 +45,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
                     Times.Once());
 
             this.necsBrokerMock.Verify(broker =>
-                broker.ReIdAsync(It.IsAny<NecsReidentificationRequest>()),
+                broker.ReIdAsync(It.IsAny<NecsReIdentificationRequest>()),
                     Times.Never);
 
             this.necsBrokerMock.VerifyNoOtherCalls();
@@ -108,7 +108,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
 
             // when
             ValueTask<IdentificationRequest> addIdentificationRequestTask =
-                this.reIdentificationService.ProcessReidentificationRequest(invalidIdentificationRequest);
+                this.reIdentificationService.ProcessReIdentificationRequest(invalidIdentificationRequest);
 
             IdentificationRequestValidationException actualIdentificationRequestValidationException =
                 await Assert.ThrowsAsync<IdentificationRequestValidationException>(
@@ -124,7 +124,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
                         Times.Once);
 
             this.necsBrokerMock.Verify(broker =>
-                broker.ReIdAsync(It.IsAny<NecsReidentificationRequest>()),
+                broker.ReIdAsync(It.IsAny<NecsReIdentificationRequest>()),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -157,7 +157,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
 
             // when
             ValueTask<IdentificationRequest> addIdentificationRequestTask =
-                this.reIdentificationService.ProcessReidentificationRequest(invalidIdentificationRequest);
+                this.reIdentificationService.ProcessReIdentificationRequest(invalidIdentificationRequest);
 
             IdentificationRequestValidationException actualIdentificationRequestValidationException =
                 await Assert.ThrowsAsync<IdentificationRequestValidationException>(
@@ -173,7 +173,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
                         Times.Once);
 
             this.necsBrokerMock.Verify(broker =>
-                broker.ReIdAsync(It.IsAny<NecsReidentificationRequest>()),
+                broker.ReIdAsync(It.IsAny<NecsReIdentificationRequest>()),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();

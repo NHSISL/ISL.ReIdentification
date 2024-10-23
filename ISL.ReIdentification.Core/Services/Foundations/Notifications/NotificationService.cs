@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Notifications;
@@ -10,7 +11,7 @@ using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 
 namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
 {
-    public class NotificationService : INotificationService
+    public partial class NotificationService : INotificationService
     {
         private readonly NotificationConfigurations notificationConfigurations;
         private readonly INotificationBroker notificationBroker;
@@ -26,13 +27,56 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask SendPendingApprovalNotificationAsync(AccessRequest accessRequest) =>
+        public ValueTask SendCsvPendingApprovalNotificationAsync(AccessRequest accessRequest) =>
+        TryCatch(async () =>
+        {
+            ValidateOnSendCsvPendingApprovalNotificationAsync(accessRequest, this.notificationConfigurations);
+
+            string toEmail = accessRequest.CsvIdentificationRequest.RecipientEmail;
+            string subject = "Pending Approval";
+            string body = "Your request is pending approval";
+
+            Dictionary<string, dynamic> personalisation = new Dictionary<string, dynamic>
+            {
+                { "id", accessRequest.CsvIdentificationRequest.Id.ToString() },
+                { "requesterEntraUserId", accessRequest.CsvIdentificationRequest.RequesterEntraUserId.ToString() },
+                { "requesterFirstName", accessRequest.CsvIdentificationRequest.RequesterFirstName },
+                { "requesterLastName", accessRequest.CsvIdentificationRequest.RequesterLastName },
+                { "requesterDisplayName", accessRequest.CsvIdentificationRequest.RequesterDisplayName },
+                { "requesterEmail", accessRequest.CsvIdentificationRequest.RequesterEmail },
+                { "requesterJobTitle", accessRequest.CsvIdentificationRequest.RequesterJobTitle },
+                { "recipientEntraUserId", accessRequest.CsvIdentificationRequest.RecipientEntraUserId.ToString() },
+                { "recipientFirstName", accessRequest.CsvIdentificationRequest.RecipientFirstName },
+                { "recipientLastName", accessRequest.CsvIdentificationRequest.RecipientLastName },
+                { "recipientDisplayName", accessRequest.CsvIdentificationRequest.RecipientDisplayName },
+                { "recipientEmail", accessRequest.CsvIdentificationRequest.RecipientEmail },
+                { "recipientJobTitle", accessRequest.CsvIdentificationRequest.RecipientJobTitle },
+                { "reason", accessRequest.CsvIdentificationRequest.Reason },
+                { "organisation", accessRequest.CsvIdentificationRequest.Organisation },
+                { "identifierColumn", accessRequest.CsvIdentificationRequest.IdentifierColumn },
+                { "templateId", this.notificationConfigurations.CsvPendingApprovalRequestTemplateId },
+                { "configurationBaseUrl", this.notificationConfigurations.ConfigurationBaseUrl },
+                { "portalBaseUrl", this.notificationConfigurations.PortalBaseUrl },
+            };
+
+            ValidateInputsOnSendCsvPendingApprovalNotificationAsync(toEmail, subject, body, personalisation);
+
+            await this.notificationBroker.SendEmailAsync(toEmail, subject, body, personalisation);
+        });
+
+        public ValueTask SendCsvApprovedNotificationAsync(AccessRequest accessRequest) =>
             throw new System.NotImplementedException();
 
-        public ValueTask SendApprovedNotificationAsync(AccessRequest accessRequest) =>
+        public ValueTask SendCsvDeniedNotificationAsync(AccessRequest accessRequest) =>
             throw new System.NotImplementedException();
 
-        public ValueTask SendDeniedNotificationAsync(AccessRequest accessRequest) =>
+        public ValueTask SendImpersonationPendingApprovalNotificationAsync(AccessRequest accessRequest) =>
+            throw new System.NotImplementedException();
+
+        public ValueTask SendImpersonationApprovedNotificationAsync(AccessRequest accessRequest) =>
+            throw new System.NotImplementedException();
+
+        public ValueTask SendImpersonationDeniedNotificationAsync(AccessRequest accessRequest) =>
             throw new System.NotImplementedException();
     }
 }
