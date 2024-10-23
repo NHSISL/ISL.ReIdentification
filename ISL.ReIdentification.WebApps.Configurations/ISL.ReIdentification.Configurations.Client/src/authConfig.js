@@ -4,7 +4,6 @@
  */
 
 import { LogLevel } from '@azure/msal-browser';
-import { type } from 'os';
 
 /**
  * Configuration object to be passed to MSAL instance on creation. 
