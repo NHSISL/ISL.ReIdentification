@@ -51,11 +51,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
                 loggingBroker: this.loggingBrokerMock.Object);
         }
 
-        private Expression<Func<NecsReidentificationRequest, bool>> SameNecsReidentificationRequestAs(
-            NecsReidentificationRequest expectedNecsReidentificationRequest)
+        private Expression<Func<NecsReIdentificationRequest, bool>> SameNecsReIdentificationRequestAs(
+            NecsReIdentificationRequest expectedNecsReIdentificationRequest)
         {
-            return actualNecsReidentificationRequest =>
-                this.compareLogic.Compare(expectedNecsReidentificationRequest, actualNecsReidentificationRequest)
+            return actualNecsReIdentificationRequest =>
+                this.compareLogic.Compare(expectedNecsReIdentificationRequest, actualNecsReIdentificationRequest)
                     .AreEqual;
         }
 
@@ -85,15 +85,15 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
             };
         }
 
-        private (List<NecsReidentificationRequest> requests, List<NecsReIdentificationResponse> responses)
+        private (List<NecsReIdentificationRequest> requests, List<NecsReIdentificationResponse> responses)
             CreateBatchedItems(IdentificationRequest identificationRequest, int batchSize, Guid identifier)
         {
-            List<NecsReidentificationRequest> requests = new List<NecsReidentificationRequest>();
+            List<NecsReIdentificationRequest> requests = new List<NecsReIdentificationRequest>();
             List<NecsReIdentificationResponse> responses = new List<NecsReIdentificationResponse>();
 
             for (int i = 0; i < identificationRequest.IdentificationItems.Count; i += batchSize)
             {
-                NecsReidentificationRequest necsReidentificationRequest = new NecsReidentificationRequest
+                NecsReIdentificationRequest necsReIdentificationRequest = new NecsReIdentificationRequest
                 {
                     RequestId = identifier,
                     UserIdentifier = identificationRequest.EntraUserId.ToString(),
@@ -106,13 +106,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
                             .ToList()
                 };
 
-                requests.Add(necsReidentificationRequest);
+                requests.Add(necsReIdentificationRequest);
 
                 NecsReIdentificationResponse necsReIdentificationResponse = new NecsReIdentificationResponse
                 {
                     UniqueRequestId = identifier,
                     ElapsedTime = GetRandomNumber(),
-                    ProcessedCount = necsReidentificationRequest.PseudonymisedNumbers.Count,
+                    ProcessedCount = necsReIdentificationRequest.PseudonymisedNumbers.Count,
                     Results = identificationRequest.IdentificationItems.Skip(i)
                         .Take(batchSize).ToList().Select(item =>
                             new NecsReidentifiedItem

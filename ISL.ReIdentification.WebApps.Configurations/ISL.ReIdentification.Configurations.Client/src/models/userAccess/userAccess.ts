@@ -1,9 +1,11 @@
 export class UserAccess {
     public id: string;
-    public firstName: string;
-    public lastName: string;
+    public displayName: string;
+    public entraGuid: string;
+    public entraUpn: string;
     public userEmail: string;
-    public orgCode: string;
+    public orgCodes: string[];
+    public jobTitle: string;
     public activeFrom?: Date;
     public activeTo?: Date;
     public createdBy?: string;
@@ -12,11 +14,13 @@ export class UserAccess {
     public updatedDate?: Date | undefined;
 
     constructor(user: any) {
-        this.id = user.id ? user.id : "";
-        this.firstName = user.firstName || "";
-        this.lastName = user.lastName || "";
+        this.id = user.id ? user.id : crypto.randomUUID();
+        this.entraGuid = user.entraGuid || "";
+        this.entraUpn = user.entraUpn || "";
+        this.displayName = user.displayName || "";
         this.userEmail = user.userEmail || "";
-        this.orgCode = user.orgCode || "";
+        this.orgCodes = user.orgCodes || "";
+        this.jobTitle = user.jobTitle || "";
         this.activeFrom = user.activeFrom;
         this.activeTo = user.activeTo;
         this.createdDate = user.createdDate ? new Date(user.createdDate) : undefined;

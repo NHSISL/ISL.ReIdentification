@@ -26,16 +26,16 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
             int randomCount = (batchSize * GetRandomNumber()) + GetRandomNumber();
             IdentificationRequest randomIdentificationRequest = CreateRandomIdentificationRequest(count: randomCount);
 
-            (List<NecsReidentificationRequest> requests, List<NecsReIdentificationResponse> responses) =
+            (List<NecsReIdentificationRequest> requests, List<NecsReIdentificationResponse> responses) =
                 CreateBatchedItems(randomIdentificationRequest, batchSize, randomIdentifier);
 
             for (int i = 0; i < requests.Count; i++)
             {
-                NecsReidentificationRequest necsReidentificationRequest = requests[i];
+                NecsReIdentificationRequest necsReIdentificationRequest = requests[i];
                 NecsReIdentificationResponse necsReIdentificationResponse = responses[i];
 
                 this.necsBrokerMock.Setup(broker =>
-                    broker.ReIdAsync(It.Is(SameNecsReidentificationRequestAs(necsReidentificationRequest))))
+                    broker.ReIdAsync(It.Is(SameNecsReIdentificationRequestAs(necsReIdentificationRequest))))
                         .ReturnsAsync(necsReIdentificationResponse);
             }
 
@@ -75,11 +75,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
 
             for (int i = 0; i < requests.Count; i++)
             {
-                NecsReidentificationRequest necsReidentificationRequest = requests[i];
+                NecsReIdentificationRequest necsReIdentificationRequest = requests[i];
                 NecsReIdentificationResponse necsReIdentificationResponse = responses[i];
 
                 this.necsBrokerMock.Verify(broker =>
-                    broker.ReIdAsync(It.Is(SameNecsReidentificationRequestAs(necsReidentificationRequest))),
+                    broker.ReIdAsync(It.Is(SameNecsReIdentificationRequestAs(necsReIdentificationRequest))),
                         Times.Once);
             }
 

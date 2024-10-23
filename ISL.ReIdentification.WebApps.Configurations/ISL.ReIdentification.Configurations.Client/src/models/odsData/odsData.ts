@@ -3,6 +3,7 @@ export class OdsData {
     public id: string;
     public organisationCode: string;
     public organisationName: string;
+    public odsHierarchy: string;
     public relationshipStartDate?: Date | undefined;
     public relationshipEndDate?: Date | undefined;
     public hasChildren: boolean;
@@ -14,5 +15,6 @@ export class OdsData {
         this.relationshipStartDate = ods.relationshipStartDate ? new Date(ods.relationshipStartDate) : undefined;
         this.relationshipEndDate = ods.relationshipEndDate ? new Date(ods.relationshipEndDate) : undefined;
         this.hasChildren = ods.hasChildren || false;
+        this.odsHierarchy = ods.odsHierarchy || "";
     }
 }

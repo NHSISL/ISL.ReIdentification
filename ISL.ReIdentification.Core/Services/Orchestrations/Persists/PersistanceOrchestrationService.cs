@@ -47,7 +47,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
             var maybeImpersonationContexts = await this.impersonationContextService
                 .RetrieveAllImpersonationContextsAsync();
 
-            ImpersonationContext? matchedImpersonationContext = maybeImpersonationContexts
+            ImpersonationContext matchedImpersonationContext = maybeImpersonationContexts
                 .Where(impersonationContext =>
                     impersonationContext.Id == accessRequest.ImpersonationContext.Id)
                 .FirstOrDefault();
@@ -66,10 +66,8 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
                     new AccessRequest { ImpersonationContext = modifiedImpersonationContext };
 
                 await (accessRequest.ImpersonationContext.IsApproved
-                    ?
-                        this.notificationService.SendApprovedNotificationAsync(modifiedAccessRequest)
-                    :
-                        this.notificationService.SendDeniedNotificationAsync(modifiedAccessRequest));
+                    ? this.notificationService.SendImpersonationApprovedNotificationAsync(modifiedAccessRequest)
+                    : this.notificationService.SendImpersonationDeniedNotificationAsync(modifiedAccessRequest));
 
                 return modifiedAccessRequest;
             }
@@ -78,7 +76,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
                 .AddImpersonationContextAsync(accessRequest.ImpersonationContext);
 
             var createdAccessRequest = new AccessRequest { ImpersonationContext = createdImpersonationContext };
-            await this.notificationService.SendPendingApprovalNotificationAsync(createdAccessRequest);
+            await this.notificationService.SendImpersonationPendingApprovalNotificationAsync(createdAccessRequest);
 
             return createdAccessRequest;
         });
@@ -123,7 +121,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
                     .AddCsvIdentificationRequestAsync(accessRequest.CsvIdentificationRequest);
 
             var returnedAccessRequest = new AccessRequest { CsvIdentificationRequest = outputCsvIdentificationRequest };
-            await this.notificationService.SendPendingApprovalNotificationAsync(returnedAccessRequest);
+            await this.notificationService.SendCsvPendingApprovalNotificationAsync(returnedAccessRequest);
 
             return returnedAccessRequest;
         });

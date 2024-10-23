@@ -100,7 +100,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
                 IQueryable<OdsData> odsParentRecord =
                     await this.reIdentificationStorageBroker.SelectAllOdsDatasAsync();
 
-                OdsData? parentRecord = odsParentRecord
+                OdsData parentRecord = odsParentRecord
                     .FirstOrDefault(ods => ods.OrganisationCode == userOrganisation);
 
                 if (parentRecord != null)

@@ -1,94 +1,58 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
+import { FunctionComponent, useEffect, useState } from "react";
 import { odsDataService } from "../../services/foundations/odsDataAccessService";
 import { OdsData } from "../../models/odsData/odsData";
-import { Button, Form, FormCheck } from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMinus, faPlus, faSpinner } from "@fortawesome/free-solid-svg-icons";
-import { width } from "@fortawesome/free-solid-svg-icons/faUserFriends";
+import { toastError } from "../../brokers/toastBroker";
+import { OdsTreeElement } from "./odsTreeElement";
 
 type OdsTreeProps = {
-    parentId: string;
+    rootName: string;
+    selectedRecords: OdsData[];
+    setSelectedRecords: (selectedRecords: OdsData[]) => void;
 };
 
-type OdsTreeElementProps = {
-    node: OdsData,
-    addSelectedRecord: (orgCode: string) => void,
-    removeSelectedRecord: (orgCode: string) => void,
-    parentSelected: boolean
-}
+const OdsTree: FunctionComponent<OdsTreeProps> = ({ rootName, selectedRecords, setSelectedRecords }) => {
 
-const OdsTreeElement: FunctionComponent<OdsTreeElementProps> = ({node, addSelectedRecord, removeSelectedRecord, parentSelected}) => {
-    const [isExpanded, setIsExpanded] = useState(false);
-    const [expandedId,setExpandedId] = useState("");
-    const { data, isLoading } = odsDataService.useGetOdsChildren(expandedId);
-    const [selected, setIsSelected] = useState(false);
+    const { data: rootRecord } = odsDataService.useRetrieveAllOdsData(`?filter=OrganisationCode eq '${rootName}'`)
+    const [rootRecordId, setRootRecordId] = useState("");
+    const { data } = odsDataService.useGetOdsChildren(rootRecordId);
 
-    const toggle = (id: string) =>  {
-        if (isExpanded) {
-            setIsExpanded(false)
-            setExpandedId("")
-        } else {
-            setIsExpanded(true);
-            setExpandedId(id);
+    useEffect(() => {
+        if (!rootRecord) {
+            return;
+        };
+
+        if (rootRecord.length != 1) {
+            console.log("Did not receive one Root:");
+            toastError("Did not receive one Root:");
+            return;
         }
+
+        setRootRecordId(rootRecord[0].id);
+
+    }, [rootRecord])
+
+    const addSelectedRecord = (odsRecord: OdsData) => {
+        setSelectedRecords([...selectedRecords, odsRecord]);
     }
 
-
-    const processCheck = (event: React.ChangeEvent<HTMLInputElement> ) => {
-        console.log(event);
-        if(event.target.checked) {
-            addSelectedRecord(node.organisationCode)
-            setIsSelected(true);
-        } else {
-            removeSelectedRecord(node.organisationCode);
-            setIsSelected(false);
-        }
-    }
-
-    return (<div style={{paddingLeft:'30px'}}>
-        <span style={{width: "20px", display:"inline-block"}}>
-            {node.hasChildren ? 
-                <span onClick={() => {toggle(node.id)}} >
-                    {isExpanded ? <FontAwesomeIcon icon={faMinus}/> : <FontAwesomeIcon icon={faPlus}/>}
-                </span>
-                :
-                ""
-            }
-        </span>
-
-        <span>{node.organisationCode}</span>
-        &nbsp;
-        <span><Form.Check inline onChange={processCheck} disabled={parentSelected} checked={selected || parentSelected}/></span>
-        {isLoading && <FontAwesomeIcon icon={faSpinner} pulse/>}
-        {data && data.map((element: OdsData) => <>
-            <OdsTreeElement node={element} key={element.id} addSelectedRecord={addSelectedRecord} removeSelectedRecord={removeSelectedRecord} parentSelected={parentSelected || selected}></OdsTreeElement>
-        </>)}
-    </div>)
-}
-
-
-const OdsTree: FunctionComponent<OdsTreeProps> = ({ parentId }) => {
-    const { data } = odsDataService.useGetOdsChildren(parentId);
-    const [selectedOdsRecords, setSetSelectedOdsRecords] = useState<Array<string>>([]);
-    const [isSelected, setIsSelected] = useState(false);
-
-    const addSelectedRecord = (odsRecord: string) =>
-    {
-        setSetSelectedOdsRecords([...selectedOdsRecords, odsRecord]);
-    }
-
-    const removeSelectedRecord = (odsRecord: string) => {
-        setSetSelectedOdsRecords([...selectedOdsRecords.filter(o => o != odsRecord)])
+    const removeSelectedRecord = (odsRecord: OdsData) => {
+        setSelectedRecords([...selectedRecords.filter(o => o.organisationCode != odsRecord.organisationCode)])
     }
 
     return (
         <>
-            {data && data.map((element: OdsData) => <> 
-                <OdsTreeElement node={element} addSelectedRecord={addSelectedRecord} removeSelectedRecord={removeSelectedRecord} parentSelected={isSelected}></OdsTreeElement>
-            </>
+            {data && data.map((element: OdsData) => {
+                return <span key={element.id}>
+                    <OdsTreeElement
+                        node={element}
+                        addSelectedRecord={addSelectedRecord}
+                        removeSelectedRecord={removeSelectedRecord}
+                        parentSelected={false}
+                        selectedRecords={selectedRecords}
+                    ></OdsTreeElement>
+                </span>;
+            }
             )}
-
-            selected records = {JSON.stringify(selectedOdsRecords)}
         </>
     );
 };

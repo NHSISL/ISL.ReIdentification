@@ -151,7 +151,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                     .ReturnsAsync(randomDateTimeOffset);
 
             this.reIdentificationServiceMock.Setup(service =>
-                service.ProcessReidentificationRequest(
+                service.ProcessReIdentificationRequest(
                     It.Is(SameIdentificationRequestAs(inputHasAccessIdentificationRequest))))
                         .ReturnsAsync(outputHasAccessIdentificationRequest);
 
@@ -198,7 +198,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             }
 
             this.reIdentificationServiceMock.Verify(service =>
-                service.ProcessReidentificationRequest(It.Is(
+                service.ProcessReIdentificationRequest(It.Is(
                     SameIdentificationRequestAs(inputHasAccessIdentificationRequest))),
                         Times.Once);
 

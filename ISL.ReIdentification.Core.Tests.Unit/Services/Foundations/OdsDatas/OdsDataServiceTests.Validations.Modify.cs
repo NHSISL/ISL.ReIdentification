@@ -57,7 +57,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
         public async Task ShouldThrowValidationExceptionOnModifyIfOdsDataIsInvalidAndLogItAsync(string invalidText)
         {
             // given 
-            var invalidOdsData = new OdsData();
+            var invalidOdsData = new OdsData
+            {
+                OrganisationCode = invalidText
+            };
 
             var invalidOdsDataException =
                 new InvalidOdsDataException(
@@ -66,6 +69,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
             invalidOdsDataException.AddData(
                 key: nameof(OdsData.Id),
                 values: "Id is invalid");
+
+            invalidOdsDataException.AddData(
+                key: nameof(OdsData.OrganisationCode),
+                values: "Text is invalid");
 
             var expectedOdsDataValidationException =
                 new OdsDataValidationException(

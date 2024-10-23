@@ -16,7 +16,7 @@ using RESTFulSense.Controllers;
 
 namespace ISL.ReIdentification.Configurations.Server.Controllers
 {
-    [Authorize(Roles = "Administrators")]
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class OdsDataController : RESTFulController
