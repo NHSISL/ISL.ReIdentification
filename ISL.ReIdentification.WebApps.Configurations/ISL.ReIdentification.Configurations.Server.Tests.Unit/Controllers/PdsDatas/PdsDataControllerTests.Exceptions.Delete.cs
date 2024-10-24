@@ -118,5 +118,47 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.PdsD
 
             this.pdsDataServiceMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldReturnLockedOnDeleteIfRecordIsLockedAsync()
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+            var someInnerException = new Exception();
+            string someMessage = GetRandomString();
+
+            var lockedPdsDataException =
+                new LockedPdsDataException(
+                    message: someMessage,
+                    innerException: someInnerException);
+
+            var pdsDataDependencyValidationException =
+                new PdsDataDependencyValidationException(
+                    message: someMessage,
+                    innerException: lockedPdsDataException);
+
+            LockedObjectResult expectedConflictObjectResult =
+                Locked(lockedPdsDataException);
+
+            var expectedActionResult =
+                new ActionResult<PdsData>(expectedConflictObjectResult);
+
+            this.pdsDataServiceMock.Setup(service =>
+                service.RemovePdsDataByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(pdsDataDependencyValidationException);
+
+            // when
+            ActionResult<PdsData> actualActionResult =
+                await this.pdsDataController.DeletePdsDataByIdAsync(someId);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.pdsDataServiceMock.Verify(service =>
+                service.RemovePdsDataByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.pdsDataServiceMock.VerifyNoOtherCalls();
+        }
     }
 }
