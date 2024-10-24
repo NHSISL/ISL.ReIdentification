@@ -8,6 +8,7 @@ using ISL.ReIdentification.Core.Models.Foundations.PdsDatas;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using RESTFulSense.Clients.Extensions;
+using RESTFulSense.Models;
 using Xeptions;
 
 namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.PdsDatas
@@ -23,6 +24,38 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.PdsD
 
             BadRequestObjectResult expectedBadRequestObjectResult =
                 BadRequest(validationException.InnerException);
+
+            var expectedActionResult =
+                new ActionResult<PdsData>(expectedBadRequestObjectResult);
+
+            this.pdsDataServiceMock.Setup(service =>
+                service.RemovePdsDataByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(validationException);
+
+            // when
+            ActionResult<PdsData> actualActionResult =
+                await this.pdsDataController.DeletePdsDataByIdAsync(someId);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.pdsDataServiceMock.Verify(service =>
+                service.RemovePdsDataByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.pdsDataServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(ServerExceptions))]
+        public async Task ShouldReturnInternalServerErrorOnDeleteIfServerErrorOccurredAsync(
+            Xeption validationException)
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+
+            InternalServerErrorObjectResult expectedBadRequestObjectResult =
+                InternalServerError(validationException);
 
             var expectedActionResult =
                 new ActionResult<PdsData>(expectedBadRequestObjectResult);

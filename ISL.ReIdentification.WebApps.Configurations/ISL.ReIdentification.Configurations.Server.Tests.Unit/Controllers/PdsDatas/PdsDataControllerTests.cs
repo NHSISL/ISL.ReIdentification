@@ -42,6 +42,23 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.PdsD
             };
         }
 
+        public static TheoryData<Xeption> ServerExceptions()
+        {
+            var someInnerException = new Xeption();
+            string someMessage = GetRandomString();
+
+            return new TheoryData<Xeption>
+            {
+                new PdsDataDependencyException(
+                    message: someMessage,
+                    innerException: someInnerException),
+
+                new PdsDataServiceException(
+                    message: someMessage,
+                    innerException: someInnerException)
+            };
+        }
+
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
 
