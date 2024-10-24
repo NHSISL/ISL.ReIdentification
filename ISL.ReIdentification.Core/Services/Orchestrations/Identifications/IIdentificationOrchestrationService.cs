@@ -11,5 +11,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
     {
         ValueTask<IdentificationRequest> ProcessIdentificationRequestAsync(
             IdentificationRequest identificationRequest);
+
+        ValueTask RemoveDocumentByFileNameAsync(string fileName, string container);
     }
 }

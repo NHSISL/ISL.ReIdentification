@@ -14,6 +14,7 @@ using ISL.ReIdentification.Core.Models.Foundations.AccessAudits.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications.Exceptions;
 using ISL.ReIdentification.Core.Services.Foundations.AccessAudits;
+using ISL.ReIdentification.Core.Services.Foundations.Documents;
 using ISL.ReIdentification.Core.Services.Foundations.ReIdentifications;
 using ISL.ReIdentification.Core.Services.Orchestrations.Identifications;
 using KellermanSoftware.CompareNetObjects;
@@ -27,6 +28,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
     {
         private readonly Mock<IReIdentificationService> reIdentificationServiceMock;
         private readonly Mock<IAccessAuditService> accessAuditServiceMock;
+        private readonly Mock<IDocumentService> documentServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;
@@ -37,6 +39,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
         {
             this.reIdentificationServiceMock = new Mock<IReIdentificationService>();
             this.accessAuditServiceMock = new Mock<IAccessAuditService>();
+            this.documentServiceMock = new Mock<IDocumentService>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.identifierBrokerMock = new Mock<IIdentifierBroker>();
@@ -45,6 +48,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             this.identificationOrchestrationService = new IdentificationOrchestrationService(
                 this.reIdentificationServiceMock.Object,
                 this.accessAuditServiceMock.Object,
+                this.documentServiceMock.Object,
                 this.loggingBrokerMock.Object,
                 this.dateTimeBrokerMock.Object,
                 this.identifierBrokerMock.Object);

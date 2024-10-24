@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
@@ -10,6 +11,7 @@ using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
 using ISL.ReIdentification.Core.Services.Foundations.AccessAudits;
+using ISL.ReIdentification.Core.Services.Foundations.Documents;
 using ISL.ReIdentification.Core.Services.Foundations.ReIdentifications;
 
 namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
@@ -18,6 +20,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
     {
         private readonly IReIdentificationService reIdentificationService;
         private readonly IAccessAuditService accessAuditService;
+        private readonly IDocumentService documentService;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIdentifierBroker identifierBroker;
@@ -25,12 +28,14 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
         public IdentificationOrchestrationService(
             IReIdentificationService reIdentificationService,
             IAccessAuditService accessAuditService,
+            IDocumentService documentService,
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker,
             IIdentifierBroker identifierBroker)
         {
             this.reIdentificationService = reIdentificationService;
             this.accessAuditService = accessAuditService;
+            this.documentService = documentService;
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
             this.identifierBroker = identifierBroker;
@@ -115,5 +120,8 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
 
             return identificationRequest;
         });
+
+        public async ValueTask RemoveDocumentByFileNameAsync(string fileName, string container) =>
+            throw new NotImplementedException();
     }
 }
