@@ -31,8 +31,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
 
             AccessRequest someAccessRequest = CreateRandomAccessRequest();
 
-            accessOrchestrationServiceMock.Setup(service =>
-                 service.GetOrganisationsForUserAsync(It.IsAny<Guid>()))
+            this.userAccessServiceMock.Setup(service =>
+                 service.RetrieveAllActiveOrganisationsUserHasAccessTo(It.IsAny<Guid>()))
                      .ThrowsAsync(dependencyValidationException);
 
             var expectedAccessOrchestrationDependencyValidationException =
@@ -56,6 +56,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
             // then
             actualAccessOrchestrationDependencyValidationException
                 .Should().BeEquivalentTo(expectedAccessOrchestrationDependencyValidationException);
+
+            this.userAccessServiceMock.Verify(service =>
+                service.RetrieveAllActiveOrganisationsUserHasAccessTo(It.IsAny<Guid>()),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -83,8 +87,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
 
             AccessRequest someAccessRequest = CreateRandomAccessRequest();
 
-            accessOrchestrationServiceMock.Setup(service =>
-                 service.GetOrganisationsForUserAsync(It.IsAny<Guid>()))
+            this.userAccessServiceMock.Setup(service =>
+                 service.RetrieveAllActiveOrganisationsUserHasAccessTo(It.IsAny<Guid>()))
                      .ThrowsAsync(dependencyException);
 
             var expectedAccessOrchestrationDependencyException =
@@ -108,6 +112,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
             // then
             actualAccessOrchestrationDependencyException
                 .Should().BeEquivalentTo(expectedAccessOrchestrationDependencyException);
+
+            this.userAccessServiceMock.Verify(service =>
+                service.RetrieveAllActiveOrganisationsUserHasAccessTo(It.IsAny<Guid>()),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -155,8 +163,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
                     message: "Access orchestration service error occurred, please contact support.",
                     innerException: failedAccessOrchestrationServiceException);
 
-            accessOrchestrationServiceMock.Setup(service =>
-                 service.GetOrganisationsForUserAsync(It.IsAny<Guid>()))
+            this.userAccessServiceMock.Setup(service =>
+                 service.RetrieveAllActiveOrganisationsUserHasAccessTo(It.IsAny<Guid>()))
                      .ThrowsAsync(aggregateException);
 
             // when
@@ -172,8 +180,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
             actualAccessOrchestrationServiceException
                 .Should().BeEquivalentTo(expectedAccessOrchestrationServiceException);
 
-            accessOrchestrationServiceMock.Verify(service =>
-                service.GetOrganisationsForUserAsync(It.IsAny<Guid>()),
+            this.userAccessServiceMock.Verify(service =>
+                service.RetrieveAllActiveOrganisationsUserHasAccessTo(It.IsAny<Guid>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -210,8 +218,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
                     message: "Access orchestration service error occurred, please contact support.",
                     innerException: failedServiceAccessOrchestrationException);
 
-            accessOrchestrationServiceMock.Setup(service =>
-                 service.GetOrganisationsForUserAsync(It.IsAny<Guid>()))
+            this.userAccessServiceMock.Setup(service =>
+                 service.RetrieveAllActiveOrganisationsUserHasAccessTo(It.IsAny<Guid>()))
                      .ThrowsAsync(serviceException);
 
             AccessOrchestrationService accessOrchestrationService = accessOrchestrationServiceMock.Object;
@@ -229,6 +237,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
             // then
             actualAccessOrchestrationServiceException
                 .Should().BeEquivalentTo(expectedAccessOrchestrationServiceException);
+
+            this.userAccessServiceMock.Verify(service =>
+                service.RetrieveAllActiveOrganisationsUserHasAccessTo(It.IsAny<Guid>()),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogErrorAsync(It.Is(SameExceptionAs(
