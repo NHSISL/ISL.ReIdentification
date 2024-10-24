@@ -72,5 +72,9 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
                 return InternalServerError(pdsDataServiceException);
             }
         }
+
+        [HttpDelete("{pdsDataId}")]
+        public async ValueTask<ActionResult<PdsData>> DeletePdsDataByIdAsync(Guid pdsDataId) =>
+            throw new NotImplementedException();
     }
 }
