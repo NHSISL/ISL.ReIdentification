@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace ISL.ReIdentification.Core.Models.Brokers.NECS.Requests
 {
-    public class NecsReidentificationRequest
+    public class NecsReIdentificationRequest
     {
         [JsonProperty("requestId")]
         public Guid RequestId { get; set; }

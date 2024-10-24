@@ -41,8 +41,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
         private static string GetRandomString() =>
             new MnemonicString(wordCount: GetRandomNumber()).GetValue();
 
-        private static string GetRandomStringWithLengthOf(int length) =>
-            new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+        private static string GetRandomStringWithLengthOf(int length)
+        {
+            string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+
+            return result.Length > length ? result.Substring(0, length) : result;
+        }
 
         private SqlException CreateSqlException() =>
             (SqlException)RuntimeHelpers.GetUninitializedObject(type: typeof(SqlException));
@@ -71,7 +75,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
                     .ToList();
         }
 
-        private static List<OdsData> CreateRandomOdsDataChildren(HierarchyId? parentHierarchyId)
+        private static List<OdsData> CreateRandomOdsDataChildren(HierarchyId parentHierarchyId)
         {
             if (parentHierarchyId == null)
             {
@@ -82,7 +86,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
                 .Create(count: GetRandomNumber())
                     .ToList();
 
-            HierarchyId? lastChildHierarchy = null;
+            HierarchyId lastChildHierarchy = null;
 
             foreach (var child in children)
             {
@@ -103,7 +107,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
             CreateOdsDataFiller(dateTimeOffset).Create();
 
         private static Filler<OdsData> CreateOdsDataFiller(
-            DateTimeOffset dateTimeOffset, HierarchyId? hierarchyId = null)
+            DateTimeOffset dateTimeOffset, HierarchyId hierarchyId = null)
         {
             string user = Guid.NewGuid().ToString();
             var filler = new Filler<OdsData>();

@@ -53,12 +53,17 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                 broker.SelectAllPdsDatasAsync(),
                     Times.Once);
 
+            this.dateTimeBroker.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                Times.Never);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogCriticalAsync(It.Is(SameExceptionAs(
                     expectedPdsDataDependencyException))),
                         Times.Once);
 
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
+            this.dateTimeBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -102,12 +107,17 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                 broker.SelectAllPdsDatasAsync(),
                     Times.Once);
 
+            this.dateTimeBroker.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                Times.Never);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedPdsDataServiceException))),
                         Times.Once);
 
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
+            this.dateTimeBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

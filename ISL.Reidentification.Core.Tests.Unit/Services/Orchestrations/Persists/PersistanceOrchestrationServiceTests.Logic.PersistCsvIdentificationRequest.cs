@@ -74,7 +74,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                     Times.Once);
 
             this.notificationServiceMock.Verify(service =>
-                service.SendPendingApprovalNotificationAsync(It.IsAny<AccessRequest>()),
+                service.SendCsvPendingApprovalNotificationAsync(It.IsAny<AccessRequest>()),
                     Times.Once);
 
             this.csvIdentificationRequestServiceMock.VerifyNoOtherCalls();
@@ -141,7 +141,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                     Times.Never);
 
             this.notificationServiceMock.Verify(service =>
-                service.SendPendingApprovalNotificationAsync(It.IsAny<AccessRequest>()),
+                service.SendCsvPendingApprovalNotificationAsync(It.IsAny<AccessRequest>()),
                     Times.Never);
 
             this.csvIdentificationRequestServiceMock.VerifyNoOtherCalls();

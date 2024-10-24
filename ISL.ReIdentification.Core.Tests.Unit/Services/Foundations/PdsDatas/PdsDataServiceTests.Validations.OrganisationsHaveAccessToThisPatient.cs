@@ -20,7 +20,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
         [InlineData("", emptyList)]
         [InlineData(" ", emptyList)]
         public async Task ShouldThrowValidationExceptionOnOrganisationsHaveAccessToThisPatientAndLogItAsync(
-            string? invalidPseudoNumber, List<string> invalidList)
+            string invalidPseudoNumber,
+            List<string> invalidList)
         {
             // given
             var invalidPdsDataException =
@@ -61,7 +62,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                 broker.SelectPdsDataByIdAsync(It.IsAny<Guid>()),
                     Times.Never);
 
+            this.dateTimeBroker.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                Times.Never);
+
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBroker.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
         }
     }

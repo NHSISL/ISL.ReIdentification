@@ -20,7 +20,7 @@
     "axios": "^1.7.7",
     "bootstrap": "^5.3.3",
     "guid-typescript": "file:dependencies/guid-typescript",
-    "isl.reidentification.frontend.client": "file:",
+    "isl.reIdentification.frontend.client": "file:",
     "isl.ReIdentification.frontend.client": "file:",
     "jest": "^29.7.0",
     "lodash": "^4.17.21",

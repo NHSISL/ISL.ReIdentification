@@ -35,7 +35,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ReIdentifications
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<IdentificationRequest> ProcessReidentificationRequest(
+        public ValueTask<IdentificationRequest> ProcessReIdentificationRequest(
             IdentificationRequest identificationRequests) =>
             TryCatch(async () =>
             {
@@ -59,7 +59,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ReIdentifications
                 {
                     await TryCatch(async () =>
                     {
-                        NecsReidentificationRequest necsReidentificationRequest = new NecsReidentificationRequest
+                        NecsReIdentificationRequest necsReIdentificationRequest = new NecsReIdentificationRequest
                         {
                             RequestId = await this.identifierBroker.GetIdentifierAsync(),
                             UserIdentifier = identificationRequest.EntraUserId.ToString(),
@@ -73,10 +73,10 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ReIdentifications
                                 new NecsPseudonymisedItem { RowNumber = item.RowNumber, Psuedo = item.Identifier })
                                     .ToList();
 
-                        necsReidentificationRequest.PseudonymisedNumbers.AddRange(batch);
+                        necsReIdentificationRequest.PseudonymisedNumbers.AddRange(batch);
 
                         NecsReIdentificationResponse necsReIdentificationResponse =
-                            await necsBroker.ReIdAsync(necsReidentificationRequest);
+                            await necsBroker.ReIdAsync(necsReIdentificationRequest);
 
                         foreach (var item in necsReIdentificationResponse.Results)
                         {

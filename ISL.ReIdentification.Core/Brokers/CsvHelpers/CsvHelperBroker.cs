@@ -20,7 +20,7 @@ namespace ISL.ReIdentification.Core.Brokers.CsvHelpers
         public async ValueTask<List<T>> MapCsvToObjectAsync<T>(
             string data,
             bool hasHeaderRecord,
-            Dictionary<string, int>? fieldMappings = null)
+            Dictionary<string, int> fieldMappings = null)
         {
             return await csvClient
                 .MapCsvToObjectAsync<T>(data, hasHeaderRecord, fieldMappings);
@@ -29,7 +29,7 @@ namespace ISL.ReIdentification.Core.Brokers.CsvHelpers
         public async ValueTask<string> MapObjectToCsvAsync<T>(
             List<T> @object,
             bool addHeaderRecord,
-            Dictionary<string, int>? fieldMappings = null,
+            Dictionary<string, int> fieldMappings = null,
             bool? shouldAddTrailingComma = false)
         {
             return await csvClient

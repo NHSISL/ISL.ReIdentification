@@ -58,15 +58,20 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
         private static string GetRandomStringWithLengthOf(int length)
         {
-            return new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length)
-                .GetValue();
+            string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+
+            return result.Length > length ? result.Substring(0, length) : result;
         }
 
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
 
-        private static string GetRandomStringWithLength(int length) =>
-            new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+        private static string GetRandomStringWithLength(int length)
+        {
+            string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+
+            return result.Length > length ? result.Substring(0, length) : result;
+        }
 
         private static int GetRandomNegativeNumber() =>
             -1 * new IntRange(min: 2, max: 10).GetValue();
@@ -100,7 +105,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             return filler;
         }
 
-        private static List<OdsData> CreateRandomOdsDataChildren(HierarchyId? parentHierarchyId)
+        private static List<OdsData> CreateRandomOdsDataChildren(HierarchyId parentHierarchyId)
         {
             if (parentHierarchyId == null)
             {
@@ -111,7 +116,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
                 .Create(count: GetRandomNumber())
                     .ToList();
 
-            HierarchyId? lastChildHierarchy = null;
+            HierarchyId lastChildHierarchy = null;
 
             foreach (var child in children)
             {
@@ -139,7 +144,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             CreateOdsDataFiller(organisationCode).Create();
 
         private static Filler<OdsData> CreateOdsDataFiller(
-            string organisationCode, HierarchyId? hierarchyId = null)
+            string organisationCode, HierarchyId hierarchyId = null)
         {
             string user = Guid.NewGuid().ToString();
             DateTimeOffset dateTimeOffset = GetRandomDateTimeOffset();

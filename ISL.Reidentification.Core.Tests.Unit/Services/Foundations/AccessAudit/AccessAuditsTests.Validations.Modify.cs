@@ -143,9 +143,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             AccessAudit invalidAccessAudit = CreateRandomModifyAccessAudit(randomDateTimeOffset);
-            var inputCreatedByUpdatedByString = GetRandomStringWithLength(256);
-            invalidAccessAudit.PseudoIdentifier = GetRandomStringWithLength(11);
-            invalidAccessAudit.Email = GetRandomStringWithLength(321);
+            var inputCreatedByUpdatedByString = GetRandomStringWithLengthOf(256);
+            invalidAccessAudit.PseudoIdentifier = GetRandomStringWithLengthOf(11);
+            invalidAccessAudit.Email = GetRandomStringWithLengthOf(321);
             invalidAccessAudit.CreatedBy = inputCreatedByUpdatedByString;
             invalidAccessAudit.UpdatedBy = inputCreatedByUpdatedByString;
 

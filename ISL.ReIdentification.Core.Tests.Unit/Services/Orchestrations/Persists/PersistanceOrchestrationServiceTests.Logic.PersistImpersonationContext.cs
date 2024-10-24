@@ -56,7 +56,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                     Times.Once);
 
             this.notificationServiceMock.Verify(service =>
-                service.SendPendingApprovalNotificationAsync(It.IsAny<AccessRequest>()),
+                service.SendImpersonationPendingApprovalNotificationAsync(It.IsAny<AccessRequest>()),
                     Times.Once);
 
             this.impersonationContextServiceMock.VerifyNoOtherCalls();
@@ -110,7 +110,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                     Times.Once);
 
             this.notificationServiceMock.Verify(service =>
-                service.SendApprovedNotificationAsync(It.IsAny<AccessRequest>()),
+                service.SendImpersonationApprovedNotificationAsync(It.IsAny<AccessRequest>()),
                     Times.Once);
 
             this.impersonationContextServiceMock.VerifyNoOtherCalls();
@@ -164,7 +164,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                     Times.Once);
 
             this.notificationServiceMock.Verify(service =>
-                service.SendDeniedNotificationAsync(It.IsAny<AccessRequest>()),
+                service.SendImpersonationDeniedNotificationAsync(It.IsAny<AccessRequest>()),
                     Times.Once);
 
             this.impersonationContextServiceMock.VerifyNoOtherCalls();
@@ -212,7 +212,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                     Times.Never);
 
             this.notificationServiceMock.Verify(service =>
-                service.SendPendingApprovalNotificationAsync(It.IsAny<AccessRequest>()),
+                service.SendImpersonationPendingApprovalNotificationAsync(It.IsAny<AccessRequest>()),
+
                     Times.Never);
 
             this.impersonationContextServiceMock.VerifyNoOtherCalls();
