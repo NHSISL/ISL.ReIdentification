@@ -27,7 +27,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 this.identificationOrchestrationServiceMock.Object,
                 this.csvHelperBrokerMock.Object,
                 this.securityBrokerMock.Object,
-                this.loggingBrokerMock.Object)
+                this.loggingBrokerMock.Object,
+                this.dateTimeBrokerMock.Object)
             { CallBase = true };
 
             Guid inputCsvIdentificationRequestId = Guid.NewGuid();

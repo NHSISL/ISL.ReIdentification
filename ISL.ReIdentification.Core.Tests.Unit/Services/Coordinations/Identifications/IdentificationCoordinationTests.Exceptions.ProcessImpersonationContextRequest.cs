@@ -84,6 +84,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                     someAccessRequest.CsvIdentificationRequest),
                         Times.Once);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
             this.identificationOrchestrationServiceMock.Verify(service =>
                 service.AddDocumentAsync(It.IsAny<Stream>(), errorFileName, container),
                     Times.Once);
@@ -103,6 +107,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             this.accessOrchestrationServiceMock.VerifyNoOtherCalls();
             this.identificationOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -112,6 +117,19 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
         {
             // given
             AccessRequest someAccessRequest = CreateRandomAccessRequest();
+            Guid randomGuid = Guid.NewGuid();
+            Guid contextId = randomGuid;
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            string timestamp = randomDateTimeOffset.ToString("yyyyMMddHHmms");
+            string contextIdString = contextId.ToString();
+            string randomString = GetRandomString();
+            string container = GetRandomString();
+            string fileName = randomString;
+            string fileExtension = ".csv";
+            string filepath = $"/{container}/{contextIdString}/outbox/subdirectory/{fileName}{fileExtension}";
+            someAccessRequest.CsvIdentificationRequest.Filepath = filepath;
+            string inputFileName = $"outbox/subdirectory/{fileName}{fileExtension}";
+            string errorFileName = $"error/subdirectory/{fileName}_{timestamp}{fileExtension}";
 
             var identificationCoordinationServiceMock = new Mock<IdentificationCoordinationService>
                 (this.accessOrchestrationServiceMock.Object,
@@ -127,6 +145,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 service.ConvertCsvIdentificationRequestToIdentificationRequest(
                     someAccessRequest.CsvIdentificationRequest))
                         .ThrowsAsync(dependencyException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
 
             var expectedIdentificationCoordinationDependencyException =
                 new IdentificationCoordinationDependencyException(
@@ -156,10 +178,22 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                     someAccessRequest.CsvIdentificationRequest),
                         Times.Once);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                broker.LogErrorAsync(It.Is(SameExceptionAs(
                    expectedIdentificationCoordinationDependencyException))),
                        Times.Once);
+
+            this.identificationOrchestrationServiceMock.Verify(service =>
+                service.AddDocumentAsync(It.IsAny<Stream>(), errorFileName, container),
+                    Times.Once);
+
+            this.identificationOrchestrationServiceMock.Verify(service =>
+                service.RemoveDocumentByFileNameAsync(inputFileName, container),
+                    Times.Once);
 
             this.persistanceOrchestrationServiceMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
@@ -167,6 +201,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             this.accessOrchestrationServiceMock.VerifyNoOtherCalls();
             this.identificationOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -175,6 +210,19 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             // given
             AccessRequest someAccessRequest = CreateRandomAccessRequest();
             Exception someException = new Exception();
+            Guid randomGuid = Guid.NewGuid();
+            Guid contextId = randomGuid;
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            string timestamp = randomDateTimeOffset.ToString("yyyyMMddHHmms");
+            string contextIdString = contextId.ToString();
+            string randomString = GetRandomString();
+            string container = GetRandomString();
+            string fileName = randomString;
+            string fileExtension = ".csv";
+            string filepath = $"/{container}/{contextIdString}/outbox/subdirectory/{fileName}{fileExtension}";
+            someAccessRequest.CsvIdentificationRequest.Filepath = filepath;
+            string inputFileName = $"outbox/subdirectory/{fileName}{fileExtension}";
+            string errorFileName = $"error/subdirectory/{fileName}_{timestamp}{fileExtension}";
 
             var identificationCoordinationServiceMock = new Mock<IdentificationCoordinationService>
                 (this.accessOrchestrationServiceMock.Object,
@@ -190,6 +238,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 service.ConvertCsvIdentificationRequestToIdentificationRequest(
                     someAccessRequest.CsvIdentificationRequest))
                         .ThrowsAsync(someException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
 
             var expectedIdentificationCoordinationServiceException =
                 new IdentificationCoordinationServiceException(
@@ -219,8 +271,20 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                     someAccessRequest.CsvIdentificationRequest),
                         Times.Once);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(expectedIdentificationCoordinationServiceException))),
+                    Times.Once);
+
+            this.identificationOrchestrationServiceMock.Verify(service =>
+                service.AddDocumentAsync(It.IsAny<Stream>(), errorFileName, container),
+                    Times.Once);
+
+            this.identificationOrchestrationServiceMock.Verify(service =>
+                service.RemoveDocumentByFileNameAsync(inputFileName, container),
                     Times.Once);
 
             this.persistanceOrchestrationServiceMock.VerifyNoOtherCalls();
@@ -229,6 +293,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             this.accessOrchestrationServiceMock.VerifyNoOtherCalls();
             this.identificationOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }
