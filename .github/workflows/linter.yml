@@ -1,0 +1,24 @@
+name: Lint Codebase
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  packages: read
+  statuses: write
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+        - uses: actions/checkout@v2
+        - name: Install modules
+          run: yarn
+        - name: Run ESLint
+          run: eslint . --ext .js,.jsx,.ts,.tsx
