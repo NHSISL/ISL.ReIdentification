@@ -117,7 +117,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnType<DateTimeOffset?>().Use(dateTimeOffset);
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(odsData => odsData.OrganisationCode).Use(GetRandomStringWithLength(15))
+                .OnProperty(odsData => odsData.OrganisationName).Use(GetRandomStringWithLength(30));
 
             return filler;
         }
@@ -127,7 +129,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
             var filler = new Filler<PdsData>();
 
             filler.Setup()
-                .OnType<DateTimeOffset?>().Use(dateTimeOffset);
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(pdsData => pdsData.PseudoNhsNumber).Use(GetRandomStringWithLength(10))
+                .OnProperty(pdsData => pdsData.OrgCode).Use(GetRandomStringWithLength(15));
 
             return filler;
         }
@@ -191,6 +195,18 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use((DateTimeOffset?)default)
+
+                .OnProperty(impersonationContext => impersonationContext.RequesterEmail)
+                    .Use(() => GetRandomStringWithLength(320))
+
+                .OnProperty(impersonationContext => impersonationContext.ResponsiblePersonEmail)
+                    .Use(() => GetRandomStringWithLength(320))
+
+                .OnProperty(impersonationContext => impersonationContext.Organisation)
+                    .Use(() => GetRandomStringWithLength(255))
+
+                .OnProperty(impersonationContext => impersonationContext.ProjectName)
+                    .Use(() => GetRandomStringWithLength(255))
 
                 .OnProperty(impersonationContext => impersonationContext.IdentifierColumn)
                     .Use(() => GetRandomStringWithLength(10))

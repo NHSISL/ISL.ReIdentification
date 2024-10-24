@@ -86,11 +86,27 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
 
         private static Filler<CsvIdentificationRequest> CreateCsvIdentificationRequestFiller(DateTimeOffset dateTimeOffset)
         {
+            string user = Guid.NewGuid().ToString();
             var filler = new Filler<CsvIdentificationRequest>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnType<DateTimeOffset?>().Use((DateTimeOffset?)default);
+                .OnType<DateTimeOffset?>().Use((DateTimeOffset?)default)
+
+                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.IdentifierColumn)
+                    .Use(() => GetRandomStringWithLengthOf(10))
+
+                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.RequesterEmail)
+                    .Use(GetRandomStringWithLengthOf(320))
+
+                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.RecipientEmail)
+                    .Use(GetRandomStringWithLengthOf(320))
+
+                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.Organisation)
+                    .Use(GetRandomStringWithLengthOf(255))
+
+                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.CreatedBy).Use(user)
+                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.UpdatedBy).Use(user);
 
             return filler;
         }
@@ -104,8 +120,20 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
 
+                .OnProperty(impersonationContext => impersonationContext.RequesterEmail)
+                    .Use(GetRandomStringWithLengthOf(320))
+
+                .OnProperty(impersonationContext => impersonationContext.ResponsiblePersonEmail)
+                    .Use(GetRandomStringWithLengthOf(320))
+
+                .OnProperty(impersonationContext => impersonationContext.Organisation)
+                    .Use(GetRandomStringWithLengthOf(255))
+
+                .OnProperty(impersonationContext => impersonationContext.ProjectName)
+                    .Use(GetRandomStringWithLengthOf(255))
+
                 .OnProperty(impersonationContext => impersonationContext.IdentifierColumn)
-                    .Use(() => GetRandomStringWithLengthOf(10))
+                    .Use(GetRandomStringWithLengthOf(9))
 
                 .OnProperty(impersonationContext => impersonationContext.CreatedBy).Use(user)
                 .OnProperty(impersonationContext => impersonationContext.UpdatedBy).Use(user);

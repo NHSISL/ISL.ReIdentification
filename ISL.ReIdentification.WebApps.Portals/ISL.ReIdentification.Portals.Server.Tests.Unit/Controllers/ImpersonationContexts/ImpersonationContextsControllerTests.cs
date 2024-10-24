@@ -63,6 +63,13 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.Impersonati
         private static string GetRandomString() =>
             new MnemonicString(wordCount: GetRandomNumber()).GetValue();
 
+        private static string GetRandomStringWithLengthOf(int length)
+        {
+            string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+
+            return result.Length > length ? result.Substring(0, length) : result;
+        }
+
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
@@ -84,6 +91,22 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.Impersonati
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
+
+                .OnProperty(impersonationContext => impersonationContext.RequesterEmail)
+                    .Use(() => GetRandomStringWithLengthOf(320))
+
+                .OnProperty(impersonationContext => impersonationContext.ResponsiblePersonEmail)
+                    .Use(() => GetRandomStringWithLengthOf(320))
+
+                .OnProperty(impersonationContext => impersonationContext.Organisation)
+                    .Use(() => GetRandomStringWithLengthOf(255))
+
+                .OnProperty(impersonationContext => impersonationContext.ProjectName)
+                    .Use(() => GetRandomStringWithLengthOf(255))
+
+                .OnProperty(impersonationContext => impersonationContext.IdentifierColumn)
+                    .Use(() => GetRandomStringWithLengthOf(10))
+
                 .OnProperty(impersonationContext => impersonationContext.CreatedBy).Use(user)
                 .OnProperty(impersonationContext => impersonationContext.UpdatedBy).Use(user);
 
