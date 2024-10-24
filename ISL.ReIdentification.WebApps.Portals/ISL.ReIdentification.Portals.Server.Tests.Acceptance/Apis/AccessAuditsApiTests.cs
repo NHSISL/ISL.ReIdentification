@@ -78,6 +78,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
                 .OnType<DateTimeOffset>().Use(now)
                 .OnType<DateTimeOffset?>().Use(now)
                 .OnProperty(userAccess => userAccess.PseudoIdentifier).Use(GetRandomStringWithLengthOf(9))
+                .OnProperty(userAccess => userAccess.Email).Use(GetRandomStringWithLengthOf(319))
                 .OnProperty(userAccess => userAccess.CreatedBy).Use(user)
                 .OnProperty(userAccess => userAccess.UpdatedBy).Use(user);
 

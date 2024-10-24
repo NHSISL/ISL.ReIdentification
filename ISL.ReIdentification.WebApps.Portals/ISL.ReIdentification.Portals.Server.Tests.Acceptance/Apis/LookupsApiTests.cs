@@ -84,7 +84,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
-                .OnProperty(lookup => lookup.Name).Use(() => GetRandomString())
+                .OnProperty(lookup => lookup.Name).Use(() => GetRandomStringWithLengthOf(449))
                 .OnProperty(lookup => lookup.CreatedDate).Use(now)
                 .OnProperty(lookup => lookup.CreatedBy).Use(user)
                 .OnProperty(lookup => lookup.UpdatedDate).Use(now)

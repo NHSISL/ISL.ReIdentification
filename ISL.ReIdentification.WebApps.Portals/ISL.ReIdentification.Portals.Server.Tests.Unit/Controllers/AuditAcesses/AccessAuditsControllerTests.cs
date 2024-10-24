@@ -64,6 +64,13 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.AccessAudit
         private static string GetRandomString() =>
             new MnemonicString(wordCount: GetRandomNumber()).GetValue();
 
+        private static string GetRandomStringWithLengthOf(int length)
+        {
+            string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+
+            return result.Length > length ? result.Substring(0, length) : result;
+        }
+
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
@@ -83,11 +90,16 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.AccessAudit
         private static Filler<AccessAudit> CreateAccessAuditFiller()
         {
             DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
+            string user = Guid.NewGuid().ToString();
             var filler = new Filler<AccessAudit>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnType<DateTimeOffset?>().Use(dateTimeOffset);
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(accessAudit => accessAudit.PseudoIdentifier).Use(GetRandomStringWithLengthOf(9))
+                .OnProperty(accessAudit => accessAudit.Email).Use(GetRandomStringWithLengthOf(319))
+                .OnProperty(accessAudit => accessAudit.CreatedBy).Use(user)
+                .OnProperty(accessAudit => accessAudit.UpdatedBy).Use(user);
 
             return filler;
         }

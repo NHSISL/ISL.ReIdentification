@@ -64,6 +64,13 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.Lookups
         private static string GetRandomString() =>
             new MnemonicString(wordCount: GetRandomNumber()).GetValue();
 
+        private static string GetRandomStringWithLengthOf(int length)
+        {
+            string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+
+            return result.Length > length ? result.Substring(0, length) : result;
+        }
+
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
@@ -83,11 +90,15 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.Lookups
         private static Filler<Lookup> CreateLookupFiller()
         {
             DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
+            string user = Guid.NewGuid().ToString();
             var filler = new Filler<Lookup>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnType<DateTimeOffset?>().Use(dateTimeOffset);
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(lookup => lookup.Name).Use(GetRandomStringWithLengthOf(449))
+                .OnProperty(lookup => lookup.CreatedBy).Use(user)
+                .OnProperty(lookup => lookup.UpdatedBy).Use(user);
 
             return filler;
         }
