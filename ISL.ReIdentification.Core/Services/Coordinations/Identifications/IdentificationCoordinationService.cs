@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Brokers.CsvHelpers;
+using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Securities;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
@@ -31,6 +32,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
         private readonly ICsvHelperBroker csvHelperBroker;
         private readonly ISecurityBroker securityBroker;
         private readonly ILoggingBroker loggingBroker;
+        private readonly IDateTimeBroker dateTimeBroker;
 
         public IdentificationCoordinationService(
             IAccessOrchestrationService accessOrchestrationService,
@@ -38,7 +40,8 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             IIdentificationOrchestrationService identificationOrchestrationService,
             ICsvHelperBroker csvHelperBroker,
             ISecurityBroker securityBroker,
-            ILoggingBroker loggingBroker)
+            ILoggingBroker loggingBroker,
+            IDateTimeBroker dateTimeBroker)
         {
             this.accessOrchestrationService = accessOrchestrationService;
             this.persistanceOrchestrationService = persistanceOrchestrationService;
@@ -46,6 +49,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             this.csvHelperBroker = csvHelperBroker;
             this.securityBroker = securityBroker;
             this.loggingBroker = loggingBroker;
+            this.dateTimeBroker = dateTimeBroker;
         }
 
         public ValueTask<AccessRequest> ProcessIdentificationRequestsAsync(AccessRequest accessRequest) =>
@@ -128,10 +132,17 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
 
             AccessRequest convertedAccessRequest = new AccessRequest();
             string filepath = accessRequest.CsvIdentificationRequest.Filepath;
-            string[] filepathParts = filepath.Split('/');
-            string container = filepathParts[1];
-            Guid impersonationContextId = Guid.Parse(filepathParts[2]);
-            string fileName = filepathParts[4];
+            string[] filepathParts = filepath.Split('/', StringSplitOptions.RemoveEmptyEntries);
+            string container = filepathParts[0];
+            Guid impersonationContextId = Guid.Parse(filepathParts[1]);
+            string fileName = string.Join("/", filepathParts, 2, filepathParts.Length - 2);
+            DateTimeOffset dateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            string timestamp = dateTimeOffset.ToString("yyyyMMddHHmms");
+            string nameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
+
+            string updatedFilename = fileName
+                .Replace("outbox", "inbox")
+                .Replace(nameWithoutExtension, nameWithoutExtension + "_" + timestamp);
 
             AccessRequest returnedAccessRequestWithImpersonationContext =
                 await this.persistanceOrchestrationService
@@ -160,7 +171,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             };
 
             MemoryStream csvData = new MemoryStream(reIdentifiedCsvIdentificationRequest.Data);
-            await this.identificationOrchestrationService.AddDocumentAsync(csvData, fileName, container);
+            await this.identificationOrchestrationService.AddDocumentAsync(csvData, updatedFilename, container);
 
             return reIdentifiedAccessRequest;
         });

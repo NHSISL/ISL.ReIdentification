@@ -9,6 +9,7 @@ using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Text;
 using ISL.ReIdentification.Core.Brokers.CsvHelpers;
+using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Securities;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
@@ -38,6 +39,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
         private readonly Mock<IPersistanceOrchestrationService> persistanceOrchestrationServiceMock;
         private readonly Mock<IIdentificationOrchestrationService> identificationOrchestrationServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
+        private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly IdentificationCoordinationService identificationCoordinationService;
         private readonly ICompareLogic compareLogic;
 
@@ -49,6 +51,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             this.persistanceOrchestrationServiceMock = new Mock<IPersistanceOrchestrationService>();
             this.identificationOrchestrationServiceMock = new Mock<IIdentificationOrchestrationService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
+            this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.compareLogic = new CompareLogic();
 
             this.identificationCoordinationService = new IdentificationCoordinationService(
@@ -57,7 +60,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 this.identificationOrchestrationServiceMock.Object,
                 this.csvHelperBrokerMock.Object,
                 this.securityBrokerMock.Object,
-                this.loggingBrokerMock.Object);
+                this.loggingBrokerMock.Object,
+                this.dateTimeBrokerMock.Object);
         }
 
         private static string GetRandomString() =>

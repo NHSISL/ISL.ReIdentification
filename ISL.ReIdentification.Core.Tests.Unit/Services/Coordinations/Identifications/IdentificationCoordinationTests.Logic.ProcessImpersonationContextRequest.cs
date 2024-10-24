@@ -24,12 +24,16 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             // given
             Guid randomGuid = Guid.NewGuid();
             Guid contextId = randomGuid;
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            string timestamp = randomDateTimeOffset.ToString("yyyyMMddHHmms");
             string contextIdString = contextId.ToString();
             string randomString = GetRandomString();
             string container = GetRandomString();
-            string fileName = randomString + ".csv";
-            string filepath = $"/{container}/{contextIdString}/outbox/{fileName}";
+            string fileName = randomString;
+            string fileExtension = ".csv";
+            string filepath = $"/{container}/{contextIdString}/outbox/directory1/directory2/{fileName}{fileExtension}";
             AccessRequest inputAccessRequest = CreateRandomAccessRequest();
+            string outputFileName = $"inbox/directory1/directory2/{fileName}_{timestamp}{fileExtension}";
             inputAccessRequest.CsvIdentificationRequest.Filepath = filepath;
             AccessRequest outputPersistanceOrchestrationAccessRequest = CreateRandomAccessRequest();
             ImpersonationContext outputImpersonationContext = CreateRandomImpersonationContext();
@@ -50,13 +54,18 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 this.identificationOrchestrationServiceMock.Object,
                 this.csvHelperBrokerMock.Object,
                 this.securityBrokerMock.Object,
-                this.loggingBrokerMock.Object)
+                this.loggingBrokerMock.Object,
+                this.dateTimeBrokerMock.Object)
             { CallBase = true };
 
             identificationCoordinationServiceMock.Setup(service =>
                 service.ConvertCsvIdentificationRequestToIdentificationRequest(
                     inputAccessRequest.CsvIdentificationRequest))
                         .ReturnsAsync(outputConversionIdentificationRequest);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
 
             this.persistanceOrchestrationServiceMock.Setup(service =>
                 service.RetrieveImpersonationContextByIdAsync(contextId))
@@ -109,7 +118,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                         Times.Once);
 
             this.identificationOrchestrationServiceMock.Verify(service =>
-                service.AddDocumentAsync(It.IsAny<Stream>(), fileName, container),
+                service.AddDocumentAsync(It.IsAny<Stream>(), outputFileName, container),
+                    Times.Once);
+
+            this.identificationOrchestrationServiceMock.Verify(service =>
+                service.RemoveDocumentByFileNameAsync(fileName, container),
                     Times.Once);
 
             identificationCoordinationServiceMock.VerifyNoOtherCalls();
