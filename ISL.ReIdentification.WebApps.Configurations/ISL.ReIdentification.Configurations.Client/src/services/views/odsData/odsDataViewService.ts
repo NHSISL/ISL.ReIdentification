@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Guid } from "guid-typescript";
 import { OdsDataView } from "../../../models/views/components/odsData/odsDataView";
 import { odsDataService } from "../../foundations/odsDataAccessService";
 
@@ -63,7 +62,7 @@ export const odsDataViewService = {
         };
     },
 
-    useGetOdsDataById: (id: Guid) => {
+    useGetOdsDataById: (id: string) => {
         const query = `?$filter=id eq ${id}`;
         const response = odsDataService.useRetrieveAllOdsDataPages(query);
         const [mappedOdsData, setMappedOdsData] = useState<OdsDataView>();

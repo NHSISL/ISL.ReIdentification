@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Guid } from "guid-typescript";
 import { PdsDataView } from "../../../models/views/components/pdsData/pdsDataView";
 import { pdsDataService } from "../../foundations/pdsDataAccessService";
 
@@ -63,7 +62,7 @@ export const pdsDataViewService = {
         };
     },
 
-    useGetPdsDataById: (id: Guid) => {
+    useGetPdsDataById: (id: string) => {
         const query = `?$filter=id eq ${id}`;
         const response = pdsDataService.useRetrieveAllPdsDataPages(query);
         const [mappedPdsData, setMappedPdsData] = useState<PdsDataView>();
