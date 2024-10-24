@@ -6,11 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Force.DeepCloner;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
-using ISL.ReIdentification.Core.Models.Foundations.OdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.PdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.PdsDatas.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
@@ -107,17 +105,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
         private static string GetRandomStringWithLength(int length) =>
             new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
 
-        private static Filler<OdsData> CreateOdsDataFiller(DateTimeOffset dateTimeOffset)
-        {
-            var filler = new Filler<OdsData>();
-
-            filler.Setup()
-                .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnType<DateTimeOffset?>().Use(dateTimeOffset);
-
-            return filler;
-        }
-
         private static Filler<PdsData> CreatePdsDataFiller(DateTimeOffset dateTimeOffset)
         {
             var filler = new Filler<PdsData>();
@@ -204,13 +191,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
                 actualException.SameExceptionAs(expectedException);
         }
 
-        public static IEnumerable<object[]> GetTestInvalidParameters()
-        {
-            yield return new object[] { null, null };
-            yield return new object[] { "", new List<string> { "" } };
-            yield return new object[] { " ", new List<string> { " " } };
-        }
-
         public static TheoryData<Xeption> DependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
@@ -256,81 +236,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
                 new PdsDataServiceException(
                     message: "Pds data service error occurred, please contact support.",
                     innerException),
-            };
-        }
-
-        public static TheoryData<UserAccess> GetOrganisationsReturnsOrgs()
-        {
-            UserAccess randomUserAccess = CreateRandomUserAccess(GetRandomPastDateTimeOffset());
-            UserAccess nullActiveToUserAccess = randomUserAccess.DeepClone();
-            UserAccess futureActiveToUserAccess = randomUserAccess.DeepClone();
-            nullActiveToUserAccess.ActiveTo = null;
-            futureActiveToUserAccess.ActiveTo = GetRandomFutureDateTimeOffset();
-
-            return new TheoryData<UserAccess>
-            {
-                nullActiveToUserAccess,
-                futureActiveToUserAccess
-            };
-        }
-
-        public static TheoryData<UserAccess, bool> GetOrganisationsReturnsNoOrgs()
-        {
-            UserAccess randomUserAccess = CreateRandomUserAccess(GetRandomPastDateTimeOffset());
-            UserAccess futureActiveFromUserAccess = randomUserAccess.DeepClone();
-            UserAccess pastActiveToUserAccess = randomUserAccess.DeepClone();
-            UserAccess differentEntraUserIdUserAccess = randomUserAccess.DeepClone();
-            futureActiveFromUserAccess.ActiveFrom = GetRandomFutureDateTimeOffset();
-            pastActiveToUserAccess.ActiveTo = GetRandomPastDateTimeOffset();
-            differentEntraUserIdUserAccess.ActiveTo = null;
-
-            return new TheoryData<UserAccess, bool>
-            {
-                { pastActiveToUserAccess, false },
-                { futureActiveFromUserAccess, false },
-                { differentEntraUserIdUserAccess, true }
-            };
-        }
-
-        public static TheoryData<PdsData, string> UserHasAccessToPatientTrue()
-        {
-            string randomString = GetRandomString();
-            string organisation = randomString;
-            PdsData randomPdsData = CreateRandomPdsData(GetRandomPastDateTimeOffset());
-            PdsData nullEffectiveToPdsData = randomPdsData.DeepClone();
-            PdsData futureEffectiveToPdsData = randomPdsData.DeepClone();
-            PdsData basePdsData = randomPdsData.DeepClone();
-            PdsData currentCcgOfRegistrationPdsData = basePdsData.DeepClone();
-            PdsData currentIcbOfRegistration = basePdsData.DeepClone();
-            PdsData icbOfRegistration = basePdsData.DeepClone();
-
-            return new TheoryData<PdsData, string>
-            {
-                { nullEffectiveToPdsData, organisation },
-                { futureEffectiveToPdsData, organisation },
-                { currentCcgOfRegistrationPdsData, organisation },
-                { currentIcbOfRegistration, organisation },
-                { icbOfRegistration, organisation }
-            };
-        }
-
-        public static TheoryData<PdsData, string, bool> UserHasAccessToPatientFalse()
-        {
-            string randomString = GetRandomString();
-            string organisation = randomString;
-            PdsData randomPdsData = CreateRandomPdsData(GetRandomPastDateTimeOffset());
-            PdsData differentIdentifierPdsData = randomPdsData.DeepClone();
-            PdsData pastEffectiveToPdsData = randomPdsData.DeepClone();
-            PdsData futureEffectiveFromPdsData = randomPdsData.DeepClone();
-            PdsData notRegisteredPdsData = randomPdsData.DeepClone();
-            string differentOrganisation = GetRandomString();
-
-            return new TheoryData<PdsData, string, bool>
-            {
-                { differentIdentifierPdsData, organisation, true },
-                { pastEffectiveToPdsData, organisation, false },
-                { futureEffectiveFromPdsData, organisation, false },
-                { notRegisteredPdsData, organisation, false }
             };
         }
     }
