@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Guid } from "guid-typescript";
 import { OdsDataView } from "../../../models/views/components/odsData/odsDataView";
 import { odsDataService } from "../../foundations/odsDataAccessService";
 
@@ -37,15 +36,11 @@ export const odsDataViewService = {
                     x.data.forEach((odsData: OdsDataView) => {
                         odsDataes.push(new OdsDataView(
                             odsData.id,
-                            odsData.organisationCode_Root,
-                            odsData.organisationPrimaryRole_Root,
-                            odsData.organisationCode_Parent,
-                            odsData.organisationPrimaryRole_Parent,
+                            odsData.organisationCode,
+                            odsData.organisationName,
+                            odsData.hasChildren,
                             odsData.relationshipStartDate,
                             odsData.relationshipEndDate,
-                            odsData.path,
-                            odsData.depth,
-                            odsData.pdsData
                         ));
                     });
                 });
@@ -67,7 +62,7 @@ export const odsDataViewService = {
         };
     },
 
-    useGetOdsDataById: (id: Guid) => {
+    useGetOdsDataById: (id: string) => {
         const query = `?$filter=id eq ${id}`;
         const response = odsDataService.useRetrieveAllOdsDataPages(query);
         const [mappedOdsData, setMappedOdsData] = useState<OdsDataView>();
@@ -77,15 +72,11 @@ export const odsDataViewService = {
                 const odsData = response.data.pages[0].data[0];
                 const odsDataView = new OdsDataView(
                     odsData.id,
-                    odsData.organisationCode_Root,
-                    odsData.organisationPrimaryRole_Root,
-                    odsData.organisationCode_Parent,
-                    odsData.organisationPrimaryRole_Parent,
+                    odsData.organisationCode,
+                    odsData.organisationName,
+                    odsData.hasChildren,
                     odsData.relationshipStartDate,
                     odsData.relationshipEndDate,
-                    odsData.path,
-                    odsData.depth,
-                    odsData.pdsData
                 );
 
                 setMappedOdsData(odsDataView);

@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Guid } from "guid-typescript";
 import { csvIdentificationRequestService } from "../../foundations/csvIdentificationRequestService";
 import { CsvIdentificationRequestView } from "../../../models/views/components/csvIdentificationRequest/csvIdentificationRequestView";
 
@@ -73,7 +72,7 @@ export const csvIdentificationRequestViewService = {
         };
     },
 
-    useGetCsvIdentificationRequestById: (id: Guid) => {
+    useGetCsvIdentificationRequestById: (id: string) => {
         const query = `?$filter=id eq ${id}`;
         const response = csvIdentificationRequestService.useRetrieveAllCsvIdentificationRequestPages(query);
         const [mappedCsvIdentificationRequest, setMappedCsvIdentificationRequest] = useState<CsvIdentificationRequestView>();

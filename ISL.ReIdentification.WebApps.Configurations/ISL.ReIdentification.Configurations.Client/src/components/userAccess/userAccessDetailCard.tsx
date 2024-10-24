@@ -16,10 +16,6 @@ const UserAccessDetailCard: FunctionComponent<UserAccessDetailCardProps> = (prop
     const {
         userAccess,
         mode,
-        onAdd,
-        onUpdate,
-        onDelete,
-        children
     } = props;
 
     const [displayMode, setDisplayMode] = useState<string>(mode);

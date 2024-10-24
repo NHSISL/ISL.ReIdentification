@@ -34,7 +34,7 @@ export const OdsTreeElement: FunctionComponent<OdsTreeElementProps> = ({ node, a
 
     useEffect(() => { 
         setAlreadyChecked(selectedRecords.filter((x : OdsData) => x.organisationCode == node.organisationCode).length > 0);
-    },[selectedRecords])
+    },[node, selectedRecords])
 
     useEffect(() => {
         selectedRecords.forEach(selectedRecord => {
@@ -47,7 +47,7 @@ export const OdsTreeElement: FunctionComponent<OdsTreeElementProps> = ({ node, a
                 }
             }
         })
-    }, [selectedRecords]);
+    }, [node, selectedRecords]);
 
     const processCheck = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.checked) {

@@ -39,7 +39,7 @@ export const odsDataService = {
                 }
                 return broker.GetOdsDataSubsequentPagesAsync(pageParam)
             },
-            initialPageParam: 0,
+            initialPageParam: "",
             staleTime: Infinity,
             getNextPageParam: (lastPage: { nextPage?: string }) => lastPage.nextPage,
         });
@@ -66,10 +66,10 @@ export const odsDataService = {
         const queryClient = useQueryClient();
 
         return useMutation({
-            mutationFn: (id: Guid) => {
+            mutationFn: (id: string) => {
                 return broker.DeleteOdsDataByIdAsync(id);
             },
-            onSuccess: (data: { id: Guid }) => {
+            onSuccess: (data: { id: string }) => {
                 queryClient.invalidateQueries({ queryKey: ["OdsDataGetAll"] });
                 queryClient.invalidateQueries({ queryKey: ["OdsDataGetById", { id: data.id }] });
             }
