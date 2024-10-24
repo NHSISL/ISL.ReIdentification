@@ -27,10 +27,6 @@ jobs:
           run: npm install
         - name: Install certificates
           run: dotnet dev-certs https --verbose --trust
-        - name: Install certificates
-          run: |
-            dotnet dev-certs https --verbose --export-path /home/runner/isl.reidentification.configurations.client.pem --format Pem --no-password
-            ls
         - name: Run ESLint
           working-directory: ./ISL.ReIdentification.WebApps.Configurations/ISL.ReIdentification.Configurations.Client
           run: npm run lint
