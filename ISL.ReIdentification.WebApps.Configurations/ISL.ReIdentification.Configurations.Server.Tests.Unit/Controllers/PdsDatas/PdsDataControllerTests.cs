@@ -23,6 +23,9 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.PdsD
             pdsDataController = new PdsDataController(pdsDataServiceMock.Object);
         }
 
+        private static string GetRandomString() =>
+            new MnemonicString().GetValue();
+
         private static string GetRandomStringWithLengthOf(int length)
         {
             string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
