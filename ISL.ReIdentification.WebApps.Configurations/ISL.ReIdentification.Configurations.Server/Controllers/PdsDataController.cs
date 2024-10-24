@@ -83,10 +83,17 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
                 return Ok(pdsData);
             }
             catch (PdsDataValidationException pdsDataValidationException)
-                when (pdsDataValidationException.InnerException
-                    is NotFoundPdsDataException)
+                when (pdsDataValidationException.InnerException is NotFoundPdsDataException)
             {
                 return NotFound(pdsDataValidationException.InnerException);
+            }
+            catch (PdsDataValidationException pdsDataValidationException)
+            {
+                return BadRequest(pdsDataValidationException.InnerException);
+            }
+            catch (PdsDataDependencyValidationException pdsDataDependencyValidationException)
+            {
+                return BadRequest(pdsDataDependencyValidationException.InnerException);
             }
         }
     }
