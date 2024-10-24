@@ -207,10 +207,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             foreach (OdsData odsData in randomOdsDataItems)
             {
                 List<OdsData> randomOdsDatas = CreateRandomOdsDataChildren(odsData.OdsHierarchy);
+
                 foreach (OdsData randomOdsData in randomOdsDatas)
                 {
                     randomOdsData.RelationshipWithParentEndDate = GetRandomPastDateTimeOffset();
                 }
+
                 storageOdsDataItems.AddRange(randomOdsDatas);
             }
 
