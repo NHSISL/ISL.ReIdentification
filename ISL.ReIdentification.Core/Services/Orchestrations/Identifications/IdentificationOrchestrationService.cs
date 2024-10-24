@@ -2,6 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
@@ -115,5 +117,14 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
 
             return identificationRequest;
         });
+
+        public ValueTask AddDocumentAsync(Stream input, string fileName, string container) =>
+            throw new NotImplementedException();
+
+        public ValueTask RetrieveDocumentByFileNameAsync(Stream output, string fileName, string container) =>
+            throw new NotImplementedException();
+            
+        public ValueTask RemoveDocumentByFileNameAsync(string filename, string container) =>
+            throw new NotImplementedException();
     }
 }

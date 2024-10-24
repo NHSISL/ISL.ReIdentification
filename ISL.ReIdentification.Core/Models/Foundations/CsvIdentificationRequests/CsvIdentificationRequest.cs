@@ -24,6 +24,7 @@ namespace ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests
         public string Reason { get; set; } = string.Empty;
         public string Purpose { get; set; } = string.Empty;
         public string Organisation { get; set; } = string.Empty;
+        public string Filepath { get; set; } = string.Empty;
         public byte[] Data { get; set; } = Array.Empty<byte>();
         public string Sha256Hash { get; set; } = string.Empty;
         public string IdentifierColumn { get; set; } = string.Empty;
