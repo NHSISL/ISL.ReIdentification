@@ -125,10 +125,10 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
         public ValueTask<AccessRequest> ProcessImpersonationContextRequestAsync(AccessRequest accessRequest) =>
         TryCatch(async () =>
         {
+            ValidateImpersonationContext(accessRequest);
+
             try
             {
-                ValidateImpersonationContext(accessRequest);
-
                 IdentificationRequest identificationRequest =
                     await ConvertCsvIdentificationRequestToIdentificationRequest(
                         accessRequest.CsvIdentificationRequest);
