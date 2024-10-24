@@ -15,12 +15,16 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Brokers
 
         public async ValueTask<PdsData> PostPdsDataAsync(
             PdsData pdsData) =>
-                await this.apiFactoryClient.PostContentAsync(ImpersonationContextsRelativeUrl, pdsData);
+                await this.apiFactoryClient.PostContentAsync(PdsDataRelativeUrl, pdsData);
 
         public async ValueTask<List<PdsData>> GetAllPdsDataAsync() =>
             await this.apiFactoryClient.GetContentAsync<List<PdsData>>($"{PdsDataRelativeUrl}/");
 
         public async ValueTask<PdsData> GetPdsDataByIdAsync(Guid pdsDataId) =>
             await this.apiFactoryClient.GetContentAsync<PdsData>($"{PdsDataRelativeUrl}/{pdsDataId}");
+
+        public async ValueTask<PdsData> DeletePdsDataByIdAsync(Guid pdsDataId) =>
+            await this.apiFactoryClient.DeleteContentAsync<PdsData>(
+                $"{PdsDataRelativeUrl}/{pdsDataId}");
     }
 }
