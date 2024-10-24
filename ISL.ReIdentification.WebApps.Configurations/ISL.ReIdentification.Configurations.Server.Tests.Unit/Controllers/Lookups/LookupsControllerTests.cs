@@ -96,7 +96,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.Look
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
-                .OnProperty(lookup => lookup.Name).Use(GetRandomStringWithLengthOf(449))
+                .OnProperty(lookup => lookup.Name).Use(GetRandomStringWithLengthOf(450))
                 .OnProperty(lookup => lookup.CreatedBy).Use(user)
                 .OnProperty(lookup => lookup.UpdatedBy).Use(user);
 

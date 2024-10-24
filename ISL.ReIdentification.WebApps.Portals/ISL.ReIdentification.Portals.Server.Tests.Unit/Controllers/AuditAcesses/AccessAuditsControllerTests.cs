@@ -96,8 +96,8 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.AccessAudit
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
-                .OnProperty(accessAudit => accessAudit.PseudoIdentifier).Use(GetRandomStringWithLengthOf(9))
-                .OnProperty(accessAudit => accessAudit.Email).Use(GetRandomStringWithLengthOf(319))
+                .OnProperty(accessAudit => accessAudit.PseudoIdentifier).Use(GetRandomStringWithLengthOf(10))
+                .OnProperty(accessAudit => accessAudit.Email).Use(GetRandomStringWithLengthOf(320))
                 .OnProperty(accessAudit => accessAudit.CreatedBy).Use(user)
                 .OnProperty(accessAudit => accessAudit.UpdatedBy).Use(user);
 

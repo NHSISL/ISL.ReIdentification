@@ -113,19 +113,19 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 .OnType<DateTimeOffset?>().Use((DateTimeOffset?)default)
 
                 .OnProperty(impersonationContext => impersonationContext.RequesterEmail)
-                    .Use(GetRandomStringWithLengthOf(319))
+                    .Use(GetRandomStringWithLengthOf(320))
 
                 .OnProperty(impersonationContext => impersonationContext.ResponsiblePersonEmail)
-                    .Use(GetRandomStringWithLengthOf(319))
+                    .Use(GetRandomStringWithLengthOf(320))
 
                 .OnProperty(impersonationContext => impersonationContext.Organisation)
-                    .Use(GetRandomStringWithLengthOf(254))
+                    .Use(GetRandomStringWithLengthOf(255))
 
                 .OnProperty(impersonationContext => impersonationContext.ProjectName)
-                    .Use(GetRandomStringWithLengthOf(254))
+                    .Use(GetRandomStringWithLengthOf(255))
 
                 .OnProperty(impersonationContext => impersonationContext.IdentifierColumn)
-                    .Use(GetRandomStringWithLengthOf(9))
+                    .Use(GetRandomStringWithLengthOf(10))
 
                 .OnProperty(impersonationContext => impersonationContext.CreatedBy).Use(user)
                 .OnProperty(impersonationContext => impersonationContext.UpdatedBy).Use(user);
@@ -153,13 +153,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                     .Use(() => GetRandomStringWithLengthOf(10))
 
                 .OnProperty(csvIdentificationRequest => csvIdentificationRequest.RequesterEmail)
-                    .Use(GetRandomStringWithLengthOf(319))
+                    .Use(GetRandomStringWithLengthOf(320))
 
                 .OnProperty(csvIdentificationRequest => csvIdentificationRequest.RecipientEmail)
-                    .Use(GetRandomStringWithLengthOf(319))
+                    .Use(GetRandomStringWithLengthOf(320))
 
                 .OnProperty(csvIdentificationRequest => csvIdentificationRequest.Organisation)
-                    .Use(GetRandomStringWithLengthOf(254))
+                    .Use(GetRandomStringWithLengthOf(255))
 
                 .OnProperty(csvIdentificationRequest => csvIdentificationRequest.CreatedBy).Use(user)
                 .OnProperty(csvIdentificationRequest => csvIdentificationRequest.UpdatedBy).Use(user);

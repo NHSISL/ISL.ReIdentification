@@ -95,13 +95,13 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.CsvI
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
 
                 .OnProperty(csvIdentificationRequest => csvIdentificationRequest.RequesterEmail)
-                    .Use(GetRandomStringWithLengthOf(319))
+                    .Use(GetRandomStringWithLengthOf(320))
 
                 .OnProperty(csvIdentificationRequest => csvIdentificationRequest.RecipientEmail)
-                    .Use(GetRandomStringWithLengthOf(319))
+                    .Use(GetRandomStringWithLengthOf(320))
 
                 .OnProperty(csvIdentificationRequest => csvIdentificationRequest.Organisation)
-                    .Use(GetRandomStringWithLengthOf(254))
+                    .Use(GetRandomStringWithLengthOf(255))
 
                 .OnProperty(csvIdentificationRequest => csvIdentificationRequest.CreatedBy).Use(user)
                 .OnProperty(csvIdentificationReqeust => csvIdentificationReqeust.UpdatedBy).Use(user);

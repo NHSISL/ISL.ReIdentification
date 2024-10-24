@@ -95,13 +95,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
                     .Use(() => GetRandomStringWithLengthOf(10))
 
                 .OnProperty(csvIdentificationRequest => csvIdentificationRequest.RequesterEmail)
-                    .Use(GetRandomStringWithLengthOf(319))
+                    .Use(GetRandomStringWithLengthOf(320))
 
                 .OnProperty(csvIdentificationRequest => csvIdentificationRequest.RecipientEmail)
-                    .Use(GetRandomStringWithLengthOf(319))
+                    .Use(GetRandomStringWithLengthOf(320))
 
                 .OnProperty(csvIdentificationRequest => csvIdentificationRequest.Organisation)
-                    .Use(GetRandomStringWithLengthOf(254))
+                    .Use(GetRandomStringWithLengthOf(255))
 
                 .OnProperty(csvIdentificationRequest => csvIdentificationRequest.CreatedBy).Use(user)
                 .OnProperty(csvIdentificationRequest => csvIdentificationRequest.UpdatedBy).Use(user);

@@ -134,10 +134,10 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.ReIdentific
                     .Use(() => GetRandomStringWithLengthOf(320))
 
                 .OnProperty(impersonationContext => impersonationContext.Organisation)
-                    .Use(() => GetRandomStringWithLengthOf(249))
+                    .Use(() => GetRandomStringWithLengthOf(255))
 
                 .OnProperty(impersonationContext => impersonationContext.ProjectName)
-                    .Use(() => GetRandomStringWithLengthOf(249))
+                    .Use(() => GetRandomStringWithLengthOf(255))
 
                 .OnProperty(impersonationContext => impersonationContext.IdentifierColumn)
                     .Use(() => GetRandomStringWithLengthOf(10))
@@ -166,13 +166,13 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.ReIdentific
                     .Use(() => GetRandomStringWithLengthOf(10))
 
                 .OnProperty(csvIdentificationRequest => csvIdentificationRequest.RequesterEmail)
-                    .Use(GetRandomStringWithLengthOf(319))
+                    .Use(GetRandomStringWithLengthOf(320))
 
                 .OnProperty(csvIdentificationRequest => csvIdentificationRequest.RecipientEmail)
-                    .Use(GetRandomStringWithLengthOf(319))
+                    .Use(GetRandomStringWithLengthOf(320))
 
                 .OnProperty(csvIdentificationRequest => csvIdentificationRequest.Organisation)
-                    .Use(GetRandomStringWithLengthOf(254))
+                    .Use(GetRandomStringWithLengthOf(255))
 
                 .OnProperty(csvIdentificationRequest => csvIdentificationRequest.CreatedBy).Use(user)
                 .OnProperty(csvIdentificationRequest => csvIdentificationRequest.UpdatedBy).Use(user);

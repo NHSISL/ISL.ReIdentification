@@ -85,10 +85,10 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
                     .Use(() => GetRandomStringWithLengthOf(320))
 
                 .OnProperty(impersonationContext => impersonationContext.Organisation)
-                    .Use(() => GetRandomStringWithLengthOf(249))
+                    .Use(() => GetRandomStringWithLengthOf(255))
 
                 .OnProperty(impersonationContext => impersonationContext.ProjectName)
-                    .Use(() => GetRandomStringWithLengthOf(249))
+                    .Use(() => GetRandomStringWithLengthOf(255))
 
                 .OnProperty(impersonationContext => impersonationContext.IdentifierColumn)
                     .Use(() => GetRandomStringWithLengthOf(10))

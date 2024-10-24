@@ -97,13 +97,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                     .Use(() => GetRandomStringWithLengthOf(10))
 
                 .OnProperty(csvIdentificationRequest => csvIdentificationRequest.RequesterEmail)
-                    .Use(GetRandomStringWithLengthOf(319))
+                    .Use(GetRandomStringWithLengthOf(320))
 
                 .OnProperty(csvIdentificationRequest => csvIdentificationRequest.RecipientEmail)
-                    .Use(GetRandomStringWithLengthOf(319))
+                    .Use(GetRandomStringWithLengthOf(320))
 
                 .OnProperty(csvIdentificationRequest => csvIdentificationRequest.Organisation)
-                    .Use(GetRandomStringWithLengthOf(254))
+                    .Use(GetRandomStringWithLengthOf(255))
 
                 .OnProperty(csvIdentificationRequest => csvIdentificationRequest.CreatedBy).Use(user)
                 .OnProperty(csvIdentificationRequest => csvIdentificationRequest.UpdatedBy).Use(user);
@@ -121,16 +121,16 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
 
                 .OnProperty(impersonationContext => impersonationContext.RequesterEmail)
-                    .Use(GetRandomStringWithLengthOf(319))
+                    .Use(GetRandomStringWithLengthOf(320))
 
                 .OnProperty(impersonationContext => impersonationContext.ResponsiblePersonEmail)
-                    .Use(GetRandomStringWithLengthOf(319))
+                    .Use(GetRandomStringWithLengthOf(320))
 
                 .OnProperty(impersonationContext => impersonationContext.Organisation)
-                    .Use(GetRandomStringWithLengthOf(254))
+                    .Use(GetRandomStringWithLengthOf(255))
 
                 .OnProperty(impersonationContext => impersonationContext.ProjectName)
-                    .Use(GetRandomStringWithLengthOf(254))
+                    .Use(GetRandomStringWithLengthOf(255))
 
                 .OnProperty(impersonationContext => impersonationContext.IdentifierColumn)
                     .Use(GetRandomStringWithLengthOf(9))
