@@ -76,9 +76,18 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
         [HttpDelete("{pdsDataId}")]
         public async ValueTask<ActionResult<PdsData>> DeletePdsDataByIdAsync(Guid pdsDataId)
         {
-            PdsData pdsData = await this.pdsDataService.RemovePdsDataByIdAsync(pdsDataId);
+            try
+            {
+                PdsData pdsData = await this.pdsDataService.RemovePdsDataByIdAsync(pdsDataId);
 
-            return Ok(pdsData);
+                return Ok(pdsData);
+            }
+            catch (PdsDataValidationException pdsDataValidationException)
+                when (pdsDataValidationException.InnerException
+                    is NotFoundPdsDataException)
+            {
+                return NotFound(pdsDataValidationException.InnerException);
+            }
         }
     }
 }
