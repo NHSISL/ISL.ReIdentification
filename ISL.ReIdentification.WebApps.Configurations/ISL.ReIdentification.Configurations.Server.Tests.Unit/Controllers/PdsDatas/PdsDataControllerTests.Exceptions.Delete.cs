@@ -5,6 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Foundations.PdsDatas;
+using ISL.ReIdentification.Core.Models.Foundations.PdsDatas.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using RESTFulSense.Clients.Extensions;
@@ -63,6 +64,46 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.PdsD
             this.pdsDataServiceMock.Setup(service =>
                 service.RemovePdsDataByIdAsync(It.IsAny<Guid>()))
                     .ThrowsAsync(validationException);
+
+            // when
+            ActionResult<PdsData> actualActionResult =
+                await this.pdsDataController.DeletePdsDataByIdAsync(someId);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.pdsDataServiceMock.Verify(service =>
+                service.RemovePdsDataByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.pdsDataServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldReturnNotFoundOnDeleteIfItemDoesNotExistAsync()
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+            string someMessage = GetRandomString();
+
+            var notFoundPdsDataException =
+                new NotFoundPdsDataException(
+                    message: someMessage);
+
+            var pdsDataValidationException =
+                new PdsDataValidationException(
+                    message: someMessage,
+                    innerException: notFoundPdsDataException);
+
+            NotFoundObjectResult expectedNotFoundObjectResult =
+                NotFound(notFoundPdsDataException);
+
+            var expectedActionResult =
+                new ActionResult<PdsData>(expectedNotFoundObjectResult);
+
+            this.pdsDataServiceMock.Setup(service =>
+                service.RemovePdsDataByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(pdsDataValidationException);
 
             // when
             ActionResult<PdsData> actualActionResult =
