@@ -10,7 +10,6 @@ using Force.DeepCloner;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Models.Foundations.PdsDatas;
-using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Services.Foundations.PdsDatas;
 using ISL.ReIdentification.Core.Services.Foundations.UserAccesses;
@@ -84,28 +83,6 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Accesses
             }
 
             return accessRequest;
-        }
-
-        virtual internal async ValueTask<List<string>> GetOrganisationsForUserAsync(Guid entraUserId)
-        {
-            ValidateOnGetOrganisationsForUser(entraUserId);
-            DateTimeOffset currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-
-            IQueryable<UserAccess> userAccesses =
-                await this.userAccessService
-                    .RetrieveAllUserAccessesAsync();
-
-            userAccesses = userAccesses
-                .Where(userAccess =>
-                    userAccess.EntraUserId == entraUserId
-                    && userAccess.ActiveFrom <= currentDateTime
-                    && (userAccess.ActiveTo == null || userAccess.ActiveTo > currentDateTime));
-
-            List<string> organisationsForUser = userAccesses
-                .Select(userAccess => userAccess.OrgCode)
-                .ToList();
-
-            return organisationsForUser;
         }
 
         virtual internal async ValueTask<bool> UserHasAccessToPatientAsync(string identifier, List<string> organisationCodes)
