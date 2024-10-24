@@ -120,7 +120,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
         public ValueTask<AccessRequest> PersistsImpersonationContextAsync(AccessRequest accessRequest) =>
         TryCatch(async () =>
         {
-            ValidateImpersonationContext(accessRequest);
+            ValidateOnPersistImpersonationContext(accessRequest);
 
             return await this.persistanceOrchestrationService.PersistImpersonationContextAsync(accessRequest);
         });
@@ -324,6 +324,5 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
 
             return (landingFilepath, pickFilepath, errorFilepath, impersonationContextId);
         }
-
     }
 }
