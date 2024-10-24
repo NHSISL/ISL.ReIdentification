@@ -138,18 +138,6 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                         accessRequest.CsvIdentificationRequest);
 
                 AccessRequest convertedAccessRequest = new AccessRequest();
-                //string filepath = accessRequest.CsvIdentificationRequest.Filepath;
-                //string[] filepathParts = filepath.Split('/', StringSplitOptions.RemoveEmptyEntries);
-                //string container = filepathParts[0];
-                //Guid impersonationContextId = Guid.Parse(filepathParts[1]);
-                //string fileName = string.Join("/", filepathParts, 2, filepathParts.Length - 2);
-                //DateTimeOffset dateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-                //string timestamp = dateTimeOffset.ToString("yyyyMMddHHmms");
-                //string nameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
-
-                //string updatedFilename = fileName
-                //    .Replace("outbox", projectStorageConfiguration.PickupFolder)
-                //    .Replace(nameWithoutExtension, nameWithoutExtension + "_" + timestamp);
 
                 AccessRequest returnedAccessRequestWithImpersonationContext =
                     await this.persistanceOrchestrationService

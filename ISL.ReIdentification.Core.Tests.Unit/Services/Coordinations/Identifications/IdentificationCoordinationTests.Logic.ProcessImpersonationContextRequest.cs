@@ -7,6 +7,8 @@ using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
+using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
+using ISL.ReIdentification.Core.Models.Coordinations.Identifications.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
@@ -31,11 +33,17 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             string container = GetRandomString();
             string fileName = randomString;
             string fileExtension = ".csv";
-            string filepath = $"/{container}/{contextIdString}/outbox/subdirectory/{fileName}{fileExtension}";
+            string inputFilepath = $"/{container}/{contextIdString}/outbox/subdirectory/{fileName}{fileExtension}";
+            string outputLandingFilepath = $"outbox/subdirectory/{fileName}{fileExtension}";
+            string outputPickupFilepath = $"inbox/subdirectory/{fileName}_{timestamp}{fileExtension}";
+            string outputErrorFilepath = $"error/subdirectory/{fileName}_{timestamp}{fileExtension}";
+            Guid outputContextId = contextId;
+
+            var outputExtractFromFilepath =
+                (outputLandingFilepath, outputPickupFilepath, outputErrorFilepath, outputContextId);
+
             AccessRequest inputAccessRequest = CreateRandomAccessRequest();
-            string inputFileName = $"outbox/subdirectory/{fileName}{fileExtension}";
-            string outputFileName = $"inbox/subdirectory/{fileName}_{timestamp}{fileExtension}";
-            inputAccessRequest.CsvIdentificationRequest.Filepath = filepath;
+            inputAccessRequest.CsvIdentificationRequest.Filepath = inputFilepath;
             AccessRequest outputPersistanceOrchestrationAccessRequest = CreateRandomAccessRequest();
             ImpersonationContext outputImpersonationContext = CreateRandomImpersonationContext();
             outputPersistanceOrchestrationAccessRequest.ImpersonationContext = outputImpersonationContext;
@@ -47,7 +55,16 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             resultingAccessRequest.CsvIdentificationRequest = outputConversionCsvIdentificationRequest;
             resultingAccessRequest.IdentificationRequest = null;
             resultingAccessRequest.ImpersonationContext = null;
+            MemoryStream resultingCsvData = new MemoryStream(resultingAccessRequest.CsvIdentificationRequest.Data);
             AccessRequest expectedAccessRequest = resultingAccessRequest.DeepClone();
+
+            var projectStorageConfiguration = new ProjectStorageConfiguration
+            {
+                Container = container,
+                LandingFolder = GetRandomString(),
+                PickupFolder = GetRandomString(),
+                ErrorFolder = GetRandomString(),
+            };
 
             var identificationCoordinationServiceMock = new Mock<IdentificationCoordinationService>
                 (this.accessOrchestrationServiceMock.Object,
@@ -56,17 +73,18 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 this.csvHelperBrokerMock.Object,
                 this.securityBrokerMock.Object,
                 this.loggingBrokerMock.Object,
-                this.dateTimeBrokerMock.Object)
+                this.dateTimeBrokerMock.Object,
+                projectStorageConfiguration)
             { CallBase = true };
+
+            identificationCoordinationServiceMock.Setup(service =>
+                service.ExtractFromFilepath(inputFilepath))
+                    .ReturnsAsync(outputExtractFromFilepath);
 
             identificationCoordinationServiceMock.Setup(service =>
                 service.ConvertCsvIdentificationRequestToIdentificationRequest(
                     inputAccessRequest.CsvIdentificationRequest))
                         .ReturnsAsync(outputConversionIdentificationRequest);
-
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
-                    .ReturnsAsync(randomDateTimeOffset);
 
             this.persistanceOrchestrationServiceMock.Setup(service =>
                 service.RetrieveImpersonationContextByIdAsync(contextId))
@@ -97,13 +115,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             actualAccessRequest.Should().BeEquivalentTo(expectedAccessRequest);
 
             identificationCoordinationServiceMock.Verify(service =>
+                service.ExtractFromFilepath(inputFilepath),
+                    Times.Once);
+
+            identificationCoordinationServiceMock.Verify(service =>
                 service.ConvertCsvIdentificationRequestToIdentificationRequest(
                     inputAccessRequest.CsvIdentificationRequest),
                         Times.Once);
-
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
 
             this.persistanceOrchestrationServiceMock.Verify(service =>
                 service.RetrieveImpersonationContextByIdAsync(contextId),
@@ -123,12 +141,128 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                         Times.Once);
 
             this.identificationOrchestrationServiceMock.Verify(service =>
-                service.AddDocumentAsync(It.IsAny<Stream>(), outputFileName, container),
+                service.AddDocumentAsync(It.Is(SameStreamAs(resultingCsvData)), outputPickupFilepath, container),
                     Times.Once);
 
             this.identificationOrchestrationServiceMock.Verify(service =>
-                service.RemoveDocumentByFileNameAsync(inputFileName, container),
+                service.RemoveDocumentByFileNameAsync(outputLandingFilepath, container),
                     Times.Once);
+
+            identificationCoordinationServiceMock.VerifyNoOtherCalls();
+            this.persistanceOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.accessOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.identificationOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldMoveFileToErrorFolderOnProcessImpersonationContextRequestOnErrorAsync()
+        {
+            // given
+            Exception someException = new Exception();
+            Guid randomGuid = Guid.NewGuid();
+            Guid contextId = randomGuid;
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            string timestamp = randomDateTimeOffset.ToString("yyyyMMddHHmms");
+            string contextIdString = contextId.ToString();
+            string randomString = GetRandomString();
+            string container = GetRandomString();
+            string fileName = randomString;
+            string fileExtension = ".csv";
+            string inputFilepath = $"/{container}/{contextIdString}/outbox/subdirectory/{fileName}{fileExtension}";
+            string outputLandingFilepath = $"outbox/subdirectory/{fileName}{fileExtension}";
+            string outputPickupFilepath = $"inbox/subdirectory/{fileName}_{timestamp}{fileExtension}";
+            string outputErrorFilepath = $"error/subdirectory/{fileName}_{timestamp}{fileExtension}";
+            Guid outputContextId = contextId;
+
+            var outputExtractFromFilepath =
+                (outputLandingFilepath, outputPickupFilepath, outputErrorFilepath, outputContextId);
+
+            AccessRequest inputAccessRequest = CreateRandomAccessRequest();
+            inputAccessRequest.CsvIdentificationRequest.Filepath = inputFilepath;
+            MemoryStream inputCsvData = new MemoryStream(inputAccessRequest.CsvIdentificationRequest.Data);
+            AccessRequest outputPersistanceOrchestrationAccessRequest = CreateRandomAccessRequest();
+            ImpersonationContext outputImpersonationContext = CreateRandomImpersonationContext();
+            outputPersistanceOrchestrationAccessRequest.ImpersonationContext = outputImpersonationContext;
+            IdentificationRequest outputConversionIdentificationRequest = CreateRandomIdentificationRequest();
+            AccessRequest outputOrchestrationAccessRequest = CreateRandomAccessRequest();
+            IdentificationRequest outputOrchestrationIdentificationRequest = CreateRandomIdentificationRequest();
+            CsvIdentificationRequest outputConversionCsvIdentificationRequest = CreateRandomCsvIdentificationRequest();
+            AccessRequest resultingAccessRequest = CreateRandomAccessRequest();
+            resultingAccessRequest.CsvIdentificationRequest = outputConversionCsvIdentificationRequest;
+            resultingAccessRequest.IdentificationRequest = null;
+            resultingAccessRequest.ImpersonationContext = null;
+            AccessRequest expectedAccessRequest = resultingAccessRequest.DeepClone();
+
+            var projectStorageConfiguration = new ProjectStorageConfiguration
+            {
+                Container = container,
+                LandingFolder = GetRandomString(),
+                PickupFolder = GetRandomString(),
+                ErrorFolder = GetRandomString(),
+            };
+
+            var identificationCoordinationServiceMock = new Mock<IdentificationCoordinationService>
+                (this.accessOrchestrationServiceMock.Object,
+                this.persistanceOrchestrationServiceMock.Object,
+                this.identificationOrchestrationServiceMock.Object,
+                this.csvHelperBrokerMock.Object,
+                this.securityBrokerMock.Object,
+                this.loggingBrokerMock.Object,
+                this.dateTimeBrokerMock.Object,
+                projectStorageConfiguration)
+            { CallBase = true };
+
+            var expectedIdentificationCoordinationServiceException =
+                new IdentificationCoordinationServiceException(
+                    message: "Identification coordination service error occurred, " +
+                        "fix the errors and try again.",
+                    innerException: someException);
+
+            identificationCoordinationServiceMock.Setup(service =>
+                service.ExtractFromFilepath(inputFilepath))
+                    .ReturnsAsync(outputExtractFromFilepath);
+
+            identificationCoordinationServiceMock.Setup(service =>
+                service.ConvertCsvIdentificationRequestToIdentificationRequest(
+                    inputAccessRequest.CsvIdentificationRequest))
+                        .ThrowsAsync(someException);
+
+            IdentificationCoordinationService identificationCoordinationService =
+                identificationCoordinationServiceMock.Object;
+
+            // when
+            ValueTask<AccessRequest> accessRequestTask = identificationCoordinationService
+                .ProcessImpersonationContextRequestAsync(inputAccessRequest);
+
+            IdentificationCoordinationServiceException actualIdentificationCoordinationValidationException =
+                await Assert.ThrowsAsync<IdentificationCoordinationServiceException>(
+                    testCode: accessRequestTask.AsTask);
+
+            // then
+            identificationCoordinationServiceMock.Verify(service =>
+                service.ExtractFromFilepath(inputFilepath),
+                    Times.Once);
+
+            identificationCoordinationServiceMock.Verify(service =>
+                service.ConvertCsvIdentificationRequestToIdentificationRequest(
+                    inputAccessRequest.CsvIdentificationRequest),
+                        Times.Once);
+
+            this.identificationOrchestrationServiceMock.Verify(service =>
+                service.AddDocumentAsync(It.Is(SameStreamAs(inputCsvData)), outputErrorFilepath, container),
+                    Times.Once);
+
+            this.identificationOrchestrationServiceMock.Verify(service =>
+                service.RemoveDocumentByFileNameAsync(outputLandingFilepath, container),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
+                   expectedIdentificationCoordinationServiceException))),
+                       Times.Once);
 
             identificationCoordinationServiceMock.VerifyNoOtherCalls();
             this.persistanceOrchestrationServiceMock.VerifyNoOtherCalls();
