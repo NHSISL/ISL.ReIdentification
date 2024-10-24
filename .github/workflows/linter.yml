@@ -25,6 +25,8 @@ jobs:
         - name: Install modules
           working-directory: ./ISL.ReIdentification.WebApps.Configurations/ISL.ReIdentification.Configurations.Client
           run: npm install
+        - name: Install certificates
+          run: dotnet dev-certs https --verbose --trust
         - name: Run ESLint
           working-directory: ./ISL.ReIdentification.WebApps.Configurations/ISL.ReIdentification.Configurations.Client
           run: npm run lint
@@ -33,6 +35,4 @@ jobs:
           run: npm run test
         - name: Run JS Build
           working-directory: ./ISL.ReIdentification.WebApps.Configurations/ISL.ReIdentification.Configurations.Client
-          run: |
-            dotnet dev-certs https --verbose --trust
-            npm run build
+          run: npm run build
