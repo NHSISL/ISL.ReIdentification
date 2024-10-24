@@ -5,14 +5,7 @@ import { IdentificationRequestView } from "../../../models/views/components/reId
 import { IdentificationRequest } from "../../../models/ReIdentifications/IdentificationRequest";
 
 type ReIdentificationViewServiceResponse = {
-    mappedLookups: IdentificationRequestView[] | undefined;
-    pages: Array<{ data: IdentificationRequestView[] }>;
-    isLoading: boolean;
-    fetchNextPage: () => void;
-    isFetchingNextPage: boolean;
-    hasNextPage: boolean;
-    data: { pages: Array<{ data: IdentificationRequestView[] }> } | undefined;
-    refetch: () => void;
+    mappedReIdentifications: IdentificationRequestView[] | undefined;
 };
 
 
@@ -21,29 +14,14 @@ export const reIdentificationViewService = {
         const response = reIdentificationService.useRequestReIdentification();
 
         const [mappedReIdentifications, setMappedReIdentifications] =
-            useState<Array<IdentificationRequestView> | undefined>(undefined);
+            useState<Array<IdentificationRequestView> | undefined>();
 
         useEffect(() => {
             if (Array.isArray(response.data)) {
-                const reIdentifications = response.data.map((identificationRequest: IdentificationRequest) =>
-                    new IdentificationRequestView(
-                        identificationRequest.id,
-                        identificationRequest.identificationItems,
-                        identificationRequest.entraUserId,
-                        identificationRequest.givenName,
-                        identificationRequest.surname,
-                        identificationRequest.displayName,
-                        identificationRequest.jobTitle,
-                        identificationRequest.email,
-                        identificationRequest.purpose,
-                        identificationRequest.organisation,
-                        identificationRequest.reason,
-                    )
-                );
-
+                const reIdentifications = response.data as IdentificationRequest[]; 
                 setMappedReIdentifications(reIdentifications);
             } else {
-                setMappedReIdentifications(undefined); // Clear state if no valid array
+                setMappedReIdentifications([]); // Clear state if no valid array
             }
         }, [response.data]);
 
