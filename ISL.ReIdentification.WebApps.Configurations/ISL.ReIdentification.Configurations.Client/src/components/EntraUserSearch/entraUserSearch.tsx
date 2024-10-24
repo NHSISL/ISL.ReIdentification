@@ -1,8 +1,8 @@
 import { debounce } from "lodash";
-import React, { FunctionComponent, useMemo, useState } from "react";
+import { FunctionComponent, useMemo, useState } from "react";
 import { Button, Card, Form, FormGroup, InputGroup, Table } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCross, faDatabase, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faDatabase, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { entraUsersService } from "../../services/foundations/entraUsersService";
 import { entraUser } from "../../models/views/components/entraUsers/entraUsers";
 
@@ -12,7 +12,7 @@ type EntraUserSearchProps = {
 
 const EntraUserSearch: FunctionComponent<EntraUserSearchProps> = ({ selectUser }) => {
     const [searchTerm, setSearchTerm] = useState<string>();
-    const [debouncedTerm, setDebouncedTerm] = useState<string>();
+    const [debouncedTerm, setDebouncedTerm] = useState<string>("");
     const { data } = entraUsersService.useSearchEntraUsers(debouncedTerm);
 
     const handleSearchChange = (value: string) => {

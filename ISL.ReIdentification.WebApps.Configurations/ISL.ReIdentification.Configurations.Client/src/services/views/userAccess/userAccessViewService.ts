@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { Guid } from "guid-typescript";
 import { UserAccessView } from "../../../models/views/components/userAccess/userAccessView";
 import { userAccessService } from "../../foundations/userAccessService";
 import { UserAccess } from "../../../models/userAccess/userAccess";
+import { UserAccessOdataResponse } from "../../../brokers/apiBroker.userAccess";
 
 type UserAccessViewServiceResponse = {
     mappedUserAccess: UserAccessView[] | undefined;
@@ -32,7 +32,7 @@ export const userAccessViewService = {
 
         const response = userAccessService.useRetrieveAllUserAccessPages(query);
         const [mappedUserAccess, setMappedUserAccess] = useState<Array<UserAccessView>>();
-        const [pages, setPages] = useState<any>([]);
+        const [pages, setPages] = useState<UserAccessOdataResponse[]>([]);
 
         useEffect(() => {
             if (response.data && response.data.pages) {
@@ -41,15 +41,18 @@ export const userAccessViewService = {
                     page.data.forEach((userAccess: UserAccess) => {
                         userAccesses.push(new UserAccessView(
                             userAccess.id,
-                            userAccess.displayName,
                             userAccess.userEmail,
+                            userAccess.displayName,
+                            userAccess.entraGuid,
+                            userAccess.entraUpn,
+                            userAccess.jobTitle,
                             userAccess.orgCodes,
                             userAccess.activeFrom,
                             userAccess.activeTo,
                             userAccess.createdBy,
                             userAccess.createdDate,
                             userAccess.updatedBy,
-                            userAccess.updatedDate,
+                            userAccess.updatedDate
                         ));
                     });
                 });
@@ -57,7 +60,7 @@ export const userAccessViewService = {
                 setMappedUserAccess(userAccesses);
                 setPages(response.data.pages);
             }
-        }, [response.data?.pages]);
+        }, [response.data, response.data?.pages]);
 
         return {
             mappedUserAccess,
@@ -81,10 +84,12 @@ export const userAccessViewService = {
                 const userAccess = response.data.pages[0].data[0];
                 const userAccessView = new UserAccessView(
                     userAccess.id,
-                    userAccess.firstName,
-                    userAccess.lastName,
                     userAccess.userEmail,
-                    userAccess.orgCode,
+                    userAccess.displayName,
+                    userAccess.entraGuid,
+                    userAccess.entraUpn,
+                    userAccess.jobTitle,
+                    userAccess.orgCodes,
                     userAccess.activeFrom,
                     userAccess.activeTo,
                     userAccess.createdBy,
@@ -95,7 +100,7 @@ export const userAccessViewService = {
 
                 setMappedUserAccess(userAccessView);
             }
-        }, [response.data?.pages]);
+        }, [response.data, response.data?.pages]);
 
         return {
             mappedUserAccess,

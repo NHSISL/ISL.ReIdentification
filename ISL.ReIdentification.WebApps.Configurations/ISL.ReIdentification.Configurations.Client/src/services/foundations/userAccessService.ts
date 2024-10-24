@@ -1,5 +1,4 @@
 import { useMsal } from "@azure/msal-react";
-import { Guid } from "guid-typescript";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import UserAccessBroker from "../../brokers/apiBroker.userAccess";
 import { UserAccess } from "../../models/userAccess/userAccess";
@@ -41,15 +40,15 @@ export const userAccessService = {
         const userAccessBroker = new UserAccessBroker();
         return useInfiniteQuery({
             queryKey: ["UserAccessGetAll", { query: query }],
-            queryFn: ({ pageParam = null }) => {
+            queryFn: ({ pageParam  }) => {
                 if (!pageParam) {
                     return userAccessBroker.GetUserAccessFirstPagesAsync(query);
                 }
                 return userAccessBroker.GetUserAccessSubsequentPagesAsync(pageParam);
             },
-            initialPageParam: 0,
+            initialPageParam: "",
             staleTime: Infinity,
-            getNextPageParam: (lastPage: any) => lastPage.nextPage ?? null,
+            getNextPageParam: (lastPage) => lastPage.nextPage ?? null,
         });
     },
 
@@ -79,11 +78,11 @@ export const userAccessService = {
         const queryClient = useQueryClient();
 
         return useMutation({
-            mutationFn: (id: Guid) => {
+            mutationFn: (id: string) => {
                 return broker.DeleteUserAccessByIdAsync(id);
             },
 
-            onSuccess: (data: { id: Guid }) => {
+            onSuccess: (data: { id: string }) => {
                 queryClient.invalidateQueries({ queryKey: ["UserAccessGetAll"] });
                 queryClient.invalidateQueries({ queryKey: ["UserAccessGetById", { id: data.id }] });
             }

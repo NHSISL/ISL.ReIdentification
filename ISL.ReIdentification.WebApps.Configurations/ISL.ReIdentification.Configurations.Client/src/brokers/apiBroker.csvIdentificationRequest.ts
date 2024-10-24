@@ -1,7 +1,11 @@
 import { AxiosResponse } from "axios";
-import { Guid } from "guid-typescript";
 import ApiBroker from "./apiBroker";
 import { CsvIdentificationRequest } from "../models/csvIdentificationRequest/csvIdentificationRequest";
+
+type CsvIdentificationRequestODataResponse = {
+    data : CsvIdentificationRequest[],
+    nextPage: string
+}
 
 class CsvIdentificationRequestBroker {
     relativeCsvIdentificationRequestUrl = '/api/csvIdentificationRequests';
@@ -9,8 +13,8 @@ class CsvIdentificationRequestBroker {
 
     private apiBroker: ApiBroker = new ApiBroker();
 
-    private processOdataResult = (result: AxiosResponse) => {
-        const data = result.data.value.map((csvIdentificationRequest: any) => new CsvIdentificationRequest(csvIdentificationRequest));
+    private processOdataResult = (result: AxiosResponse) : CsvIdentificationRequestODataResponse=> {
+        const data = result.data.value.map((csvIdentificationRequest: CsvIdentificationRequest) => new CsvIdentificationRequest(csvIdentificationRequest));
 
         const nextPage = result.data['@odata.nextLink'];
         return { data, nextPage }
@@ -25,7 +29,7 @@ class CsvIdentificationRequestBroker {
         const url = this.relativeCsvIdentificationRequestUrl + queryString;
 
         return await this.apiBroker.GetAsync(url)
-            .then(result => result.data.map((csvIdentificationRequest: any) => new CsvIdentificationRequest(csvIdentificationRequest)));
+            .then(result => result.data.map((csvIdentificationRequest: CsvIdentificationRequest) => new CsvIdentificationRequest(csvIdentificationRequest)));
     }
 
     async GetCsvIdentificationRequestFirstPagesAsync(query: string) {
@@ -37,7 +41,7 @@ class CsvIdentificationRequestBroker {
         return this.processOdataResult(await this.apiBroker.GetAsyncAbsolute(absoluteUri));
     }
 
-    async GetCsvIdentificationRequestByIdAsync(id: Guid) {
+    async GetCsvIdentificationRequestByIdAsync(id: string) {
         const url = `${this.relativeCsvIdentificationRequestUrl}/${id}`;
 
         return await this.apiBroker.GetAsync(url)
@@ -49,7 +53,7 @@ class CsvIdentificationRequestBroker {
             .then(result => new CsvIdentificationRequest(result.data));
     }
 
-    async DeleteCsvIdentificationRequestByIdAsync(id: Guid) {
+    async DeleteCsvIdentificationRequestByIdAsync(id: string) {
         const url = `${this.relativeCsvIdentificationRequestUrl}/${id}`;
 
         return await this.apiBroker.DeleteAsync(url)
