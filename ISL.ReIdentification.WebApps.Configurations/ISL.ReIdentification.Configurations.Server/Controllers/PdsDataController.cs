@@ -74,7 +74,11 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
         }
 
         [HttpDelete("{pdsDataId}")]
-        public async ValueTask<ActionResult<PdsData>> DeletePdsDataByIdAsync(Guid pdsDataId) =>
-            throw new NotImplementedException();
+        public async ValueTask<ActionResult<PdsData>> DeletePdsDataByIdAsync(Guid pdsDataId)
+        {
+            PdsData pdsData = await this.pdsDataService.RemovePdsDataByIdAsync(pdsDataId);
+
+            return Ok(pdsData);
+        }
     }
 }
