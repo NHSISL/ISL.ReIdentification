@@ -13,6 +13,10 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Brokers
     {
         private const string PdsDataRelativeUrl = "api/pdsData";
 
+        public async ValueTask<PdsData> PostPdsDataAsync(
+            PdsData pdsData) =>
+                await this.apiFactoryClient.PostContentAsync(ImpersonationContextsRelativeUrl, pdsData);
+
         public async ValueTask<List<PdsData>> GetAllPdsDataAsync() =>
             await this.apiFactoryClient.GetContentAsync<List<PdsData>>($"{PdsDataRelativeUrl}/");
 
