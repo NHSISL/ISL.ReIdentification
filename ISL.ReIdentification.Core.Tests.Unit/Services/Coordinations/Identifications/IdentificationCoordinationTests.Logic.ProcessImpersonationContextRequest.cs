@@ -31,9 +31,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             string container = GetRandomString();
             string fileName = randomString;
             string fileExtension = ".csv";
-            string filepath = $"/{container}/{contextIdString}/outbox/directory1/directory2/{fileName}{fileExtension}";
+            string filepath = $"/{container}/{contextIdString}/outbox/subdirectory/{fileName}{fileExtension}";
             AccessRequest inputAccessRequest = CreateRandomAccessRequest();
-            string outputFileName = $"inbox/directory1/directory2/{fileName}_{timestamp}{fileExtension}";
+            string inputFileName = $"outbox/subdirectory/{fileName}{fileExtension}";
+            string outputFileName = $"inbox/subdirectory/{fileName}_{timestamp}{fileExtension}";
             inputAccessRequest.CsvIdentificationRequest.Filepath = filepath;
             AccessRequest outputPersistanceOrchestrationAccessRequest = CreateRandomAccessRequest();
             ImpersonationContext outputImpersonationContext = CreateRandomImpersonationContext();
@@ -100,6 +101,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                     inputAccessRequest.CsvIdentificationRequest),
                         Times.Once);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
             this.persistanceOrchestrationServiceMock.Verify(service =>
                 service.RetrieveImpersonationContextByIdAsync(contextId),
                     Times.Once);
@@ -122,7 +127,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                     Times.Once);
 
             this.identificationOrchestrationServiceMock.Verify(service =>
-                service.RemoveDocumentByFileNameAsync(fileName, container),
+                service.RemoveDocumentByFileNameAsync(inputFileName, container),
                     Times.Once);
 
             identificationCoordinationServiceMock.VerifyNoOtherCalls();
@@ -131,6 +136,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             this.identificationOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

@@ -118,63 +118,88 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
         TryCatch(async () =>
         {
             ValidateImpersonationContext(accessRequest);
-            
+
             return await this.persistanceOrchestrationService.PersistImpersonationContextAsync(accessRequest);
         });
 
         public ValueTask<AccessRequest> ProcessImpersonationContextRequestAsync(AccessRequest accessRequest) =>
         TryCatch(async () =>
         {
-            ValidateImpersonationContext(accessRequest);
-
-            IdentificationRequest identificationRequest =
-                await ConvertCsvIdentificationRequestToIdentificationRequest(
-                    accessRequest.CsvIdentificationRequest);
-
-            AccessRequest convertedAccessRequest = new AccessRequest();
-            string filepath = accessRequest.CsvIdentificationRequest.Filepath;
-            string[] filepathParts = filepath.Split('/', StringSplitOptions.RemoveEmptyEntries);
-            string container = filepathParts[0];
-            Guid impersonationContextId = Guid.Parse(filepathParts[1]);
-            string fileName = string.Join("/", filepathParts, 2, filepathParts.Length - 2);
-            DateTimeOffset dateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-            string timestamp = dateTimeOffset.ToString("yyyyMMddHHmms");
-            string nameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
-
-            string updatedFilename = fileName
-                .Replace("outbox", "inbox")
-                .Replace(nameWithoutExtension, nameWithoutExtension + "_" + timestamp);
-
-            AccessRequest returnedAccessRequestWithImpersonationContext =
-                await this.persistanceOrchestrationService
-                    .RetrieveImpersonationContextByIdAsync(impersonationContextId);
-
-            IdentificationRequest currentIdentificationRequest =
-                OverrideIdentificationRequestUserDetails(
-                    identificationRequest, returnedAccessRequestWithImpersonationContext.ImpersonationContext);
-
-            convertedAccessRequest.IdentificationRequest = currentIdentificationRequest;
-
-            AccessRequest returnedAccessRequest =
-                await this.accessOrchestrationService
-                    .ValidateAccessForIdentificationRequestAsync(convertedAccessRequest);
-
-            IdentificationRequest returnedIdentificationRequest =
-                await this.identificationOrchestrationService
-                    .ProcessIdentificationRequestAsync(returnedAccessRequest.IdentificationRequest);
-
-            CsvIdentificationRequest reIdentifiedCsvIdentificationRequest =
-                await ConvertIdentificationRequestToCsvIdentificationRequest(returnedIdentificationRequest);
-
-            AccessRequest reIdentifiedAccessRequest = new AccessRequest
+            try
             {
-                CsvIdentificationRequest = reIdentifiedCsvIdentificationRequest
-            };
+                ValidateImpersonationContext(accessRequest);
 
-            MemoryStream csvData = new MemoryStream(reIdentifiedCsvIdentificationRequest.Data);
-            await this.identificationOrchestrationService.AddDocumentAsync(csvData, updatedFilename, container);
+                IdentificationRequest identificationRequest =
+                    await ConvertCsvIdentificationRequestToIdentificationRequest(
+                        accessRequest.CsvIdentificationRequest);
 
-            return reIdentifiedAccessRequest;
+                AccessRequest convertedAccessRequest = new AccessRequest();
+                string filepath = accessRequest.CsvIdentificationRequest.Filepath;
+                string[] filepathParts = filepath.Split('/', StringSplitOptions.RemoveEmptyEntries);
+                string container = filepathParts[0];
+                Guid impersonationContextId = Guid.Parse(filepathParts[1]);
+                string fileName = string.Join("/", filepathParts, 2, filepathParts.Length - 2);
+                DateTimeOffset dateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                string timestamp = dateTimeOffset.ToString("yyyyMMddHHmms");
+                string nameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
+
+                string updatedFilename = fileName
+                    .Replace("outbox", "inbox")
+                    .Replace(nameWithoutExtension, nameWithoutExtension + "_" + timestamp);
+
+                AccessRequest returnedAccessRequestWithImpersonationContext =
+                    await this.persistanceOrchestrationService
+                        .RetrieveImpersonationContextByIdAsync(impersonationContextId);
+
+                IdentificationRequest currentIdentificationRequest =
+                    OverrideIdentificationRequestUserDetails(
+                        identificationRequest, returnedAccessRequestWithImpersonationContext.ImpersonationContext);
+
+                convertedAccessRequest.IdentificationRequest = currentIdentificationRequest;
+
+                AccessRequest returnedAccessRequest =
+                    await this.accessOrchestrationService
+                        .ValidateAccessForIdentificationRequestAsync(convertedAccessRequest);
+
+                IdentificationRequest returnedIdentificationRequest =
+                    await this.identificationOrchestrationService
+                        .ProcessIdentificationRequestAsync(returnedAccessRequest.IdentificationRequest);
+
+                CsvIdentificationRequest reIdentifiedCsvIdentificationRequest =
+                    await ConvertIdentificationRequestToCsvIdentificationRequest(returnedIdentificationRequest);
+
+                AccessRequest reIdentifiedAccessRequest = new AccessRequest
+                {
+                    CsvIdentificationRequest = reIdentifiedCsvIdentificationRequest
+                };
+
+                MemoryStream csvData = new MemoryStream(reIdentifiedCsvIdentificationRequest.Data);
+                await this.identificationOrchestrationService.AddDocumentAsync(csvData, updatedFilename, container);
+                await this.identificationOrchestrationService.RemoveDocumentByFileNameAsync(fileName, container);
+
+                return reIdentifiedAccessRequest;
+            }
+            catch (Exception)
+            {
+                string filepath = accessRequest.CsvIdentificationRequest.Filepath;
+                string[] filepathParts = filepath.Split('/', StringSplitOptions.RemoveEmptyEntries);
+                string container = filepathParts[0];
+                Guid impersonationContextId = Guid.Parse(filepathParts[1]);
+                string fileName = string.Join("/", filepathParts, 2, filepathParts.Length - 2);
+                DateTimeOffset dateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                string timestamp = dateTimeOffset.ToString("yyyyMMddHHmms");
+                string nameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
+
+                string errorFilename = fileName
+                    .Replace("outbox", "error")
+                    .Replace(nameWithoutExtension, nameWithoutExtension + "_" + timestamp);
+
+                MemoryStream csvData = new MemoryStream(accessRequest.CsvIdentificationRequest.Data);
+                await this.identificationOrchestrationService.AddDocumentAsync(csvData, errorFilename, container);
+                await this.identificationOrchestrationService.RemoveDocumentByFileNameAsync(fileName, container);
+
+                throw;
+            }
         });
 
         virtual async internal ValueTask<IdentificationRequest> ConvertCsvIdentificationRequestToIdentificationRequest(
