@@ -198,7 +198,9 @@ namespace ISL.ReIdentification.Configurations.Server
         }
 
         private static void AddProcessingServices(IServiceCollection services)
-        { }
+        {
+            services.AddTransient<IUserAccessProcessingService, UserAccessProcessingService>();
+        }
 
         private static void AddOrchestrationServices(IServiceCollection services)
         {
