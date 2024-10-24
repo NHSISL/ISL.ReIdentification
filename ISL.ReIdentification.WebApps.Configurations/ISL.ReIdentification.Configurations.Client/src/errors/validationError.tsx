@@ -1,7 +1,7 @@
 export class ApiValidationError extends Error {
-    errors: any
+    errors: unknown
     
-    constructor(validationErrors : Array<any>){
+    constructor(validationErrors : Array<unknown>){
         super("ApiValidationError");
         this.errors = validationErrors
     }

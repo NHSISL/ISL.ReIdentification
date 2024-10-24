@@ -15,10 +15,8 @@ class LookupBroker {
     private apiBroker: ApiBroker = new ApiBroker();
 
     private processOdataResult = (result: AxiosResponse) : LookupODataResponse => {
-        const data = result.data.value.map((lookup: Lookup) => new Lookup(lookup));
-
         const nextPage = result.data['@odata.nextLink'];
-        return { data, nextPage }
+        return { data: <Lookup[]>result.data.value, nextPage }
     }
 
     async PostLookupAsync(lookup: Lookup) {

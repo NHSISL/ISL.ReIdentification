@@ -1,7 +1,7 @@
 import { FunctionComponent } from "react";
 import { LookupView } from "../../../models/views/components/lookups/lookupView";
-import { toastSuccess } from "../../../brokers/toastBroker";
 import { Button } from "react-bootstrap";
+import { toastSuccess } from "../../../brokers/toastBroker.success";
 
 interface LookupRowDeleteProps {
     lookup: LookupView;

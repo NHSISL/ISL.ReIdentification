@@ -3,6 +3,7 @@ import LookupRowView from "./lookupRowView";
 import LookupRowEdit from "./lookupRowEdit";
 import LookupRowDelete from "./lookupRowDelete";
 import { LookupView } from "../../../models/views/components/lookups/lookupView";
+import { ILookupErrors, LookupErrors } from "./lookupErrors";
 
 type LookupRowProps = {
     lookup: LookupView;
@@ -22,7 +23,7 @@ const LookupRow: FunctionComponent<LookupRowProps> = (props) => {
     } = props;
 
     const [mode, setMode] = useState<string>('VIEW');
-    const [apiError, setApiError] = useState<any>({});
+    const [apiError, setApiError] = useState<ILookupErrors>(LookupErrors);
 
 
     const handleMode = (value: string) => {
@@ -30,12 +31,11 @@ const LookupRow: FunctionComponent<LookupRowProps> = (props) => {
     };
 
     const handleUpdate = async (lookup: LookupView) => {
-        console.log(lookup);
         try {
             await onUpdate(lookup);
             setMode('VIEW');
         } catch (error) {
-            setApiError(error);
+            setApiError(error as ILookupErrors);
             setMode('EDIT');
         }
     };

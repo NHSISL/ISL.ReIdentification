@@ -60,7 +60,7 @@ class ApiBroker {
         return axios.get(absoluteUri, await this.config());;
     }
 
-    public async PostAsync(relativeUrl: string, data: any) {
+    public async PostAsync(relativeUrl: string, data: unknown) {
         const url = relativeUrl;
 
         return axios.post(url,
@@ -83,7 +83,7 @@ class ApiBroker {
         );
     }
 
-    public async PutAsync(relativeUrl: string, data: any) {
+    public async PutAsync(relativeUrl: string, data: unknown) {
         const url = relativeUrl;
 
         return axios.put(url, data, await this.config());

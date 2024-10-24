@@ -2,6 +2,8 @@ import { useMsal } from "@azure/msal-react";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import LookupBroker from "../../brokers/apiBroker.lookups";
 import { Lookup } from "../../models/lookups/lookup";
+import { ApiError } from "../../types/apiError";
+
 
 export const lookupService = {
     useCreatelookup: () => {
@@ -9,8 +11,8 @@ export const lookupService = {
         const queryClient = useQueryClient();
         const msal = useMsal();
 
-        return useMutation({
-            mutationFn: (lookup: Lookup) => {
+        return useMutation<Lookup, ApiError, Lookup, unknown>({
+            mutationFn: (lookup: Lookup) =>  {
                 const date = new Date();
                 lookup.createdDate = lookup.updatedDate = date;
                 lookup.createdBy = lookup.updatedBy = msal.accounts[0].username;

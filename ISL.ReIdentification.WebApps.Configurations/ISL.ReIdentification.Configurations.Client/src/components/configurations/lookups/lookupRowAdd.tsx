@@ -1,16 +1,17 @@
 import { FunctionComponent, ChangeEvent, useState, useEffect } from "react";
 import { LookupView } from "../../../models/views/components/lookups/lookupView";
-import { lookupErrors } from "./lookupErrors";
+import { ILookupErrors, LookupErrors } from "./lookupErrors";
 import { lookupValidations } from "./lookupValidations";
 import { useValidation } from "../../../hooks/useValidation";
 import { Button } from "react-bootstrap";
 import TextAreaInputBase from "../../bases/inputs/TextAreaInputBase";
 import TextInputBase from "../../bases/inputs/TextInputBase";
+import { ILookupApiErrors } from "./lookupApiErrors";
 
 interface LookupRowAddProps {
     onCancel: () => void;
     onAdd: (lookup: LookupView) => void;
-    apiError?: any;
+    apiError: ILookupApiErrors;
 }
 
 const LookupRowAdd: FunctionComponent<LookupRowAddProps> = (props) => {
@@ -23,7 +24,7 @@ const LookupRowAdd: FunctionComponent<LookupRowAddProps> = (props) => {
     const [lookup, setLookup] = useState<LookupView>(new LookupView(crypto.randomUUID()));
 
     const { errors, processApiErrors, enableValidationMessages, validate } =
-        useValidation(lookupErrors, lookupValidations, lookup);
+        useValidation<ILookupErrors,ILookupApiErrors>(LookupErrors, lookupValidations, lookup);
 
     const handleChange = (event: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
         const addLookup = {
@@ -44,7 +45,9 @@ const LookupRowAdd: FunctionComponent<LookupRowAddProps> = (props) => {
     }
 
     useEffect(() => {
-        processApiErrors(apiError);
+        if(apiError) {
+            processApiErrors(apiError);
+        }
     }, [apiError, processApiErrors])
 
     return (
@@ -73,7 +76,7 @@ const LookupRowAdd: FunctionComponent<LookupRowAddProps> = (props) => {
             <td></td>
             <td className="centre">
                 <Button onClick={() => onCancel()} variant="danger">Cancel</Button>&nbsp;
-                <Button onClick={() => handleSave()} disabled={errors.hasErrors} >Add</Button>
+                <Button onClick={() => handleSave()} >Add</Button>
             </td>
 
         </tr>
