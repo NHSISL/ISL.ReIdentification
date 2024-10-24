@@ -92,7 +92,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnType<DateTimeOffset?>().Use((DateTimeOffset?)default);
+                .OnType<DateTimeOffset?>().Use((DateTimeOffset?)default)
+                .OnProperty(pdsData => pdsData.PseudoNhsNumber).Use(GetRandomStringWithLengthOf(9))
+                .OnProperty(pdsData => pdsData.OrgCode).Use(GetRandomStringWithLengthOf(9));
 
             return filler;
         }

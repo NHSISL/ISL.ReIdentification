@@ -120,6 +120,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use((DateTimeOffset?)default)
+                .OnProperty(odsData => odsData.OrganisationCode).Use(GetRandomStringWithLengthOf(14))
+                .OnProperty(odsData => odsData.OrganisationName).Use(GetRandomStringWithLengthOf(29))
                 .OnProperty(odsData => odsData.OdsHierarchy).Use(hierarchyId);
 
             return filler;

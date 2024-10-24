@@ -91,11 +91,20 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
 
-                .OnProperty(delegatedAccess => delegatedAccess.IdentifierColumn)
+                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.IdentifierColumn)
                     .Use(() => GetRandomStringWithLengthOf(10))
 
-                .OnProperty(delegatedAccess => delegatedAccess.CreatedBy).Use(user)
-                .OnProperty(delegatedAccess => delegatedAccess.UpdatedBy).Use(user);
+                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.RequesterEmail)
+                    .Use(GetRandomStringWithLengthOf(319))
+
+                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.RecipientEmail)
+                    .Use(GetRandomStringWithLengthOf(319))
+
+                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.Organisation)
+                    .Use(GetRandomStringWithLengthOf(254))
+
+                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.CreatedBy).Use(user)
+                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.UpdatedBy).Use(user);
 
             return filler;
         }
