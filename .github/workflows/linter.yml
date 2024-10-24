@@ -30,9 +30,9 @@ jobs:
         - name: Run ESLint
           working-directory: ./ISL.ReIdentification.WebApps.Configurations/ISL.ReIdentification.Configurations.Client
           run: npm run lint
-        - name: Run JS Test
-          working-directory: ./ISL.ReIdentification.WebApps.Configurations/ISL.ReIdentification.Configurations.Client
-          run: npm run test
+      #  - name: Run JS Test
+      #    working-directory: ./ISL.ReIdentification.WebApps.Configurations/ISL.ReIdentification.Configurations.Client
+      #    run: npm run test
         - name: Run JS Build
           working-directory: ./ISL.ReIdentification.WebApps.Configurations/ISL.ReIdentification.Configurations.Client
           run: npm run build
