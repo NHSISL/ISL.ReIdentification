@@ -92,6 +92,11 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
                 return BadRequest(pdsDataValidationException.InnerException);
             }
             catch (PdsDataDependencyValidationException pdsDataDependencyValidationException)
+                when (pdsDataDependencyValidationException.InnerException is LockedPdsDataException)
+            {
+                return Locked(pdsDataDependencyValidationException.InnerException);
+            }
+            catch (PdsDataDependencyValidationException pdsDataDependencyValidationException)
             {
                 return BadRequest(pdsDataDependencyValidationException.InnerException);
             }
