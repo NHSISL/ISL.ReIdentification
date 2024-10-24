@@ -74,7 +74,7 @@ namespace ISL.ReIdentification.Portals.Server
             AddFoundationServices(builder.Services);
             AddProcessingServices(builder.Services);
             AddOrchestrationServices(builder.Services);
-            AddCoordinationServices(builder.Services);
+            AddCoordinationServices(builder.Services, builder.Configuration);
 
             // Register IConfiguration to be available for dependency injection
             builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
