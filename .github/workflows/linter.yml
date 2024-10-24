@@ -6,7 +6,7 @@ on:
       - main
   push:
     branches:
-      - users/dcunliffe/TS-Linting
+      - main
 
 jobs:
     lint:
