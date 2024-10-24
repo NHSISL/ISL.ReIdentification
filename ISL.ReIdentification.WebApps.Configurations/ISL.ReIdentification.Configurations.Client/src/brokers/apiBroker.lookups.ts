@@ -7,7 +7,6 @@ type LookupODataResponse = {
     nextPage: string
 }
 
-
 class LookupBroker {
     relativeLookupUrl = '/api/lookups';
     relativeLookupOdataUrl = '/odata/lookups'
@@ -16,19 +15,19 @@ class LookupBroker {
 
     private processOdataResult = (result: AxiosResponse) : LookupODataResponse => {
         const nextPage = result.data['@odata.nextLink'];
-        return { data: <Lookup[]>result.data.value, nextPage }
+        return { data: result.data.value as Lookup[], nextPage }
     }
 
     async PostLookupAsync(lookup: Lookup) {
         return await this.apiBroker.PostAsync(this.relativeLookupUrl, lookup)
-            .then(result => new Lookup(result.data));
+            .then(result => result.data as Lookup);
     }
 
     async GetAllLookupsAsync(queryString: string) {
         const url = this.relativeLookupUrl + queryString;
 
         return await this.apiBroker.GetAsync(url)
-            .then(result => result.data.map((lookup: Lookup) => new Lookup(lookup)));
+            .then(result => result.data as Lookup[]);
     }
 
     async GetLookupFirstPagesAsync(query: string) {
@@ -44,19 +43,19 @@ class LookupBroker {
         const url = `${this.relativeLookupUrl}/${id}`;
 
         return await this.apiBroker.GetAsync(url)
-            .then(result => new Lookup(result.data));
+            .then(result => result.data as Lookup);
     }
 
     async PutLookupAsync(lookup: Lookup) {
         return await this.apiBroker.PutAsync(this.relativeLookupUrl, lookup)
-            .then(result => new Lookup(result.data));
+            .then(result => result.data as Lookup);
     }
 
     async DeleteLookupByIdAsync(id: string) {
         const url = `${this.relativeLookupUrl}/${id}`;
 
         return await this.apiBroker.DeleteAsync(url)
-            .then(result => new Lookup(result.data));
+            .then(result => result.data as Lookup);
     }
 }
 export default LookupBroker;

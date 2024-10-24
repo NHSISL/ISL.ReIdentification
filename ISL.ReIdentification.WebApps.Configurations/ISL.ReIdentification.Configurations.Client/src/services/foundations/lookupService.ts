@@ -16,7 +16,6 @@ export const lookupService = {
                 const date = new Date();
                 lookup.createdDate = lookup.updatedDate = date;
                 lookup.createdBy = lookup.updatedBy = msal.accounts[0].username;
-
                 return broker.PostLookupAsync(lookup);
             },
             onSuccess: (variables: Lookup) => {
