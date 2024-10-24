@@ -118,6 +118,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
         TryCatch(async () =>
         {
             ValidateImpersonationContext(accessRequest);
+            
             return await this.persistanceOrchestrationService.PersistImpersonationContextAsync(accessRequest);
         });
 
