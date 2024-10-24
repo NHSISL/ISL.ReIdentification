@@ -122,6 +122,6 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
         });
 
         public async ValueTask RemoveDocumentByFileNameAsync(string fileName, string container) =>
-            throw new NotImplementedException();
+            await this.documentService.RemoveDocumentByFileNameAsync(fileName, container);
     }
 }
