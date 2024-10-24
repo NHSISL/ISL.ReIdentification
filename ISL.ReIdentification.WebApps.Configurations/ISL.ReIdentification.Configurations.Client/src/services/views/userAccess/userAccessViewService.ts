@@ -60,7 +60,7 @@ export const userAccessViewService = {
                 setMappedUserAccess(userAccesses);
                 setPages(response.data.pages);
             }
-        }, [response.data?.pages]);
+        }, [response.data, response.data?.pages]);
 
         return {
             mappedUserAccess,
@@ -100,7 +100,7 @@ export const userAccessViewService = {
 
                 setMappedUserAccess(userAccessView);
             }
-        }, [response.data?.pages]);
+        }, [response.data, response.data?.pages]);
 
         return {
             mappedUserAccess,

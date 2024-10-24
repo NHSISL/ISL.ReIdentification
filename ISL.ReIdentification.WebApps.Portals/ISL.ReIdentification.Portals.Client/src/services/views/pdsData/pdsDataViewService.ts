@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { PdsDataView } from "../../../models/views/components/pdsData/pdsDataView";
 import { pdsDataService } from "../../foundations/pdsDataAccessService";
+import { PdsDataView } from "../../../models/views/components/psdData/pdsDataView";
 
 type PdsDataViewServiceResponse = {
     mappedPdsData: PdsDataView[] | undefined;
@@ -35,15 +35,7 @@ export const pdsDataViewService = {
                 response.data.pages.forEach((x: { data: PdsDataView[] }) => {
                     x.data.forEach((pdsData: PdsDataView) => {
                         pdsDataes.push(new PdsDataView(
-                            pdsData.rowId,
-                            pdsData.pseudoNhsNumber,
-                            pdsData.primaryCareProvider,
-                            pdsData.primaryCareProviderBusinessEffectiveFromDate,
-                            pdsData.primaryCareProviderBusinessEffectiveToDate,
-                            pdsData.ccgOfRegistration,
-                            pdsData.currentCcgOfRegistration,
-                            pdsData.icbOfRegistration,
-                            pdsData.currentIcbOfRegistration,
+                            pdsData.id,
                         ));
                     });
                 });
@@ -74,15 +66,7 @@ export const pdsDataViewService = {
             if (response.data && response.data.pages && response.data.pages[0].data[0]) {
                 const pdsData = response.data.pages[0].data[0];
                 const pdsDataView = new PdsDataView(
-                    pdsData.rowId,
-                    pdsData.pseudoNhsNumber,
-                    pdsData.primaryCareProvider,
-                    pdsData.primaryCareProviderBusinessEffectiveFromDate,
-                    pdsData.primaryCareProviderBusinessEffectiveToDate,
-                    pdsData.ccgOfRegistration,
-                    pdsData.currentCcgOfRegistration,
-                    pdsData.icbOfRegistration,
-                    pdsData.currentIcbOfRegistration,
+                    pdsData.id,
                 );
 
                 setMappedPdsData(pdsDataView);
