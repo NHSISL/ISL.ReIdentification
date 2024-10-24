@@ -17,8 +17,8 @@ export const queryClientGlobalOptions = new QueryClient({
            // toastSuccess("Saved.");
             console.log("Saved.");
         },
-        onError: (error: any) => {
-            if (!error?.response?.data?.errors) {
+        onError: (error: Error) => {
+            if (error) {
                 console.log("An unknown error has occurred, please try again.");
                 //toastError("An unknown error has occurred, please try again.");
             } else {

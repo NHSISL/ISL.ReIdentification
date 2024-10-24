@@ -15,7 +15,7 @@ export const UserAccessNew = () => {
     const {mutate} = userAccessService.useCreateUserAccess();
 
     const saveRecord = () => {
-        const ua = new UserAccess({});
+        const ua = new UserAccess();
 
         if(selectedUser){
             ua.displayName = selectedUser.displayName; 

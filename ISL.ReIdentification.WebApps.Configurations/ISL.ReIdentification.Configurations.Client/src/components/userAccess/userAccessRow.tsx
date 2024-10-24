@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from "react";
+import { FunctionComponent } from "react";
 import { UserAccess } from "../../models/userAccess/userAccess";
 import UserAccessRowView from "./userAccessRowView";
 

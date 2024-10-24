@@ -1,12 +1,11 @@
-import React, { FunctionComponent, useState } from "react";
+import { FunctionComponent, useState } from "react";
 import EntraUserSearch from "../EntraUserSearch/entraUserSearch";
 import { entraUser } from "../../models/views/components/entraUsers/entraUsers";
 import { Button, Card } from "react-bootstrap";
 
-type UserAccessDetailCardNewProps = {
-};
+type UserAccessDetailCardNewProps = object;
 
-const UserAccessDetailCardNew: FunctionComponent<UserAccessDetailCardNewProps> = (props) => {
+const UserAccessDetailCardNew: FunctionComponent<UserAccessDetailCardNewProps> = () => {
     const [selectedUser, setSelectedUser] = useState<entraUser | undefined>()
 
 
