@@ -33,6 +33,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
         private readonly ISecurityBroker securityBroker;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
+        private readonly ProjectStorageConfiguration projectStorageConfiguration;
 
         public IdentificationCoordinationService(
             IAccessOrchestrationService accessOrchestrationService,
@@ -41,7 +42,8 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             ICsvHelperBroker csvHelperBroker,
             ISecurityBroker securityBroker,
             ILoggingBroker loggingBroker,
-            IDateTimeBroker dateTimeBroker)
+            IDateTimeBroker dateTimeBroker,
+            ProjectStorageConfiguration projectStorageConfiguration)
         {
             this.accessOrchestrationService = accessOrchestrationService;
             this.persistanceOrchestrationService = persistanceOrchestrationService;
@@ -50,6 +52,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             this.securityBroker = securityBroker;
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
+            this.projectStorageConfiguration = projectStorageConfiguration;
         }
 
         public ValueTask<AccessRequest> ProcessIdentificationRequestsAsync(AccessRequest accessRequest) =>
@@ -125,7 +128,8 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
         public ValueTask<AccessRequest> ProcessImpersonationContextRequestAsync(AccessRequest accessRequest) =>
         TryCatch(async () =>
         {
-            ValidateImpersonationContext(accessRequest);
+            ValidateOnProcessImpersonationContextRequestAsync(accessRequest, this.projectStorageConfiguration);
+            var filepathData = await ExtractFromFilepath(accessRequest.CsvIdentificationRequest.Filepath);
 
             try
             {
@@ -134,22 +138,22 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                         accessRequest.CsvIdentificationRequest);
 
                 AccessRequest convertedAccessRequest = new AccessRequest();
-                string filepath = accessRequest.CsvIdentificationRequest.Filepath;
-                string[] filepathParts = filepath.Split('/', StringSplitOptions.RemoveEmptyEntries);
-                string container = filepathParts[0];
-                Guid impersonationContextId = Guid.Parse(filepathParts[1]);
-                string fileName = string.Join("/", filepathParts, 2, filepathParts.Length - 2);
-                DateTimeOffset dateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-                string timestamp = dateTimeOffset.ToString("yyyyMMddHHmms");
-                string nameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
+                //string filepath = accessRequest.CsvIdentificationRequest.Filepath;
+                //string[] filepathParts = filepath.Split('/', StringSplitOptions.RemoveEmptyEntries);
+                //string container = filepathParts[0];
+                //Guid impersonationContextId = Guid.Parse(filepathParts[1]);
+                //string fileName = string.Join("/", filepathParts, 2, filepathParts.Length - 2);
+                //DateTimeOffset dateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                //string timestamp = dateTimeOffset.ToString("yyyyMMddHHmms");
+                //string nameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
 
-                string updatedFilename = fileName
-                    .Replace("outbox", "inbox")
-                    .Replace(nameWithoutExtension, nameWithoutExtension + "_" + timestamp);
+                //string updatedFilename = fileName
+                //    .Replace("outbox", projectStorageConfiguration.PickupFolder)
+                //    .Replace(nameWithoutExtension, nameWithoutExtension + "_" + timestamp);
 
                 AccessRequest returnedAccessRequestWithImpersonationContext =
                     await this.persistanceOrchestrationService
-                        .RetrieveImpersonationContextByIdAsync(impersonationContextId);
+                        .RetrieveImpersonationContextByIdAsync(filepathData.ImpersonationContextId);
 
                 IdentificationRequest currentIdentificationRequest =
                     OverrideIdentificationRequestUserDetails(
@@ -174,29 +178,28 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                 };
 
                 MemoryStream csvData = new MemoryStream(reIdentifiedCsvIdentificationRequest.Data);
-                await this.identificationOrchestrationService.AddDocumentAsync(csvData, updatedFilename, container);
-                await this.identificationOrchestrationService.RemoveDocumentByFileNameAsync(fileName, container);
+
+                await this.identificationOrchestrationService
+                    .AddDocumentAsync(
+                        csvData, filepathData.PickupFilepath, projectStorageConfiguration.Container);
+
+                await this.identificationOrchestrationService
+                    .RemoveDocumentByFileNameAsync(
+                        filepathData.LandingFilepath, projectStorageConfiguration.Container);
 
                 return reIdentifiedAccessRequest;
             }
             catch (Exception)
             {
-                string filepath = accessRequest.CsvIdentificationRequest.Filepath;
-                string[] filepathParts = filepath.Split('/', StringSplitOptions.RemoveEmptyEntries);
-                string container = filepathParts[0];
-                Guid impersonationContextId = Guid.Parse(filepathParts[1]);
-                string fileName = string.Join("/", filepathParts, 2, filepathParts.Length - 2);
-                DateTimeOffset dateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-                string timestamp = dateTimeOffset.ToString("yyyyMMddHHmms");
-                string nameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
-
-                string errorFilename = fileName
-                    .Replace("outbox", "error")
-                    .Replace(nameWithoutExtension, nameWithoutExtension + "_" + timestamp);
-
                 MemoryStream csvData = new MemoryStream(accessRequest.CsvIdentificationRequest.Data);
-                await this.identificationOrchestrationService.AddDocumentAsync(csvData, errorFilename, container);
-                await this.identificationOrchestrationService.RemoveDocumentByFileNameAsync(fileName, container);
+
+                await this.identificationOrchestrationService
+                    .AddDocumentAsync(
+                        csvData, filepathData.ErrorFilepath, projectStorageConfiguration.Container);
+
+                await this.identificationOrchestrationService
+                    .RemoveDocumentByFileNameAsync(
+                        filepathData.LandingFilepath, projectStorageConfiguration.Container);
 
                 throw;
             }
@@ -310,5 +313,29 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
 
             return identificationRequest;
         }
+
+        virtual internal async ValueTask<(
+            string LandingFilepath, string PickupFilepath, string ErrorFilepath, Guid ImpersonationContextId)>
+            ExtractFromFilepath(string filepath)
+        {
+            string[] filepathParts = filepath.Split('/', StringSplitOptions.RemoveEmptyEntries);
+            string container = filepathParts[0];
+            Guid impersonationContextId = Guid.Parse(filepathParts[1]);
+            string landingFilepath = string.Join("/", filepathParts, 2, filepathParts.Length - 2);
+            DateTimeOffset dateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            string timestamp = dateTimeOffset.ToString("yyyyMMddHHmms");
+            string nameWithoutExtension = Path.GetFileNameWithoutExtension(landingFilepath);
+
+            string pickFilepath = landingFilepath
+                .Replace(projectStorageConfiguration.LandingFolder, projectStorageConfiguration.PickupFolder)
+                .Replace(nameWithoutExtension, nameWithoutExtension + "_" + timestamp);
+
+            string errorFilepath = landingFilepath
+                .Replace(projectStorageConfiguration.LandingFolder, projectStorageConfiguration.ErrorFolder)
+                .Replace(nameWithoutExtension, nameWithoutExtension + "_" + timestamp);
+
+            return (landingFilepath, pickFilepath, errorFilepath, impersonationContextId);
+        }
+
     }
 }

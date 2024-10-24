@@ -17,6 +17,7 @@ using ISL.ReIdentification.Core.Brokers.Securities;
 using ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Brokers.NECS;
 using ISL.ReIdentification.Core.Models.Brokers.Notifications;
+using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Foundations.Lookups;
@@ -211,8 +212,12 @@ namespace ISL.ReIdentification.Configurations.Server
             services.AddTransient<ICsvIdentificationRequestService, CsvIdentificationRequestService>();
         }
 
-        private static void AddCoordinationServices(IServiceCollection services)
+        private static void AddCoordinationServices(IServiceCollection services, IConfiguration configuration)
         {
+            ProjectStorageConfiguration projectStorageConfiguration = configuration
+                .GetSection("projectStorageConfiguration")
+                    .Get<ProjectStorageConfiguration>();
+
             services.AddTransient<IIdentificationCoordinationService, IdentificationCoordinationService>();
         }
     }

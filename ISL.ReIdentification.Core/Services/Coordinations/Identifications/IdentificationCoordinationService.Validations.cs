@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
@@ -34,6 +35,38 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                 Parameter: nameof(AccessRequest.ImpersonationContext)));
         }
 
+        private static void ValidateOnProcessImpersonationContextRequestAsync(
+            AccessRequest accessRequest,
+            ProjectStorageConfiguration projectStorageConfiguration)
+        {
+            Validate(
+                (Rule: IsInvalid(accessRequest), Parameter: nameof(AccessRequest)),
+                (Rule: IsInvalid(projectStorageConfiguration), Parameter: nameof(ProjectStorageConfiguration)));
+
+            Validate(
+                (Rule: IsInvalid(accessRequest.CsvIdentificationRequest),
+                Parameter: $"{nameof(AccessRequest)}.{nameof(AccessRequest.CsvIdentificationRequest)}"),
+
+                (Rule: IsInvalid(projectStorageConfiguration.Container),
+                Parameter: $"{nameof(ProjectStorageConfiguration)}.{nameof(ProjectStorageConfiguration.Container)}"),
+
+                (Rule: IsInvalid(projectStorageConfiguration.LandingFolder),
+                Parameter: $"{nameof(ProjectStorageConfiguration)}.{nameof(ProjectStorageConfiguration.LandingFolder)}"),
+
+                (Rule: IsInvalid(projectStorageConfiguration.PickupFolder),
+                Parameter: $"{nameof(ProjectStorageConfiguration)}.{nameof(ProjectStorageConfiguration.PickupFolder)}"),
+
+                (Rule: IsInvalid(projectStorageConfiguration.ErrorFolder),
+                Parameter: $"{nameof(ProjectStorageConfiguration)}.{nameof(ProjectStorageConfiguration.ErrorFolder)}"));
+
+            Validate(
+                (Rule: IsInvalid(accessRequest.CsvIdentificationRequest.Filepath),
+                Parameter:
+                    $"{nameof(AccessRequest)}" +
+                    $".{nameof(AccessRequest.CsvIdentificationRequest)}" +
+                    $".{nameof(AccessRequest.CsvIdentificationRequest.Filepath)}"));
+        }
+
         private static void ValidateAccessRequestIsNotNull(AccessRequest accessRequest)
         {
             if (accessRequest is null)
@@ -49,6 +82,12 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
         {
             Condition = id == Guid.Empty,
             Message = "Id is invalid"
+        };
+
+        private static dynamic IsInvalid(string value) => new
+        {
+            Condition = string.IsNullOrWhiteSpace(value),
+            Message = "Text is invalid"
         };
 
         private static dynamic IsInvalid(Object @object) => new

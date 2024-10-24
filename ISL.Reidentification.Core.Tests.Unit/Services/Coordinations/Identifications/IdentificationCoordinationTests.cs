@@ -41,6 +41,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly IdentificationCoordinationService identificationCoordinationService;
+        private readonly ProjectStorageConfiguration projectStorageConfiguration;
         private readonly ICompareLogic compareLogic;
 
         public IdentificationCoordinationTests()
@@ -54,14 +55,23 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.compareLogic = new CompareLogic();
 
+            this.projectStorageConfiguration = new ProjectStorageConfiguration
+            {
+                Container = GetRandomString(),
+                LandingFolder = GetRandomString(),
+                PickupFolder = GetRandomString(),
+                ErrorFolder = GetRandomString()
+            };
+
             this.identificationCoordinationService = new IdentificationCoordinationService(
-                this.accessOrchestrationServiceMock.Object,
-                this.persistanceOrchestrationServiceMock.Object,
-                this.identificationOrchestrationServiceMock.Object,
-                this.csvHelperBrokerMock.Object,
-                this.securityBrokerMock.Object,
-                this.loggingBrokerMock.Object,
-                this.dateTimeBrokerMock.Object);
+                accessOrchestrationService: this.accessOrchestrationServiceMock.Object,
+                persistanceOrchestrationService: this.persistanceOrchestrationServiceMock.Object,
+                identificationOrchestrationService: this.identificationOrchestrationServiceMock.Object,
+                csvHelperBroker: this.csvHelperBrokerMock.Object,
+                securityBroker: this.securityBrokerMock.Object,
+                loggingBroker: this.loggingBrokerMock.Object,
+                dateTimeBroker: this.dateTimeBrokerMock.Object,
+                projectStorageConfiguration);
         }
 
         private static string GetRandomString() =>
