@@ -17,6 +17,10 @@ jobs:
           uses: actions/setup-node@v2
           with:
             node-version: 22
+        - name: Setup .Net
+          uses: actions/setup-dotnet@v3
+          with:
+            dotnet-version: 8.0.302
         - uses: actions/checkout@v2
         - name: Install modules
           working-directory: ./ISL.ReIdentification.WebApps.Configurations/ISL.ReIdentification.Configurations.Client
@@ -29,4 +33,6 @@ jobs:
        #   run: npm run test
         - name: Run JS Build
           working-directory: ./ISL.ReIdentification.WebApps.Configurations/ISL.ReIdentification.Configurations.Client
-          run: npm run build
+          run: |
+            dotnet dev-certs https --verbose --trust
+            npm run build
