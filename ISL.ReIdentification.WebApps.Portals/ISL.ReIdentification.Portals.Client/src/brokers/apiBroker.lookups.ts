@@ -1,5 +1,4 @@
 import { AxiosResponse } from "axios";
-import { Guid } from "guid-typescript";
 import ApiBroker from "./apiBroker";
 import { Lookup } from "../models/lookups/lookup";
 
@@ -10,7 +9,7 @@ class LookupBroker {
     private apiBroker: ApiBroker = new ApiBroker();
 
     private processOdataResult = (result: AxiosResponse) => {
-        const data = result.data.value.map((lookup: any) => new Lookup(lookup));
+        const data = result.data.value.map((lookup: Lookup) => new Lookup(lookup));
 
         const nextPage = result.data['@odata.nextLink'];
         return { data, nextPage }
@@ -22,14 +21,14 @@ class LookupBroker {
     }
 
     async GetAllLookupsAsync(queryString: string) {
-        var url = this.relativeLookupUrl + queryString;
+        const url = this.relativeLookupUrl + queryString;
 
         return await this.apiBroker.GetAsync(url)
-            .then(result => result.data.map((lookup: any) => new Lookup(lookup)));
+            .then(result => result.data.map((lookup: Lookup) => new Lookup(lookup)));
     }
 
     async GetLookupFirstPagesAsync(query: string) {
-        var url = this.relativeLookupOdataUrl + query;
+        const url = this.relativeLookupOdataUrl + query;
         return this.processOdataResult(await this.apiBroker.GetAsync(url));
     }
 
@@ -37,7 +36,7 @@ class LookupBroker {
         return this.processOdataResult(await this.apiBroker.GetAsyncAbsolute(absoluteUri));
     }
 
-    async GetLookupByIdAsync(id: Guid) {
+    async GetLookupByIdAsync(id: string) {
         const url = `${this.relativeLookupUrl}/${id}`;
 
         return await this.apiBroker.GetAsync(url)
@@ -49,7 +48,7 @@ class LookupBroker {
             .then(result => new Lookup(result.data));
     }
 
-    async DeleteLookupByIdAsync(id: Guid) {
+    async DeleteLookupByIdAsync(id: string) {
         const url = `${this.relativeLookupUrl}/${id}`;
 
         return await this.apiBroker.DeleteAsync(url)

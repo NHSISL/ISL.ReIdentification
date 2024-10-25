@@ -14,7 +14,7 @@ const ReIdentificationDetail: FunctionComponent<ReIdentificationDetailProps> = (
     } = props;
 
 
-    let { mappedLookups: lookupsRetrieved } = lookupViewService.useGetAllLookups("");
+    const { mappedLookups: lookupsRetrieved } = lookupViewService.useGetAllLookups("");
     const postRequest = reIdentificationService.useRequestReIdentification();
 
     const [successfullAccessRequest, setSuccessfullAccessRequest] = useState<AccessRequestView | null>(null);
