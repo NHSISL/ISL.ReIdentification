@@ -5,6 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications.Exceptions;
+using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Services.Coordinations.Identifications;
 using Microsoft.AspNetCore.Authorization;
@@ -13,7 +14,7 @@ using RESTFulSense.Controllers;
 
 namespace ISL.ReIdentification.Portals.Server.Controllers
 {
-    [Authorize(Roles = "Administrators")]
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class ReIdentificationController : RESTFulController
