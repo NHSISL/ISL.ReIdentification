@@ -218,6 +218,8 @@ namespace ISL.ReIdentification.Configurations.Server
                 .GetSection("projectStorageConfiguration")
                     .Get<ProjectStorageConfiguration>();
 
+            services.AddSingleton(projectStorageConfiguration);
+
             services.AddTransient<IIdentificationCoordinationService, IdentificationCoordinationService>();
         }
     }
