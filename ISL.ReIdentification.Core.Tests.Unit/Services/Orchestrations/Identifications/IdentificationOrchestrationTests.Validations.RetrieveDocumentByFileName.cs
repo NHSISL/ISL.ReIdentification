@@ -23,7 +23,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             string invalidContainer = invalidString;
 
             var invalidArgumentIdentificationOrchestrationException =
-            new InvalidArgumentIdentificationOrchestrationException(
+                new InvalidArgumentIdentificationOrchestrationException(
                     message: "Invalid argument identification orchestration exception, " +
                         "please correct the errors and try again.");
 

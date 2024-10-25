@@ -27,19 +27,16 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             this.documentServiceMock
                 .Setup(service => service
                     .RetrieveDocumentByFileNameAsync(randomStream, randomFileName, randomContainer))
-                .Callback<Stream, string, string>((output, fileName, container) =>
-                {
-                    returnedStream.Position = 0;
-                    returnedStream.CopyTo(output);
-                })
-                .Returns(ValueTask.CompletedTask);
+                        .Callback<Stream, string, string>((output, fileName, container) =>
+                        {
+                            returnedStream.Position = 0;
+                            returnedStream.CopyTo(output);
+                        })
+                        .Returns(ValueTask.CompletedTask);
 
             // when
             await this.identificationOrchestrationService
-                .RetrieveDocumentByFileNameAsync(
-                    output: outputStream,
-                    fileName: randomFileName,
-                    container: randomContainer);
+                .RetrieveDocumentByFileNameAsync(outputStream, randomFileName, randomContainer);
 
             // then
             byte[] actualData = ReadAllBytesFromStream(outputStream);
@@ -47,7 +44,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
 
             this.documentServiceMock.Verify(service =>
                 service.RetrieveDocumentByFileNameAsync(
-                    It.IsAny<Stream>(),
+                    It.Is(SameStreamAs(outputStream)),
                     randomFileName,
                     randomContainer),
                         Times.Once);
