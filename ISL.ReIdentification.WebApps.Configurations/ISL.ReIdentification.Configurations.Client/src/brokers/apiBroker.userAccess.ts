@@ -1,7 +1,11 @@
 import { AxiosResponse } from "axios";
-import { Guid } from "guid-typescript";
 import ApiBroker from "./apiBroker";
 import { UserAccess } from "../models/userAccess/userAccess";
+
+export type UserAccessOdataResponse = {
+    data: UserAccess[],
+    nextPage: string
+}
 
 class UserAccessBroker {
     relativeUserAccessUrl = '/api/userAccesses';
@@ -9,8 +13,8 @@ class UserAccessBroker {
 
     private apiBroker: ApiBroker = new ApiBroker();
 
-    private processOdataResult = (result: AxiosResponse) => {
-        const data = result.data.value.map((userAccess: any) => new UserAccess(userAccess));
+    private processOdataResult = (result: AxiosResponse) : UserAccessOdataResponse => {
+        const data = result.data.value.map((userAccess: UserAccess) => new UserAccess(userAccess));
 
         const nextPage = result.data['@odata.nextLink'];
         return { data, nextPage }
@@ -25,7 +29,7 @@ class UserAccessBroker {
         const url = this.relativeUserAccessUrl + queryString;
 
         return await this.apiBroker.GetAsync(url)
-            .then(result => result.data.map((userAccess: any) => new UserAccess(userAccess)));
+            .then(result => result.data.map((userAccess: UserAccess) => new UserAccess(userAccess)));
     }
 
     async GetUserAccessFirstPagesAsync(query: string) {
@@ -37,7 +41,7 @@ class UserAccessBroker {
         return this.processOdataResult(await this.apiBroker.GetAsyncAbsolute(absoluteUri));
     }
 
-    async GetLookupByIdAsync(id: Guid) {
+    async GetLookupByIdAsync(id: string) {
         const url = `${this.relativeUserAccessUrl}/${id}`;
 
         return await this.apiBroker.GetAsync(url)
@@ -49,7 +53,7 @@ class UserAccessBroker {
             .then(result => new UserAccess(result.data));
     }
 
-    async DeleteUserAccessByIdAsync(id: Guid) {
+    async DeleteUserAccessByIdAsync(id: string) {
         const url = `${this.relativeUserAccessUrl}/${id}`;
 
         return await this.apiBroker.DeleteAsync(url)

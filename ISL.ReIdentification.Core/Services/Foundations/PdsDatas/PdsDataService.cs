@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Foundations.PdsDatas;
@@ -15,13 +16,16 @@ namespace ISL.ReIdentification.Core.Services.Foundations.PdsDatas
     public partial class PdsDataService : IPdsDataService
     {
         private readonly IReIdentificationStorageBroker reIdentificationStorageBroker;
+        private readonly IDateTimeBroker dateTimeBroker;
         private readonly ILoggingBroker loggingBroker;
 
         public PdsDataService(
             IReIdentificationStorageBroker reIdentificationStorageBroker,
+            IDateTimeBroker dateTimeBroker,
             ILoggingBroker loggingBroker)
         {
             this.reIdentificationStorageBroker = reIdentificationStorageBroker;
+            this.dateTimeBroker = dateTimeBroker;
             this.loggingBroker = loggingBroker;
         }
 
@@ -84,10 +88,15 @@ namespace ISL.ReIdentification.Core.Services.Foundations.PdsDatas
                 ValidateOnOrganisationsHaveAccessToThisPatient(pseudoNhsNumber, organisationCodes);
 
                 var query = await this.reIdentificationStorageBroker.SelectAllPdsDatasAsync();
+                DateTimeOffset currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
                 bool hasAccess = query.Any(
                     pdsData => pdsData.PseudoNhsNumber == pseudoNhsNumber
-                    && organisationCodes.Contains(pdsData.OrgCode));
+                    && organisationCodes.Contains(pdsData.OrgCode)
+                    && (pdsData.RelationshipWithOrganisationEffectiveFromDate == null
+                        || pdsData.RelationshipWithOrganisationEffectiveFromDate <= currentDateTime)
+                    && (pdsData.RelationshipWithOrganisationEffectiveToDate == null ||
+                        pdsData.RelationshipWithOrganisationEffectiveToDate > currentDateTime));
 
                 return hasAccess;
             });

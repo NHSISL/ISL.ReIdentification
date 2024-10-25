@@ -135,9 +135,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             AccessAudit invalidAccessAudit = CreateRandomAccessAudit(dateTimeOffset: randomDateTimeOffset);
-            var inputCreatedByUpdatedByString = GetRandomStringWithLength(256);
-            invalidAccessAudit.Email = GetRandomStringWithLength(321);
-            invalidAccessAudit.PseudoIdentifier = GetRandomStringWithLength(11);
+            var inputCreatedByUpdatedByString = GetRandomStringWithLengthOf(256);
+            invalidAccessAudit.Email = GetRandomStringWithLengthOf(321);
+            invalidAccessAudit.PseudoIdentifier = GetRandomStringWithLengthOf(11);
             invalidAccessAudit.CreatedBy = inputCreatedByUpdatedByString;
             invalidAccessAudit.UpdatedBy = inputCreatedByUpdatedByString;
 
@@ -264,7 +264,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
 
         [Theory]
         [InlineData(1)]
-        [InlineData(-61)]
+        [InlineData(-91)]
         public async Task ShouldThrowValidationExceptionOnAddIfCreatedDateIsNotRecentAndLogItAsync(
             int invalidSeconds)
         {
@@ -273,7 +273,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
                 GetRandomDateTimeOffset();
 
             DateTimeOffset now = randomDateTime;
-            DateTimeOffset startDate = now.AddSeconds(-60);
+            DateTimeOffset startDate = now.AddSeconds(-90);
             DateTimeOffset endDate = now.AddSeconds(0);
             AccessAudit randomAccessAudit = CreateRandomAccessAudit();
             AccessAudit invalidAccessAudit = randomAccessAudit;

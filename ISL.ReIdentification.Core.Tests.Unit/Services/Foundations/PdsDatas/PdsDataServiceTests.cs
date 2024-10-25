@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Foundations.PdsDatas;
@@ -21,16 +22,19 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
     public partial class PdsDataServiceTests
     {
         private readonly Mock<IReIdentificationStorageBroker> reIdentificationStorageBroker;
+        private readonly Mock<IDateTimeBroker> dateTimeBroker;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly PdsDataService pdsDataService;
 
         public PdsDataServiceTests()
         {
             this.reIdentificationStorageBroker = new Mock<IReIdentificationStorageBroker>();
+            this.dateTimeBroker = new Mock<IDateTimeBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
             this.pdsDataService = new PdsDataService(
                 reIdentificationStorageBroker: this.reIdentificationStorageBroker.Object,
+                dateTimeBroker: this.dateTimeBroker.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
         }
 
@@ -45,8 +49,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                 .Select(selector: _ => GetRandomStringWithLengthOf(length))
                 .ToList();
 
-        private static string GetRandomStringWithLengthOf(int length) =>
-            new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+        private static string GetRandomStringWithLengthOf(int length)
+        {
+            string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+
+            return result.Length > length ? result.Substring(0, length) : result;
+        }
 
         private SqlException CreateSqlException() =>
             (SqlException)RuntimeHelpers.GetUninitializedObject(type: typeof(SqlException));
@@ -59,6 +67,15 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static DateTimeOffset GetRandomFutureDateTimeOffset()
+        {
+            DateTime futureStartDate = DateTimeOffset.UtcNow.AddDays(1).Date;
+            int randomDaysInFuture = GetRandomNumber();
+            DateTime futureEndDate = futureStartDate.AddDays(randomDaysInFuture).Date;
+
+            return new DateTimeRange(earliestDate: futureStartDate, latestDate: futureEndDate).GetValue();
+        }
 
         private static PdsData CreateRandomModifyPdsData(DateTimeOffset dateTimeOffset)
         {
@@ -88,7 +105,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnType<DateTimeOffset?>().Use((DateTimeOffset?)default);
+                .OnType<DateTimeOffset?>().Use((DateTimeOffset?)default)
+                .OnProperty(pdsData => pdsData.PseudoNhsNumber).Use(GetRandomStringWithLengthOf(10))
+                .OnProperty(pdsData => pdsData.OrgCode).Use(GetRandomStringWithLengthOf(15));
 
             return filler;
         }

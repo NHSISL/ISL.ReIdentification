@@ -35,6 +35,12 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
                 (Rule: IsInvalid(userAccessId), Parameter: nameof(UserAccess.Id)));
         }
 
+        private async ValueTask ValidateOnRemoveUserAccessByIdAsync(Guid userAccessId)
+        {
+            Validate(
+                (Rule: IsInvalid(userAccessId), Parameter: nameof(UserAccess.Id)));
+        }
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,

@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using FluentAssertions;
 using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Brokers;
 using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.Lookups;
 using Tynamix.ObjectFiller;
@@ -28,8 +29,12 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
         private static UserAccess CreateRandomUserAccess() =>
             CreateRandomUserAccessFiller().Create();
 
-        private static string GetRandomStringWithLengthOf(int length) =>
-            new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+        private static string GetRandomStringWithLengthOf(int length)
+        {
+            string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+
+            return result.Length > length ? result.Substring(0, length) : result;
+        }
 
         private static Filler<UserAccess> CreateRandomUserAccessFiller()
         {
@@ -41,14 +46,11 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
                 .OnType<DateTimeOffset>().Use(now)
                 .OnType<DateTimeOffset?>().Use(now)
 
-                .OnProperty(userAccess => userAccess.GivenName)
-                    .Use(() => GetRandomStringWithLengthOf(255))
-
-                .OnProperty(userAccess => userAccess.Surname)
-                    .Use(() => GetRandomStringWithLengthOf(255))
-
                 .OnProperty(userAccess => userAccess.Email)
                     .Use(() => GetRandomStringWithLengthOf(320))
+
+                .OnProperty(userAccess => userAccess.OrgCode)
+                    .Use(() => GetRandomStringWithLengthOf(15))
 
                 .OnProperty(userAccess => userAccess.CreatedDate).Use(now)
                 .OnProperty(userAccess => userAccess.CreatedBy).Use(user)

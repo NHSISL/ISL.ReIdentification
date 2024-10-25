@@ -1,12 +1,12 @@
 import axios from 'axios';
 import { InteractionRequiredAuthError, PublicClientApplication } from "@azure/msal-browser";
+//@ts-expect-error auth config from js file
 import { loginRequest, msalConfig } from '../authConfig';
 
 class ApiBroker {
     msalInstance = new PublicClientApplication(msalConfig);
-    scope: any;
+    scope: string[];
 
-    constructor();
     constructor(scope?: string) {
         this.scope = scope ? [scope] : loginRequest.scopes;
     }
@@ -60,7 +60,7 @@ class ApiBroker {
         return axios.get(absoluteUri, await this.config());;
     }
 
-    public async PostAsync(relativeUrl: string, data: any) {
+    public async PostAsync(relativeUrl: string, data: unknown) {
         const url = relativeUrl;
 
         return axios.post(url,
@@ -83,7 +83,7 @@ class ApiBroker {
         );
     }
 
-    public async PutAsync(relativeUrl: string, data: any) {
+    public async PutAsync(relativeUrl: string, data: unknown) {
         const url = relativeUrl;
 
         return axios.put(url, data, await this.config());

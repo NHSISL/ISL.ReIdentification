@@ -1,6 +1,6 @@
-import React, { FunctionComponent, ChangeEvent, useState, useEffect } from "react";
+import { FunctionComponent, ChangeEvent, useState, useEffect } from "react";
 import { LookupView } from "../../../models/views/components/lookups/lookupView";
-import { lookupErrors } from "./lookupErrors";
+import { ILookupErrors, LookupErrors } from "./lookupErrors";
 import { lookupValidations } from "./lookupValidations";
 import TextInputBase from "../../bases/inputs/TextInputBase";
 import { Button } from "react-bootstrap";
@@ -10,7 +10,7 @@ interface LookupRowEditProps {
     lookup: LookupView;
     onCancel: () => void;
     onEdit: (supplier: LookupView) => void;
-    apiError?: any;
+    apiError: ILookupErrors;
 }
 
 const LookupRowEdit: FunctionComponent<LookupRowEditProps> = (props) => {
@@ -24,7 +24,7 @@ const LookupRowEdit: FunctionComponent<LookupRowEditProps> = (props) => {
     const [editLookup, setEditLookup] = useState<LookupView>({ ...lookup });
 
     const { errors, processApiErrors, enableValidationMessages, validate } =
-        useValidation(lookupErrors, lookupValidations, editLookup);
+        useValidation(LookupErrors, lookupValidations, editLookup);
 
     const handleChange = (event: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
         const updatedLookup = {
@@ -64,9 +64,6 @@ const LookupRowEdit: FunctionComponent<LookupRowEditProps> = (props) => {
                     required={true}
                     error={errors.name}
                     onChange={handleChange} />
-
-
-                
             </td>
             <td>
                 <TextInputBase

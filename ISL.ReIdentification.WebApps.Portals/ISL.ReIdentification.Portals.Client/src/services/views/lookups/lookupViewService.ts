@@ -1,18 +1,10 @@
 import { useEffect, useState } from "react";
 import { lookupService } from "../../foundations/lookupService";
 import { LookupView } from "../../../models/views/components/lookups/lookupView";
-import { Guid } from "guid-typescript";
 import { Lookup } from "../../../models/lookups/lookup";
 
 type LookupViewServiceResponse = {
     mappedLookups: LookupView[] | undefined;
-    pages: Array<{ data: LookupView[] }>;
-    isLoading: boolean;
-    fetchNextPage: () => void;
-    isFetchingNextPage: boolean;
-    hasNextPage: boolean;
-    data: { pages: Array<{ data: LookupView[] }> } | undefined;
-    refetch: () => void;
 };
 
 export const lookupViewService = {
@@ -32,7 +24,7 @@ export const lookupViewService = {
 
         useEffect(() => {
             if (response.data) {
-                const lookups = response.data.map((lookup: Lookup) =>
+                const lookups = response.data.pages[0].data.map((lookup: Lookup) =>
                     new LookupView(
                         lookup.id,
                         lookup.name,
@@ -48,12 +40,11 @@ export const lookupViewService = {
         }, [response.data]);
 
         return {
-            mappedLookups,
-            ...response
+            mappedLookups, ...response
         }
     },
 
-    useGetLookupById: (id: Guid) => {
+    useGetLookupById: (id: string) => {
         const query = `?$filter=id eq ${id}`;
         const response = lookupService.useRetrieveAllLookupPages(query);
         const [mappedLookup, setMappedLookup] = useState<LookupView>();
