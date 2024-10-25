@@ -25,7 +25,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
         public ValueTask<UserAccess> AddUserAccessAsync(UserAccess userAccess) =>
         TryCatch(async () =>
         {
-            await ValidateOnAddUserAccessAsync(userAccess);
+            ValidateOnAddUserAccess(userAccess);
 
             return await this.userAccessService.AddUserAccessAsync(userAccess);
         });
@@ -39,7 +39,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
         public ValueTask<UserAccess> RetrieveUserAccessByIdAsync(Guid userAccessId) =>
         TryCatch(async () =>
         {
-            await ValidateOnRetrieveUserAccessByIdAsync(userAccessId);
+            ValidateOnRetrieveUserAccessById(userAccessId);
 
             return await this.userAccessService.RetrieveUserAccessByIdAsync(userAccessId);
         });
@@ -47,7 +47,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
         public ValueTask<UserAccess> ModifyUserAccessAsync(UserAccess userAccess) =>
         TryCatch(async () =>
         {
-            await ValidateOnModifyUserAccessAsync(userAccess);
+            ValidateOnModifyUserAccess(userAccess);
 
             return await this.userAccessService.ModifyUserAccessAsync(userAccess);
         });
@@ -55,13 +55,18 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
         public ValueTask<UserAccess> RemoveUserAccessByIdAsync(Guid userAccessId) =>
         TryCatch(async () =>
         {
-            await ValidateOnRemoveUserAccessByIdAsync(userAccessId);
+            ValidateOnRemoveUserAccessById(userAccessId);
 
             return await this.userAccessService.RemoveUserAccessByIdAsync(userAccessId);
         });
 
         public ValueTask<List<string>> RetrieveAllActiveOrganisationsUserHasAccessToAsync(Guid entraUserId) =>
-            this.userAccessService.RetrieveAllActiveOrganisationsUserHasAccessToAsync(entraUserId);
+        TryCatch(async () =>
+        {
+            ValidateOnRetrieveAllActiveOrganisationsUserHasAccessTo(entraUserId);
+
+            return await this.userAccessService.RetrieveAllActiveOrganisationsUserHasAccessToAsync(entraUserId);
+        });
 
         public ValueTask<BulkUserAccess> BulkAddRemoveUserAccessAsync(BulkUserAccess bulkUserAccess) =>
             throw new NotImplementedException();
