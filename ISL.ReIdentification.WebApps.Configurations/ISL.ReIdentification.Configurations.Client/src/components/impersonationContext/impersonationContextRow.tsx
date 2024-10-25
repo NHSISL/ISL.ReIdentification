@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from "react";
+import { FunctionComponent } from "react";
 import { ImpersonationContext } from "../../models/impersonationContext/impersonationContext";
 import ImpersonationContextRowView from "./impersonationContextRowView";
 
