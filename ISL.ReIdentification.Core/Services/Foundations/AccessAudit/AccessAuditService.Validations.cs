@@ -202,8 +202,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
         private async ValueTask<(bool IsNotRecent, DateTimeOffset StartDate, DateTimeOffset EndDate)>
             IsDateNotRecentAsync(DateTimeOffset date)
         {
-            int pastSeconds = 60;
-            int futureSeconds = 0;
+            int pastThreshold = 60;
+            int futureThreshold = 0;
             DateTimeOffset currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
             if (currentDateTime == default)
@@ -211,10 +211,9 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
                 return (false, default, default);
             }
 
-            TimeSpan timeDifference = currentDateTime.Subtract(date);
-            DateTimeOffset startDate = currentDateTime.AddSeconds(-pastSeconds);
-            DateTimeOffset endDate = currentDateTime.AddSeconds(futureSeconds);
-            bool isNotRecent = timeDifference.TotalSeconds is > 60 or < 0;
+            DateTimeOffset startDate = currentDateTime.AddSeconds(-pastThreshold);
+            DateTimeOffset endDate = currentDateTime.AddSeconds(futureThreshold);
+            bool isNotRecent = date < startDate || date > endDate;
 
             return (isNotRecent, startDate, endDate);
         }
