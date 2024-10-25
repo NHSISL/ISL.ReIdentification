@@ -4,6 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
+using ISL.ReIdentification.Core.Extensions.Loggings;
 using ISL.ReIdentification.Core.Models.Foundations.Lookups;
 using ISL.ReIdentification.Core.Models.Foundations.Lookups.Exceptions;
 
@@ -207,6 +208,11 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Lookups
                         key: parameter,
                         value: rule.Message);
                 }
+            }
+
+            if (invalidLookupException.Data.Count > 0)
+            {
+                Console.WriteLine($"VALIDATION ERROR: {invalidLookupException.GetValidationSummary()}");
             }
 
             invalidLookupException.ThrowIfContainsErrors();
