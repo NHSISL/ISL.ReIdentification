@@ -40,23 +40,22 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             {
                 return BadRequest(userAccessProcessingValidationException.InnerException);
             }
-            catch (UserAccessProcessingDependencyValidationException userAccessProcessingDependencyValidationException)
-                when (userAccessProcessingDependencyValidationException.InnerException
-                    is AlreadyExistsUserAccessException)
+            catch (UserAccessProcessingDependencyValidationException lookupDependencyValidationException)
+               when (lookupDependencyValidationException.InnerException is AlreadyExistsUserAccessException)
             {
-                return Conflict(userAccessProcessingDependencyValidationException.InnerException);
+                return Conflict(lookupDependencyValidationException.InnerException);
             }
-            catch (UserAccessProcessingDependencyValidationException userAccessProcessingDependencyValidationException)
+            catch (UserAccessProcessingDependencyValidationException lookupDependencyValidationException)
             {
-                return BadRequest(userAccessProcessingDependencyValidationException.InnerException);
+                return BadRequest(lookupDependencyValidationException.InnerException);
             }
-            catch (UserAccessProcessingDependencyException userAccessProcessingDependencyException)
+            catch (UserAccessProcessingDependencyException lookupDependencyException)
             {
-                return InternalServerError(userAccessProcessingDependencyException);
+                return InternalServerError(lookupDependencyException);
             }
-            catch (UserAccessProcessingServiceException userAccessProcessingServiceException)
+            catch (UserAccessProcessingServiceException lookupServiceException)
             {
-                return InternalServerError(userAccessProcessingServiceException);
+                return InternalServerError(lookupServiceException);
             }
         }
 
@@ -92,13 +91,13 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
                 return Ok(userAccess);
             }
             catch (UserAccessProcessingValidationException userAccessProcessingValidationException)
-                when (userAccessProcessingValidationException.InnerException is NotFoundUserAccessException)
-            {
-                return NotFound(userAccessProcessingValidationException.InnerException);
-            }
-            catch (UserAccessProcessingValidationException userAccessProcessingValidationException)
             {
                 return BadRequest(userAccessProcessingValidationException.InnerException);
+            }
+            catch (UserAccessProcessingDependencyValidationException userAccessProcessingDependencyValidationException)
+                when (userAccessProcessingDependencyValidationException.InnerException is NotFoundUserAccessException)
+            {
+                return NotFound(userAccessProcessingDependencyValidationException.InnerException);
             }
             catch (UserAccessProcessingDependencyValidationException userAccessProcessingDependencyValidationException)
             {
@@ -111,6 +110,10 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             catch (UserAccessProcessingServiceException userAccessProcessingServiceException)
             {
                 return InternalServerError(userAccessProcessingServiceException);
+            }
+            catch (Exception ex)
+            {
+                throw;
             }
         }
 
