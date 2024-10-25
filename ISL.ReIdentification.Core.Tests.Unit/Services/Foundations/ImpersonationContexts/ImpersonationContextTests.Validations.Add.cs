@@ -308,7 +308,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
                 GetRandomDateTimeOffset();
 
             DateTimeOffset now = randomDateTime;
-            DateTimeOffset startDate = now.AddSeconds(-60);
+            DateTimeOffset startDate = now.AddSeconds(-90);
             DateTimeOffset endDate = now.AddSeconds(0);
             ImpersonationContext randomImpersonationContext = CreateRandomImpersonationContext();
             ImpersonationContext invalidImpersonationContext = randomImpersonationContext;

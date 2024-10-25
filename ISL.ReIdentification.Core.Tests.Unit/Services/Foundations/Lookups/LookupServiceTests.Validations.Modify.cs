@@ -259,7 +259,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             DateTimeOffset now = randomDateTimeOffset;
-            DateTimeOffset startDate = now.AddSeconds(-60);
+            DateTimeOffset startDate = now.AddSeconds(-90);
             DateTimeOffset endDate = now.AddSeconds(0);
             Lookup randomLookup = CreateRandomLookup(randomDateTimeOffset);
             Lookup invalidLookup = randomLookup;
