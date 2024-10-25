@@ -91,8 +91,8 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.User
                 new NotFoundUserAccessException(
                     message: someMessage);
 
-            var userAccessProcessingValidationException =
-                new UserAccessProcessingValidationException(
+            var userAccessProcessingDependencyValidationException =
+                new UserAccessProcessingDependencyValidationException(
                     message: someMessage,
                     innerException: notFoundUserAccessException);
 
@@ -104,7 +104,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.User
 
             this.userAccessProcessingService.Setup(service =>
                 service.RetrieveUserAccessByIdAsync(It.IsAny<Guid>()))
-                    .ThrowsAsync(userAccessProcessingValidationException);
+                    .ThrowsAsync(userAccessProcessingDependencyValidationException);
 
             // when
             ActionResult<UserAccess> actualActionResult =
