@@ -28,12 +28,17 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
         private static string GetRandomString()
         {
             int length = GetRandomNumber();
+            string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
 
-            return new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+            return result.Length > length ? result.Substring(0, length) : result;
         }
 
-        private static string GetRandomStringWithLengthOf(int length) =>
-            new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+        private static string GetRandomStringWithLengthOf(int length)
+        {
+            string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+
+            return result.Length > length ? result.Substring(0, length) : result;
+        }
 
         private static Lookup UpdateLookupWithRandomValues(Lookup inputLookup)
         {

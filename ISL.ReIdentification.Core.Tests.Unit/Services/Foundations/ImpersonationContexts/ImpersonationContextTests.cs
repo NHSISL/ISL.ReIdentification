@@ -68,8 +68,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
 
         private static string GetRandomStringWithLengthOf(int length)
         {
-            return new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length)
-                .GetValue();
+            string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+
+            return result.Length > length ? result.Substring(0, length) : result;
         }
 
         private static int GetRandomNumber() =>

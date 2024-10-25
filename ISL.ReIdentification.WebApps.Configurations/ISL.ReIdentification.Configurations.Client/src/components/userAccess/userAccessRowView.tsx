@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from "react";
+import { FunctionComponent } from "react";
 import { Link } from 'react-router-dom';
 import { UserAccess } from "../../models/userAccess/userAccess";
 import { Button } from "react-bootstrap";
@@ -16,14 +16,13 @@ const UserAccessRow: FunctionComponent<UserAccessRowProps> = (props) => {
 
     return (
         <tr>
-            <td>{userAccess.firstName}</td>
-            <td>{userAccess.lastName}</td>
+            <td>{userAccess.displayName}</td>
             <td>
                 <div className="p-2 rounded al text-center">
                     {userAccess.userEmail}
                 </div>
             </td>
-            <td>{userAccess.orgCode}</td>
+            <td>{userAccess.orgCodes.join(",")}</td>
             <td>{moment(userAccess.activeFrom?.toString()).format("Do-MMM-yyyy HH:mm")}</td>
             <td>{moment(userAccess.activeTo?.toString()).format("Do-MMM-yyyy HH:mm")}</td>
             <td>

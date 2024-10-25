@@ -1,35 +1,25 @@
-import { Guid } from "guid-typescript";
 
 export class PdsDataView {
-    public rowId: Guid;
+    public rowId: string;
     public pseudoNhsNumber: string;
-    public primaryCareProvider: string;
-    public primaryCareProviderBusinessEffectiveFromDate?: Date | undefined;
-    public primaryCareProviderBusinessEffectiveToDate?: Date | undefined;
-    public ccgOfRegistration: string;
-    public currentCcgOfRegistration: string;
-    public icbOfRegistration?: string;
-    public currentIcbOfRegistration?: string;
+    public OrgCode: string;
+    public OrganisationName: string;
+    public RelationshipWithOrganisationEffectiveFromDate?: Date | undefined;
+    public RelationshipWithOrganisationEffectiveToDate?: Date | undefined;
 
     constructor(
-        rowId: Guid,
+        rowId: string,
         pseudoNhsNumber: string,
-        primaryCareProvider: string,
-        primaryCareProviderBusinessEffectiveFromDate?: Date,
-        primaryCareProviderBusinessEffectiveToDate?: Date,
-        ccgOfRegistration: string,
-        currentCcgOfRegistration: string,
-        icbOfRegistration?: string,
-        currentIcbOfRegistration?: string,
+        OrgCode: string,
+        OrganisationName: string,
+        RelationshipWithOrganisationEffectiveFromDate?: Date,
+        RelationshipWithOrganisationEffectiveToDate?: Date,
     ) {
         this.rowId = rowId;
         this.pseudoNhsNumber = pseudoNhsNumber;
-        this.primaryCareProvider = primaryCareProvider;
-        this.primaryCareProviderBusinessEffectiveFromDate = primaryCareProviderBusinessEffectiveFromDate
-        this.primaryCareProviderBusinessEffectiveToDate = primaryCareProviderBusinessEffectiveToDate
-        this.ccgOfRegistration = ccgOfRegistration;
-        this.currentCcgOfRegistration = currentCcgOfRegistration;
-        this.icbOfRegistration = icbOfRegistration;
-        this.currentIcbOfRegistration = currentIcbOfRegistration;
+        this.OrgCode = OrgCode;
+        this.OrganisationName = OrganisationName
+        this.RelationshipWithOrganisationEffectiveFromDate = RelationshipWithOrganisationEffectiveFromDate
+        this.RelationshipWithOrganisationEffectiveToDate = RelationshipWithOrganisationEffectiveToDate;
     }
 }

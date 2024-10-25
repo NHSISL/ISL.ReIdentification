@@ -1,7 +1,6 @@
-import { Guid } from 'guid-typescript';
 
 export class ImpersonationContextOLD {
-    public id: Guid;
+    public id: string;
     public requesterEmail: string;
     public recipientEmail: string;
     public isImpersonationContext: boolean;
@@ -13,8 +12,8 @@ export class ImpersonationContextOLD {
     public updatedBy?: string;
     public updatedDate?: Date | undefined;
 
-    constructor(impersonationContext: any) {
-        this.id = impersonationContext.id ? Guid.parse(impersonationContext.id) : Guid.parse(Guid.EMPTY);
+    constructor(impersonationContext: ImpersonationContextOLD) {
+        this.id = impersonationContext.id || crypto.randomUUID();
         this.requesterEmail = impersonationContext.requesterEmail || "";
         this.recipientEmail = impersonationContext.recipientEmail || "";
         this.isImpersonationContext = impersonationContext.isImpersonationContext || false;

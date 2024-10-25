@@ -104,8 +104,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
 
-        private static string GetRandomStringWithLength(int length) =>
-            new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+        private static string GetRandomStringWithLength(int length)
+        {
+            string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+
+            return result.Length > length ? result.Substring(0, length) : result;
+        }
 
         private static Filler<OdsData> CreateOdsDataFiller(DateTimeOffset dateTimeOffset)
         {
