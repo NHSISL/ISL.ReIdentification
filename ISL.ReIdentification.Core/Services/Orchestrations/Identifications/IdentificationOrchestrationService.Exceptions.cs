@@ -5,6 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits.Exceptions;
+using ISL.ReIdentification.Core.Models.Foundations.Documents.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Identifications.Exceptions;
@@ -89,6 +90,16 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                 invalidArgumentIdentificationOrchestrationException)
             {
                 throw await CreateAndLogValidationExceptionAsync(invalidArgumentIdentificationOrchestrationException);
+            }
+            catch (DocumentValidationException documentValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    documentValidationException);
+            }
+            catch (DocumentDependencyValidationException documentDependencyValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    documentDependencyValidationException);
             }
             catch (Exception exception)
             {
