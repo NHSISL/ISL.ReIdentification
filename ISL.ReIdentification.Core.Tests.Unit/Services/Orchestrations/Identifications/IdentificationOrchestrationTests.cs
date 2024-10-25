@@ -137,6 +137,23 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             }
         }
 
+        public class HasLengthStream : MemoryStream
+        {
+            public override long Length => 1;
+        }
+
+        public static TheoryData<Stream, string> InvalidArgumentsStreamHasLength()
+        {
+            Stream stream = new HasLengthStream();
+
+            return new TheoryData<Stream, string>
+            {
+                { null, null },
+                { stream, ""},
+                { stream, " " }
+            };
+        }
+
         public static TheoryData<Xeption> DependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();

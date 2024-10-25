@@ -13,14 +13,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
     public partial class IdentificationOrchestrationTests
     {
         [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData(" ")]
+        [MemberData(nameof(InvalidArgumentsStreamHasLength))]
         public async Task ShouldThrowValidationExceptionOnRetrieveDocumentByFileNameWhenArgumentsInvalidAndLogItAsync(
-            string invalidString)
+            Stream invalidStream, string invalidString)
         {
             // given
-            Stream invalidStream = null;
+            Stream invalidOutput = invalidStream;
             string invalidFileName = invalidString;
             string invalidContainer = invalidString;
 
@@ -30,7 +28,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                         "please correct the errors and try again.");
 
             invalidArgumentIdentificationOrchestrationException.AddData(
-                key: "Output",
+                key: "output",
                 values: "Stream is invalid");
 
             invalidArgumentIdentificationOrchestrationException.AddData(
