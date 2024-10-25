@@ -41,8 +41,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
 
             IdentificationOrchestrationServiceException
                 actualIdentificationOrchestrationValidationException =
-                await Assert.ThrowsAsync<IdentificationOrchestrationServiceException>(
-                    testCode: removeDocumentByFileNamTask.AsTask);
+                    await Assert.ThrowsAsync<IdentificationOrchestrationServiceException>(
+                        testCode: removeDocumentByFileNamTask.AsTask);
 
             // then
             actualIdentificationOrchestrationValidationException.Should().BeEquivalentTo(
