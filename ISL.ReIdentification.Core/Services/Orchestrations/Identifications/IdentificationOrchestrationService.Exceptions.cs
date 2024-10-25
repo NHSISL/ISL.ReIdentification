@@ -101,6 +101,16 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                 throw await CreateAndLogDependencyValidationExceptionAsync(
                     documentDependencyValidationException);
             }
+            catch (DocumentDependencyException documentDependencyException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(
+                    documentDependencyException);
+            }
+            catch (DocumentServiceException documentServiceException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(
+                    documentServiceException);
+            }
             catch (Exception exception)
             {
                 var failedServiceIdentificationOrchestrationException =
