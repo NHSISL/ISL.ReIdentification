@@ -39,14 +39,14 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                     innerException: invalidArgumentIdentificationOrchestrationException);
 
             // when
-            ValueTask identificationRequestTask =
+            ValueTask removeDocumentByFileNamTask =
                 this.identificationOrchestrationService
                     .RemoveDocumentByFileNameAsync(invalidString, invalidString);
 
             IdentificationOrchestrationValidationException
                 actualIdentificationOrchestrationValidationException =
                     await Assert.ThrowsAsync<IdentificationOrchestrationValidationException>(
-                        testCode: identificationRequestTask.AsTask);
+                        testCode: removeDocumentByFileNamTask.AsTask);
 
             // then
             actualIdentificationOrchestrationValidationException
