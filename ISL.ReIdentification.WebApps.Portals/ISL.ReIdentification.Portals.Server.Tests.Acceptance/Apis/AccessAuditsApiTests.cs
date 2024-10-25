@@ -50,9 +50,8 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
         private async ValueTask<AccessAudit> PostRandomAccessAuditAsync()
         {
             AccessAudit randomAccessAudit = CreateRandomAccessAudit();
-            await this.apiBroker.PostAccessAuditAsync(randomAccessAudit);
 
-            return randomAccessAudit;
+            return await this.apiBroker.PostAccessAuditAsync(randomAccessAudit);
         }
 
         private async ValueTask<List<AccessAudit>> PostRandomAccessAuditsAsync()
