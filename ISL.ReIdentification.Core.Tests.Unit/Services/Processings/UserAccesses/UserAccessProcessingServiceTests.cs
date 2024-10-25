@@ -42,6 +42,20 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
 
+        private static string GetRandomStringWithLengthOf(int length)
+        {
+            string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+
+            return result.Length > length ? result.Substring(0, length) : result;
+        }
+
+        private static List<string> GetRandomStringsWithLengthOf(int length)
+        {
+            return Enumerable.Range(start: 0, count: GetRandomNumber())
+                .Select(selector: _ => GetRandomStringWithLengthOf(length))
+                .ToList();
+        }
+
         private static int GetRandomNumber() =>
             new IntRange(max: 15, min: 2).GetValue();
 
