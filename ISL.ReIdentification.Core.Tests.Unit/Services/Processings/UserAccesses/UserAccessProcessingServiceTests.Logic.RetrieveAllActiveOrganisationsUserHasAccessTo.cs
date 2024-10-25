@@ -36,7 +36,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
             actualOrganisations.Should().BeEquivalentTo(expectedOrganisations);
 
             this.userAccessServiceMock.Verify(service =>
-                service.RemoveUserAccessByIdAsync(inputId),
+                service.RetrieveAllOrganisationsUserHasAccessTo(inputId),
                     Times.Once);
 
             this.userAccessServiceMock.VerifyNoOtherCalls();

@@ -61,7 +61,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
         });
 
         public ValueTask<List<string>> RetrieveAllActiveOrganisationsUserHasAccessTo(Guid entraUserId) =>
-            throw new NotImplementedException();
+            this.userAccessService.RetrieveAllOrganisationsUserHasAccessTo(entraUserId);
 
         public ValueTask<BulkUserAccess> BulkAddRemoveUserAccessAsync(BulkUserAccess bulkUserAccess) =>
             throw new NotImplementedException();
