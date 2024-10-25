@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using FluentAssertions;
 using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Brokers;
 using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.Lookups;
 using Tynamix.ObjectFiller;
@@ -45,14 +46,11 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
                 .OnType<DateTimeOffset>().Use(now)
                 .OnType<DateTimeOffset?>().Use(now)
 
-                .OnProperty(userAccess => userAccess.GivenName)
-                    .Use(() => GetRandomStringWithLengthOf(255))
-
-                .OnProperty(userAccess => userAccess.Surname)
-                    .Use(() => GetRandomStringWithLengthOf(255))
-
                 .OnProperty(userAccess => userAccess.Email)
                     .Use(() => GetRandomStringWithLengthOf(320))
+
+                .OnProperty(userAccess => userAccess.OrgCode)
+                    .Use(() => GetRandomStringWithLengthOf(15))
 
                 .OnProperty(userAccess => userAccess.CreatedDate).Use(now)
                 .OnProperty(userAccess => userAccess.CreatedBy).Use(user)

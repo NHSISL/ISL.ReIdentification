@@ -304,14 +304,14 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
 
         [Theory]
         [InlineData(1)]
-        [InlineData(-61)]
+        [InlineData(-91)]
         public async Task ShouldThrowValidationExceptionOnModifyIfUpdatedDateIsNotRecentAndLogItAsync(
             int invalidSeconds)
         {
             //given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             DateTimeOffset now = randomDateTimeOffset;
-            DateTimeOffset startDate = now.AddSeconds(-60);
+            DateTimeOffset startDate = now.AddSeconds(-90);
             DateTimeOffset endDate = now.AddSeconds(0);
             ImpersonationContext randomImpersonationContext = CreateRandomImpersonationContext(randomDateTimeOffset);
             randomImpersonationContext.UpdatedDate = randomDateTimeOffset.AddSeconds(invalidSeconds);
