@@ -52,7 +52,6 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             ValidateOnProcessIdentificationRequests(accessRequest);
 
             EntraUser currentUser = await this.securityBroker.GetCurrentUser();
-            
 
             accessRequest.IdentificationRequest.EntraUserId = currentUser.EntraUserId;
             accessRequest.IdentificationRequest.Purpose = "to remove";
