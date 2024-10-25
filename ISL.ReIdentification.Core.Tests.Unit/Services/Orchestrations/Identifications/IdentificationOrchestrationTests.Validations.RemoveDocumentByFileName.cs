@@ -19,8 +19,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             string invalidString)
         {
             // given
+            string invalidFileName = invalidString;
+            string invalidContainer = invalidString;
+
             var invalidArgumentIdentificationOrchestrationException =
-            new InvalidArgumentIdentificationOrchestrationException(
+                new InvalidArgumentIdentificationOrchestrationException(
                     message: "Invalid argument identification orchestration exception, " +
                         "please correct the errors and try again.");
 
@@ -41,7 +44,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             // when
             ValueTask removeDocumentByFileNamTask =
                 this.identificationOrchestrationService
-                    .RemoveDocumentByFileNameAsync(invalidString, invalidString);
+                    .RemoveDocumentByFileNameAsync(invalidFileName, invalidContainer);
 
             IdentificationOrchestrationValidationException
                 actualIdentificationOrchestrationValidationException =

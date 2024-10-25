@@ -18,7 +18,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
 
             // when
             await this.identificationOrchestrationService
-                    .RemoveDocumentByFileNameAsync(randomFilename, randomContainer);
+                .RemoveDocumentByFileNameAsync(randomFilename, randomContainer);
 
             // then
             this.documentServiceMock.Verify(service =>
