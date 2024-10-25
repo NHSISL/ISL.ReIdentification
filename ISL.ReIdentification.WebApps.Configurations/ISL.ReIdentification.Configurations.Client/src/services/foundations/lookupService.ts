@@ -1,8 +1,9 @@
 import { useMsal } from "@azure/msal-react";
-import { Guid } from "guid-typescript";
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import LookupBroker from "../../brokers/apiBroker.lookups";
 import { Lookup } from "../../models/lookups/lookup";
+import { ApiError } from "../../types/apiError";
+
 
 export const lookupService = {
     useCreatelookup: () => {
@@ -10,12 +11,11 @@ export const lookupService = {
         const queryClient = useQueryClient();
         const msal = useMsal();
 
-        return useMutation({
-            mutationFn: (lookup: Lookup) => {
+        return useMutation<Lookup, ApiError, Lookup, unknown>({
+            mutationFn: (lookup: Lookup) =>  {
                 const date = new Date();
                 lookup.createdDate = lookup.updatedDate = date;
                 lookup.createdBy = lookup.updatedBy = msal.accounts[0].username;
-
                 return broker.PostLookupAsync(lookup);
             },
             onSuccess: (variables: Lookup) => {
@@ -38,10 +38,17 @@ export const lookupService = {
     useRetrieveAllLookupPages: (query: string) => {
         const lookupBroker = new LookupBroker();
 
-        return useQuery({
+        return useInfiniteQuery({
             queryKey: ["LookupGetAll", { query: query }],
-            queryFn: () => lookupBroker.GetAllLookupsAsync(query),
-            staleTime: Infinity
+            queryFn: ({ pageParam }: { pageParam?: string }) => {
+                if (!pageParam) {
+                    return lookupBroker.GetLookupFirstPagesAsync(query)
+                }
+                return lookupBroker.GetLookupSubsequentPagesAsync(pageParam)
+            },
+            staleTime: Infinity,
+            initialPageParam: "",
+            getNextPageParam: (lastPage: { nextPage?: string }) => lastPage.nextPage,
         });
     },
 
@@ -59,7 +66,7 @@ export const lookupService = {
                 return lookupBroker.PutLookupAsync(lookup);
             },
 
-            onSuccess: (data: { id: any }) => {
+            onSuccess: (data: { id: string }) => {
                 queryClient.invalidateQueries({ queryKey: ["LookupGetAll"] });
                 queryClient.invalidateQueries({ queryKey: ["LookupGetById", { id: data.id }] });
             }
@@ -71,10 +78,10 @@ export const lookupService = {
         const queryClient = useQueryClient();
 
         return useMutation({
-            mutationFn: (id: Guid) => {
+            mutationFn: (id: string) => {
                 return broker.DeleteLookupByIdAsync(id);
             },
-            onSuccess: (data: { id: Guid }) => {
+            onSuccess: (data: { id: string }) => {
                 queryClient.invalidateQueries({ queryKey: ["LookupGetAll"] });
                 queryClient.invalidateQueries({ queryKey: ["LookupGetById", { id: data.id }] });
             }

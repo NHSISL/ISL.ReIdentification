@@ -17,7 +17,7 @@ class EntraUsersBroker {
         return await this.apiBroker.GetAsyncAbsolute(url)
             .then(result => {
                 if(result.data && result.data.value) {
-                    return result.data.value.map((eu: any) => { return new entraUser(eu) })
+                    return result.data.value.map((eu: entraUser) => { return new entraUser(eu) })
                 }
             });
     }

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { Guid } from "guid-typescript";
 import { impersonationContextService } from "../../foundations/impersonationContextService";
-import { ImpersonationContextView } from "../../../models/views/components/impersonationContext/impersonationContextView";
+import { ImpersonationContextView } from "../../../models/views/components/impersonationContext/ImpersonationContextView";
 
 type ImpersonationContextViewServiceResponse = {
     mappedImpersonationContexts: ImpersonationContextView[] | undefined;
@@ -79,7 +78,7 @@ export const impersonationContextViewService = {
         };
     },
 
-    useGetImpersonationContextById: (id: Guid) => {
+    useGetImpersonationContextById: (id: string) => {
         const query = `?$filter=id eq ${id}`;
         const response = impersonationContextService.useRetrieveAllImpersonationContextPages(query);
         const [mappedImpersonationContext, setMappedImpersonationContext] = useState<ImpersonationContextView>();

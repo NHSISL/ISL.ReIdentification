@@ -1,9 +1,9 @@
-import React, { FunctionComponent } from "react";
+import { FunctionComponent } from "react";
 import PdsRowView from "./pdsRowView";
 
-type PdsRowProps = {};
+type PdsRowProps = object;
 
-const PdsRow: FunctionComponent<PdsRowProps> = (props) => {
+const PdsRow: FunctionComponent<PdsRowProps> = () => {
     return (
         <PdsRowView />
     );

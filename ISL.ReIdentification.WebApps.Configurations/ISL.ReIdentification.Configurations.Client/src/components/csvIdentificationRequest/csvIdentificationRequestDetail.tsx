@@ -17,8 +17,8 @@ const CsvIdentificationRequestDetail: FunctionComponent<CsvIdentificationRequest
 
     let csvIdentificationRequestRetrieved: CsvIdentificationRequestView | undefined
 
-    if (CsvIdentificationRequestId !== "") {
-        let { mappedCsvIdentificationRequest } = csvIdentificationRequestViewService.useGetCsvIdentificationRequestById(CsvIdentificationRequestId);
+    if (CsvIdentificationRequestId) {
+        const { mappedCsvIdentificationRequest } = csvIdentificationRequestViewService.useGetCsvIdentificationRequestById(CsvIdentificationRequestId);
         csvIdentificationRequestRetrieved = mappedCsvIdentificationRequest
     }
 

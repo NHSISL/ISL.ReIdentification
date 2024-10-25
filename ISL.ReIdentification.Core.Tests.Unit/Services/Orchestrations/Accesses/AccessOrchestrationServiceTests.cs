@@ -102,15 +102,34 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
 
-        private static string GetRandomStringWithLength(int length) =>
-            new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+        private static string GetRandomStringWithLength(int length)
+        {
+            string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+
+            return result.Length > length ? result.Substring(0, length) : result;
+        }
+
+        private static Filler<OdsData> CreateOdsDataFiller(DateTimeOffset dateTimeOffset)
+        {
+            var filler = new Filler<OdsData>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(odsData => odsData.OrganisationCode).Use(GetRandomStringWithLength(15))
+                .OnProperty(odsData => odsData.OrganisationName).Use(GetRandomStringWithLength(30));
+
+            return filler;
+        }
 
         private static Filler<PdsData> CreatePdsDataFiller(DateTimeOffset dateTimeOffset)
         {
             var filler = new Filler<PdsData>();
 
             filler.Setup()
-                .OnType<DateTimeOffset?>().Use(dateTimeOffset);
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(pdsData => pdsData.PseudoNhsNumber).Use(GetRandomStringWithLength(10))
+                .OnProperty(pdsData => pdsData.OrgCode).Use(GetRandomStringWithLength(15));
 
             return filler;
         }
@@ -174,6 +193,18 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use((DateTimeOffset?)default)
+
+                .OnProperty(impersonationContext => impersonationContext.RequesterEmail)
+                    .Use(() => GetRandomStringWithLength(320))
+
+                .OnProperty(impersonationContext => impersonationContext.ResponsiblePersonEmail)
+                    .Use(() => GetRandomStringWithLength(320))
+
+                .OnProperty(impersonationContext => impersonationContext.Organisation)
+                    .Use(() => GetRandomStringWithLength(255))
+
+                .OnProperty(impersonationContext => impersonationContext.ProjectName)
+                    .Use(() => GetRandomStringWithLength(255))
 
                 .OnProperty(impersonationContext => impersonationContext.IdentifierColumn)
                     .Use(() => GetRandomStringWithLength(10))
