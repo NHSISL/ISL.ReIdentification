@@ -29,9 +29,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             string landingFolderName = GetRandomString();
             string pickupFolderName = GetRandomString();
             string errorFolderName = GetRandomString();
-            string filepath = $"/{container}/{contextIdString}/{landingFolderName}/subdirectory/{fileName}{fileExtension}";
-            string inputFilepath = filepath;
-            
+
             string filepath = $"/{container}/{contextIdString}/{landingFolderName}" +
                 $"/subdirectory/{fileName}{fileExtension}";
 
