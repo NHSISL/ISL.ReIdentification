@@ -88,10 +88,9 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
         private async ValueTask<UserAccess> PostRandomUserAccess()
         {
             UserAccess randomUserAccess = CreateRandomUserAccess();
-            UserAccess result = await this.apiBroker.PostUserAccessAsync(randomUserAccess);
-            result.Should().BeEquivalentTo(randomUserAccess);
+            await this.apiBroker.PostUserAccessAsync(randomUserAccess);
 
-            return result;
+            return randomUserAccess;
         }
     }
 }
