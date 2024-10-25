@@ -75,6 +75,25 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
                 .ToList();
         }
 
+        private static List<UserAccess> CreateUserAccessesWithVariedActiveDates(Guid entraUserId)
+        {
+            UserAccess futureActiveFromUserAccess = CreateRandomUserAccess(GetRandomFutureDateTimeOffset());
+            UserAccess pastActiveToUserAccess = CreateRandomUserAccess(GetRandomPastDateTimeOffset());
+            UserAccess currentActiveToUserAccess = CreateRandomUserAccess();
+            currentActiveToUserAccess.ActiveFrom = DateTimeOffset.UtcNow;
+            currentActiveToUserAccess.ActiveTo = GetRandomFutureDateTimeOffset();
+
+            List<UserAccess> userAccesses = new List<UserAccess> {
+                futureActiveFromUserAccess,
+                pastActiveToUserAccess,
+                currentActiveToUserAccess
+            };
+
+            userAccesses.ForEach(userAccess => userAccess.EntraUserId = entraUserId);
+
+            return userAccesses;
+        }
+
         private static string GetRandomStringWithLengthOf(int length)
         {
             string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();

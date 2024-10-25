@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using ISL.ReIdentification.Core.Models.Foundations.OdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 using Moq;
 
@@ -15,22 +14,14 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 {
     public partial class UserAccessesTests
     {
-        [Theory]
-        [MemberData(nameof(OrganisationListsAndExpectedOutputs))]
-        public async Task ShouldRetrieveAllActiveOrganisationsUserHasAccessToAsync(
-            List<UserAccess> userAccesses,
-            List<OdsData> odsDataItems,
-            List<string> expectedOrganisations)
+        [Fact]
+        public async Task ShouldRetrieveAllActiveOrganisationsUserHasAccessToAsync()
         {
             // given
             Guid randomEntraUserId = Guid.NewGuid();
             Guid inputEntraUserId = randomEntraUserId;
-            userAccesses.ForEach(userAccess => userAccess.EntraUserId = inputEntraUserId);
+            List<UserAccess> userAccesses = CreateUserAccessesWithVariedActiveDates(inputEntraUserId);
             List<UserAccess> storageUserAccess = userAccesses;
-
-            List<UserAccess> activeUserAccesses = storageUserAccess.Where(userAccess =>
-                userAccess.ActiveFrom <= DateTimeOffset.UtcNow
-                    && (userAccess.ActiveTo == null || userAccess.ActiveTo > DateTimeOffset.UtcNow)).ToList();
 
             this.reIdentificationStorageBroker.Setup(broker =>
                 broker.SelectAllUserAccessesAsync())
