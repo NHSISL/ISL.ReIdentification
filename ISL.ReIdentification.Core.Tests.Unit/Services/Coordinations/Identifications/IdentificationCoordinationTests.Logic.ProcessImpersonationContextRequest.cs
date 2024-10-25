@@ -48,6 +48,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             ImpersonationContext outputImpersonationContext = CreateRandomImpersonationContext();
             outputPersistanceOrchestrationAccessRequest.ImpersonationContext = outputImpersonationContext;
             IdentificationRequest outputConversionIdentificationRequest = CreateRandomIdentificationRequest();
+
+            AccessRequest inputAccessOrchestrationAccessRequest = new AccessRequest
+            {
+                IdentificationRequest = outputConversionIdentificationRequest,
+            };
+
             AccessRequest outputOrchestrationAccessRequest = CreateRandomAccessRequest();
             IdentificationRequest outputOrchestrationIdentificationRequest = CreateRandomIdentificationRequest();
             CsvIdentificationRequest outputConversionCsvIdentificationRequest = CreateRandomCsvIdentificationRequest();
@@ -91,11 +97,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                     .ReturnsAsync(outputPersistanceOrchestrationAccessRequest);
 
             this.accessOrchestrationServiceMock.Setup(service =>
-                service.ValidateAccessForIdentificationRequestAsync(It.IsAny<AccessRequest>()))
-                    .ReturnsAsync(outputOrchestrationAccessRequest);
+                service.ValidateAccessForIdentificationRequestAsync(
+                    It.Is(SameAccessRequestAs(inputAccessOrchestrationAccessRequest))))
+                        .ReturnsAsync(outputOrchestrationAccessRequest);
 
             this.identificationOrchestrationServiceMock.Setup(service =>
-                service.ProcessIdentificationRequestAsync(It.IsAny<IdentificationRequest>()))
+                service.ProcessIdentificationRequestAsync(outputOrchestrationAccessRequest.IdentificationRequest))
                     .ReturnsAsync(outputOrchestrationIdentificationRequest);
 
             identificationCoordinationServiceMock.Setup(service =>
@@ -128,8 +135,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                     Times.Once);
 
             this.accessOrchestrationServiceMock.Verify(service =>
-                service.ValidateAccessForIdentificationRequestAsync(It.IsAny<AccessRequest>()),
-                    Times.Once);
+                service.ValidateAccessForIdentificationRequestAsync(
+                    It.Is(SameAccessRequestAs(inputAccessOrchestrationAccessRequest))),
+                        Times.Once);
 
             this.identificationOrchestrationServiceMock.Verify(service =>
                 service.ProcessIdentificationRequestAsync(outputOrchestrationAccessRequest.IdentificationRequest),
