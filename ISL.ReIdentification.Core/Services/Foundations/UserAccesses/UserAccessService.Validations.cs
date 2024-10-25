@@ -4,6 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
+using ISL.ReIdentification.Core.Extensions.Loggings;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses.Exceptions;
 
@@ -225,7 +226,13 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
                 }
             }
 
+            if (invalidUserAccessException.Data.Count > 0)
+            {
+                Console.WriteLine($"VALIDATION ERROR: {invalidUserAccessException.GetValidationSummary()}");
+            }
+
             invalidUserAccessException.ThrowIfContainsErrors();
+
         }
     }
 }
