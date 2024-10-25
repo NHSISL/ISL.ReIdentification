@@ -25,6 +25,39 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
         public PdsDataController(IPdsDataService pdsDataService) =>
             this.pdsDataService = pdsDataService;
 
+        [HttpPost]
+        public async ValueTask<ActionResult<PdsData>> PostPdsDataAsync([FromBody] PdsData pdsData)
+        {
+            try
+            {
+                PdsData addedPdsData =
+                    await this.pdsDataService.AddPdsDataAsync(pdsData);
+
+                return Created(addedPdsData);
+            }
+            catch (PdsDataValidationException pdsDataValidationException)
+            {
+                return BadRequest(pdsDataValidationException.InnerException);
+            }
+            catch (PdsDataDependencyValidationException pdsDataDependencyValidationException)
+               when (pdsDataDependencyValidationException.InnerException is AlreadyExistsPdsDataException)
+            {
+                return Conflict(pdsDataDependencyValidationException.InnerException);
+            }
+            catch (PdsDataDependencyValidationException pdsDataDependencyValidationException)
+            {
+                return BadRequest(pdsDataDependencyValidationException.InnerException);
+            }
+            catch (PdsDataDependencyException pdsDataDependencyException)
+            {
+                return InternalServerError(pdsDataDependencyException);
+            }
+            catch (PdsDataServiceException pdsDataServiceException)
+            {
+                return InternalServerError(pdsDataServiceException);
+            }
+        }
+
         [HttpGet]
         [EnableQuery(PageSize = 25)]
         public async ValueTask<ActionResult<IQueryable<PdsData>>> GetAsync()
