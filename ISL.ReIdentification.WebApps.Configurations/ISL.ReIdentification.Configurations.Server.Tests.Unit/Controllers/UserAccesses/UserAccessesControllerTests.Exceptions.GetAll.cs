@@ -29,7 +29,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.User
             var expectedActionResult =
                 new ActionResult<IQueryable<UserAccess>>(expectedInternalServerErrorObjectResult);
 
-            this.userAccessServiceMock.Setup(service =>
+            this.userAccessProcessingService.Setup(service =>
                 service.RetrieveAllUserAccessesAsync())
                     .ThrowsAsync(serverException);
 
@@ -40,11 +40,11 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.User
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
-            this.userAccessServiceMock.Verify(service =>
+            this.userAccessProcessingService.Verify(service =>
                 service.RetrieveAllUserAccessesAsync(),
                     Times.Once);
 
-            this.userAccessServiceMock.VerifyNoOtherCalls();
+            this.userAccessProcessingService.VerifyNoOtherCalls();
         }
     }
 }
