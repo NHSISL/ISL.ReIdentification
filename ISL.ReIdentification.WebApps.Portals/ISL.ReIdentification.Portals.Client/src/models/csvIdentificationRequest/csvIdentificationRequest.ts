@@ -8,7 +8,7 @@ export class CsvIdentificationRequest {
     public reason?: string;
     public purpose?: string;
     public organisation?: string;
-    public data?: Uint8Array;
+    public data?: string;
     public sha256Hash?: string;
     public identifierColumn?: string;
     public createdBy?: string;
@@ -16,7 +16,7 @@ export class CsvIdentificationRequest {
     public updatedBy?: string;
     public updatedDate?: Date | undefined;
 
-    constructor(csvIdentificationRequest: any) {
+    constructor(csvIdentificationRequest: CsvIdentificationRequest) {
         this.id = csvIdentificationRequest.id ? csvIdentificationRequest.id : "";
         this.requesterFirstName = csvIdentificationRequest.requesterFirstName || "";
         this.requesterLastName = csvIdentificationRequest.requesterLastName || "";
@@ -26,7 +26,7 @@ export class CsvIdentificationRequest {
         this.reason = csvIdentificationRequest.reason || "";
         this.purpose = csvIdentificationRequest.purpose || "";
         this.organisation = csvIdentificationRequest.organisation || "";
-        this.data = csvIdentificationRequest.data || 0;
+        this.data = csvIdentificationRequest.data || "0";
         this.sha256Hash = csvIdentificationRequest.sha256Hash || "";
         this.identifierColumn = csvIdentificationRequest.identifierColumn || ""; 
         this.createdDate = csvIdentificationRequest.createdDate ? new Date(csvIdentificationRequest.createdDate) : undefined;

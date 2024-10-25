@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState } from "react";
+import { FunctionComponent } from "react";
 import { Card } from "react-bootstrap";
 import ReIdentificationDetailCardView from "./reIdentificationDetailCardView";
 import { LookupView } from "../../models/views/components/lookups/lookupView";

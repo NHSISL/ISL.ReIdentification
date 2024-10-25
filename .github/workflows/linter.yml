@@ -1,4 +1,4 @@
-name: Lint Frontend
+name: Javascript Linting
 
 on:
   pull_request:
@@ -22,17 +22,29 @@ jobs:
           with:
             dotnet-version: 8.0.302
         - uses: actions/checkout@v2
-        - name: Install modules
-          working-directory: ./ISL.ReIdentification.WebApps.Configurations/ISL.ReIdentification.Configurations.Client
-          run: npm install
         - name: Install certificates
           run: dotnet dev-certs https --verbose --trust
-        - name: Run ESLint
+        - name: Install node modules (Configuration)
+          working-directory: ./ISL.ReIdentification.WebApps.Configurations/ISL.ReIdentification.Configurations.Client
+          run: npm install
+        - name: Run ESLint (Configuration)
           working-directory: ./ISL.ReIdentification.WebApps.Configurations/ISL.ReIdentification.Configurations.Client
           run: npm run lint
-        - name: Run JS Test
+        - name: Run JS Test (Configuration)
           working-directory: ./ISL.ReIdentification.WebApps.Configurations/ISL.ReIdentification.Configurations.Client
           run: npm run test
-        - name: Run JS Build
+        - name: Run JS Build (Configuration)
           working-directory: ./ISL.ReIdentification.WebApps.Configurations/ISL.ReIdentification.Configurations.Client
+          run: npm run build
+        - name: Install node modules (Portal)
+          working-directory: ./ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Client
+          run: npm install
+        - name: Run ESLint (Portal)
+          working-directory: ./ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Client
+          run: npm run lint
+        - name: Run JS Test (Portal)
+          working-directory: ./ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Client
+          run: npm run test
+        - name: Run JS Build (Portal)
+          working-directory: ./ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Client
           run: npm run build
