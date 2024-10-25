@@ -123,6 +123,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);
 
+        private Expression<Func<Stream, bool>> SameStreamAs(Stream expectedStream) =>
+            actualStream => this.compareLogic.Compare(expectedStream, actualStream).AreEqual;
+
         private static byte[] ReadAllBytesFromStream(Stream stream)
         {
             if (stream.CanSeek)
