@@ -4,11 +4,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Text;
 using ISL.ReIdentification.Core.Brokers.CsvHelpers;
+using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Securities;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
@@ -38,7 +40,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
         private readonly Mock<IPersistanceOrchestrationService> persistanceOrchestrationServiceMock;
         private readonly Mock<IIdentificationOrchestrationService> identificationOrchestrationServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
+        private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly IdentificationCoordinationService identificationCoordinationService;
+        private readonly ProjectStorageConfiguration projectStorageConfiguration;
         private readonly ICompareLogic compareLogic;
 
         public IdentificationCoordinationTests()
@@ -49,15 +53,26 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             this.persistanceOrchestrationServiceMock = new Mock<IPersistanceOrchestrationService>();
             this.identificationOrchestrationServiceMock = new Mock<IIdentificationOrchestrationService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
+            this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.compareLogic = new CompareLogic();
 
+            this.projectStorageConfiguration = new ProjectStorageConfiguration
+            {
+                Container = GetRandomString(),
+                LandingFolder = GetRandomString(),
+                PickupFolder = GetRandomString(),
+                ErrorFolder = GetRandomString()
+            };
+
             this.identificationCoordinationService = new IdentificationCoordinationService(
-                this.accessOrchestrationServiceMock.Object,
-                this.persistanceOrchestrationServiceMock.Object,
-                this.identificationOrchestrationServiceMock.Object,
-                this.csvHelperBrokerMock.Object,
-                this.securityBrokerMock.Object,
-                this.loggingBrokerMock.Object);
+                accessOrchestrationService: this.accessOrchestrationServiceMock.Object,
+                persistanceOrchestrationService: this.persistanceOrchestrationServiceMock.Object,
+                identificationOrchestrationService: this.identificationOrchestrationServiceMock.Object,
+                csvHelperBroker: this.csvHelperBrokerMock.Object,
+                securityBroker: this.securityBrokerMock.Object,
+                loggingBroker: this.loggingBrokerMock.Object,
+                dateTimeBroker: this.dateTimeBrokerMock.Object,
+                projectStorageConfiguration);
         }
 
         private static string GetRandomString() =>
@@ -180,6 +195,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);
+
+        private Expression<Func<Stream, bool>> SameStreamAs(Stream expectedStream) =>
+            actualStream => this.compareLogic.Compare(expectedStream, actualStream).AreEqual;
+
+        private Expression<Func<AccessRequest, bool>> SameAccessRequestAs(AccessRequest expectedAccessRequest) =>
+            actualAccessRequest => this.compareLogic.Compare(expectedAccessRequest, actualAccessRequest).AreEqual;
 
         public static TheoryData<Xeption> DependencyValidationExceptions()
         {
