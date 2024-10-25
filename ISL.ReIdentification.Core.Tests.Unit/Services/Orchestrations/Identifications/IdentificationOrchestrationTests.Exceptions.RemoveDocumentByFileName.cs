@@ -22,8 +22,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             string someFilename = GetRandomString();
             string someContainer = GetRandomString();
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
+            this.documentServiceMock.Setup(serivce =>
+                serivce.RemoveDocumentByFileNameAsync(someFilename, someContainer))
                     .ThrowsAsync(dependencyValidationException);
 
             var expectedIdentificationOrchestrationDependencyValidationException =
