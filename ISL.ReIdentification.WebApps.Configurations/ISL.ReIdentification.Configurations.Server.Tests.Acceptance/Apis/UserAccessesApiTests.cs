@@ -45,14 +45,11 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
                 .OnType<DateTimeOffset>().Use(now)
                 .OnType<DateTimeOffset?>().Use(now)
 
-                .OnProperty(userAccess => userAccess.GivenName)
-                    .Use(() => GetRandomStringWithLengthOf(255))
-
-                .OnProperty(userAccess => userAccess.Surname)
-                    .Use(() => GetRandomStringWithLengthOf(255))
-
                 .OnProperty(userAccess => userAccess.Email)
                     .Use(() => GetRandomStringWithLengthOf(320))
+
+                .OnProperty(userAccess => userAccess.OrgCode)
+                    .Use(() => GetRandomStringWithLengthOf(15))
 
                 .OnProperty(userAccess => userAccess.CreatedDate).Use(now)
                 .OnProperty(userAccess => userAccess.CreatedBy).Use(user)
@@ -90,9 +87,8 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
         private async ValueTask<UserAccess> PostRandomUserAccess()
         {
             UserAccess randomUserAccess = CreateRandomUserAccess();
-            await this.apiBroker.PostUserAccessAsync(randomUserAccess);
 
-            return randomUserAccess;
+            return await this.apiBroker.PostUserAccessAsync(randomUserAccess);
         }
     }
 }

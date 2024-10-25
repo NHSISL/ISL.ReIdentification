@@ -244,7 +244,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
 
         [Theory]
         [InlineData(1)]
-        [InlineData(-61)]
+        [InlineData(-91)]
         public async Task ShouldThrowValidationExceptionOnAddIfCreatedDateIsNotRecentAndLogItAsync(
             int invalidSeconds)
         {
@@ -253,7 +253,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
                 GetRandomDateTimeOffset();
 
             DateTimeOffset now = randomDateTime;
-            DateTimeOffset startDate = now.AddSeconds(-60);
+            DateTimeOffset startDate = now.AddSeconds(-90);
             DateTimeOffset endDate = now.AddSeconds(0);
             Lookup randomLookup = CreateRandomLookup();
             Lookup invalidLookup = randomLookup;
