@@ -125,8 +125,8 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
         public ValueTask AddDocumentAsync(Stream input, string fileName, string container) =>
             throw new NotImplementedException();
 
-        public ValueTask RetrieveDocumentByFileNameAsync(Stream output, string fileName, string container) =>
-            throw new NotImplementedException();
+        public async ValueTask RetrieveDocumentByFileNameAsync(Stream output, string fileName, string container) =>
+            await this.documentService.RetrieveDocumentByFileNameAsync(output, fileName, container);
 
         public ValueTask RemoveDocumentByFileNameAsync(string fileName, string container) =>
         TryCatch(async () =>
