@@ -72,11 +72,11 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.OdsD
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private static List<OdsData> CreateRandomOdsDatas()
+        private static IQueryable<OdsData> CreateRandomOdsDatas()
         {
             return CreateOdsDataFiller(dateTimeOffset: GetRandomDateTimeOffset())
                 .Create(count: GetRandomNumber())
-                    .ToList();
+                    .AsQueryable();
         }
 
         private static List<OdsData> CreateRandomOdsDataChildren(HierarchyId parentHierarchyId)
@@ -109,6 +109,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.OdsD
 
         private static OdsData CreateRandomOdsData(DateTimeOffset dateTimeOffset) =>
             CreateOdsDataFiller(dateTimeOffset).Create();
+
 
         private static Filler<OdsData> CreateOdsDataFiller(
             DateTimeOffset dateTimeOffset, HierarchyId hierarchyId = null)
