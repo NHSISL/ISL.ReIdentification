@@ -28,9 +28,17 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             string fileExtension = ".csv";
             string filepath = $"/{container}/{contextIdString}/outbox/subdirectory/{fileName}{fileExtension}";
             string inputFilepath = filepath;
-            string expectedLandingFilepath = $"outbox/subdirectory/{fileName}{fileExtension}";
-            string expectedPickupFilepath = $"inbox/subdirectory/{fileName}_{timestamp}{fileExtension}";
-            string expectedErrorFilepath = $"error/subdirectory/{fileName}_{timestamp}{fileExtension}";
+            string landingFolderName = GetRandomString();
+            string pickupFolderName = GetRandomString();
+            string errorFolderName = GetRandomString();
+            
+            string filepath = $"/{container}/{contextIdString}/{landingFolderName}" +
+                $"/subdirectory/{fileName}{fileExtension}";
+
+            string inputFilepath = filepath;
+            string expectedLandingFilepath = $"{landingFolderName}/subdirectory/{fileName}{fileExtension}";
+            string expectedPickupFilepath = $"{pickupFolderName}/subdirectory/{fileName}_{timestamp}{fileExtension}";
+            string expectedErrorFilepath = $"{errorFolderName}/subdirectory/{fileName}_{timestamp}{fileExtension}";
             Guid expectedContextId = contextId;
 
             var expectedResult =
@@ -47,9 +55,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 projectStorageConfiguration: new ProjectStorageConfiguration
                 {
                     Container = GetRandomString(),
-                    LandingFolder = "outbox",
-                    PickupFolder = "inbox",
-                    ErrorFolder = "error"
+                    LandingFolder = landingFolderName,
+                    PickupFolder = pickupFolderName,
+                    ErrorFolder = errorFolderName
                 });
 
             this.dateTimeBrokerMock.Setup(broker =>
