@@ -1,10 +1,10 @@
-import { ApiValidationError } from "../errors/validationError";
 import { Validation } from "../models/validations/validation";
+import { ErrorBase } from "../types/ErrorBase";
 import { ValidationMessages } from "./validationMessages";
 
-export function ValidationProcessor<T>() {
+export function ValidationProcessor<T extends ErrorBase,T1>() {
 
-    const processRequired = (key: string, values: any, isRequired?: boolean) => {
+    const processRequired = (key: keyof object, values: object, isRequired?: boolean) => {
         if (!isRequired) {
             return;
         }
@@ -14,29 +14,39 @@ export function ValidationProcessor<T>() {
         }
     }
 
-    const processMinLength = (key: string, values: any, minlength?: number) => {
+    const processMinLength = (key: keyof object, values: object, minlength?: number) => {
         if (!minlength) {
             return;
         }
 
-        if (minlength > values[key].length) {
+        const value : string = values[key];
+
+        if (minlength > value.length) {
             return ValidationMessages.minimumLengthMessage(minlength);
         }
     }
 
-    const processMaxLength = (key: string, values: any, maxlength?: number) => {
+    const processMaxLength = (key: keyof object, values: object, maxlength?: number) => {
         if (!maxlength) {
             return;
         }
 
-        if (maxlength < values[key].length) {
+        if(typeof values[key] !== 'string'){
+            throw "attempting length check on non-string field";
+        }
+
+        if (maxlength < (values[key] as string).length) {
             return ValidationMessages.maximumLengthMessage(maxlength);
         }
     }
 
-    const processMinValue = (key: string, values: any, minValue?: number) => {
+    const processMinValue = (key: keyof object, values: object, minValue?: number) => {
         if (!minValue) {
             return;
+        }
+
+        if(typeof values[key] !== 'number'){
+            throw "attempting minimum check on non-number field";
         }
 
         if (minValue > values[key]) {
@@ -44,9 +54,13 @@ export function ValidationProcessor<T>() {
         }
     }
 
-    const processMaxValue = (key: string, values: any, maxValue?: number) => {
+    const processMaxValue = (key: keyof object, values: object, maxValue?: number) => {
         if (!maxValue) {
             return;
+        }
+
+        if(typeof values[key] !== 'number'){
+            throw "attempting minimum check on non-number field";
         }
 
         if (maxValue < values[key]) {
@@ -54,57 +68,68 @@ export function ValidationProcessor<T>() {
         }
     }
 
-    const processMinDate = (key: string, values: any, minDate?: Date) => {
+    const processMinDate = (key: keyof object, values: object, minDate?: Date) => {
         if (!minDate) {
             return;
         }
 
-        if (minDate > values[key]) {
+        if(typeof values[key] !== 'object'){
+            throw "attempting date check on non-date field";
+        }
+
+        if (minDate > (values[key] as Date)) {
             return ValidationMessages.minimumDateMessage(minDate);
         }
     }
 
-    const processMaxDate = (key: string, values: any, maxDate?: Date) => {
+    const processMaxDate = (key: keyof object, values: object, maxDate?: Date) => {
         if (!maxDate) {
             return;
         }
 
-        if (maxDate < values[key]) {
+        if(typeof values[key] !== 'object'){
+            throw "attempting date check on non-date field";
+        }
+
+
+        if (maxDate < (values[key] as Date)) {
             return ValidationMessages.maximumDateMessage(maxDate);
         }
     }
 
-    const processEnumValidation = (key: string, values: any, message?: string, regex?: string | RegExp) => {
+    const processEnumValidation = (key: keyof object, values: object, regex?: string | RegExp) => {
         if (!regex) {
             return;
         }
 
-        var reg = new RegExp(regex);
+        const reg = new RegExp(regex);
 
         if (reg.test(values[key]) === false) {
-            return ValidationMessages.regExFail();;
+            return ValidationMessages.regExFail();
         }
     }
 
-    const processValidation = (errorSpecification: T, validations: Validation[], values: any, validationEnabled: boolean) : T => {
-        let validationErrors: any = { ...errorSpecification };
+    const processValidation = (errorSpecification: T, validations: Validation[], values: object, validationEnabled: boolean) : T => {
+        const validationErrors: T = { ...errorSpecification };
         
         validations.forEach((validation: Validation) => {
-            let propertyErrors: Array<any> = [];
+            const propertyErrors: Array<unknown> = [];
 
-            propertyErrors.push(processRequired(validation.property, values, validation.isRequired));
-            propertyErrors.push(processMinLength(validation.property, values, validation.minLength));
-            propertyErrors.push(processMaxLength(validation.property, values, validation.maxLength));
-            propertyErrors.push(processMinValue(validation.property, values, validation.minValue));
-            propertyErrors.push(processMaxValue(validation.property, values, validation.maxValue));
-            propertyErrors.push(processMinDate(validation.property, values, validation.minDate));
-            propertyErrors.push(processMaxDate(validation.property, values, validation.maxDate));
-            propertyErrors.push(processEnumValidation(validation.property, values, validation.errorMessage, validation.regex));
+            propertyErrors.push(processRequired(validation.property as keyof object, values, validation.isRequired));
+            propertyErrors.push(processMinLength(validation.property as keyof object, values, validation.minLength));
+            propertyErrors.push(processMaxLength(validation.property as keyof object, values, validation.maxLength));
+            propertyErrors.push(processMinValue(validation.property as keyof object, values, validation.minValue));
+            propertyErrors.push(processMaxValue(validation.property as keyof object, values, validation.maxValue));
+            propertyErrors.push(processMinDate(validation.property as keyof object, values, validation.minDate));
+            propertyErrors.push(processMaxDate(validation.property as keyof object, values, validation.maxDate));
+            propertyErrors.push(processEnumValidation(validation.property as keyof object, values, validation.regex));
 
-            const processedError = propertyErrors.filter((x: any) => x);
+            const processedError = propertyErrors.filter((x: unknown) => x);
 
             if (processedError.length) {
-                validationErrors[validation.property as keyof T] = `${validation.friendlyName} ${processedError.join(" and ")}.`;
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                const property = validationErrors[validation.property as keyof T] ;
+                validationErrors[validation.property as keyof T] = `${validation.friendlyName} ${processedError.join(" and ")}.` as typeof property;
                 validationErrors.hasErrors = true;
             }
         })
@@ -116,15 +141,20 @@ export function ValidationProcessor<T>() {
         return errorSpecification;
     };
 
-    const processApiErrors = (apiErrors: ApiValidationError, errorSpecification: any) => {
-        let errors: any = { ...errorSpecification };
-        for (const key in apiErrors.errors) {
-            errors[key] = apiErrors.errors[key].join(", ");
+    const processApiErrors = (apiErrors: T1, errorSpecification: T ) : T  => {
+        const errors = { ...errorSpecification };
+        errors.hasErrors = false;
+        for (const key in apiErrors) {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const property = errors[key as unknown as keyof T];
+            if(apiErrors[key]) {
+                if((apiErrors[key] as string[]).length){
+                    errors[key as unknown as keyof T] = (apiErrors[key] as string[]).join(", ") as typeof property;
+                    errors.hasErrors = true;
+                }
+            }
         }
-        if (apiErrors.errors) {
-            return {hasErrors: true, errors}
-        }
-        return {hasErrors:false, errors: null}
+        return errors
     }
 
     return {
