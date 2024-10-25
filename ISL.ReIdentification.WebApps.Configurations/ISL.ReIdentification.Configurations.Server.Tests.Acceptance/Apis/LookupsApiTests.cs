@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using FluentAssertions;
 using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Brokers;
 using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.Lookups;
 using Tynamix.ObjectFiller;
@@ -47,9 +48,10 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
         private async ValueTask<Lookup> PostRandomLookupAsync()
         {
             Lookup randomLookup = CreateRandomLookup();
-            await this.apiBroker.PostLookupAsync(randomLookup);
+            Lookup result = await this.apiBroker.PostLookupAsync(randomLookup);
+            result.Should().BeEquivalentTo(randomLookup);
 
-            return randomLookup;
+            return result;
         }
 
         private async ValueTask<List<Lookup>> PostRandomLookupsAsync()
