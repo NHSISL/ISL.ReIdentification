@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -108,6 +109,59 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                        Times.Once);
 
             this.documentServiceMock.VerifyNoOtherCalls();
+            this.accessAuditServiceMock.VerifyNoOtherCalls();
+            this.reIdentificationServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRetrieveDocumentByFileNameIfServiceErrorOccurredAndLogItAsync()
+        {
+            // given
+            string someFilename = GetRandomString();
+            string someContainer = GetRandomString();
+            MemoryStream someStream = new MemoryStream();
+            var someException = new Exception();
+
+            var failedServiceIdentificationOrchestrationException =
+                new FailedServiceIdentificationOrchestrationException(
+                    message: "Failed service identification orchestration error occurred, contact support.",
+                    innerException: someException);
+
+            var expectedIdentificationOrchestrationServiceException =
+                new IdentificationOrchestrationServiceException(
+                    message: "Service error occurred, contact support.",
+                    innerException: failedServiceIdentificationOrchestrationException);
+
+            this.documentServiceMock.Setup(service =>
+                service.RetrieveDocumentByFileNameAsync(someStream, someFilename, someContainer))
+                    .ThrowsAsync(someException);
+
+            // when
+            ValueTask retrieveDocumentByFileNameTask =
+                this.identificationOrchestrationService
+                    .RetrieveDocumentByFileNameAsync(someStream, someFilename, someContainer);
+
+            IdentificationOrchestrationServiceException
+                actualIdentificationOrchestrationValidationException =
+                    await Assert.ThrowsAsync<IdentificationOrchestrationServiceException>(
+                        testCode: retrieveDocumentByFileNameTask.AsTask);
+
+            // then
+            actualIdentificationOrchestrationValidationException.Should().BeEquivalentTo(
+                expectedIdentificationOrchestrationServiceException);
+
+            this.documentServiceMock.Verify(service =>
+                service.RetrieveDocumentByFileNameAsync(someStream, someFilename, someContainer),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
+                   expectedIdentificationOrchestrationServiceException))),
+                       Times.Once);
+
             this.accessAuditServiceMock.VerifyNoOtherCalls();
             this.reIdentificationServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
