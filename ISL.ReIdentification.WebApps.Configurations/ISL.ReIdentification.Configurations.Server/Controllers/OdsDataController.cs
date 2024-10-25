@@ -116,6 +116,10 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             {
                 return BadRequest(odsDataValidationException.InnerException);
             }
+            catch (OdsDataDependencyValidationException odsDataDependencyValidationException)
+            {
+                return BadRequest(odsDataDependencyValidationException.InnerException);
+            }
             catch (OdsDataDependencyException odsDataDependencyException)
             {
                 return InternalServerError(odsDataDependencyException);
