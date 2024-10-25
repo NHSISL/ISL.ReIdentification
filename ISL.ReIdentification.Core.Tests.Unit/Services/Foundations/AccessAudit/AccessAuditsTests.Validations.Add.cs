@@ -264,7 +264,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
 
         [Theory]
         [InlineData(1)]
-        [InlineData(-61)]
+        [InlineData(-91)]
         public async Task ShouldThrowValidationExceptionOnAddIfCreatedDateIsNotRecentAndLogItAsync(
             int invalidSeconds)
         {

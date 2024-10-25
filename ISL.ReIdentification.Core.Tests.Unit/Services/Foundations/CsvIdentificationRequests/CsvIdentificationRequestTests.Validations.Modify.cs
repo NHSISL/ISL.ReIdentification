@@ -299,7 +299,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
         [Theory]
         [InlineData(1)]
-        [InlineData(-61)]
+        [InlineData(-91)]
         public async Task ShouldThrowValidationExceptionOnModifyIfUpdatedDateIsNotRecentAndLogItAsync(
             int invalidSeconds)
         {

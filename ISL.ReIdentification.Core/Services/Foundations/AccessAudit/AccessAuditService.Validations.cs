@@ -202,7 +202,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
         private async ValueTask<(bool IsNotRecent, DateTimeOffset StartDate, DateTimeOffset EndDate)>
             IsDateNotRecentAsync(DateTimeOffset date)
         {
-            int pastThreshold = 60;
+            int pastThreshold = 90;
             int futureThreshold = 0;
             DateTimeOffset currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
