@@ -15,6 +15,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
     public partial class IdentificationOrchestrationService : IIdentificationOrchestrationService
     {
         private delegate ValueTask<IdentificationRequest> ReturningIdentificationRequestFunction();
+        private delegate ValueTask ReturningNothingFunction();
 
         private async ValueTask<IdentificationRequest> TryCatch(
             ReturningIdentificationRequestFunction returningIdentificationRequestFunction)
@@ -75,6 +76,19 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                         innerException: exception);
 
                 throw await CreateAndLogServiceExceptionAsync(failedServiceIdentificationOrchestrationException);
+            }
+        }
+
+        private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
+        {
+            try
+            {
+                await returningNothingFunction();
+            }
+            catch (InvalidArgumentIdentificationOrchestrationException
+                invalidArgumentIdentificationOrchestrationException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentIdentificationOrchestrationException);
             }
         }
 

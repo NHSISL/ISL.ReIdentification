@@ -121,7 +121,12 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             return identificationRequest;
         });
 
-        public async ValueTask RemoveDocumentByFileNameAsync(string fileName, string container) =>
+        public ValueTask RemoveDocumentByFileNameAsync(string fileName, string container) =>
+        TryCatch(async () =>
+        {
+            ValidateOnRemoveDocumentByFileName(fileName, container);
             await this.documentService.RemoveDocumentByFileNameAsync(fileName, container);
+        });
+
     }
 }
