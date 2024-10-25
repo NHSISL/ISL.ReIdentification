@@ -255,7 +255,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             DateTimeOffset now = randomDateTimeOffset;
-            DateTimeOffset startDate = now.AddSeconds(-60);
+            DateTimeOffset startDate = now.AddSeconds(-90);
             DateTimeOffset endDate = now.AddSeconds(0);
             AccessAudit randomAccessAudit = CreateRandomAccessAudit(randomDateTimeOffset);
             AccessAudit invalidAccessAudit = randomAccessAudit;
