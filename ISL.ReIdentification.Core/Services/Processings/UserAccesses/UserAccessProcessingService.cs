@@ -60,8 +60,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
             return await this.userAccessService.RemoveUserAccessByIdAsync(userAccessId);
         });
 
-        public ValueTask<List<string>> RetrieveAllActiveOrganisationsUserHasAccessTo(Guid entraUserId) =>
-            this.userAccessService.RetrieveAllOrganisationsUserHasAccessTo(entraUserId);
+        public ValueTask<List<string>> RetrieveAllActiveOrganisationsUserHasAccessToAsync(Guid entraUserId) =>
+            this.userAccessService.RetrieveAllActiveOrganisationsUserHasAccessToAsync(entraUserId);
 
         public ValueTask<BulkUserAccess> BulkAddRemoveUserAccessAsync(BulkUserAccess bulkUserAccess) =>
             throw new NotImplementedException();

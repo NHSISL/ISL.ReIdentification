@@ -25,18 +25,18 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
             List<string> expectedOrganisations = inputOrganisations.DeepClone();
 
             this.userAccessServiceMock.Setup(service =>
-                service.RetrieveAllOrganisationsUserHasAccessTo(inputId))
+                service.RetrieveAllActiveOrganisationsUserHasAccessToAsync(inputId))
                     .ReturnsAsync(storageOrganisations);
 
             // when
             List<string> actualOrganisations = await this.userAccessProcessingService
-                .RetrieveAllActiveOrganisationsUserHasAccessTo(inputId);
+                .RetrieveAllActiveOrganisationsUserHasAccessToAsync(inputId);
 
             // then
             actualOrganisations.Should().BeEquivalentTo(expectedOrganisations);
 
             this.userAccessServiceMock.Verify(service =>
-                service.RetrieveAllOrganisationsUserHasAccessTo(inputId),
+                service.RetrieveAllActiveOrganisationsUserHasAccessToAsync(inputId),
                     Times.Once);
 
             this.userAccessServiceMock.VerifyNoOtherCalls();
