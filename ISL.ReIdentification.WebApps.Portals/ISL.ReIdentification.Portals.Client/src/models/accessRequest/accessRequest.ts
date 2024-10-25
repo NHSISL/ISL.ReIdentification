@@ -10,6 +10,6 @@ export class AccessRequest {
     constructor(accessRequest: AccessRequest) {
         this.identificationRequest = accessRequest.identificationRequest || {};
         this.csvIdentificationRequest = accessRequest.csvIdentificationRequest || {};
-        this.impersonationContext = accessRequest.impersonationContext || {};
+       // this.impersonationContext = accessRequest.impersonationContext || {};
     }
 }

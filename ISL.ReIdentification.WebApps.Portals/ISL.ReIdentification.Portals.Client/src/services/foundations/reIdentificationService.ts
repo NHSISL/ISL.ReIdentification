@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
-import ReIdentificationBroker from "../../brokers/apiBroker.reIdentification";
 import { AccessRequestView } from '../../models/views/components/accessRequest/accessRequestView';
 import { AccessRequest } from '../../models/accessRequest/accessRequest';
+import ReIdentificationBroker from '../../brokers/apiBroker.reidentification';
 
 export const reIdentificationService = {
 
