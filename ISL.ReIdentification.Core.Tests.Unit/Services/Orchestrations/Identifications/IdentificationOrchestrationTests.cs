@@ -191,5 +191,23 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                     innerException),
             };
         }
+
+        public static TheoryData<Xeption> DocumentDependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new DocumentDependencyException(
+                    message: "Document dependency error occurred, please contact support.",
+                    innerException),
+
+                new DocumentServiceException(
+                    message: "Document service error occurred, please contact support.",
+                    innerException),
+            };
+        }
     }
 }
