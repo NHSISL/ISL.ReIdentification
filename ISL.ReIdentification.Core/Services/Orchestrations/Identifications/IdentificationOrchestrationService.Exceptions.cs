@@ -90,6 +90,15 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             {
                 throw await CreateAndLogValidationExceptionAsync(invalidArgumentIdentificationOrchestrationException);
             }
+            catch (Exception exception)
+            {
+                var failedServiceIdentificationOrchestrationException =
+                    new FailedServiceIdentificationOrchestrationException(
+                        message: "Failed service identification orchestration error occurred, contact support.",
+                        innerException: exception);
+
+                throw await CreateAndLogServiceExceptionAsync(failedServiceIdentificationOrchestrationException);
+            }
         }
 
         private async ValueTask<IdentificationOrchestrationValidationException>
