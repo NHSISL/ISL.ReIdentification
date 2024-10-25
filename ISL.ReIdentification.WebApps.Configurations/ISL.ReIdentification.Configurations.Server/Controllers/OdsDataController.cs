@@ -125,5 +125,43 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
                 return InternalServerError(odsDataServiceException);
             }
         }
+
+        [HttpPut]
+        public async ValueTask<ActionResult<OdsData>> PutOdsDataAsync([FromBody] OdsData odsData)
+        {
+            try
+            {
+                OdsData modifiedOdsData =
+                    await this.odsDataService.ModifyOdsDataAsync(odsData);
+
+                return Ok(modifiedOdsData);
+            }
+            catch (OdsDataValidationException odsDataValidationException)
+                when (odsDataValidationException.InnerException is NotFoundOdsDataException)
+            {
+                return NotFound(odsDataValidationException.InnerException);
+            }
+            catch (OdsDataValidationException odsDataValidationException)
+            {
+                return BadRequest(odsDataValidationException.InnerException);
+            }
+            catch (OdsDataDependencyValidationException odsDataDependencyValidationException)
+               when (odsDataDependencyValidationException.InnerException is AlreadyExistsOdsDataException)
+            {
+                return Conflict(odsDataDependencyValidationException.InnerException);
+            }
+            catch (OdsDataDependencyValidationException odsDataDependencyValidationException)
+            {
+                return BadRequest(odsDataDependencyValidationException.InnerException);
+            }
+            catch (OdsDataDependencyException odsDataDependencyException)
+            {
+                return InternalServerError(odsDataDependencyException);
+            }
+            catch (OdsDataServiceException odsDataServiceException)
+            {
+                return InternalServerError(odsDataServiceException);
+            }
+        }
     }
 }
