@@ -109,5 +109,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.OdsDatas
 
             return descendants;
         });
+
+        public ValueTask<List<OdsData>> RetrieveAllAncestorsByChildId(Guid odsDataId) =>
+            throw new NotImplementedException();
     }
 }
