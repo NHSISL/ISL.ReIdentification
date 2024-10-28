@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ISL.ReIdentification.Core.Brokers.DateTimes;
+using ISL.ReIdentification.Core.Brokers.Identifiers;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 
@@ -14,11 +16,19 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
     public partial class UserAccessProcessingService : IUserAccessProcessingService
     {
         private readonly IUserAccessService userAccessService;
+        private readonly IDateTimeBroker dateTimeBroker;
+        private readonly IIdentifierBroker identifierBroker;
         private readonly ILoggingBroker loggingBroker;
 
-        public UserAccessProcessingService(IUserAccessService userAccessService, ILoggingBroker loggingBroker)
+        public UserAccessProcessingService(
+            IUserAccessService userAccessService,
+            IDateTimeBroker dateTimeBroker,
+            IIdentifierBroker identifierBroker,
+            ILoggingBroker loggingBroker)
         {
             this.userAccessService = userAccessService;
+            this.dateTimeBroker = dateTimeBroker;
+            this.identifierBroker = identifierBroker;
             this.loggingBroker = loggingBroker;
         }
 
@@ -68,7 +78,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
             return await this.userAccessService.RetrieveAllActiveOrganisationsUserHasAccessToAsync(entraUserId);
         });
 
-        public ValueTask<BulkUserAccess> BulkAddRemoveUserAccessAsync(BulkUserAccess bulkUserAccess) =>
+        public ValueTask<UserAccess> BulkAddRemoveUserAccessAsync(BulkUserAccess bulkUserAccess) =>
             throw new NotImplementedException();
     }
 }
