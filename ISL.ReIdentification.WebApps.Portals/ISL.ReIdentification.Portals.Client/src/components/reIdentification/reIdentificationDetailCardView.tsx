@@ -37,11 +37,11 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
             identificationRequest: {
                 id: crypto.randomUUID(),
                 identificationItems: [{
-                  rowNumber: "1",
-                  identifier: pseudoCode,
-                  hasAccess: undefined,
-                  message: undefined,
-                  isReidentified: undefined,
+                    rowNumber: "1",
+                    identifier: pseudoCode,
+                    hasAccess: undefined,
+                    message: undefined,
+                    isReidentified: undefined,
                 }],
                 DisplayName: acc.name || "",
                 GivenName: "TODO",
@@ -92,6 +92,13 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
 
     if (!reIdResponse) {
         return (
+            <>
+            <Card.Subtitle className="text-start text-muted mb-3">
+                    <small>
+                        Please paste the pseudo identifer in the box below and
+                        provide a reason why you are identifying this patient.
+                    </small>
+                </Card.Subtitle>
             <Form onSubmit={handleSubmit}>
                 <Form.Group className="text-start">
                     <Form.Label>Pseudo NHS Number:</Form.Label>
@@ -123,15 +130,17 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
                     Something went Wrong.
                 </Alert>}
                 <Button type="submit" disabled={!pseudoCode || !selectedLookupId}>
-                        {!loading ? <>Get NHS Number</> : <Spinner />}
+                    {!loading ? <>Get NHS Number</> : <Spinner />}
                 </Button>
-            </Form>
+                </Form>
+            </>
         );
     }
     if (reIdResponse) {
         return <>
-            <p>NHS Number:</p>
-            <Card>
+            <p className="text-start">
+                NHS Number:</p>
+            <Card bg="success" text="white">
                 <Card.Body>
                     {reIdResponse.identifier}&nbsp;
                     {reIdResponse.hasAccess && clipboardAvailable &&
@@ -148,14 +157,14 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
                             <p>Any changes to the patient record regisistration will take 24 hours to apply to the reidentification service </p>
                         </Modal.Body>
                         <Modal.Footer>
-                            <Button onClick={reset}>Start Over</Button>
+                            <Button variant="primary" onClick={reset}>Start Over</Button>
                         </Modal.Footer>
                     </Modal>}
                 </Card.Body>
             </Card>
             <br />
 
-            <Button onClick={reset}>Start Over</Button>
+            <Button onClick={reset} variant="primary">Start Over</Button>
         </>
     }
 
