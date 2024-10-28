@@ -93,6 +93,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
                 values: "Text is invalid");
 
             invalidCsvIdentificationRequestException.AddData(
+                key: nameof(CsvIdentificationRequest.Filepath),
+                values: "Text is invalid");
+
+            invalidCsvIdentificationRequestException.AddData(
                 key: nameof(CsvIdentificationRequest.IdentifierColumn),
                 values: "Text is invalid");
 
@@ -365,7 +369,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
         }
 
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnModifyIfStorageCsvIdentificationRequestDoesNotExistAndLogItAsync()
+        public async Task
+            ShouldThrowValidationExceptionOnModifyIfStorageCsvIdentificationRequestDoesNotExistAndLogItAsync()
         {
             //given
             int randomNegative = GetRandomNegativeNumber();
@@ -397,7 +402,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             // when
             ValueTask<CsvIdentificationRequest> modifyCsvIdentificationRequestTask =
-                this.csvIdentificationRequestService.ModifyCsvIdentificationRequestAsync(nonExistingCsvIdentificationRequest);
+                this.csvIdentificationRequestService
+                    .ModifyCsvIdentificationRequestAsync(nonExistingCsvIdentificationRequest);
 
             CsvIdentificationRequestValidationException actualCsvIdentificationRequestValidationException =
                 await Assert.ThrowsAsync<CsvIdentificationRequestValidationException>(
