@@ -5,8 +5,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Force.DeepCloner;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
+using ISL.ReIdentification.Core.Models.Securities;
 using Moq;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
@@ -17,31 +20,62 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
         public async Task ShouldBulkAddRemoveUserAccessAsync()
         {
             // given
+            Guid randomId = Guid.NewGuid();
             Guid randomEntraId = Guid.NewGuid();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
 
+            EntraUser currentUser = new EntraUser(
+                entraUserId: randomEntraId,
+                givenName: GetRandomString(),
+                surname: GetRandomString(),
+                displayName: GetRandomString(),
+                email: GetRandomString(),
+                jobTitle: GetRandomString(),
+                roles: new List<string>(),
+                claims: new List<Claim>());
+
             List<UserAccess> randomNewUserAccess = CreateRandomUserAccesses(
-                randomDateTimeOffset,
-                randomEntraId);
+                dateTimeOffset: randomDateTimeOffset,
+                entraUserId: randomEntraId,
+                count: GetRandomNumber());
 
-            List<UserAccess> randomExistingUserAccess = CreateRandomUserAccesses(
-                randomDateTimeOffset,
-                randomEntraId);
+            List<UserAccess> randomExistingUserAccesses = CreateRandomUserAccesses(
+                dateTimeOffset: randomDateTimeOffset,
+                entraUserId: randomEntraId,
+                count: GetRandomNumber());
 
-            List<UserAccess> randomRemovedUserAccess = CreateRandomUserAccesses(
-                randomDateTimeOffset,
-                randomEntraId);
+            List<UserAccess> randomRemovedUserAccesses = CreateRandomUserAccesses(
+                dateTimeOffset: randomDateTimeOffset,
+                entraUserId: randomEntraId,
+                count: GetRandomNumber());
 
-            List<UserAccess> userAccessesThatShouldExist = new List<UserAccess>();
-            userAccessesThatShouldExist.AddRange(randomNewUserAccess);
-            userAccessesThatShouldExist.AddRange(randomExistingUserAccess);
+            randomNewUserAccess.ForEach(userAccess =>
+            {
+                userAccess.Id = randomId;
+                userAccess.EntraUserId = randomNewUserAccess.First().EntraUserId;
+                userAccess.GivenName = randomNewUserAccess.First().GivenName;
+                userAccess.Surname = randomNewUserAccess.First().Surname;
+                userAccess.DisplayName = randomNewUserAccess.First().DisplayName;
+                userAccess.JobTitle = randomNewUserAccess.First().JobTitle;
+                userAccess.Email = randomNewUserAccess.First().Email;
+                userAccess.UserPrincipalName = randomNewUserAccess.First().UserPrincipalName;
+                userAccess.CreatedBy = currentUser.EntraUserId.ToString();
+                userAccess.CreatedDate = randomDateTimeOffset;
+                userAccess.UpdatedBy = currentUser.EntraUserId.ToString();
+                userAccess.UpdatedDate = randomDateTimeOffset;
+            });
 
+            List<UserAccess> newUsers = randomNewUserAccess.DeepClone();
 
-            List<string> orgCodesThatShouldExist = new List<string>();
-            orgCodesThatShouldExist.AddRange(randomNewUserAccess.Select(userAccess => userAccess.OrgCode).ToList());
-            orgCodesThatShouldExist.AddRange(randomExistingUserAccess.Select(userAccess => userAccess.OrgCode).ToList());
+            List<UserAccess> storageUserAccess = new List<UserAccess>();
+            storageUserAccess.AddRange(randomExistingUserAccesses);
+            storageUserAccess.AddRange(randomRemovedUserAccesses);
 
-            BulkUserAccess bulkUserAccess = new BulkUserAccess
+            List<string> validOrgCodes = new List<string>();
+            validOrgCodes.AddRange(randomNewUserAccess.Select(userAccess => userAccess.OrgCode).ToList());
+            validOrgCodes.AddRange(randomExistingUserAccesses.Select(userAccess => userAccess.OrgCode).ToList());
+
+            BulkUserAccess inputBulkUserAccess = new BulkUserAccess
             {
                 EntraUserId = randomNewUserAccess.First().EntraUserId,
                 GivenName = randomNewUserAccess.First().GivenName,
@@ -50,44 +84,63 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
                 JobTitle = randomNewUserAccess.First().JobTitle,
                 Email = randomNewUserAccess.First().Email,
                 UserPrincipalName = randomNewUserAccess.First().UserPrincipalName,
-                OrgCodes = orgCodesThatShouldExist
+                OrgCodes = validOrgCodes
             };
+
+            this.userAccessServiceMock.Setup(service =>
+                service.RetrieveAllUserAccessesAsync())
+                    .ReturnsAsync(storageUserAccess.AsQueryable());
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            //foreach (UserAccess newUserAccess in randomNewUserAccess)
-            //{
-            //    this.userAccessServiceMock.Setup(service =>
-            //        service.AddUserAccessAsync(newUserAccess))
-            //            .ReturnsAsync(newUserAccess);
-            //}
+            this.identifierBrokerMock.Setup(broker =>
+                broker.GetIdentifierAsync())
+                        .ReturnsAsync(randomId);
 
-            //foreach (UserAccess removedUserAccess in randomRemovedUserAccess)
-            //{
-            //    this.userAccessServiceMock.Setup(service =>
-            //        service.RemoveUserAccessByIdAsync(existingUserAccess.Id))
-            //            .ReturnsAsync(existingUserAccess);
-            //}
-
-
-            //this.userAccessServiceMock.Setup(service =>
-            //    service.AddUserAccessAsync(inputUserAccess))
-            //        .ReturnsAsync(storageUserAccess);
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUser())
+                    .ReturnsAsync(currentUser);
 
             // when
-            UserAccess actualUserAccess = await this.userAccessProcessingService
-                .BulkAddRemoveUserAccessAsync(bulkUserAccess);
+            await this.userAccessProcessingService.BulkAddRemoveUserAccessAsync(inputBulkUserAccess);
 
-            //// then
-            //actualUserAccess.Should().BeEquivalentTo(expectedUserAccess);
+            // then
+            this.userAccessServiceMock.Verify(service =>
+                service.RetrieveAllUserAccessesAsync(),
+                    Times.Once);
 
-            //this.userAccessServiceMock.Verify(service =>
-            //    service.AddUserAccessAsync(inputUserAccess),
-            //        Times.Once);
+            foreach (UserAccess userAccess in randomRemovedUserAccesses)
+            {
+                this.userAccessServiceMock.Verify(service =>
+                    service.RemoveUserAccessByIdAsync(userAccess.Id),
+                        Times.Once);
+            }
+
+            foreach (UserAccess newUser in newUsers)
+            {
+                this.userAccessServiceMock.Verify(service =>
+                    service.AddUserAccessAsync(It.Is(SameUserAccessAs(newUser))),
+                        Times.Once);
+            }
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUser(),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Exactly(randomNewUserAccess.Count));
+
+            this.identifierBrokerMock.Verify(broker =>
+                broker.GetIdentifierAsync(),
+                    Times.Exactly(randomNewUserAccess.Count));
 
             this.userAccessServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
