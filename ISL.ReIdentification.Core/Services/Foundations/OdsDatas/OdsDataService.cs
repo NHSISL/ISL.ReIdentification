@@ -118,6 +118,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.OdsDatas
             OdsData childRecord = await this.reIdentificationStorageBroker
                  .SelectOdsDataByIdAsync(odsDataId);
 
+            ValidateStorageOdsData(childRecord, odsDataId);
+
             OdsData currentNode = childRecord;
             List<OdsData> ancestors = new List<OdsData>();
             IQueryable<OdsData> odsDatas = await this.reIdentificationStorageBroker.SelectAllOdsDatasAsync();
