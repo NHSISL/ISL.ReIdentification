@@ -4,8 +4,6 @@
 
 using System.Threading.Tasks;
 using FluentAssertions;
-using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
-using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Identifications.Exceptions;
 using Moq;
 
@@ -13,37 +11,45 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
 {
     public partial class IdentificationOrchestrationTests
     {
-        [Fact]
-        public async Task ShouldThrowValidationExceptionOnProcessIdentificationRequestWhenNullAndLogItAsync()
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionOnRemoveDocumentByFileNameWhenArgumentsInvalidAndLogItAsync(
+            string invalidString)
         {
             // given
-            int itemCount = GetRandomNumber();
+            string invalidFileName = invalidString;
+            string invalidContainer = invalidString;
 
-            IdentificationRequest nullIdentificationRequest = null;
+            var invalidArgumentIdentificationOrchestrationException =
+                new InvalidArgumentIdentificationOrchestrationException(
+                    message: "Invalid argument identification orchestration exception, " +
+                        "please correct the errors and try again.");
 
-            var nullIdentificationRequestException =
-                new NullIdentificationRequestException(message: "Identification request is null.");
+            invalidArgumentIdentificationOrchestrationException.AddData(
+                key: "fileName",
+                values: "Text is invalid");
 
+            invalidArgumentIdentificationOrchestrationException.AddData(
+                key: "container",
+                values: "Text is invalid");
 
             var expectedIdentificationOrchestrationValidationException =
                 new IdentificationOrchestrationValidationException(
                     message: "Identification orchestration validation error occurred, " +
                         "fix the errors and try again.",
-                    innerException: nullIdentificationRequestException);
-
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
-                    .ThrowsAsync(nullIdentificationRequestException);
+                    innerException: invalidArgumentIdentificationOrchestrationException);
 
             // when
-            ValueTask<IdentificationRequest> identificationRequestTask =
+            ValueTask removeDocumentByFileNamTask =
                 this.identificationOrchestrationService
-                    .ProcessIdentificationRequestAsync(nullIdentificationRequest);
+                    .RemoveDocumentByFileNameAsync(invalidFileName, invalidContainer);
 
             IdentificationOrchestrationValidationException
                 actualIdentificationOrchestrationValidationException =
-                await Assert.ThrowsAsync<IdentificationOrchestrationValidationException>(
-                    testCode: identificationRequestTask.AsTask);
+                    await Assert.ThrowsAsync<IdentificationOrchestrationValidationException>(
+                        testCode: removeDocumentByFileNamTask.AsTask);
 
             // then
             actualIdentificationOrchestrationValidationException
@@ -54,6 +60,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                    expectedIdentificationOrchestrationValidationException))),
                        Times.Once);
 
+            this.documentServiceMock.VerifyNoOtherCalls();
             this.accessAuditServiceMock.VerifyNoOtherCalls();
             this.reIdentificationServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

@@ -26,6 +26,7 @@ using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Services.Coordinations.Identifications;
 using ISL.ReIdentification.Core.Services.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationRequests;
+using ISL.ReIdentification.Core.Services.Foundations.Documents;
 using ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Services.Foundations.Lookups;
 using ISL.ReIdentification.Core.Services.Foundations.Notifications;
@@ -188,6 +189,7 @@ namespace ISL.ReIdentification.Portals.Server
             services.AddTransient<ICsvIdentificationRequestService, CsvIdentificationRequestService>();
             services.AddTransient<INotificationService, NotificationService>();
             services.AddTransient<IReIdentificationService, ReIdentificationService>();
+            services.AddTransient<IDocumentService, DocumentService>();
         }
 
         private static void AddProcessingServices(IServiceCollection services)

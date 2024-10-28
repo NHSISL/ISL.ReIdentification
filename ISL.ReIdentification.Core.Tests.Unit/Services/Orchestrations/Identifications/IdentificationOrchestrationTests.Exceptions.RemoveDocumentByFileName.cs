@@ -5,7 +5,6 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Orchestrations.Identifications.Exceptions;
 using Moq;
 using Xeptions;
@@ -15,18 +14,16 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
     public partial class IdentificationOrchestrationTests
     {
         [Theory]
-        [MemberData(nameof(DependencyValidationExceptions))]
-        public async Task ShouldThrowDependencyValidationOnProcessIdentificationRequestAndLogItAsync(
+        [MemberData(nameof(DocumentDependencyValidationExceptions))]
+        public async Task ShouldThrowDependencyValidationOnRemoveDocumentByFileNameAndLogItAsync(
             Xeption dependencyValidationException)
         {
             // given
-            int itemCount = GetRandomNumber();
+            string someFilename = GetRandomString();
+            string someContainer = GetRandomString();
 
-            IdentificationRequest someIdentificationRequest =
-               CreateRandomIdentificationRequest(hasAccess: false, itemCount: itemCount);
-
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
+            this.documentServiceMock.Setup(service =>
+                service.RemoveDocumentByFileNameAsync(someFilename, someContainer))
                     .ThrowsAsync(dependencyValidationException);
 
             var expectedIdentificationOrchestrationDependencyValidationException =
@@ -36,21 +33,21 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             // when
-            ValueTask<IdentificationRequest> identificationRequestTask =
+            ValueTask removeDocumentByFileNamTask =
                 this.identificationOrchestrationService
-                    .ProcessIdentificationRequestAsync(someIdentificationRequest);
+                    .RemoveDocumentByFileNameAsync(someFilename, someContainer);
 
             IdentificationOrchestrationDependencyValidationException
                 actualIdentificationOrchestrationDependencyValidationException =
-                await Assert.ThrowsAsync<IdentificationOrchestrationDependencyValidationException>(
-                    testCode: identificationRequestTask.AsTask);
+                    await Assert.ThrowsAsync<IdentificationOrchestrationDependencyValidationException>(
+                        testCode: removeDocumentByFileNamTask.AsTask);
 
             // then
             actualIdentificationOrchestrationDependencyValidationException
                 .Should().BeEquivalentTo(expectedIdentificationOrchestrationDependencyValidationException);
 
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffsetAsync(),
+            this.documentServiceMock.Verify(service =>
+                service.RemoveDocumentByFileNameAsync(someFilename, someContainer),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -58,6 +55,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                    expectedIdentificationOrchestrationDependencyValidationException))),
                        Times.Once);
 
+            this.documentServiceMock.VerifyNoOtherCalls();
             this.accessAuditServiceMock.VerifyNoOtherCalls();
             this.reIdentificationServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
@@ -66,42 +64,40 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
         }
 
         [Theory]
-        [MemberData(nameof(DependencyExceptions))]
-        public async Task ShouldThrowDependencyOnProcessIdentificationRequestAndLogItAsync(
-            Xeption dependencyValidationException)
+        [MemberData(nameof(DocumentDependencyExceptions))]
+        public async Task ShouldThrowDependencyOnRemoveDocumentByFileNameAndLogItAsync(
+            Xeption dependencyException)
         {
             // given
-            int itemCount = GetRandomNumber();
+            string someFilename = GetRandomString();
+            string someContainer = GetRandomString();
 
-            IdentificationRequest someIdentificationRequest =
-               CreateRandomIdentificationRequest(hasAccess: false, itemCount: itemCount);
-
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
-                    .ThrowsAsync(dependencyValidationException);
+            this.documentServiceMock.Setup(serivce =>
+                serivce.RemoveDocumentByFileNameAsync(someFilename, someContainer))
+                    .ThrowsAsync(dependencyException);
 
             var expectedIdentificationOrchestrationDependencyException =
                 new IdentificationOrchestrationDependencyException(
                     message: "Identification orchestration dependency error occurred, " +
                         "fix the errors and try again.",
-                    innerException: dependencyValidationException.InnerException as Xeption);
+                    innerException: dependencyException.InnerException as Xeption);
 
             // when
-            ValueTask<IdentificationRequest> identificationRequestTask =
+            ValueTask removeDocumentByFileNamTask =
                 this.identificationOrchestrationService
-                    .ProcessIdentificationRequestAsync(someIdentificationRequest);
+                    .RemoveDocumentByFileNameAsync(someFilename, someContainer);
 
             IdentificationOrchestrationDependencyException
                 actualIdentificationOrchestrationDependencyException =
-                await Assert.ThrowsAsync<IdentificationOrchestrationDependencyException>(
-                    testCode: identificationRequestTask.AsTask);
+                    await Assert.ThrowsAsync<IdentificationOrchestrationDependencyException>(
+                        testCode: removeDocumentByFileNamTask.AsTask);
 
             // then
             actualIdentificationOrchestrationDependencyException
                 .Should().BeEquivalentTo(expectedIdentificationOrchestrationDependencyException);
 
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffsetAsync(),
+            this.documentServiceMock.Verify(serivce =>
+                serivce.RemoveDocumentByFileNameAsync(someFilename, someContainer),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -109,6 +105,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                    expectedIdentificationOrchestrationDependencyException))),
                        Times.Once);
 
+            this.documentServiceMock.VerifyNoOtherCalls();
             this.accessAuditServiceMock.VerifyNoOtherCalls();
             this.reIdentificationServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
@@ -117,58 +114,51 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
         }
 
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnAddIfServiceErrorOccurredAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnRemoveDocumentByFileNameIfServiceErrorOccurredAndLogItAsync()
         {
             // given
-            int itemCount = GetRandomNumber();
-
-            IdentificationRequest someIdentificationRequest =
-               CreateRandomIdentificationRequest(hasAccess: false, itemCount: itemCount);
-
-            var serviceException = new Exception();
+            string someFilename = GetRandomString();
+            string someContainer = GetRandomString();
+            var someException = new Exception();
 
             var failedServiceIdentificationOrchestrationException =
                 new FailedServiceIdentificationOrchestrationException(
                     message: "Failed service identification orchestration error occurred, contact support.",
-                    innerException: serviceException);
+                    innerException: someException);
 
             var expectedIdentificationOrchestrationServiceException =
                 new IdentificationOrchestrationServiceException(
                     message: "Service error occurred, contact support.",
                     innerException: failedServiceIdentificationOrchestrationException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
-                    .ThrowsAsync(serviceException);
+            this.documentServiceMock.Setup(serivce =>
+                serivce.RemoveDocumentByFileNameAsync(someFilename, someContainer))
+                    .ThrowsAsync(someException);
 
             // when
-            ValueTask<IdentificationRequest> identificationRequestTask =
+            ValueTask removeDocumentByFileNamTask =
                 this.identificationOrchestrationService
-                    .ProcessIdentificationRequestAsync(someIdentificationRequest);
+                    .RemoveDocumentByFileNameAsync(someFilename, someContainer);
 
             IdentificationOrchestrationServiceException
                 actualIdentificationOrchestrationValidationException =
-                await Assert.ThrowsAsync<IdentificationOrchestrationServiceException>(
-                    testCode: identificationRequestTask.AsTask);
+                    await Assert.ThrowsAsync<IdentificationOrchestrationServiceException>(
+                        testCode: removeDocumentByFileNamTask.AsTask);
 
             // then
             actualIdentificationOrchestrationValidationException.Should().BeEquivalentTo(
                 expectedIdentificationOrchestrationServiceException);
 
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffsetAsync(),
-                        Times.Once);
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogErrorAsync(It.Is(SameExceptionAs(
-                    expectedIdentificationOrchestrationServiceException))),
-                        Times.Once);
+            this.documentServiceMock.Verify(serivce =>
+                serivce.RemoveDocumentByFileNameAsync(someFilename, someContainer),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogErrorAsync(It.Is(SameExceptionAs(
                    expectedIdentificationOrchestrationServiceException))),
                        Times.Once);
 
+            this.documentServiceMock.VerifyNoOtherCalls();
             this.accessAuditServiceMock.VerifyNoOtherCalls();
             this.reIdentificationServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
