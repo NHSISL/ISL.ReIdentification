@@ -16,19 +16,18 @@ import { Page5 } from './pages/page5';
 import { Home } from './pages/home';
 import { ConfigurationHome } from './pages/configuration/configurationHome';
 import { Lookups } from './pages/configuration/lookups';
-import { UserAccess } from './pages/userAccess';
+import { UserAccess } from './components/userAccess/userAccess';
 import { OdsData } from './pages/odsData';
 import { PdsData } from './pages/pdsData';
-import UserAccessDetail from './components/userAccess/userAccessDetail';
 import { ImpersonationContext } from './pages/impersonationContext';
 import { ImpersonationContextDetailPage } from './pages/impersonationContextDetail';
 import { CsvIdentificationRequestDetailPage } from './pages/csvIdentificationRequestDetail';
 import { CsvIdentificationRequestPage } from './pages/csvIdentificationRequest';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { UserAccessNew } from './pages/userAccessNew';
+import { UserAccessNew } from './components/userAccess/userAccessNew';
 import "react-toastify/dist/ReactToastify.css";
 import ToastBroker from './brokers/toastBroker';
-import { UserAccessEdit } from './pages/userAccessEdit';
+import { UserAccessEdit } from './components/userAccess/userAccessEdit';
 
 // TODO:
 //      - API Secured Routes
@@ -64,10 +63,6 @@ function App({ instance }: any) {
                 {
                     path: "userAccess/:entraUserId",
                     element: <UserAccessEdit/>
-                },
-                {
-                    path: "userAccessDetail/:userDetailId",
-                    element: <UserAccessDetail />
                 },
                 {
                     path: "impersonationContext",

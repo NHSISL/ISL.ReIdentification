@@ -1,6 +1,7 @@
 import { Button, Container } from "react-bootstrap"
-import BreadCrumbBase from "../components/bases/layouts/BreadCrumb/BreadCrumbBase"
-import UserAccessTable from "../components/userAccess/userAccessTable"
+import BreadCrumbBase from "../bases/layouts/BreadCrumb/BreadCrumbBase"
+import UserAccessTable from "./userAccessTable"
+import { Link } from "react-router-dom"
 
 export const UserAccess = () => {
     return (
@@ -16,7 +17,9 @@ export const UserAccess = () => {
                     <p>Role Needs to be in Security Matrix and Azure AD against user.</p>
                     <UserAccessTable />
                 </div>
-                <Button href="userAccess/newUser">Add New User</Button>
+                <Link to="/userAccess/newUser">
+                    <Button>Add New User</Button>
+                </Link> 
             </section>
         </Container>
     )

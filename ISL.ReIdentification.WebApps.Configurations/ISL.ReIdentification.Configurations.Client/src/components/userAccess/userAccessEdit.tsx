@@ -1,12 +1,12 @@
 import { Button, Card, CardBody, CardFooter, CardHeader, Container } from "react-bootstrap"
 import { Link, useParams } from "react-router-dom"
-import BreadCrumbBase from "../components/bases/layouts/BreadCrumb/BreadCrumbBase"
-import OdsTree from "../components/odsData/odsTree";
+import BreadCrumbBase from "../bases/layouts/BreadCrumb/BreadCrumbBase"
+import OdsTree from "../odsData/odsTree";
 import { useEffect, useState } from "react";
-import { OdsData } from "../models/odsData/odsData";
-import { userAccessViewService } from "../services/views/userAccess/userAccessViewService";
-import { UserAccess } from "../models/userAccess/userAccess";
-import { odsDataService } from "../services/foundations/odsDataAccessService";
+import { OdsData } from "../../models/odsData/odsData";
+import { userAccessViewService } from "../../services/views/userAccess/userAccessViewService";
+import { UserAccess } from "../../models/userAccess/userAccess";
+import { odsDataService } from "../../services/foundations/odsDataAccessService";
 
 export const UserAccessEdit = () => {
     const { entraUserId } = useParams();
