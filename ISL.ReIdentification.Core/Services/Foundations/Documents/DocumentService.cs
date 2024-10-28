@@ -10,7 +10,7 @@ using ISL.ReIdentification.Core.Brokers.Storages.Blob;
 
 namespace ISL.ReIdentification.Core.Services.Foundations.Documents
 {
-    public class DocumentService : IDocumentService
+    public partial class DocumentService : IDocumentService
     {
         private readonly IBlobStorageBroker blobStorageBroker;
         private readonly ILoggingBroker loggingBroker;
@@ -23,8 +23,13 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask AddDocumentAsync(Stream input, string fileName, string container) =>
+        public ValueTask AddDocumentAsync(Stream input, string fileName, string container) =>
+        TryCatch(async () =>
+        {
+            ValidateOnAddDocument(input, fileName, container);
             await this.blobStorageBroker.InsertFileAsync(input, fileName, container);
+        });
+
 
         public ValueTask RetrieveDocumentByFileNameAsync(Stream output, string fileName, string container) =>
              throw new NotImplementedException();
