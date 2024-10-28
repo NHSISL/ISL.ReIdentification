@@ -61,7 +61,6 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                     GivenName = identificationRequest.GivenName,
                     Surname = identificationRequest.Surname,
                     Email = identificationRequest.Email,
-                    Purpose = identificationRequest.Purpose,
                     Reason = identificationRequest.Reason,
                     Organisation = identificationRequest.Organisation,
                     HasAccess = item.HasAccess,
@@ -77,7 +76,8 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                 if (item.HasAccess is false)
                 {
                     item.Identifier = "0000000000";
-                    item.Message = "Failed to Re-Identify. User do not have access to the organisation(s) associated with patient.";
+                    item.Message = "Failed to Re-Identify. User do not have access to the organisation(s) " + 
+                        "associated with patient.";
                 }
             }
 
@@ -100,7 +100,6 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                 DisplayName = identificationRequest.DisplayName,
                 JobTitle = identificationRequest.JobTitle,
                 Email = identificationRequest.Email,
-                Purpose = identificationRequest.Purpose,
                 Organisation = identificationRequest.Organisation,
                 Reason = identificationRequest.Reason
             };

@@ -67,7 +67,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
                 DisplayName = invalidText,
                 JobTitle = invalidText,
                 Email = invalidText,
-                Purpose = invalidText,
                 Organisation = invalidText,
                 Reason = invalidText,
                 IdentificationItems = new List<IdentificationItem>()
@@ -83,10 +82,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
 
             invalidIdentificationRequestException.AddData(
                 key: nameof(IdentificationRequest.Email),
-                values: "Text is invalid");
-
-            invalidIdentificationRequestException.AddData(
-                key: nameof(IdentificationRequest.Purpose),
                 values: "Text is invalid");
 
             invalidIdentificationRequestException.AddData(
