@@ -20,9 +20,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             string randomContainer = GetRandomString();
             byte[] randomfileData = Encoding.UTF8.GetBytes(GetRandomString());
             byte[] expectedData = randomfileData;
-            Stream returnedStream = new MemoryStream(randomfileData);
-            Stream randomStream = new MemoryStream();
-            Stream outputStream = randomStream;
+            MemoryStream returnedStream = new MemoryStream(randomfileData);
+            MemoryStream randomStream = new MemoryStream();
+            MemoryStream outputStream = randomStream;
 
             this.documentServiceMock
                 .Setup(service => service
