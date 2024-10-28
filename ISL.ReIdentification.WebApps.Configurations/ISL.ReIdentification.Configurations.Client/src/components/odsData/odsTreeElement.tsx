@@ -87,7 +87,7 @@ export const OdsTreeElement: FunctionComponent<OdsTreeElementProps> = ({ node, a
             }
         </span>
 
-        <span>{node.organisationCode}</span>
+        <span>{node.organisationName}({node.organisationCode})</span>
         &nbsp;
         <span><Form.Check inline onChange={processCheck} disabled={parentSelected} checked={selected || parentSelected } id={`${node.id}`} /></span>
         {isLoading && <FontAwesomeIcon icon={faSpinner} pulse />}
