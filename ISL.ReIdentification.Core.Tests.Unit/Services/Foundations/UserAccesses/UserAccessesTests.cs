@@ -75,23 +75,73 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
                 .ToList();
         }
 
-        private static List<UserAccess> CreateUserAccessesWithVariedActiveDates(Guid entraUserId)
+        private static List<UserAccess> CreateValidUserAccesses(Guid entraUserId)
         {
-            UserAccess futureActiveFromUserAccess = CreateRandomUserAccess(GetRandomFutureDateTimeOffset());
-            UserAccess pastActiveToUserAccess = CreateRandomUserAccess(GetRandomPastDateTimeOffset());
             UserAccess currentActiveToUserAccess = CreateRandomUserAccess();
             currentActiveToUserAccess.ActiveFrom = DateTimeOffset.UtcNow;
             currentActiveToUserAccess.ActiveTo = GetRandomFutureDateTimeOffset();
+            UserAccess indefiniteActiveUserAccess = currentActiveToUserAccess.DeepClone();
+            indefiniteActiveUserAccess.ActiveTo = null;
+            indefiniteActiveUserAccess.OrgCode = GetRandomString();
 
             List<UserAccess> userAccesses = new List<UserAccess> {
-                futureActiveFromUserAccess,
-                pastActiveToUserAccess,
-                currentActiveToUserAccess
+                currentActiveToUserAccess,
+                indefiniteActiveUserAccess
             };
 
             userAccesses.ForEach(userAccess => userAccess.EntraUserId = entraUserId);
 
             return userAccesses;
+        }
+
+        private static List<UserAccess> CreateInvalidUserAccesses(Guid entraUserId)
+        {
+            UserAccess futureActiveFromUserAccess = CreateRandomUserAccess(GetRandomFutureDateTimeOffset());
+            UserAccess pastActiveToUserAccess = CreateRandomUserAccess(GetRandomPastDateTimeOffset());
+
+            List<UserAccess> userAccesses = new List<UserAccess> {
+                futureActiveFromUserAccess,
+                pastActiveToUserAccess
+            };
+
+            userAccesses.ForEach(userAccess => userAccess.EntraUserId = entraUserId);
+            UserAccess someRandomActiveToUserAccess = CreateRandomUserAccess();
+            userAccesses.Add(someRandomActiveToUserAccess);
+
+            return userAccesses;
+        }
+
+        private static List<OdsData> CreateRandomOdsDatasByOrgCode(string orgCode)
+        {
+            OdsData futureActiveOdsData = CreateRandomOdsData(orgCode);
+            futureActiveOdsData.RelationshipWithParentStartDate = GetRandomFutureDateTimeOffset();
+            futureActiveOdsData.RelationshipWithParentEndDate = GetRandomFutureDateTimeOffset();
+            OdsData pastActiveOdsData = CreateRandomOdsData(orgCode);
+            pastActiveOdsData.RelationshipWithParentStartDate = GetRandomPastDateTimeOffset();
+            pastActiveOdsData.RelationshipWithParentEndDate = GetRandomPastDateTimeOffset();
+            OdsData currentActiveOdsData = CreateRandomOdsData(orgCode);
+            currentActiveOdsData.RelationshipWithParentStartDate = DateTimeOffset.UtcNow;
+            currentActiveOdsData.RelationshipWithParentEndDate = DateTimeOffset.UtcNow;
+            OdsData indefiniteOdsData = currentActiveOdsData.DeepClone();
+            indefiniteOdsData.RelationshipWithParentEndDate = null;
+
+            List<OdsData> parentOdsDatas = new List<OdsData> {
+                futureActiveOdsData,
+                pastActiveOdsData,
+                currentActiveOdsData,
+                indefiniteOdsData
+            };
+
+            List<OdsData> allOdsDatas = new List<OdsData>();
+            allOdsDatas.AddRange(parentOdsDatas);
+
+            foreach (var parentOdsData in parentOdsDatas)
+            {
+                List<OdsData> childOdsDatas = CreateRandomOdsDataChildren(parentOdsData.OdsHierarchy);
+                allOdsDatas.AddRange(childOdsDatas);
+            }
+
+            return allOdsDatas;
         }
 
         private static string GetRandomStringWithLengthOf(int length)
@@ -143,15 +193,20 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             return filler;
         }
 
-        private static List<OdsData> CreateRandomOdsDataChildren(HierarchyId parentHierarchyId)
+        private static List<OdsData> CreateRandomOdsDataChildren(HierarchyId parentHierarchyId, int count = 0)
         {
             if (parentHierarchyId == null)
             {
                 parentHierarchyId = HierarchyId.Parse("/");
             }
 
+            if (count == 0)
+            {
+                count = GetRandomNumber();
+            }
+
             List<OdsData> children = CreateOdsDataFiller(organisationCode: GetRandomString())
-                .Create(count: GetRandomNumber())
+                .Create(count)
                     .ToList();
 
             HierarchyId lastChildHierarchy = null;
@@ -207,44 +262,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
         {
             return actualException =>
                 actualException.SameExceptionAs(expectedException);
-        }
-
-        public static TheoryData<List<UserAccess>, List<OdsData>, List<string>> OrganisationListsAndExpectedOutputs()
-        {
-            UserAccess futureActiveFromUserAccess = CreateRandomUserAccess(GetRandomFutureDateTimeOffset());
-            UserAccess pastActiveToUserAccess = CreateRandomUserAccess(GetRandomPastDateTimeOffset());
-            UserAccess currentActiveToUserAccess = CreateRandomUserAccess();
-            currentActiveToUserAccess.ActiveFrom = DateTimeOffset.UtcNow;
-            currentActiveToUserAccess.ActiveTo = GetRandomFutureDateTimeOffset();
-
-            List<UserAccess> userAccesses = new List<UserAccess> {
-                futureActiveFromUserAccess,
-                pastActiveToUserAccess,
-                currentActiveToUserAccess
-            };
-
-            List<string> randomUserOrganisations = new List<string> { currentActiveToUserAccess.OrgCode };
-
-            List<OdsData> randomOdsDataItems = CreateRandomOdsDatas(randomUserOrganisations);
-            List<OdsData> storageOdsDataItems = randomOdsDataItems.DeepClone();
-            List<string> allUserOrganisation = randomUserOrganisations;
-
-            foreach (OdsData odsData in randomOdsDataItems)
-            {
-                List<OdsData> randomOdsDatas = CreateRandomOdsDataChildren(odsData.OdsHierarchy);
-                foreach (OdsData randomOdsData in randomOdsDatas)
-                {
-                    randomOdsData.RelationshipWithParentEndDate = GetRandomPastDateTimeOffset();
-                }
-                storageOdsDataItems.AddRange(randomOdsDatas);
-            }
-
-            List<string> expectedOrganisations = allUserOrganisation.Distinct().ToList();
-
-            return new TheoryData<List<UserAccess>, List<OdsData>, List<string>>
-            {
-                { userAccesses, storageOdsDataItems, expectedOrganisations }
-            };
         }
     }
 }
