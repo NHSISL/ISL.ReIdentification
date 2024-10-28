@@ -102,7 +102,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.OdsDatas
                 .SelectOdsDataByIdAsync(odsDataParentId);
 
             ValidateStorageOdsData(parentRecord, odsDataParentId);
-
             IQueryable<OdsData> query = await this.reIdentificationStorageBroker.SelectAllOdsDatasAsync();
             query = query.Where(ods => ods.OdsHierarchy.IsDescendantOf(parentRecord.OdsHierarchy));
             List<OdsData> descendants = query.ToList();
@@ -110,16 +109,15 @@ namespace ISL.ReIdentification.Core.Services.Foundations.OdsDatas
             return descendants;
         });
 
-        public ValueTask<List<OdsData>> RetrieveAllAncestorsByChildId(Guid odsDataId) =>
+        public ValueTask<List<OdsData>> RetrieveAllAncestorsByChildId(Guid odsDataChildId) =>
         TryCatch(async () =>
         {
-            ValidateOdsDataId(odsDataId);
+            ValidateOdsDataId(odsDataChildId);
 
             OdsData childRecord = await this.reIdentificationStorageBroker
-                 .SelectOdsDataByIdAsync(odsDataId);
+                 .SelectOdsDataByIdAsync(odsDataChildId);
 
-            ValidateStorageOdsData(childRecord, odsDataId);
-
+            ValidateStorageOdsData(childRecord, odsDataChildId);
             OdsData currentNode = childRecord;
             List<OdsData> ancestors = new List<OdsData>();
             IQueryable<OdsData> odsDatas = await this.reIdentificationStorageBroker.SelectAllOdsDatasAsync();
