@@ -46,7 +46,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Accesses
 
                 List<string> userOrgs =
                     await this.userAccessService
-                    .RetrieveAllActiveOrganisationsUserHasAccessToAsync(accessRequest.IdentificationRequest.EntraUserId);
+                        .RetrieveAllActiveOrganisationsUserHasAccessToAsync(accessRequest.IdentificationRequest.EntraUserId);
 
                 AccessRequest validatedAccessRequest = await CheckUserAccessToPatientsAsync(accessRequest, userOrgs);
 
