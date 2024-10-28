@@ -22,7 +22,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
 
             // when
             await this.identificationOrchestrationService
-                .AddDocumentAsync(input: randomStream, fileName: randomFileName, container: randomContainer);
+                .AddDocumentAsync(randomStream, randomFileName, randomContainer);
 
             // then
             this.documentServiceMock.Verify(service =>
