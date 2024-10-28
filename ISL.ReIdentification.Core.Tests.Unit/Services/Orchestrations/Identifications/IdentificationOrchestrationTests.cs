@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
@@ -121,6 +122,40 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);
+
+        private Expression<Func<Stream, bool>> SameStreamAs(Stream expectedStream) =>
+            actualStream => this.compareLogic.Compare(expectedStream, actualStream).AreEqual;
+
+        private static byte[] ReadAllBytesFromStream(Stream stream)
+        {
+            if (stream.CanSeek)
+            {
+                stream.Seek(0, SeekOrigin.Begin);
+            }
+
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                stream.CopyTo(memoryStream);
+                return memoryStream.ToArray();
+            }
+        }
+
+        public class HasLengthStream : MemoryStream
+        {
+            public override long Length => 1;
+        }
+
+        public static TheoryData<Stream, string> InvalidArgumentsStreamHasLength()
+        {
+            Stream stream = new HasLengthStream();
+
+            return new TheoryData<Stream, string>
+            {
+                { null, null },
+                { stream, ""},
+                { stream, " " }
+            };
+        }
 
         public static TheoryData<Xeption> DependencyValidationExceptions()
         {
