@@ -2,8 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import OdsDataBroker from "../../brokers/apiBroker.odsData";
 
 export const odsDataService = {
-
-
     useRetrieveAllOdsData: (query: string) => {
         const broker = new OdsDataBroker();
 
