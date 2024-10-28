@@ -110,7 +110,34 @@ namespace ISL.ReIdentification.Core.Services.Foundations.OdsDatas
             return descendants;
         });
 
-        public ValueTask<List<OdsData>> RetrieveAllAncestorsByChildId(Guid odsDataId) =>
-            throw new NotImplementedException();
+        public async ValueTask<List<OdsData>> RetrieveAllAncestorsByChildId(Guid odsDataId)
+        {
+            OdsData childRecord = await this.reIdentificationStorageBroker
+                .SelectOdsDataByIdAsync(odsDataId);
+
+            OdsData currentNode = childRecord;
+            List<OdsData> ancestors = new List<OdsData>();
+            IQueryable<OdsData> odsDatas = await this.reIdentificationStorageBroker.SelectAllOdsDatasAsync();
+
+            while (currentNode.OdsHierarchy.GetLevel() >= 1)
+            {
+                int level = currentNode.OdsHierarchy.GetLevel();
+
+                OdsData ancestor = odsDatas.FirstOrDefault(odsData =>
+                    odsData.OdsHierarchy == currentNode.OdsHierarchy.GetAncestor(1));
+
+                if (ancestor is not null)
+                {
+                    ancestors.Add(ancestor);
+                    currentNode = ancestor;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            return ancestors;
+        }
     }
 }

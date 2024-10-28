@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Force.DeepCloner;
 using ISL.ReIdentification.Core.Models.Foundations.OdsDatas;
 using Moq;
 
@@ -26,11 +25,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
             List<OdsData> storageOdsDatas = new List<OdsData> { storageOdsData };
             storageOdsDatas.AddRange(childrenOdsDatas);
             storageOdsDatas.AddRange(grandChildrenOdsDatas);
-            List<OdsData> expectedOdsDatas = storageOdsDatas.DeepClone();
+            List<OdsData> expectedOdsDatas = new List<OdsData>();
+            expectedOdsDatas.AddRange(childrenOdsDatas);
+            expectedOdsDatas.Add(storageOdsData);
 
             this.reIdentificationStorageBroker.Setup(broker =>
                 broker.SelectOdsDataByIdAsync(grandChildrenOdsDatas[0].Id))
-                    .ReturnsAsync(storageOdsData);
+                    .ReturnsAsync(grandChildrenOdsDatas[0]);
 
             this.reIdentificationStorageBroker.Setup(broker =>
                 broker.SelectAllOdsDatasAsync())
