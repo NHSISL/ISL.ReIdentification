@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.PdsDatas;
@@ -30,17 +29,19 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
             await this.apiBroker.DeletePdsDataByIdAsync(actuaPdsData.Id);
         }
 
-        [Fact(Skip = "Need to refactor tests and add other crud operations")]
+        [Fact]
         public async Task ShouldGetPdsDataByIdAsync()
         {
             // given
-            Guid randomPdsDataId = Guid.NewGuid();
+            PdsData randomPdsData = await PostRandomPdsDataAsync();
+            PdsData expectedPdsData = randomPdsData;
 
             // when
-            var actualPdsData = await this.apiBroker.GetOdsDataByIdAsync(randomPdsDataId);
+            PdsData actualPdsData = await this.apiBroker.GetPdsDataByIdAsync(randomPdsData.Id);
 
             // then
-            actualPdsData.Should().NotBeNull();
+            actualPdsData.Should().BeEquivalentTo(expectedPdsData);
+            await this.apiBroker.DeletePdsDataByIdAsync(actualPdsData.Id);
         }
     }
 }
