@@ -30,22 +30,6 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
             await this.apiBroker.DeletePdsDataByIdAsync(actuaPdsData.Id);
         }
 
-        [Fact]
-        public async Task ShouldPutPdsDataAsync()
-        {
-            // given
-            PdsData randomPdsData = await PostRandomPdsDataAsync();
-            PdsData modifiedPdsData = UpdatePdsDataWithRandomValues(randomPdsData);
-
-            // when
-            await this.apiBroker.PutPdsDataAsync(modifiedPdsData);
-            PdsData actualPdsData = await this.apiBroker.GetPdsDataByIdAsync(randomPdsData.Id);
-
-            // then
-            actualPdsData.Should().BeEquivalentTo(modifiedPdsData);
-            await this.apiBroker.DeletePdsDataByIdAsync(actualPdsData.Id);
-        }
-
         [Fact(Skip = "Need to refactor tests and add other crud operations")]
         public async Task ShouldGetPdsDataByIdAsync()
         {

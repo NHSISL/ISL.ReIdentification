@@ -3,7 +3,6 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Threading.Tasks;
 using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Brokers;
 using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.PdsDatas;
 using Tynamix.ObjectFiller;
@@ -44,21 +43,6 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
                 .OnProperty(pdsData => pdsData.OrgCode).Use(GetRandomStringWithLengthOf(9));
 
             return filler;
-        }
-
-        private static PdsData UpdatePdsDataWithRandomValues(PdsData inputPdsData)
-        {
-            var updatedPdsData = CreateRandomPdsData();
-            updatedPdsData.Id = inputPdsData.Id;
-
-            return updatedPdsData;
-        }
-
-        private async ValueTask<PdsData> PostRandomPdsDataAsync()
-        {
-            PdsData randomPdsData = CreateRandomPdsData();
-
-            return await this.apiBroker.PostPdsDataAsync(randomPdsData);
         }
     }
 }

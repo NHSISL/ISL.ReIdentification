@@ -23,7 +23,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Brokers
           await this.apiFactoryClient.GetContentAsync<List<Lookup>>($"{LookupsRelativeUrl}/");
 
         public async ValueTask<Lookup> PutLookupAsync(Lookup lookup) =>
-            throw new NotImplementedException();
+            await this.apiFactoryClient.PutContentAsync(LookupsRelativeUrl, lookup);
 
         public async ValueTask<Lookup> DeleteLookupByIdAsync(Guid lookupId) =>
             await this.apiFactoryClient.DeleteContentAsync<Lookup>($"{LookupsRelativeUrl}/{lookupId}");
