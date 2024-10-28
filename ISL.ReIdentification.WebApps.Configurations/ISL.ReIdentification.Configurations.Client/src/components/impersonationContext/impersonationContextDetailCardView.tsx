@@ -1,5 +1,5 @@
-import React, { FunctionComponent } from "react";
-import { ImpersonationContextView } from "../../models/views/components/impersonationContext/impersonationContextView";
+import { FunctionComponent } from "react";
+import { ImpersonationContextView } from "../../models/views/components/impersonationContext/ImpersonationContextView";
 
 interface ImpersonationContextDetailCardViewProps {
     impersonationContext: ImpersonationContextView;

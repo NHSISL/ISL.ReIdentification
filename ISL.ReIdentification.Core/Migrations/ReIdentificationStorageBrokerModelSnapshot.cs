@@ -46,18 +46,15 @@ namespace ISL.ReIdentification.Core.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("GivenName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("HasAccess")
                         .HasColumnType("bit");
 
                     b.Property<string>("Message")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Organisation")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PseudoIdentifier")
@@ -66,15 +63,12 @@ namespace ISL.ReIdentification.Core.Migrations
                         .HasColumnType("nvarchar(10)");
 
                     b.Property<string>("Purpose")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Reason")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Surname")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdatedBy")
@@ -118,6 +112,9 @@ namespace ISL.ReIdentification.Core.Migrations
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
 
+                    b.Property<string>("Filepath")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("IdentifierColumn")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -127,16 +124,11 @@ namespace ISL.ReIdentification.Core.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<string>("Purpose")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Reason")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RecipientDisplayName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RecipientEmail")
@@ -148,19 +140,15 @@ namespace ISL.ReIdentification.Core.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("RecipientFirstName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RecipientJobTitle")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RecipientLastName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RequesterDisplayName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RequesterEmail")
@@ -172,15 +160,12 @@ namespace ISL.ReIdentification.Core.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("RequesterFirstName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RequesterJobTitle")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RequesterLastName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Sha256Hash")
@@ -207,11 +192,9 @@ namespace ISL.ReIdentification.Core.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ClientId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ClientSecret")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CreatedBy")
@@ -249,7 +232,6 @@ namespace ISL.ReIdentification.Core.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RequesterDisplayName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RequesterEmail")
@@ -261,19 +243,15 @@ namespace ISL.ReIdentification.Core.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("RequesterFirstName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RequesterJobTitle")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RequesterLastName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ResponsiblePersonDisplayName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ResponsiblePersonEmail")
@@ -285,15 +263,12 @@ namespace ISL.ReIdentification.Core.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ResponsiblePersonFirstName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ResponsiblePersonJobTitle")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ResponsiblePersonLastName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdatedBy")
@@ -371,7 +346,6 @@ namespace ISL.ReIdentification.Core.Migrations
                         .HasColumnType("nvarchar(15)");
 
                     b.Property<string>("OrganisationName")
-                        .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
@@ -398,7 +372,6 @@ namespace ISL.ReIdentification.Core.Migrations
                         .HasColumnType("nvarchar(15)");
 
                     b.Property<string>("OrganisationName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PseudoNhsNumber")
@@ -438,7 +411,6 @@ namespace ISL.ReIdentification.Core.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("DisplayName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
@@ -450,11 +422,9 @@ namespace ISL.ReIdentification.Core.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("GivenName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("JobTitle")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("OrgCode")
@@ -463,7 +433,6 @@ namespace ISL.ReIdentification.Core.Migrations
                         .HasColumnType("nvarchar(15)");
 
                     b.Property<string>("Surname")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdatedBy")
@@ -475,7 +444,6 @@ namespace ISL.ReIdentification.Core.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("UserPrincipalName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");

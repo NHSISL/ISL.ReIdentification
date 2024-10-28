@@ -10,7 +10,7 @@ export class entraUser {
     public updatedBy?: string;
     public updatedDate?: Date | undefined;
 
-    constructor(entraUser: any) {
+    constructor(entraUser: entraUser) {
         this.id = entraUser.id;
         this.displayName= entraUser.displayName;
         this.jobTitle = entraUser.jobTitle;

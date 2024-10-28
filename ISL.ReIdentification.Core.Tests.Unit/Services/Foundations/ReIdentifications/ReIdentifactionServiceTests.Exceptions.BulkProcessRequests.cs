@@ -49,21 +49,21 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
                 innerException: dependancyValidationException,
                 data: dependancyValidationException.Data);
 
-            var reidentificationDependencyValidationException = new ReIdentificationDependencyValidationException(
+            var reIdentificationDependencyValidationException = new ReIdentificationDependencyValidationException(
                 message: "Re-identification dependency validation error occurred, fix errors and try again.",
                 innerException: failedClientReIdentificationException);
 
             var expectedAggregateException = new AggregateException(
                 message: $"Unable to process addresses in 1 of the batch(es) from {inputIdentificationRequest.Id}",
-                innerExceptions: reidentificationDependencyValidationException);
+                innerExceptions: reIdentificationDependencyValidationException);
 
             // When
-            ValueTask<IdentificationRequest> reidentificationRequestTask = service
+            ValueTask<IdentificationRequest> reIdentificationRequestTask = service
                 .BulkProcessRequestsAsync(inputIdentificationRequest, batchSize);
 
             AggregateException actualAggregateException =
                 await Assert.ThrowsAsync<AggregateException>(
-                    testCode: reidentificationRequestTask.AsTask);
+                    testCode: reIdentificationRequestTask.AsTask);
 
             // Then
             actualAggregateException.Should().BeEquivalentTo(expectedAggregateException);
@@ -74,7 +74,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogErrorAsync(It.Is(SameExceptionAs(
-                   reidentificationDependencyValidationException))),
+                   reIdentificationDependencyValidationException))),
                        Times.Once);
 
             this.necsBrokerMock.VerifyNoOtherCalls();
@@ -115,21 +115,21 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
                 innerException: dependancyValidationException,
                 data: dependancyValidationException.Data);
 
-            var reidentificationDependencyException = new ReIdentificationDependencyException(
+            var reIdentificationDependencyException = new ReIdentificationDependencyException(
                 message: "Re-identification dependency error occurred, contact support.",
                 innerException: failedServerReIdentificationException);
 
             var expectedAggregateException = new AggregateException(
                 message: $"Unable to process addresses in 1 of the batch(es) from {inputIdentificationRequest.Id}",
-                innerExceptions: reidentificationDependencyException);
+                innerExceptions: reIdentificationDependencyException);
 
             // When
-            ValueTask<IdentificationRequest> reidentificationRequestTask = service
+            ValueTask<IdentificationRequest> reIdentificationRequestTask = service
                 .BulkProcessRequestsAsync(inputIdentificationRequest, batchSize);
 
             AggregateException actualAggregateException =
                 await Assert.ThrowsAsync<AggregateException>(
-                    testCode: reidentificationRequestTask.AsTask);
+                    testCode: reIdentificationRequestTask.AsTask);
 
             // Then
             actualAggregateException.Should().BeEquivalentTo(expectedAggregateException);
@@ -140,7 +140,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogErrorAsync(It.Is(SameExceptionAs(
-                   reidentificationDependencyException))),
+                   reIdentificationDependencyException))),
                        Times.Once);
 
             this.necsBrokerMock.VerifyNoOtherCalls();
@@ -181,21 +181,21 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
                     innerException: serviceException,
                     data: serviceException.Data);
 
-            var reidentificationServiceException = new ReIdentificationServiceException(
+            var reIdentificationServiceException = new ReIdentificationServiceException(
                 message: "Service error occurred, please contact support.",
                 innerException: failedServiceIdentificationRequestException);
 
             var expectedAggregateException = new AggregateException(
                 message: $"Unable to process addresses in 1 of the batch(es) from {inputIdentificationRequest.Id}",
-                innerExceptions: reidentificationServiceException);
+                innerExceptions: reIdentificationServiceException);
 
             // When
-            ValueTask<IdentificationRequest> reidentificationRequestTask = service
+            ValueTask<IdentificationRequest> reIdentificationRequestTask = service
                 .BulkProcessRequestsAsync(inputIdentificationRequest, batchSize);
 
             AggregateException actualAggregateException =
                 await Assert.ThrowsAsync<AggregateException>(
-                    testCode: reidentificationRequestTask.AsTask);
+                    testCode: reIdentificationRequestTask.AsTask);
 
             // Then
             actualAggregateException.Should().BeEquivalentTo(expectedAggregateException);
@@ -206,7 +206,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogErrorAsync(It.Is(SameExceptionAs(
-                   reidentificationServiceException))),
+                   reIdentificationServiceException))),
                        Times.Once);
 
             this.necsBrokerMock.VerifyNoOtherCalls();

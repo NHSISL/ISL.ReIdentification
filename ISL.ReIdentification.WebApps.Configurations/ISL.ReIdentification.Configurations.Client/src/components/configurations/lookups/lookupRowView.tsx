@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from "react";
+import { FunctionComponent } from "react";
 import { LookupView } from "../../../models/views/components/lookups/lookupView";
 import { SecuredComponent } from "../../securitys/securedComponents";
 import { Button } from "react-bootstrap";

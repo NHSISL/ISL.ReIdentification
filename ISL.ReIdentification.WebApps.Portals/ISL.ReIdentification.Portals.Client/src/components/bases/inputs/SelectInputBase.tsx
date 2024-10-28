@@ -1,7 +1,6 @@
-import React, { FunctionComponent, ChangeEvent } from "react";
+import { FunctionComponent, ChangeEvent } from "react";
 import { Label } from 'nhsuk-react-components'
 import { InputGroup, Form } from "react-bootstrap"
-import { Option } from "../../../models/options/option";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAsterisk } from "@fortawesome/free-solid-svg-icons";
 
@@ -17,6 +16,11 @@ interface SelectInputBaseProps {
     options: Array<Option>;
     value: string | number | undefined ;
     error?: string;
+}
+
+interface Option {
+    id: string | number;
+    name: string;
 }
 
 const SelectInputBase: FunctionComponent<SelectInputBaseProps> = (props) => {
@@ -36,7 +40,7 @@ const SelectInputBase: FunctionComponent<SelectInputBaseProps> = (props) => {
                         onChange={props.onChange}
                     >
                         {props.options.length > 0 &&
-                            props.options.map((option, i, arr) => {
+                            props.options.map((option, i) => {
                                 return (
                                     <option key={i} value={option.id.toString()}>
                                         {option.name}

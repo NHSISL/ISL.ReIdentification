@@ -1,8 +1,8 @@
 import { useMsal } from "@azure/msal-react";
-import { Guid } from "guid-typescript";
 import CsvIdentificationRequestBroker from "../../brokers/apiBroker.csvIdentificationRequest";
 import { CsvIdentificationRequest } from "../../models/csvIdentificationRequest/csvIdentificationRequest";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
 
 
 export const csvIdentificationRequestService = {
@@ -48,7 +48,7 @@ export const csvIdentificationRequestService = {
                 }
                 return broker.GetCsvIdentificationRequestSubsequentPagesAsync(pageParam)
             },
-            initialPageParam: 0,
+            initialPageParam: "",
             staleTime: Infinity,
             getNextPageParam: (lastPage: { nextPage?: string }) => lastPage.nextPage,
         });
@@ -79,10 +79,10 @@ export const csvIdentificationRequestService = {
         const queryClient = useQueryClient();
 
         return useMutation({
-            mutationFn: (id: Guid) => {
+            mutationFn: (id: string) => {
                 return broker.DeleteCsvIdentificationRequestByIdAsync(id);
             },
-            onSuccess: (data: { id: Guid }) => {
+            onSuccess: (data: { id: string }) => {
                 queryClient.invalidateQueries({ queryKey: ["CsvIdentificationRequestGetAll"] });
                 queryClient.invalidateQueries({ queryKey: ["CsvIdentificationRequestGetById", { id: data.id }] });
             }

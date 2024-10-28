@@ -38,9 +38,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
             List<string> userOrganisations =
                 new List<string> { userOrganisation };
 
-            accessOrchestrationServiceMock.Setup(service =>
-                service.UserHasAccessToPatientAsync(It.IsAny<string>(), It.IsAny<List<string>>()))
-                    .ReturnsAsync(userHasAccess);
+            foreach (var identificationItem in inputAccessRequest.IdentificationRequest.IdentificationItems)
+            {
+                this.pdsDataServiceMock.Setup(service =>
+               service.OrganisationsHaveAccessToThisPatient(identificationItem.Identifier, userOrganisations))
+                   .ReturnsAsync(userHasAccess);
+            }
 
             AccessOrchestrationService service = accessOrchestrationServiceMock.Object;
 
@@ -55,9 +58,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
                 service.CheckUserAccessToPatientsAsync(inputAccessRequest, userOrganisations),
                     Times.Once());
 
-            accessOrchestrationServiceMock.Verify(service =>
-                service.UserHasAccessToPatientAsync(It.IsAny<string>(), It.IsAny<List<string>>()),
-                    Times.Exactly(inputAccessRequest.IdentificationRequest.IdentificationItems.Count));
+            foreach (var identificationItem in inputAccessRequest.IdentificationRequest.IdentificationItems)
+            {
+                this.pdsDataServiceMock.Verify(service =>
+                service.OrganisationsHaveAccessToThisPatient(identificationItem.Identifier, userOrganisations),
+                    Times.Once);
+            }
 
             accessOrchestrationServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

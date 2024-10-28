@@ -14,7 +14,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
     public partial class ReIdentificationServiceTests
     {
         [Fact]
-        public async Task ShouldProcessReidentificationRequestsAsync()
+        public async Task ShouldProcessReIdentificationRequestsAsync()
         {
             // Given
             int randomCount = GetRandomNumber();
@@ -40,7 +40,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
 
             // When
             IdentificationRequest actualIdentificationRequest = await service
-                .ProcessReidentificationRequest(inputIdentificationRequest);
+                .ProcessReIdentificationRequest(inputIdentificationRequest);
 
             // Then
             actualIdentificationRequest.Should().BeEquivalentTo(expectedIdentificationRequest);

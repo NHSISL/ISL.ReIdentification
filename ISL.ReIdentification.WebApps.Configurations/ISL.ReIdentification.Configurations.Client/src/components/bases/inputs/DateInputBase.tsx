@@ -1,4 +1,4 @@
-import React, { FunctionComponent, ChangeEvent } from "react";
+import { FunctionComponent, ChangeEvent } from "react";
 import { Label, Input } from 'nhsuk-react-components'
 import { InputGroup, Form } from "react-bootstrap"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

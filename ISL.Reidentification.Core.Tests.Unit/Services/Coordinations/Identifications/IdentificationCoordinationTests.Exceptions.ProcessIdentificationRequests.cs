@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
+using ISL.ReIdentification.Core.Models.Securities;
 using Moq;
 using Xeptions;
 
@@ -21,6 +22,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
         {
             // given
             AccessRequest someAccessRequest = CreateRandomAccessRequest();
+
+            EntraUser outputEntraUser = CreateRandomEntraUser();
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUser())
+                .ReturnsAsync(outputEntraUser);
 
             this.accessOrchestrationServiceMock.Setup(service =>
                 service.ValidateAccessForIdentificationRequestAsync(someAccessRequest))
@@ -68,6 +75,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             // given
             AccessRequest someAccessRequest = CreateRandomAccessRequest();
 
+            EntraUser outputEntraUser = CreateRandomEntraUser();
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUser())
+                .ReturnsAsync(outputEntraUser);
+
             this.accessOrchestrationServiceMock.Setup(service =>
                 service.ValidateAccessForIdentificationRequestAsync(someAccessRequest))
                     .ThrowsAsync(dependencyException);
@@ -112,6 +125,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             // given
             AccessRequest someAccessRequest = CreateRandomAccessRequest();
             Exception someException = new Exception();
+
+            EntraUser outputEntraUser = CreateRandomEntraUser();
+            
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUser())
+                .ReturnsAsync(outputEntraUser);
 
             this.accessOrchestrationServiceMock.Setup(service =>
                 service.ValidateAccessForIdentificationRequestAsync(someAccessRequest))

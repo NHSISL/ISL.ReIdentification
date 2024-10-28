@@ -1,10 +1,8 @@
-import React, { FunctionComponent } from "react";
+import { FunctionComponent } from "react";
 import { UserAccessView } from "../../models/views/components/userAccess/userAccessView";
-import { Form } from "react-bootstrap";
 
 interface UserAccessDetailCardViewProps {
     userAccess: UserAccessView;
-    //onDelete: (userAccess: UserAccessView) => void;
     mode: string;
     onModeChange: (value: string) => void;
 }
@@ -13,7 +11,6 @@ const UserAccessDetailCardView: FunctionComponent<UserAccessDetailCardViewProps>
     const {
         userAccess,
     } = props;
-
 
     return (
         <>

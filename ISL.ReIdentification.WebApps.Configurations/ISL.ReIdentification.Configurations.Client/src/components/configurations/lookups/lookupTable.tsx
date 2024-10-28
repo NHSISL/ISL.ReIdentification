@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useMemo, useState } from "react";
+import { FunctionComponent, useMemo, useState } from "react";
 import { debounce } from "lodash";
 import { Card, Container, Table } from "react-bootstrap";
 import LookupRow from "./lookupRow";
@@ -8,6 +8,8 @@ import SearchBase from "../../bases/inputs/SearchBase";
 import { SpinnerBase } from "../../bases/spinner/SpinnerBase";
 import LookupRowAdd from "./lookupRowAdd";
 import LookupRowNew from "./lookupRowNew";
+import { ApiError } from "../../../types/apiError";
+import { ILookupApiErrors, LookupApiErrors } from "./lookupApiErrors";
 
 type LookupTableProps = {
     allowedToAdd: boolean;
@@ -25,7 +27,7 @@ const LookupTable: FunctionComponent<LookupTableProps> = (props) => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [debouncedTerm, setDebouncedTerm] = useState<string>("");
     const [addMode, setAddMode] = useState<boolean>(false);
-    const [addApiError, setAddApiError] = useState<any>({});
+    const [addApiError, setAddApiError] = useState<ILookupApiErrors>(LookupApiErrors);
 
     const { mappedLookups: lookupsRetrieved, isLoading }
         = lookupViewService.useGetAllLookups(debouncedTerm);
@@ -45,8 +47,8 @@ const LookupTable: FunctionComponent<LookupTableProps> = (props) => {
             onSuccess: () => {
                 setAddMode(false);
             },
-            onError: (error: any) => {
-                setAddApiError(error?.response?.data?.errors);
+            onError: (error: ApiError) => {
+                setAddApiError(error?.response?.data?.errors as ILookupApiErrors);
             }
         });
     };

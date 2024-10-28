@@ -4,7 +4,6 @@ import './App.css';
 import Root from './components/root';
 import ErrorPage from './errors/error';
 import { Page1 } from './pages/page1';
-import { Page2 } from './pages/page2';
 import { MsalProvider } from '@azure/msal-react';
 import { SecuredRoute } from './components/securitys/securedRoutes';
 import securityPoints from './securityMatrix';

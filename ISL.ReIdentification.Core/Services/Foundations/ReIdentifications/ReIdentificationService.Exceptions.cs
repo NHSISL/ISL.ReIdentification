@@ -124,37 +124,37 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ReIdentifications
         private async ValueTask<ReIdentificationDependencyValidationException>
             CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
-            var reidentificationDependencyValidationException = new ReIdentificationDependencyValidationException(
+            var reIdentificationDependencyValidationException = new ReIdentificationDependencyValidationException(
                 message: "Re-identification dependency validation error occurred, fix errors and try again.",
                 innerException: exception);
 
-            await this.loggingBroker.LogErrorAsync(reidentificationDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(reIdentificationDependencyValidationException);
 
-            return reidentificationDependencyValidationException;
+            return reIdentificationDependencyValidationException;
         }
 
         private async ValueTask<ReIdentificationDependencyException> CreateAndLogDependencyExceptionAsync(
             Xeption exception)
         {
-            var reidentificationDependencyException = new ReIdentificationDependencyException(
+            var reIdentificationDependencyException = new ReIdentificationDependencyException(
                 message: "Re-identification dependency error occurred, contact support.",
                 innerException: exception);
 
-            await this.loggingBroker.LogErrorAsync(reidentificationDependencyException);
+            await this.loggingBroker.LogErrorAsync(reIdentificationDependencyException);
 
-            return reidentificationDependencyException;
+            return reIdentificationDependencyException;
         }
 
         private async ValueTask<ReIdentificationServiceException> CreateAndLogServiceExceptionAsync(
            Xeption exception)
         {
-            var reidentificationServiceException = new ReIdentificationServiceException(
+            var reIdentificationServiceException = new ReIdentificationServiceException(
                 message: "Service error occurred, please contact support.",
                 innerException: exception);
 
-            await this.loggingBroker.LogErrorAsync(reidentificationServiceException);
+            await this.loggingBroker.LogErrorAsync(reIdentificationServiceException);
 
-            return reidentificationServiceException;
+            return reIdentificationServiceException;
         }
     }
 }

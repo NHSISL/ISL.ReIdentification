@@ -49,7 +49,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
 
             // when
             ValueTask<IdentificationRequest> processIdentificationRequestTask =
-                service.ProcessReidentificationRequest(someIdentificationRequest);
+                service.ProcessReIdentificationRequest(someIdentificationRequest);
 
             ReIdentificationServiceException actualReIdentificationServiceException =
                 await Assert.ThrowsAsync<ReIdentificationServiceException>(
@@ -107,7 +107,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
 
             // when
             ValueTask<IdentificationRequest> processIdentificationRequestTask =
-                service.ProcessReidentificationRequest(someIdentificationRequest);
+                service.ProcessReIdentificationRequest(someIdentificationRequest);
 
             ReIdentificationServiceException actualReIdentificationServiceException =
                 await Assert.ThrowsAsync<ReIdentificationServiceException>(

@@ -1,0 +1,50 @@
+name: Javascript Linting
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+    lint:
+        name: Linting
+        runs-on: ubuntu-latest
+        steps:
+        - name:  Install NodeJS
+          uses: actions/setup-node@v2
+          with:
+            node-version: 22
+        - name: Install .Net
+          uses: actions/setup-dotnet@v3
+          with:
+            dotnet-version: 8.0.302
+        - uses: actions/checkout@v2
+        - name: Install certificates
+          run: dotnet dev-certs https --verbose --trust
+        - name: Install node modules (Configuration)
+          working-directory: ./ISL.ReIdentification.WebApps.Configurations/ISL.ReIdentification.Configurations.Client
+          run: npm install
+        - name: Run ESLint (Configuration)
+          working-directory: ./ISL.ReIdentification.WebApps.Configurations/ISL.ReIdentification.Configurations.Client
+          run: npm run lint
+        - name: Run JS Test (Configuration)
+          working-directory: ./ISL.ReIdentification.WebApps.Configurations/ISL.ReIdentification.Configurations.Client
+          run: npm run test
+        - name: Run JS Build (Configuration)
+          working-directory: ./ISL.ReIdentification.WebApps.Configurations/ISL.ReIdentification.Configurations.Client
+          run: npm run build
+        - name: Install node modules (Portal)
+          working-directory: ./ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Client
+          run: npm install
+        - name: Run ESLint (Portal)
+          working-directory: ./ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Client
+          run: npm run lint
+        - name: Run JS Test (Portal)
+          working-directory: ./ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Client
+          run: npm run test
+        - name: Run JS Build (Portal)
+          working-directory: ./ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Client
+          run: npm run build

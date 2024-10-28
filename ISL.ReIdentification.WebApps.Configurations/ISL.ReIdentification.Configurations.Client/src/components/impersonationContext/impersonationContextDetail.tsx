@@ -1,8 +1,8 @@
 import React, { FunctionComponent, useState, useEffect } from "react";
-import { ImpersonationContextView } from "../../models/views/components/impersonationContext/impersonationContextView";
-import { impersonationContextViewService } from "../../services/views/impersonationContext/impersonationContextViewService";
 import ImpersonationContextDetailCard from "./impersonationContextDetailCard";
 import { useParams } from "react-router-dom";
+import { ImpersonationContextView } from "../../models/views/components/impersonationContext/ImpersonationContextView";
+import { impersonationContextViewService } from "../../services/views/impersonationContext/impersonationContextViewService";
 
 type ImpersonationContextDetailProps = {
     children?: React.ReactNode;
@@ -17,8 +17,8 @@ const ImpersonationContextDetail: FunctionComponent<ImpersonationContextDetailPr
 
     let impersonationContextRetrieved: ImpersonationContextView | undefined
 
-    if (ImpersonationContextId !== "") {
-        let { mappedImpersonationContext } = impersonationContextViewService.useGetImpersonationContextById(ImpersonationContextId);
+    if (ImpersonationContextId) {
+        const { mappedImpersonationContext } = impersonationContextViewService.useGetImpersonationContextById(ImpersonationContextId);
         impersonationContextRetrieved = mappedImpersonationContext
     }
 
@@ -31,7 +31,7 @@ const ImpersonationContextDetail: FunctionComponent<ImpersonationContextDetailPr
             setMode('VIEW');
         }
         if (ImpersonationContextId === "" || ImpersonationContextId === undefined) {
-            setImpersonationContext(new ImpersonationContextView(crypto.randomUUID(), "", "", "", "", new Date(), new Date()))
+            setImpersonationContext(new ImpersonationContextView(crypto.randomUUID(), "", "", "", "", "","","","","",false,"","",new Date(),"",new Date()))
             setMode('ADD');
         }
     }, [ImpersonationContextId, impersonationContextRetrieved]);

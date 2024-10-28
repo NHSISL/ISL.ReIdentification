@@ -69,6 +69,13 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.ReId
         private static string GetRandomString() =>
             new MnemonicString(wordCount: GetRandomNumber()).GetValue();
 
+        private static string GetRandomStringWithLengthOf(int length)
+        {
+            string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+
+            return result.Length > length ? result.Substring(0, length) : result;
+        }
+
         private static int GetRandomNumber() =>
             new IntRange(max: 15, min: 2).GetValue();
 
@@ -114,10 +121,29 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.ReId
 
         private static Filler<ImpersonationContext> CreateImpersonationContextsFiller(DateTimeOffset dateTimeOffset)
         {
+            string user = Guid.NewGuid().ToString();
             var filler = new Filler<ImpersonationContext>();
 
             filler.Setup()
-                .OnType<DateTimeOffset>().Use(dateTimeOffset);
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+
+            .OnProperty(impersonationContext => impersonationContext.RequesterEmail)
+                    .Use(() => GetRandomStringWithLengthOf(320))
+
+                .OnProperty(impersonationContext => impersonationContext.ResponsiblePersonEmail)
+                    .Use(() => GetRandomStringWithLengthOf(320))
+
+                .OnProperty(impersonationContext => impersonationContext.Organisation)
+                    .Use(() => GetRandomStringWithLengthOf(255))
+
+                .OnProperty(impersonationContext => impersonationContext.ProjectName)
+                    .Use(() => GetRandomStringWithLengthOf(255))
+
+                .OnProperty(impersonationContext => impersonationContext.IdentifierColumn)
+                    .Use(() => GetRandomStringWithLengthOf(10))
+
+                .OnProperty(impersonationContext => impersonationContext.CreatedBy).Use(user)
+                .OnProperty(impersonationContext => impersonationContext.UpdatedBy).Use(user);
 
             return filler;
         }
@@ -130,10 +156,23 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.ReId
 
         private static Filler<CsvIdentificationRequest> CreateCsvIdentificationRequestFiller(DateTimeOffset dateTimeOffset)
         {
+            string user = Guid.NewGuid().ToString();
             var filler = new Filler<CsvIdentificationRequest>();
 
             filler.Setup()
-                .OnType<DateTimeOffset>().Use(dateTimeOffset);
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+
+                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.RequesterEmail)
+                    .Use(GetRandomStringWithLengthOf(320))
+
+                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.RecipientEmail)
+                    .Use(GetRandomStringWithLengthOf(320))
+
+                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.Organisation)
+                    .Use(GetRandomStringWithLengthOf(255))
+
+                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.CreatedBy).Use(user)
+                .OnProperty(csvIdentificationReqeust => csvIdentificationReqeust.UpdatedBy).Use(user);
 
             return filler;
         }

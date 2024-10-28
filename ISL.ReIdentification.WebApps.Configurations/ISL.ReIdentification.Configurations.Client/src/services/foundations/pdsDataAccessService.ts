@@ -1,5 +1,4 @@
-import { Guid } from "guid-typescript";
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "react-query";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import PdsDataBroker from "../../brokers/apiBroker.pdsData";
 import { PdsData } from "../../models/pds/pdsData";
 
@@ -14,7 +13,7 @@ export const pdsDataService = {
             },
             onSuccess: (variables: PdsData) => {
                 queryClient.invalidateQueries({ queryKey: ["PdsDataGetAll"] });
-                queryClient.invalidateQueries({ queryKey: ["PdsDataGetById", { id: variables.id }] });
+                queryClient.invalidateQueries({ queryKey: ["PdsDataGetById", { id: variables.rowId }] });
             }
         });
     },
@@ -40,7 +39,7 @@ export const pdsDataService = {
                 }
                 return broker.GetPdsDataSubsequentPagesAsync(pageParam)
             },
-            initialPageParam: 0,
+            initialPageParam: "",
             staleTime: Infinity,
             getNextPageParam: (lastPage: { nextPage?: string }) => lastPage.nextPage,
         });
@@ -56,7 +55,7 @@ export const pdsDataService = {
             },
             onSuccess: (data: PdsData) => {
                 queryClient.invalidateQueries({ queryKey: ["PdsDataGetAll"] });
-                queryClient.invalidateQueries({ queryKey: ["PdsDataGetById", { id: data.id }] });
+                queryClient.invalidateQueries({ queryKey: ["PdsDataGetById", { id: data.rowId }] });
             }
         });
     },
@@ -66,12 +65,12 @@ export const pdsDataService = {
         const queryClient = useQueryClient();
 
         return useMutation({
-            mutationFn: (id: Guid) => {
+            mutationFn: (id: string) => {
                 return broker.DeletePdsDataByIdAsync(id);
             },
-            onSuccess: (data: { id: Guid }) => {
+            onSuccess: (data: PdsData) => {
                 queryClient.invalidateQueries({ queryKey: ["PdsDataGetAll"] });
-                queryClient.invalidateQueries({ queryKey: ["PdsDataGetById", { id: data.id }] });
+                queryClient.invalidateQueries({ queryKey: ["PdsDataGetById", { id: data.rowId }] });
             }
         });
     },

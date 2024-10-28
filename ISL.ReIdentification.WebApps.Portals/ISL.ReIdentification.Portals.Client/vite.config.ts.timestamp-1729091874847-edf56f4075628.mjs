@@ -8,7 +8,7 @@ import child_process from "child_process";
 import { env } from "process";
 var __vite_injected_original_import_meta_url = "file:///C:/Users/david.hayes/source/repos/ISL.ReIdentification/ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Client/vite.config.ts";
 var baseFolder = env.APPDATA !== void 0 && env.APPDATA !== "" ? `${env.APPDATA}/ASP.NET/https` : `${env.HOME}/.aspnet/https`;
-var certificateName = "isl.reidentification.configurations.client";
+var certificateName = "isl.reIdentification.configurations.client";
 var certFilePath = path.join(baseFolder, `${certificateName}.pem`);
 var keyFilePath = path.join(baseFolder, `${certificateName}.key`);
 if (!fs.existsSync(certFilePath) || !fs.existsSync(keyFilePath)) {

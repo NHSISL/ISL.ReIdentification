@@ -1,39 +1,24 @@
-import { Guid } from "guid-typescript";
-import { PdsData } from "../../../pds/pdsData";
-
 export class OdsDataView {
-    public id: Guid;
-    public organisationCode_Root: string;
-    public organisationPrimaryRole_Root: string;
-    public organisationCode_Parent: string;
-    public organisationPrimaryRole_Parent: string;
+    public id: string;
+    public organisationCode: string;
+    public organisationName: string;
     public relationshipStartDate?: Date | undefined;
     public relationshipEndDate?: Date | undefined;
-    public path?: string;
-    public depth?: number;
-    public pdsData?: PdsData
+    public hasChildren: boolean;
 
     constructor(
-        id: Guid,
-        organisationCode_Root: string,
-        organisationPrimaryRole_Root: string,
-        organisationCode_Parent: string,
-        organisationPrimaryRole_Parent: string,
+        id: string,
+        organisationCode: string,
+        organisationName: string,
+        hasChildren: boolean,
         relationshipStartDate?: Date,
-        relationshipEndDate?: Date,
-        path?: string,
-        depth?: number,
-        pdsData?: PdsData,
+        relationshipEndDate?: Date
     ) {
         this.id = id;
-        this.organisationCode_Root = organisationCode_Root;
-        this.organisationPrimaryRole_Root = organisationPrimaryRole_Root;
-        this.organisationCode_Parent = organisationCode_Parent;
-        this.organisationPrimaryRole_Parent = organisationPrimaryRole_Parent;
+        this.organisationCode = organisationCode;
+        this.organisationName = organisationName;
+        this.hasChildren = hasChildren;
         this.relationshipStartDate = relationshipStartDate;
         this.relationshipEndDate = relationshipEndDate;
-        this.path = path;
-        this.depth = depth;
-        this.pdsData = pdsData;
     }
 }

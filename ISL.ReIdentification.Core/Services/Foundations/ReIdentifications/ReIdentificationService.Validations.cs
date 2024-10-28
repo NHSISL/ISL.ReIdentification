@@ -26,9 +26,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ReIdentifications
                 (Rule: IsInvalid(identificationRequest.Email),
                 Parameter: nameof(IdentificationRequest.Email)),
 
-                (Rule: IsInvalid(identificationRequest.Purpose),
-                Parameter: nameof(IdentificationRequest.Purpose)),
-
                 (Rule: IsInvalid(identificationRequest.Organisation),
                 Parameter: nameof(IdentificationRequest.Organisation)),
 
@@ -59,19 +56,19 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ReIdentifications
             Message = "Text is invalid"
         };
 
-        private static dynamic IsInvalid(List<IdentificationItem>? identificationItems) => new
+        private static dynamic IsInvalid(List<IdentificationItem> identificationItems) => new
         {
             Condition = identificationItems is null || identificationItems.Count == 0,
             Message = "IdentificationItems is invalid"
         };
 
-        private static dynamic IsNotUnique(List<IdentificationItem>? identificationItems) => new
+        private static dynamic IsNotUnique(List<IdentificationItem> identificationItems) => new
         {
             Condition = IsNotUniqueList(identificationItems),
             Message = "IdentificationItems.RowNumber is invalid.  There are duplicate RowNumbers."
         };
 
-        private static bool IsNotUniqueList(List<IdentificationItem>? identificationItems)
+        private static bool IsNotUniqueList(List<IdentificationItem> identificationItems)
         {
             return identificationItems is not null
                 && identificationItems.Count >= 0

@@ -1,5 +1,4 @@
 import { useMsal } from "@azure/msal-react";
-import { Guid } from "guid-typescript";
 import ImpersonationContextBroker from "../../brokers/apiBroker.ImpersonationContext";
 import { useQueryClient, useMutation, useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import { ImpersonationContext } from "../../models/impersonationContext/impersonationContext";
@@ -48,9 +47,9 @@ export const impersonationContextService = {
                 }
                 return broker.GetImpersonationContextSubsequentPagesAsync(pageParam)
             },
-            initialPageParam: 0,
+            initialPageParam: "",
             staleTime: Infinity,
-            getNextPageParam: (lastPage: any) => lastPage.nextPage ?? null,
+            getNextPageParam: (lastPage: { nextPage?: string }) => lastPage.nextPage ?? null,
         });
     },
 
@@ -80,11 +79,11 @@ export const impersonationContextService = {
         const queryClient = useQueryClient();
 
         return useMutation({
-            mutationFn: (id: Guid) => {
+            mutationFn: (id: string) => {
                 return broker.DeleteImpersonationContextByIdAsync(id);
             },
 
-            onSuccess: (data: { id: Guid }) => {
+            onSuccess: (data: { id: string }) => {
                 queryClient.invalidateQueries({ queryKey: ["ImpersonationContextGetAll"] });
                 queryClient.invalidateQueries({ queryKey: ["ImpersonationContextGetById", { id: data.id }] });
             }

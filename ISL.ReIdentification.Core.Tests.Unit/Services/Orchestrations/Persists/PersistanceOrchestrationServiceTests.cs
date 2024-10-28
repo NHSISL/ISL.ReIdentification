@@ -4,10 +4,13 @@
 
 using System;
 using System.Linq.Expressions;
-using ISL.Providers.Notifications.GovukNotify.Models.Foundations.Notifications.Exceptions;
+using ISL.ReIdentification.Core.Brokers.Hashing;
 using ISL.ReIdentification.Core.Brokers.Loggings;
+using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests.Exceptions;
+using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts.Exceptions;
+using ISL.ReIdentification.Core.Models.Foundations.Notifications.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts;
@@ -25,6 +28,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
         private readonly Mock<ICsvIdentificationRequestService> csvIdentificationRequestServiceMock;
         private readonly Mock<INotificationService> notificationServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
+        private readonly Mock<IHashBroker> hashBrokerMock;
         private readonly PersistanceOrchestrationService persistanceOrchestrationService;
 
         public PersistanceOrchestrationServiceTests()
@@ -33,23 +37,38 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             this.csvIdentificationRequestServiceMock = new Mock<ICsvIdentificationRequestService>();
             this.notificationServiceMock = new Mock<INotificationService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
+            this.hashBrokerMock = new Mock<IHashBroker>();
 
             this.persistanceOrchestrationService =
                 new PersistanceOrchestrationService(
                     impersonationContextService: impersonationContextServiceMock.Object,
                     csvIdentificationRequestService: csvIdentificationRequestServiceMock.Object,
                     notificationService: notificationServiceMock.Object,
-                    loggingBroker: loggingBrokerMock.Object);
+                    loggingBroker: loggingBrokerMock.Object,
+                    hashBroker: hashBrokerMock.Object);
         }
 
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
+
+        private static string GetRandomStringWithLengthOf(int length)
+        {
+            string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+
+            return result.Length > length ? result.Substring(0, length) : result;
+        }
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
         private static AccessRequest CreateRandomAccessRequest() =>
             CreateAccessRequestFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
+
+        private static ImpersonationContext CreateRandomImpersonationContext() =>
+            CreateRandomImpersonationContext(dateTimeOffset: GetRandomDateTimeOffset());
+
+        private static ImpersonationContext CreateRandomImpersonationContext(DateTimeOffset dateTimeOffset) =>
+            CreateImpersonationContextsFiller(dateTimeOffset).Create();
 
         private static Filler<AccessRequest> CreateAccessRequestFiller(DateTimeOffset dateTimeOffset)
         {
@@ -58,6 +77,66 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use((DateTimeOffset?)default);
+
+            return filler;
+        }
+
+        private static CsvIdentificationRequest CreateRandomCsvIdentificationRequest() =>
+            CreateCsvIdentificationRequestFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
+
+        private static Filler<CsvIdentificationRequest> CreateCsvIdentificationRequestFiller(DateTimeOffset dateTimeOffset)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<CsvIdentificationRequest>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use((DateTimeOffset?)default)
+
+                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.IdentifierColumn)
+                    .Use(() => GetRandomStringWithLengthOf(10))
+
+                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.RequesterEmail)
+                    .Use(GetRandomStringWithLengthOf(320))
+
+                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.RecipientEmail)
+                    .Use(GetRandomStringWithLengthOf(320))
+
+                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.Organisation)
+                    .Use(GetRandomStringWithLengthOf(255))
+
+                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.CreatedBy).Use(user)
+                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
+        private static Filler<ImpersonationContext> CreateImpersonationContextsFiller(DateTimeOffset dateTimeOffset)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<ImpersonationContext>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+
+                .OnProperty(impersonationContext => impersonationContext.RequesterEmail)
+                    .Use(GetRandomStringWithLengthOf(320))
+
+                .OnProperty(impersonationContext => impersonationContext.ResponsiblePersonEmail)
+                    .Use(GetRandomStringWithLengthOf(320))
+
+                .OnProperty(impersonationContext => impersonationContext.Organisation)
+                    .Use(GetRandomStringWithLengthOf(255))
+
+                .OnProperty(impersonationContext => impersonationContext.ProjectName)
+                    .Use(GetRandomStringWithLengthOf(255))
+
+                .OnProperty(impersonationContext => impersonationContext.IdentifierColumn)
+                    .Use(GetRandomStringWithLengthOf(9))
+
+                .OnProperty(impersonationContext => impersonationContext.CreatedBy).Use(user)
+                .OnProperty(impersonationContext => impersonationContext.UpdatedBy).Use(user);
 
             return filler;
         }

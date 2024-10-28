@@ -17,7 +17,6 @@ namespace ISL.ReIdentification.Core.Models.Foundations.ReIdentifications
         public string DisplayName { get; set; }
         public string JobTitle { get; set; }
         public string Email { get; set; }
-        public string Purpose { get; set; }
         public string Organisation { get; set; }
         public string Reason { get; set; }
     }

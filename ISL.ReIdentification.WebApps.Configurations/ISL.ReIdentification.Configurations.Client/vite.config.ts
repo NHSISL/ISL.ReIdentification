@@ -12,9 +12,13 @@ const baseFolder =
         ? `${env.APPDATA}/ASP.NET/https`
         : `${env.HOME}/.aspnet/https`;
 
-const certificateName = "isl.reidentification.configurations.client";
+const certificateName = "isl.reIdentification.configurations.client";
 const certFilePath = path.join(baseFolder, `${certificateName}.pem`);
 const keyFilePath = path.join(baseFolder, `${certificateName}.key`);
+
+if (!fs.existsSync(baseFolder)) {
+    fs.mkdirSync(baseFolder);
+}
 
 if (!fs.existsSync(certFilePath) || !fs.existsSync(keyFilePath)) {
     if (0 !== child_process.spawnSync('dotnet', [

@@ -3,10 +3,10 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
-using ISL.ReIdentification.Core.Models.Foundations.UserAccesses.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -19,6 +19,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
     {
         private delegate ValueTask<UserAccess> ReturningUserAccessFunction();
         private delegate ValueTask<IQueryable<UserAccess>> ReturningUserAccessesFunction();
+        private delegate ValueTask<List<string>> ReturningStringListFunction();
+
         private async ValueTask<UserAccess> TryCatch(ReturningUserAccessFunction returningUserAccessFunction)
         {
             try
@@ -90,6 +92,35 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
             try
             {
                 return await returningUserAccessesFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedStorageUserAccessException = new FailedStorageUserAccessException(
+                    message: "Failed user access storage error occurred, contact support.",
+                    innerException: sqlException);
+
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedStorageUserAccessException);
+            }
+            catch (Exception exception)
+            {
+                var failedServiceUserAccessException =
+                    new FailedServiceUserAccessException(
+                        message: "Failed service user access error occurred, contact support.",
+                        innerException: exception);
+
+                throw await CreateAndLogServiceExceptionAsync(failedServiceUserAccessException);
+            }
+        }
+
+        private async ValueTask<List<string>> TryCatch(ReturningStringListFunction returningStringListFunction)
+        {
+            try
+            {
+                return await returningStringListFunction();
+            }
+            catch (InvalidUserAccessException invalidUserAccessException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(invalidUserAccessException);
             }
             catch (SqlException sqlException)
             {

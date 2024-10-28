@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -16,8 +17,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
         public async Task ShouldRetrieveAllUserAccessesAsync()
         {
             // given
-            IQueryable<UserAccess> randomUserAccesses = CreateRandomUserAccesses();
-            IQueryable<UserAccess> storageUserAccesses = randomUserAccesses;
+            List<UserAccess> randomUserAccesses = CreateRandomUserAccesses();
+            IQueryable<UserAccess> storageUserAccesses = randomUserAccesses.AsQueryable();
             IQueryable<UserAccess> expectedUserAccesses = storageUserAccesses;
 
             this.reIdentificationStorageBroker.Setup(broker =>

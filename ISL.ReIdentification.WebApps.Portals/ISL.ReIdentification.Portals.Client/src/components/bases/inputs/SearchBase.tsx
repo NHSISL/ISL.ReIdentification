@@ -1,4 +1,4 @@
-import React, { FunctionComponent, FormEventHandler } from "react";
+import { FunctionComponent, FormEventHandler } from "react";
 
 interface SearchBaseProps {
     id: string;

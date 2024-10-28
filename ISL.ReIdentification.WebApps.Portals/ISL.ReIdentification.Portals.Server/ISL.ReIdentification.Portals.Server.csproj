@@ -4,7 +4,7 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<Nullable>disable</Nullable>
 		<ImplicitUsings>disable</ImplicitUsings>
-		<SpaRoot>..\ISL.Reidentification.Portals.Client</SpaRoot>
+		<SpaRoot>..\ISL.ReIdentification.Portals.Client</SpaRoot>
 		<SpaProxyLaunchCommand>npm run dev</SpaProxyLaunchCommand>
 		<SpaProxyServerUrl>https://localhost:5173</SpaProxyServerUrl>
 	</PropertyGroup>
@@ -18,7 +18,7 @@
 			<Version>8.*-*</Version>
 		</PackageReference>
 		<PackageReference Include="Microsoft.Identity.Web" Version="3.2.2" />
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.8.1" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.9.0" />
 		<PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.1" />
 	</ItemGroup>
 

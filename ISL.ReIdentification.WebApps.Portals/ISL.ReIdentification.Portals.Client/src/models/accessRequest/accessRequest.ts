@@ -8,8 +8,8 @@ export class AccessRequest {
     public impersonationContext?: ImpersonationContext;
 
     constructor(accessRequest: AccessRequest) {
-        this.identificationRequest = accessRequest.identificationRequest || {};
+        this.identificationRequest = accessRequest.identificationRequest || new IdentificationRequest();
         this.csvIdentificationRequest = accessRequest.csvIdentificationRequest || {};
-        this.impersonationContext = accessRequest.impersonationContext || {};
+        this.impersonationContext = accessRequest.impersonationContext || new ImpersonationContext();
     }
 }

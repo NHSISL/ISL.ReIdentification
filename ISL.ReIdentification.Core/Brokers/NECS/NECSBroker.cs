@@ -26,11 +26,11 @@ namespace ISL.ReIdentification.Core.Brokers.NECS
         }
 
         public async ValueTask<NecsReIdentificationResponse> ReIdAsync(
-            NecsReidentificationRequest necsReidentificationRequest)
+            NecsReIdentificationRequest necsReIdentificationRequest)
         {
             var returnedAddress =
-                await apiClient.PostContentAsync<NecsReidentificationRequest, NecsReIdentificationResponse>
-                    ($"api/Reid/Process", necsReidentificationRequest);
+                await apiClient.PostContentAsync<NecsReIdentificationRequest, NecsReIdentificationResponse>
+                    ($"api/Reid/Process", necsReIdentificationRequest);
 
             return returnedAddress;
         }

@@ -1,10 +1,9 @@
-import React, { FunctionComponent } from "react";
+import { FunctionComponent } from "react";
 import { Link } from 'react-router-dom';
 import { Button } from "react-bootstrap";
-import moment from "moment";
-import { ImpersonationContext } from "../../models/impersonationContext.ts/impersonationContext";
 import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { ImpersonationContext } from "../../models/impersonationContext/impersonationContext";
 
 type ImpersonationContextRowProps = {
     impersonationContext: ImpersonationContext;
@@ -25,7 +24,7 @@ const ImpersonationContextRow: FunctionComponent<ImpersonationContextRowProps> =
             <td>{impersonationContext.recipientLastName}</td>
             <td>{impersonationContext.recipientEmail}</td>
             <td>{impersonationContext.reason}</td>
-            <td>{impersonationContext.approved
+            <td>{impersonationContext.isApproved
                 ? <FontAwesomeIcon icon={faCheck} className="text-success" />
                 : <FontAwesomeIcon icon={faTimes} className="text-danger" />}
             </td>

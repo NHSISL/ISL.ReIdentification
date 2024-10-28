@@ -19,14 +19,26 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
         public LookupsApiTests(ApiBroker apiBroker) =>
             this.apiBroker = apiBroker;
 
-        private int GetRandomNumber() =>
+        private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
         private static DateTimeOffset GetRandomDateTime() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private static string GetRandomStringWithLengthOf(int length) =>
-            new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+        private static string GetRandomString()
+        {
+            int length = GetRandomNumber();
+            string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+
+            return result.Length > length ? result.Substring(0, length) : result;
+        }
+
+        private static string GetRandomStringWithLengthOf(int length)
+        {
+            string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+
+            return result.Length > length ? result.Substring(0, length) : result;
+        }
 
         private static Lookup UpdateLookupWithRandomValues(Lookup inputLookup)
         {
@@ -43,9 +55,8 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
         private async ValueTask<Lookup> PostRandomLookupAsync()
         {
             Lookup randomLookup = CreateRandomLookup();
-            await this.apiBroker.PostLookupAsync(randomLookup);
 
-            return randomLookup;
+            return await this.apiBroker.PostLookupAsync(randomLookup);
         }
 
         private async ValueTask<List<Lookup>> PostRandomLookupsAsync()

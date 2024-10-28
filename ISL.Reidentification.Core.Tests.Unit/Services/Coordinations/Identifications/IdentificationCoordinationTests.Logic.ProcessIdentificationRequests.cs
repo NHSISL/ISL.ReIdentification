@@ -7,6 +7,7 @@ using FluentAssertions;
 using Force.DeepCloner;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
+using ISL.ReIdentification.Core.Models.Securities;
 using Moq;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifications
@@ -24,6 +25,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             IdentificationRequest outputIdentificationRequest = randomIdentificationRequest.DeepClone();
             outputOrchestrationAccessRequest.IdentificationRequest = outputIdentificationRequest;
             AccessRequest expectedAccessRequest = outputOrchestrationAccessRequest.DeepClone();
+            EntraUser outputEntraUser = CreateRandomEntraUser();
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUser())
+                .ReturnsAsync(outputEntraUser);
 
             this.accessOrchestrationServiceMock.Setup(service =>
                 service.ValidateAccessForIdentificationRequestAsync(inputAccessRequest))

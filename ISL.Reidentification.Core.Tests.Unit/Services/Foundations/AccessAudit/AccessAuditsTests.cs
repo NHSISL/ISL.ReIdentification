@@ -65,8 +65,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
             return randomAccessAudit;
         }
 
-        private static string GetRandomStringWithLength(int length) =>
-            new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+        private static string GetRandomStringWithLengthOf(int length)
+        {
+            string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+
+            return result.Length > length ? result.Substring(0, length) : result;
+        }
 
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
@@ -85,7 +89,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
-                .OnProperty(userAccess => userAccess.PseudoIdentifier).Use(GetRandomStringWithLength(9))
+                .OnProperty(userAccess => userAccess.PseudoIdentifier).Use(GetRandomStringWithLengthOf(10))
+                .OnProperty(userAccess => userAccess.Email).Use(GetRandomStringWithLengthOf(320))
                 .OnProperty(userAccess => userAccess.CreatedBy).Use(user)
                 .OnProperty(userAccess => userAccess.UpdatedBy).Use(user);
 

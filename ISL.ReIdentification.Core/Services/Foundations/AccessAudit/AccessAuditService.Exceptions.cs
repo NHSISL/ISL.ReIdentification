@@ -124,49 +124,49 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
         private async ValueTask<AccessAuditDependencyException> CreateAndLogCriticalDependencyExceptionAsync(
            Xeption exception)
         {
-            var userAccessDependencyException = new AccessAuditDependencyException(
+            var accessAuditDependencyException = new AccessAuditDependencyException(
                 message: "Access audit dependency error occurred, contact support.",
                 innerException: exception);
 
-            await this.loggingBroker.LogCriticalAsync(userAccessDependencyException);
+            await this.loggingBroker.LogCriticalAsync(accessAuditDependencyException);
 
-            return userAccessDependencyException;
+            return accessAuditDependencyException;
         }
 
         private async ValueTask<AccessAuditDependencyValidationException>
             CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
-            var userAccessDependencyValidationException = new AccessAuditDependencyValidationException(
+            var accessAuditDependencyValidationException = new AccessAuditDependencyValidationException(
                 message: "Access audit dependency validation error occurred, fix errors and try again.",
                 innerException: exception);
 
-            await this.loggingBroker.LogErrorAsync(userAccessDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(accessAuditDependencyValidationException);
 
-            return userAccessDependencyValidationException;
+            return accessAuditDependencyValidationException;
         }
 
         private async ValueTask<AccessAuditDependencyException> CreateAndLogDependencyExceptionAsync(
             Xeption exception)
         {
-            var userAccessDependencyException = new AccessAuditDependencyException(
+            var accessAuditDependencyException = new AccessAuditDependencyException(
                 message: "Access audit dependency error occurred, contact support.",
                 innerException: exception);
 
-            await this.loggingBroker.LogErrorAsync(userAccessDependencyException);
+            await this.loggingBroker.LogErrorAsync(accessAuditDependencyException);
 
-            return userAccessDependencyException;
+            return accessAuditDependencyException;
         }
 
         private async ValueTask<AccessAuditServiceException> CreateAndLogServiceExceptionAsync(
            Xeption exception)
         {
-            var userAccessServiceException = new AccessAuditServiceException(
+            var accessAuditServiceException = new AccessAuditServiceException(
                 message: "Service error occurred, contact support.",
                 innerException: exception);
 
-            await this.loggingBroker.LogErrorAsync(userAccessServiceException);
+            await this.loggingBroker.LogErrorAsync(accessAuditServiceException);
 
-            return userAccessServiceException;
+            return accessAuditServiceException;
         }
     }
 }

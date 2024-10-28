@@ -11,6 +11,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
     public interface IPersistanceOrchestrationService
     {
         ValueTask<AccessRequest> PersistImpersonationContextAsync(AccessRequest accessRequest);
+        ValueTask<AccessRequest> RetrieveImpersonationContextByIdAsync(Guid impersonationContextId);
         ValueTask<AccessRequest> PersistCsvIdentificationRequestAsync(AccessRequest accessRequest);
         ValueTask<AccessRequest> RetrieveCsvIdentificationRequestByIdAsync(Guid csvIdentificationRequestId);
     }

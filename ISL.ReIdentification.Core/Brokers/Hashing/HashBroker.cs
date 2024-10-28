@@ -10,7 +10,7 @@ namespace ISL.ReIdentification.Core.Brokers.Hashing
 {
     public class HashBroker : IHashBroker
     {
-        public string GenerateMd5Hash(Stream? data)
+        public string GenerateMd5Hash(Stream data)
         {
             if (data == null)
             {
@@ -27,7 +27,7 @@ namespace ISL.ReIdentification.Core.Brokers.Hashing
             }
         }
 
-        public string GenerateSha256Hash(Stream? data)
+        public string GenerateSha256Hash(Stream data)
         {
             if (data == null)
             {

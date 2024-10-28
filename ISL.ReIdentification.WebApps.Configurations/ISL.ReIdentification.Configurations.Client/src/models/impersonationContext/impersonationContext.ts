@@ -16,7 +16,7 @@ export class ImpersonationContext {
     public updatedBy?: string;
     public updatedDate?: Date | undefined;
 
-    constructor(impersonationContext: any) {
+    constructor(impersonationContext: ImpersonationContext) {
         this.id = impersonationContext.id ? impersonationContext.id : "";
         this.requesterFirstName = impersonationContext.requesterFirstName || "";
         this.requesterLastName = impersonationContext.requesterLastName || "";

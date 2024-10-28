@@ -2,6 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
@@ -10,8 +12,8 @@ using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
 using ISL.ReIdentification.Core.Services.Foundations.AccessAudits;
+using ISL.ReIdentification.Core.Services.Foundations.Documents;
 using ISL.ReIdentification.Core.Services.Foundations.ReIdentifications;
-using Microsoft.IdentityModel.Tokens;
 
 namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
 {
@@ -19,6 +21,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
     {
         private readonly IReIdentificationService reIdentificationService;
         private readonly IAccessAuditService accessAuditService;
+        private readonly IDocumentService documentService;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIdentifierBroker identifierBroker;
@@ -26,12 +29,14 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
         public IdentificationOrchestrationService(
             IReIdentificationService reIdentificationService,
             IAccessAuditService accessAuditService,
+            IDocumentService documentService,
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker,
             IIdentifierBroker identifierBroker)
         {
             this.reIdentificationService = reIdentificationService;
             this.accessAuditService = accessAuditService;
+            this.documentService = documentService;
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
             this.identifierBroker = identifierBroker;
@@ -56,7 +61,6 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                     GivenName = identificationRequest.GivenName,
                     Surname = identificationRequest.Surname,
                     Email = identificationRequest.Email,
-                    Purpose = identificationRequest.Purpose,
                     Reason = identificationRequest.Reason,
                     Organisation = identificationRequest.Organisation,
                     HasAccess = item.HasAccess,
@@ -72,7 +76,8 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                 if (item.HasAccess is false)
                 {
                     item.Identifier = "0000000000";
-                    item.Message = "Failed to Re-Identify. User do not have access to the organisation(s) associated with patient.";
+                    item.Message = "Failed to Re-Identify. User do not have access to the organisation(s) " + 
+                        "associated with patient.";
                 }
             }
 
@@ -95,13 +100,12 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                 DisplayName = identificationRequest.DisplayName,
                 JobTitle = identificationRequest.JobTitle,
                 Email = identificationRequest.Email,
-                Purpose = identificationRequest.Purpose,
                 Organisation = identificationRequest.Organisation,
                 Reason = identificationRequest.Reason
             };
 
             var reIdentifiedIdentificationRequest =
-                await this.reIdentificationService.ProcessReidentificationRequest(
+                await this.reIdentificationService.ProcessReIdentificationRequest(
                     hasAccessIdentificationRequest);
 
             foreach (IdentificationItem item in reIdentifiedIdentificationRequest.IdentificationItems)
@@ -115,6 +119,24 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             }
 
             return identificationRequest;
+        });
+
+        public ValueTask AddDocumentAsync(Stream input, string fileName, string container) =>
+            throw new NotImplementedException();
+
+        public ValueTask RetrieveDocumentByFileNameAsync(Stream output, string fileName, string container) =>
+        TryCatch(async () =>
+        {
+            ValidateOnRetrieveDocumentByFileName(output, fileName, container);
+            await this.documentService.RetrieveDocumentByFileNameAsync(output, fileName, container);
+        });
+
+
+        public ValueTask RemoveDocumentByFileNameAsync(string fileName, string container) =>
+        TryCatch(async () =>
+        {
+            ValidateOnRemoveDocumentByFileName(fileName, container);
+            await this.documentService.RemoveDocumentByFileNameAsync(fileName, container);
         });
     }
 }

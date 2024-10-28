@@ -7,7 +7,7 @@ export class Lookup {
     public updatedBy?: string;
     public updatedDate?: Date | undefined;
 
-    constructor(lookup: any) {
+    constructor(lookup: Lookup) {
         this.id = lookup.id ? lookup.id : "";
         this.name = lookup.name || "";
         this.value = lookup.value || "";

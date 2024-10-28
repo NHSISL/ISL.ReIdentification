@@ -1,7 +1,7 @@
-import React, { FunctionComponent } from "react";
+import { FunctionComponent } from "react";
 import { Button } from "react-bootstrap";
 
-type OdsRowProps = {}
+type OdsRowProps = object
 
 const OdsRow: FunctionComponent<OdsRowProps> = () => {
 

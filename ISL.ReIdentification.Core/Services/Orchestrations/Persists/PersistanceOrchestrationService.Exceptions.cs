@@ -4,10 +4,11 @@
 
 using System;
 using System.Threading.Tasks;
-using ISL.Providers.Notifications.GovukNotify.Models.Foundations.Notifications.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts.Exceptions;
+using ISL.ReIdentification.Core.Models.Foundations.Notifications.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
+using ISL.ReIdentification.Core.Models.Orchestrations.Accesses.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Persists.Exceptions;
 using Xeptions;
 
@@ -22,6 +23,10 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
             try
             {
                 return await returningAccessRequestFunction();
+            }
+            catch (NullAccessRequestException nullAccessRequestException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(nullAccessRequestException);
             }
             catch (InvalidArgumentPersistanceOrchestrationException invalidArgumentPersistanceOrchestrationException)
             {
@@ -42,7 +47,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
                 throw await CreateAndLogDependencyValidationExceptionAsync(
                     csvIdentificationRequestValidationException);
             }
-            catch (CsvIdentificationRequestDependencyValidationException 
+            catch (CsvIdentificationRequestDependencyValidationException
                 csvIdentificationRequestDependencyValidationException)
             {
                 throw await CreateAndLogDependencyValidationExceptionAsync(

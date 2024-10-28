@@ -1,7 +1,11 @@
 import { AxiosResponse } from "axios";
-import { Guid } from "guid-typescript";
 import ApiBroker from "./apiBroker";
 import { OdsData } from "../models/odsData/odsData";
+
+type OdsODataResponse = {
+    data : OdsData[],
+    nextPage: string
+}
 
 class OdsDataBroker {
     relativeOdsDataUrl = '/api/odsData';
@@ -9,8 +13,8 @@ class OdsDataBroker {
 
     private apiBroker: ApiBroker = new ApiBroker();
 
-    private processOdataResult = (result: AxiosResponse) => {
-        const data = result.data.value.map((odsData: any) => new OdsData(odsData));
+    private processOdataResult = (result: AxiosResponse) : OdsODataResponse => {
+        const data = result.data.value.map((odsData: OdsData) => new OdsData(odsData));
 
         const nextPage = result.data['@odata.nextLink'];
         return { data, nextPage }
@@ -25,7 +29,7 @@ class OdsDataBroker {
         const url = this.relativeOdsDataUrl + queryString;
 
         return await this.apiBroker.GetAsync(url)
-            .then(result => result.data.map((odsData: any) => new OdsData(odsData)));
+            .then(result => result.data.map((odsData: OdsData) => new OdsData(odsData)));
     }
 
     async GetOdsDataFirstPagesAsync(query: string) {
@@ -37,7 +41,7 @@ class OdsDataBroker {
         return this.processOdataResult(await this.apiBroker.GetAsyncAbsolute(absoluteUri));
     }
 
-    async GetOdsDataByIdAsync(id: Guid) {
+    async GetOdsDataByIdAsync(id: string) {
         const url = `${this.relativeOdsDataUrl}/${id}`;
 
         return await this.apiBroker.GetAsync(url)
@@ -52,7 +56,7 @@ class OdsDataBroker {
         }
 
         return await this.apiBroker.GetAsync(url)
-            .then(result => result.data.map((odsData: any) => new OdsData(odsData)));
+            .then(result => result.data.map((odsData: OdsData) => new OdsData(odsData)));
     }
 
     async PutOdsDataAsync(odsData: OdsData) {
@@ -60,7 +64,7 @@ class OdsDataBroker {
             .then(result => new OdsData(result.data));
     }
 
-    async DeleteOdsDataByIdAsync(id: Guid) {
+    async DeleteOdsDataByIdAsync(id: string) {
         const url = `${this.relativeOdsDataUrl}/${id}`;
 
         return await this.apiBroker.DeleteAsync(url)

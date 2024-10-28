@@ -16,7 +16,7 @@ export class CsvIdentificationRequest {
     public updatedBy?: string;
     public updatedDate?: Date | undefined;
 
-    constructor(csvIdentificationRequest: any) {
+    constructor(csvIdentificationRequest: CsvIdentificationRequest) {
         this.id = csvIdentificationRequest.id ? csvIdentificationRequest.id : "";
         this.requesterFirstName = csvIdentificationRequest.requesterFirstName || "";
         this.requesterLastName = csvIdentificationRequest.requesterLastName || "";

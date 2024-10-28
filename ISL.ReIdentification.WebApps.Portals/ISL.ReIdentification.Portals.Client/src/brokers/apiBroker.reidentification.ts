@@ -1,16 +1,15 @@
-import ApiBroker from "./apiBroker";
-import { AccessRequestView } from "../models/views/components/accessRequest/accessRequestView";
 import { AccessRequest } from "../models/accessRequest/accessRequest";
+import ApiBroker from "./apiBroker";
 
-class ReIdentificationBroker {
-    relativeReIdentificationUrl = '/api/reIdentification';
+class SimpleReIdentificationBroker {
+    relativeReIdentificationUrl = '/api/reIdentification/';
 
     private apiBroker: ApiBroker = new ApiBroker();
 
-    async PostReIdentificationAsync(accessRequestView: AccessRequestView) {
+    async PostReIdentificationAsync(accessRequestView: AccessRequest) {
         return await this.apiBroker.PostAsync(this.relativeReIdentificationUrl, accessRequestView)
-            .then(result => new AccessRequest(result.data));
+            .then(result => result.data as AccessRequest);
     }
 }
 
-export default ReIdentificationBroker;
+export default SimpleReIdentificationBroker;

@@ -17,6 +17,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.PdsDatas
     public partial class PdsDataService
     {
         private delegate ValueTask<PdsData> ReturningPdsDataFunction();
+        private delegate ValueTask<bool> ReturningBooleanFunction();
         private delegate ValueTask<IQueryable<PdsData>> ReturningPdsDatasFunction();
 
         private async ValueTask<PdsData> TryCatch(ReturningPdsDataFunction returningPdsDataFunction)
@@ -82,6 +83,36 @@ namespace ISL.ReIdentification.Core.Services.Foundations.PdsDatas
                         innerException: databaseUpdateException);
 
                 throw CreateAndLogDependencyException(failedOperationPdsDataException);
+            }
+            catch (Exception exception)
+            {
+                var failedPdsDataServiceException =
+                    new FailedPdsDataServiceException(
+                        message: "Failed pdsData service occurred, please contact support",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedPdsDataServiceException);
+            }
+        }
+
+        private async ValueTask<bool> TryCatch(ReturningBooleanFunction returningBooleanFunction)
+        {
+            try
+            {
+                return await returningBooleanFunction();
+            }
+            catch (InvalidPdsDataException invalidPdsDataException)
+            {
+                throw CreateAndLogValidationException(invalidPdsDataException);
+            }
+            catch (SqlException sqlException)
+            {
+                var failedStoragePdsDataException =
+                    new FailedStoragePdsDataException(
+                        message: "Failed pdsData storage error occurred, contact support.",
+                        innerException: sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedStoragePdsDataException);
             }
             catch (Exception exception)
             {

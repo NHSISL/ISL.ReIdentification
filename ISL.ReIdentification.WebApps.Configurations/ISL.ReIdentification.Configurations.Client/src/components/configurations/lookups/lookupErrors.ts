@@ -1,12 +1,23 @@
 import { ErrorBase } from "../../../types/ErrorBase";
 export interface ILookupErrors extends ErrorBase {
     hasErrors: boolean;
+    id: string;
     name: string;
-    value: string;
+    value:string;
+    createdDate: string;
+    createdBy: string;
+    updatedBy: string;
+    updatedDate: string;
 }
 
-export const lookupErrors: ILookupErrors = {
+
+export const LookupErrors: ILookupErrors = {
     hasErrors: false,
+    id:"",
     name: "",
-    value: ""
+    value: "",
+    createdDate: "",
+    createdBy:"",
+    updatedBy:"",
+    updatedDate:""
 };

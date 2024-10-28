@@ -6,7 +6,6 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using ISL.ReIdentification.Core.Models.Foundations.UserAccesses.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses.Exceptions;
 using Moq;
@@ -255,14 +254,14 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
         [Theory]
         [InlineData(1)]
-        [InlineData(-61)]
+        [InlineData(-91)]
         public async Task ShouldThrowValidationExceptionOnModifyIfUpdatedDateIsNotRecentAndLogItAsync(
             int invalidSeconds)
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             DateTimeOffset now = randomDateTimeOffset;
-            DateTimeOffset startDate = now.AddSeconds(-60);
+            DateTimeOffset startDate = now.AddSeconds(-90);
             DateTimeOffset endDate = now.AddSeconds(0);
             UserAccess randomUserAccess = CreateRandomUserAccess(randomDateTimeOffset);
             UserAccess invalidUserAccess = randomUserAccess;

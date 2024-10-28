@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { InteractionRequiredAuthError, PublicClientApplication } from "@azure/msal-browser";
+// @ts-expect-error auth config from js file
 import { loginRequest, msalConfig } from '../authConfig';
 
 class ApiBroker {
@@ -63,7 +64,7 @@ class ApiBroker {
         });
     }
 
-    public async PostAsync(relativeUrl: string, data: any) {
+    public async PostAsync(relativeUrl: string, data: unknown) {
         const url = relativeUrl;
 
         return axios.post(url,
@@ -86,7 +87,7 @@ class ApiBroker {
         );
     }
 
-    public async PutAsync(relativeUrl: string, data: any) {
+    public async PutAsync(relativeUrl: string, data: unknown) {
         const url = relativeUrl;
 
         return axios.put(url, data, await this.config());

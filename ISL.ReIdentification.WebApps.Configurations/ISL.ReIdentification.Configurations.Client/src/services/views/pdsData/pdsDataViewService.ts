@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Guid } from "guid-typescript";
 import { PdsDataView } from "../../../models/views/components/pdsData/pdsDataView";
 import { pdsDataService } from "../../foundations/pdsDataAccessService";
 
@@ -38,13 +37,10 @@ export const pdsDataViewService = {
                         pdsDataes.push(new PdsDataView(
                             pdsData.rowId,
                             pdsData.pseudoNhsNumber,
-                            pdsData.primaryCareProvider,
-                            pdsData.primaryCareProviderBusinessEffectiveFromDate,
-                            pdsData.primaryCareProviderBusinessEffectiveToDate,
-                            pdsData.ccgOfRegistration,
-                            pdsData.currentCcgOfRegistration,
-                            pdsData.icbOfRegistration,
-                            pdsData.currentIcbOfRegistration,
+                            pdsData.OrgCode,
+                            pdsData.OrganisationName,
+                            pdsData.RelationshipWithOrganisationEffectiveFromDate,
+                            pdsData.RelationshipWithOrganisationEffectiveToDate
                         ));
                     });
                 });
@@ -66,7 +62,7 @@ export const pdsDataViewService = {
         };
     },
 
-    useGetPdsDataById: (id: Guid) => {
+    useGetPdsDataById: (id: string) => {
         const query = `?$filter=id eq ${id}`;
         const response = pdsDataService.useRetrieveAllPdsDataPages(query);
         const [mappedPdsData, setMappedPdsData] = useState<PdsDataView>();
@@ -77,13 +73,10 @@ export const pdsDataViewService = {
                 const pdsDataView = new PdsDataView(
                     pdsData.rowId,
                     pdsData.pseudoNhsNumber,
-                    pdsData.primaryCareProvider,
-                    pdsData.primaryCareProviderBusinessEffectiveFromDate,
-                    pdsData.primaryCareProviderBusinessEffectiveToDate,
-                    pdsData.ccgOfRegistration,
-                    pdsData.currentCcgOfRegistration,
-                    pdsData.icbOfRegistration,
-                    pdsData.currentIcbOfRegistration,
+                    pdsData.OrgCode,
+                    pdsData.OrganisationName,
+                    pdsData.RelationshipWithOrganisationEffectiveFromDate,
+                    pdsData.RelationshipWithOrganisationEffectiveToDate
                 );
 
                 setMappedPdsData(pdsDataView);

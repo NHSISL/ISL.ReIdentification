@@ -4,6 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
+using ISL.ReIdentification.Core.Extensions.Loggings;
 using Microsoft.Extensions.Logging;
 
 namespace ISL.ReIdentification.Core.Brokers.Loggings
@@ -28,9 +29,9 @@ namespace ISL.ReIdentification.Core.Brokers.Loggings
             logger.LogWarning(message);
 
         public async ValueTask LogErrorAsync(Exception exception) =>
-            logger.LogError(exception, exception.Message);
+            logger.LogError(exception, $"{exception.Message} {exception.GetValidationSummary()}");
 
         public async ValueTask LogCriticalAsync(Exception exception) =>
-            logger.LogCritical(exception, exception.Message);
+            logger.LogCritical(exception, $"{exception.Message} {exception.GetValidationSummary()}");
     }
 }

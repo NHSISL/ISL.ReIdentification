@@ -10,6 +10,6 @@ namespace ISL.ReIdentification.Core.Brokers.NECS
 {
     public interface INECSBroker
     {
-        ValueTask<NecsReIdentificationResponse> ReIdAsync(NecsReidentificationRequest necsReidentificationRequest);
+        ValueTask<NecsReIdentificationResponse> ReIdAsync(NecsReIdentificationRequest necsReIdentificationRequest);
     }
 }

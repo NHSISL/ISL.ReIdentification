@@ -1,7 +1,11 @@
 import { AxiosResponse } from "axios";
-import { Guid } from "guid-typescript";
 import ApiBroker from "./apiBroker";
 import { ImpersonationContext } from "../models/impersonationContext/impersonationContext";
+
+type ImpersonationContextODataResponse = {
+    data : ImpersonationContext[],
+    nextPage: string
+}
 
 class ImpersonationContextBroker {
     relativeImpersonationContextUrl = '/api/impersonationContexts';
@@ -9,8 +13,8 @@ class ImpersonationContextBroker {
 
     private apiBroker: ApiBroker = new ApiBroker();
 
-    private processOdataResult = (result: AxiosResponse) => {
-        const data = result.data.value.map((impersonationContext: any) => new ImpersonationContext(impersonationContext));
+    private processOdataResult = (result: AxiosResponse) : ImpersonationContextODataResponse =>  {
+        const data = result.data.value.map((impersonationContext: ImpersonationContext) => new ImpersonationContext(impersonationContext));
 
         const nextPage = result.data['@odata.nextLink'];
         return { data, nextPage }
@@ -25,7 +29,7 @@ class ImpersonationContextBroker {
         const url = this.relativeImpersonationContextUrl + queryString;
 
         return await this.apiBroker.GetAsync(url)
-            .then(result => result.data.map((impersonationContext: any) => new ImpersonationContext(impersonationContext)));
+            .then(result => result.data.map((impersonationContext: ImpersonationContext) => new ImpersonationContext(impersonationContext)));
     }
 
     async GetImpersonationContextFirstPagesAsync(query: string) {
@@ -37,7 +41,7 @@ class ImpersonationContextBroker {
         return this.processOdataResult(await this.apiBroker.GetAsyncAbsolute(absoluteUri));
     }
 
-    async GetImpersonationContextByIdAsync(id: Guid) {
+    async GetImpersonationContextByIdAsync(id: string) {
         const url = `${this.relativeImpersonationContextUrl}/${id}`;
 
         return await this.apiBroker.GetAsync(url)
@@ -49,7 +53,7 @@ class ImpersonationContextBroker {
             .then(result => new ImpersonationContext(result.data));
     }
 
-    async DeleteImpersonationContextByIdAsync(id: Guid) {
+    async DeleteImpersonationContextByIdAsync(id: string) {
         const url = `${this.relativeImpersonationContextUrl}/${id}`;
 
         return await this.apiBroker.DeleteAsync(url)

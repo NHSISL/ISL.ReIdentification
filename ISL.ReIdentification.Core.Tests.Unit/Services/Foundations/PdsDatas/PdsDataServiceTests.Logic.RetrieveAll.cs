@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -16,8 +17,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
         public async Task ShouldReturnPdsDatas()
         {
             // given
-            IQueryable<PdsData> randomPdsDatas = CreateRandomPdsDatas();
-            IQueryable<PdsData> storagePdsDatas = randomPdsDatas;
+            List<PdsData> randomPdsDatas = CreateRandomPdsDatas();
+            IQueryable<PdsData> storagePdsDatas = randomPdsDatas.AsQueryable();
             IQueryable<PdsData> expectedPdsDatas = storagePdsDatas;
 
             this.reIdentificationStorageBroker.Setup(broker =>
@@ -36,6 +37,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                     Times.Once);
 
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
+            this.dateTimeBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

@@ -8,7 +8,7 @@ namespace ISL.ReIdentification.Core.Brokers.Hashing
 {
     public interface IHashBroker
     {
-        string GenerateMd5Hash(Stream? data);
-        string GenerateSha256Hash(Stream? data);
+        string GenerateMd5Hash(Stream data);
+        string GenerateSha256Hash(Stream data);
     }
 }
