@@ -24,7 +24,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Brokers
             await this.apiFactoryClient.GetContentAsync<PdsData>($"{PdsDataRelativeUrl}/{pdsDataId}");
 
         public async ValueTask<PdsData> PutPdsDataAsync(PdsData pdsData) =>
-            throw new NotImplementedException();
+            await this.apiFactoryClient.PutContentAsync(PdsDataRelativeUrl, pdsData);
 
         public async ValueTask<PdsData> DeletePdsDataByIdAsync(Guid pdsDataId) =>
             await this.apiFactoryClient.DeleteContentAsync<PdsData>(
