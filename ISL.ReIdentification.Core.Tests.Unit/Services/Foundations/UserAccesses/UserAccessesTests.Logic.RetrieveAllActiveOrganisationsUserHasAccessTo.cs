@@ -7,9 +7,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Force.DeepCloner;
 using ISL.ReIdentification.Core.Models.Foundations.OdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
@@ -17,42 +17,46 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
     public partial class UserAccessesTests
     {
         [Fact]
-        public async Task ShouldRetrieveAllOrganisationsUserHasAccessToAsync()
+        public async Task ShouldRetrieveAllActiveOrganisationsUserHasAccessToAsync()
         {
             // given
             Guid randomEntraUserId = Guid.NewGuid();
             Guid inputEntraUserId = randomEntraUserId;
-            List<UserAccess> randomUserAccess = CreateRandomUserAccesses();
-            randomUserAccess.ForEach(userAccess => userAccess.EntraUserId = inputEntraUserId);
-            List<UserAccess> storageUserAccess = randomUserAccess;
+            List<UserAccess> validUserAccesses = CreateValidUserAccesses(inputEntraUserId);
+            List<UserAccess> invalidUserAccesses = CreateInvalidUserAccesses(inputEntraUserId);
+            List<UserAccess> storageUserAccess = new List<UserAccess>();
+            storageUserAccess.AddRange(validUserAccesses);
+            storageUserAccess.AddRange(invalidUserAccesses);
+            List<OdsData> userOdsDatas = new List<OdsData>();
 
-            List<string> randomUserOrganisations = randomUserAccess
-                .Select(randomUserAccess => randomUserAccess.OrgCode).ToList();
-
-            List<OdsData> randomOdsDataItems = CreateRandomOdsDatas(randomUserOrganisations);
-            List<OdsData> storageOdsDataItems = randomOdsDataItems.DeepClone();
-            List<string> allUserOrganisation = randomUserOrganisations;
-
-            foreach (OdsData odsData in randomOdsDataItems)
+            foreach (var userAccess in storageUserAccess)
             {
-                List<OdsData> randomOdsDatas = CreateRandomOdsDataChildren(odsData.OdsHierarchy);
-                allUserOrganisation.AddRange(randomOdsDatas.Select(odsData => odsData.OrganisationCode));
-                storageOdsDataItems.AddRange(randomOdsDatas);
+                List<OdsData> odsDatas = CreateRandomOdsDatasByOrgCode(userAccess.OrgCode);
+                userOdsDatas.AddRange(odsDatas);
             }
 
-            List<string> expectedOrganisations = allUserOrganisation.Distinct().ToList();
+            for (var index = 0; index < userOdsDatas.Count; index++)
+            {
+                userOdsDatas[index].OdsHierarchy = HierarchyId.Parse($"/{index}/");
+            }
+
+            List<string> expectedOrganisations = validUserAccesses.Select(userAccess => userAccess.OrgCode).ToList();
 
             this.reIdentificationStorageBroker.Setup(broker =>
                 broker.SelectAllUserAccessesAsync())
                     .ReturnsAsync(storageUserAccess.AsQueryable());
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(DateTimeOffset.UtcNow);
+
             this.reIdentificationStorageBroker.Setup(broker =>
                 broker.SelectAllOdsDatasAsync())
-                    .ReturnsAsync(storageOdsDataItems.AsQueryable());
+                    .ReturnsAsync(userOdsDatas.AsQueryable());
 
             // when
             List<string> actualOrganisations = await this.userAccessService
-                .RetrieveAllOrganisationsUserHasAccessTo(inputEntraUserId);
+                .RetrieveAllActiveOrganisationsUserHasAccessToAsync(inputEntraUserId);
 
             // then
             actualOrganisations.Should().BeEquivalentTo(expectedOrganisations);
@@ -61,9 +65,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
                 broker.SelectAllUserAccessesAsync(),
                     Times.Once);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
             this.reIdentificationStorageBroker.Verify(broker =>
                 broker.SelectAllOdsDatasAsync(),
-                    Times.Exactly(storageUserAccess.Count() * 2));
+                    Times.Exactly(validUserAccesses.Count() * 2));
 
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
