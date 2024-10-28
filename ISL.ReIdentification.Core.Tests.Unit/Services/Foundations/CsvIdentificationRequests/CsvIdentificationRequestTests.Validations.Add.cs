@@ -90,6 +90,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
                 values: "Text is invalid");
 
             invalidCsvIdentificationRequestException.AddData(
+                key: nameof(CsvIdentificationRequest.Filepath),
+                values: "Text is invalid");
+
+            invalidCsvIdentificationRequestException.AddData(
                 key: nameof(CsvIdentificationRequest.IdentifierColumn),
                 values: "Text is invalid");
 
