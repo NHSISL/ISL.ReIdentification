@@ -13,11 +13,9 @@ const ReIdentificationDetail: FunctionComponent = () => {
     return (
         <>
             <div>
-                <h2>Welcome to the re-identifcation Portal</h2>
                 <p>This page provides a simple reidentification for a single patient pseudo identifer</p>
-                <p>To do this please paste the pseudo identifer in the box below and provide a reason why you are identifying this patient.</p>
-                <p>Note: you will only be able to reidentify patients that are present within your organisation.</p>
-                <p>Note: all reidentification requests are subject to breach monitoring and reporting</p>
+                <p><strong>Note:</strong> you will only be able to reidentify patients that are present within your organisation.</p>
+                <p><strong>Note:</strong> all reidentification requests are subject to breach monitoring and reporting</p>
                 <p>Details of breach thresholds can be found <a href="about:blank" target="blank" >here</a></p>
             </div>
             {mappedLookups &&
