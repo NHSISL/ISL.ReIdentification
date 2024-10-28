@@ -110,10 +110,13 @@ namespace ISL.ReIdentification.Core.Services.Foundations.OdsDatas
             return descendants;
         });
 
-        public async ValueTask<List<OdsData>> RetrieveAllAncestorsByChildId(Guid odsDataId)
+        public ValueTask<List<OdsData>> RetrieveAllAncestorsByChildId(Guid odsDataId) =>
+        TryCatch(async () =>
         {
+            ValidateOdsDataId(odsDataId);
+
             OdsData childRecord = await this.reIdentificationStorageBroker
-                .SelectOdsDataByIdAsync(odsDataId);
+                 .SelectOdsDataByIdAsync(odsDataId);
 
             OdsData currentNode = childRecord;
             List<OdsData> ancestors = new List<OdsData>();
@@ -138,6 +141,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.OdsDatas
             }
 
             return ancestors;
-        }
+        });
     }
 }
