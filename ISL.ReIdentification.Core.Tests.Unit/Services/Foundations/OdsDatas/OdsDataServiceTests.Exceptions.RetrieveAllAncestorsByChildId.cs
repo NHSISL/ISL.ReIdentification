@@ -60,5 +60,51 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRetrieveAllAncestorsByChildIdIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+            var serviceException = new Exception();
+
+            var failedOdsDataServiceException =
+                new FailedOdsDataServiceException(
+                    message: "Failed odsData service occurred, please contact support",
+                    innerException: serviceException);
+
+            var expectedOdsDataServiceException =
+                new OdsDataServiceException(
+                    message: "OdsData service error occurred, contact support.",
+                    innerException: failedOdsDataServiceException);
+
+            this.reIdentificationStorageBroker.Setup(broker =>
+                broker.SelectOdsDataByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask<List<OdsData>> retrieveAncestorsByChildIdTask =
+                this.odsDataService.RetrieveAllAncestorsByChildId(someId);
+
+            OdsDataServiceException actualOdsDataServiceException =
+                await Assert.ThrowsAsync<OdsDataServiceException>(
+                    testCode: retrieveAncestorsByChildIdTask.AsTask);
+
+            // then
+            actualOdsDataServiceException.Should()
+                .BeEquivalentTo(expectedOdsDataServiceException);
+
+            this.reIdentificationStorageBroker.Verify(broker =>
+                broker.SelectOdsDataByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
+                   expectedOdsDataServiceException))),
+                        Times.Once);
+
+            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
