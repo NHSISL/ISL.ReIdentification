@@ -311,7 +311,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 Id = Guid.NewGuid(),
                 IdentifierColumn = nameof(CsvIdentificationRequest.IdentifierColumn),
                 Organisation = nameof(CsvIdentificationRequest.Organisation),
-                Purpose = nameof(CsvIdentificationRequest.Purpose),
                 Reason = nameof(CsvIdentificationRequest.Reason),
                 RecipientDisplayName = nameof(CsvIdentificationRequest.RecipientDisplayName),
                 RecipientEmail = nameof(CsvIdentificationRequest.RecipientEmail),
@@ -349,7 +348,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 IdentificationItems = new List<IdentificationItem> { identificationItem },
                 JobTitle = nameof(CsvIdentificationRequest.RecipientJobTitle),
                 Organisation = nameof(IdentificationRequest.Organisation),
-                Purpose = nameof(IdentificationRequest.Purpose),
                 Reason = nameof(IdentificationRequest.Reason),
                 Surname = nameof(CsvIdentificationRequest.RecipientLastName)
             };
@@ -383,7 +381,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 IdentificationItems = new List<IdentificationItem> { identificationItem },
                 JobTitle = nameof(CsvIdentificationRequest.RecipientJobTitle),
                 Organisation = nameof(IdentificationRequest.Organisation),
-                Purpose = nameof(IdentificationRequest.Purpose),
                 Reason = nameof(IdentificationRequest.Reason),
                 Surname = nameof(CsvIdentificationRequest.RecipientLastName)
             };
@@ -393,7 +390,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 Data = Encoding.UTF8.GetBytes(CsvDataString()),
                 Id = Guid.Empty,
                 Organisation = nameof(CsvIdentificationRequest.Organisation),
-                Purpose = nameof(CsvIdentificationRequest.Purpose),
                 Reason = nameof(CsvIdentificationRequest.Reason),
                 RecipientDisplayName = nameof(CsvIdentificationRequest.RecipientDisplayName),
                 RecipientEmail = nameof(CsvIdentificationRequest.RecipientEmail),

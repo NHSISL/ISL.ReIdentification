@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
@@ -11,9 +12,11 @@ using ISL.ReIdentification.Core.Brokers.Identifiers;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits.Exceptions;
+using ISL.ReIdentification.Core.Models.Foundations.Documents.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications.Exceptions;
 using ISL.ReIdentification.Core.Services.Foundations.AccessAudits;
+using ISL.ReIdentification.Core.Services.Foundations.Documents;
 using ISL.ReIdentification.Core.Services.Foundations.ReIdentifications;
 using ISL.ReIdentification.Core.Services.Orchestrations.Identifications;
 using KellermanSoftware.CompareNetObjects;
@@ -27,6 +30,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
     {
         private readonly Mock<IReIdentificationService> reIdentificationServiceMock;
         private readonly Mock<IAccessAuditService> accessAuditServiceMock;
+        private readonly Mock<IDocumentService> documentServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;
@@ -37,6 +41,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
         {
             this.reIdentificationServiceMock = new Mock<IReIdentificationService>();
             this.accessAuditServiceMock = new Mock<IAccessAuditService>();
+            this.documentServiceMock = new Mock<IDocumentService>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.identifierBrokerMock = new Mock<IIdentifierBroker>();
@@ -45,6 +50,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             this.identificationOrchestrationService = new IdentificationOrchestrationService(
                 this.reIdentificationServiceMock.Object,
                 this.accessAuditServiceMock.Object,
+                this.documentServiceMock.Object,
                 this.loggingBrokerMock.Object,
                 this.dateTimeBrokerMock.Object,
                 this.identifierBrokerMock.Object);
@@ -117,6 +123,40 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);
 
+        private Expression<Func<Stream, bool>> SameStreamAs(Stream expectedStream) =>
+            actualStream => this.compareLogic.Compare(expectedStream, actualStream).AreEqual;
+
+        private static byte[] ReadAllBytesFromStream(Stream stream)
+        {
+            if (stream.CanSeek)
+            {
+                stream.Seek(0, SeekOrigin.Begin);
+            }
+
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                stream.CopyTo(memoryStream);
+                return memoryStream.ToArray();
+            }
+        }
+
+        public class HasLengthStream : MemoryStream
+        {
+            public override long Length => 1;
+        }
+
+        public static TheoryData<Stream, string> InvalidArgumentsStreamHasLength()
+        {
+            Stream stream = new HasLengthStream();
+
+            return new TheoryData<Stream, string>
+            {
+                { null, null },
+                { stream, ""},
+                { stream, " " }
+            };
+        }
+
         public static TheoryData<Xeption> DependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
@@ -165,6 +205,42 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
 
                 new ReIdentificationServiceException(
                     message: "ReIdentification service error occurred, please contact support.",
+                    innerException),
+            };
+        }
+
+        public static TheoryData<Xeption> DocumentDependencyValidationExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new DocumentValidationException(
+                    message: "Document validation errors occured, please try again",
+                    innerException),
+
+                new DocumentDependencyValidationException(
+                    message: "Document dependency validation occurred, please try again.",
+                    innerException),
+            };
+        }
+
+        public static TheoryData<Xeption> DocumentDependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new DocumentDependencyException(
+                    message: "Document dependency error occurred, please contact support.",
+                    innerException),
+
+                new DocumentServiceException(
+                    message: "Document service error occurred, please contact support.",
                     innerException),
             };
         }
