@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using FluentAssertions;
 using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Brokers;
 using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.Lookups;
 using Tynamix.ObjectFiller;
@@ -88,9 +87,8 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
         private async ValueTask<UserAccess> PostRandomUserAccess()
         {
             UserAccess randomUserAccess = CreateRandomUserAccess();
-            await this.apiBroker.PostUserAccessAsync(randomUserAccess);
 
-            return randomUserAccess;
+            return await this.apiBroker.PostUserAccessAsync(randomUserAccess);
         }
     }
 }

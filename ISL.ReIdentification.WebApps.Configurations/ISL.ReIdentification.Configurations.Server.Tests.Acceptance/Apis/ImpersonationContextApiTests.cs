@@ -51,9 +51,8 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
         private async ValueTask<ImpersonationContext> PostRandomImpersonationContextAsync()
         {
             ImpersonationContext randomImpersonationContext = CreateRandomImpersonationContext();
-            await this.apiBroker.PostImpersonationContextAsync(randomImpersonationContext);
 
-            return randomImpersonationContext;
+            return await this.apiBroker.PostImpersonationContextAsync(randomImpersonationContext);
         }
 
         private async ValueTask<List<ImpersonationContext>> PostRandomImpersonationContextsAsync()

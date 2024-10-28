@@ -56,7 +56,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             // when
             List<string> actualOrganisations = await this.userAccessService
-                .RetrieveAllActiveOrganisationsUserHasAccessTo(inputEntraUserId);
+                .RetrieveAllActiveOrganisationsUserHasAccessToAsync(inputEntraUserId);
 
             // then
             actualOrganisations.Should().BeEquivalentTo(expectedOrganisations);

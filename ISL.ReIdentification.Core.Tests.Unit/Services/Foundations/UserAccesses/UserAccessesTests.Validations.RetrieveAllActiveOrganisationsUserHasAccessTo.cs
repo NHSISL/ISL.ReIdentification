@@ -34,7 +34,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             // when
             ValueTask<List<string>> retrieveAllActiveOrganisationsUserHasAccessToTask =
-                this.userAccessService.RetrieveAllActiveOrganisationsUserHasAccessTo(invalidUserAccessId);
+                this.userAccessService.RetrieveAllActiveOrganisationsUserHasAccessToAsync(invalidUserAccessId);
 
             UserAccessValidationException actualUserAccessValidationException =
                 await Assert.ThrowsAsync<UserAccessValidationException>(

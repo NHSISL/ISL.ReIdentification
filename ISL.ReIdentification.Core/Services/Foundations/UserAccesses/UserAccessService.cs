@@ -81,7 +81,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
             return await this.reIdentificationStorageBroker.DeleteUserAccessAsync(maybeUserAccess);
         });
 
-        public ValueTask<List<string>> RetrieveAllActiveOrganisationsUserHasAccessTo(Guid entraUserId) =>
+        public ValueTask<List<string>> RetrieveAllActiveOrganisationsUserHasAccessToAsync(Guid entraUserId) =>
         TryCatch(async () =>
         {
             ValidateOnRetrieveAllOrganisationUserHasAccessTo(entraUserId);
