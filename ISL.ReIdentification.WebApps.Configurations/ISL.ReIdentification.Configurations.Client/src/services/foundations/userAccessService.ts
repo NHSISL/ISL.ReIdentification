@@ -18,12 +18,22 @@ export const userAccessService = {
 
                 return broker.PostUserAccessAsync(userAccess);
             },
-
             onSuccess: (variables: UserAccess) => {
                 queryClient.invalidateQueries({ queryKey: ["UserAccessGetAll"]});
+                queryClient.invalidateQueries({ queryKey: ["DistinctUsers"]});
                 queryClient.invalidateQueries({ queryKey: ["UserAccessGetById", { id: variables.id }] });
             }
         });
+    },
+
+    useRetrieveDistinctUsers: () => { 
+        const broker = new UserAccessBroker();
+
+        return useQuery({
+            queryKey: ["DistinctUsers"],
+            queryFn: () => broker.GetDistinctUsers(),
+            staleTime: Infinity
+        })
     },
 
     useRetrieveAllUserAccess: (query: string) => {
