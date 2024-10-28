@@ -57,7 +57,6 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                     GivenName = identificationRequest.GivenName,
                     Surname = identificationRequest.Surname,
                     Email = identificationRequest.Email,
-                    Purpose = identificationRequest.Purpose,
                     Reason = identificationRequest.Reason,
                     Organisation = identificationRequest.Organisation,
                     HasAccess = item.HasAccess,
@@ -96,7 +95,6 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                 DisplayName = identificationRequest.DisplayName,
                 JobTitle = identificationRequest.JobTitle,
                 Email = identificationRequest.Email,
-                Purpose = identificationRequest.Purpose,
                 Organisation = identificationRequest.Organisation,
                 Reason = identificationRequest.Reason
             };
@@ -123,7 +121,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
 
         public ValueTask RetrieveDocumentByFileNameAsync(Stream output, string fileName, string container) =>
             throw new NotImplementedException();
-            
+
         public ValueTask RemoveDocumentByFileNameAsync(string filename, string container) =>
             throw new NotImplementedException();
     }

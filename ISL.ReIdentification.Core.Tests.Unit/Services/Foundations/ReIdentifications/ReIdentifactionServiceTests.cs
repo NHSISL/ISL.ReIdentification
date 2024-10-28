@@ -97,7 +97,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
                 {
                     RequestId = identifier,
                     UserIdentifier = identificationRequest.EntraUserId.ToString(),
-                    Purpose = identificationRequest.Purpose,
                     Organisation = identificationRequest.Organisation,
                     Reason = identificationRequest.Reason,
                     PseudonymisedNumbers = identificationRequest.IdentificationItems.Skip(i)

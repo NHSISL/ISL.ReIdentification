@@ -59,11 +59,13 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
         TryCatch(async () =>
         {
             ValidateOnProcessIdentificationRequests(accessRequest);
-
             EntraUser currentUser = await this.securityBroker.GetCurrentUser();
-
             accessRequest.IdentificationRequest.EntraUserId = currentUser.EntraUserId;
-            accessRequest.IdentificationRequest.Purpose = "to remove";
+            accessRequest.IdentificationRequest.Email = currentUser.Email;
+            accessRequest.IdentificationRequest.JobTitle = currentUser.JobTitle;
+            accessRequest.IdentificationRequest.DisplayName = currentUser.DisplayName;
+            accessRequest.IdentificationRequest.GivenName = currentUser.GivenName;
+            accessRequest.IdentificationRequest.Surname = currentUser.Surname;
 
             var returnedAccessRequest =
                 await this.accessOrchestrationService.ValidateAccessForIdentificationRequestAsync(accessRequest);
@@ -232,7 +234,6 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             identificationRequest.GivenName = csvIdentificationRequest.RecipientFirstName;
             identificationRequest.JobTitle = csvIdentificationRequest.RecipientJobTitle;
             identificationRequest.Organisation = csvIdentificationRequest.Organisation;
-            identificationRequest.Purpose = csvIdentificationRequest.Purpose;
             identificationRequest.Reason = csvIdentificationRequest.Reason;
             identificationRequest.Surname = csvIdentificationRequest.RecipientLastName;
             identificationRequest.IdentificationItems = identificationItems;
@@ -271,7 +272,6 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             csvIdentificationRequest.RecipientFirstName = identificationRequest.GivenName;
             csvIdentificationRequest.RecipientJobTitle = identificationRequest.JobTitle;
             csvIdentificationRequest.Organisation = identificationRequest.Organisation;
-            csvIdentificationRequest.Purpose = identificationRequest.Purpose;
             csvIdentificationRequest.RecipientLastName = identificationRequest.Surname;
             csvIdentificationRequest.Reason = identificationRequest.Reason;
             csvIdentificationRequest.Data = csvIdentificationRequestDataByteArray;
