@@ -40,7 +40,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
                 new List<string> { userOrganisation };
 
             this.userAccessServiceMock.Setup(service =>
-                service.RetrieveAllActiveOrganisationsUserHasAccessTo(inputEntraUserId))
+                service.RetrieveAllActiveOrganisationsUserHasAccessToAsync(inputEntraUserId))
                     .ReturnsAsync(userOrganisations);
 
             accessOrchestrationServiceMock.Setup(service =>
@@ -57,7 +57,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
             actualAccessRequest.Should().BeEquivalentTo(expectedAccessRequest);
 
             this.userAccessServiceMock.Verify(service =>
-                service.RetrieveAllActiveOrganisationsUserHasAccessTo(inputEntraUserId),
+                service.RetrieveAllActiveOrganisationsUserHasAccessToAsync(inputEntraUserId),
                     Times.Once);
 
             accessOrchestrationServiceMock.Verify(service =>

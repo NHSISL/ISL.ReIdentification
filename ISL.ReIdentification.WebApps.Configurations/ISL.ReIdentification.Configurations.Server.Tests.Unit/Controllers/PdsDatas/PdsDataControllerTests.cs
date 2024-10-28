@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Linq;
 using ISL.ReIdentification.Configurations.Server.Controllers;
 using ISL.ReIdentification.Core.Models.Foundations.PdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.PdsDatas.Exceptions;
@@ -59,6 +60,9 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.PdsD
             };
         }
 
+        private static int GetRandomNumber() =>
+            new IntRange(min: 2, max: 10).GetValue();
+
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
 
@@ -76,6 +80,14 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.PdsD
             CreatePdsDataFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
         private static PdsData CreateRandomPdsData(DateTimeOffset dateTimeOffset) =>
             CreatePdsDataFiller(dateTimeOffset).Create();
+
+        private static IQueryable<PdsData> CreateRandomPdsDatas()
+        {
+            return CreatePdsDataFiller(GetRandomDateTimeOffset())
+                .Create(count: GetRandomNumber())
+                    .AsQueryable();
+        }
+
         private static Filler<PdsData> CreatePdsDataFiller(DateTimeOffset dateTimeOffset)
         {
             string user = Guid.NewGuid().ToString();

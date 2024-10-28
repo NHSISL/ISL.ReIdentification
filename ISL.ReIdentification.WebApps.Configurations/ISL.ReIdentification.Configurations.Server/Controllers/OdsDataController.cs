@@ -26,6 +26,39 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
         public OdsDataController(IOdsDataService odsDataService) =>
             this.odsDataService = odsDataService;
 
+        [HttpPost]
+        public async ValueTask<ActionResult<OdsData>> PostOdsDataAsync([FromBody] OdsData odsData)
+        {
+            try
+            {
+                OdsData addedOdsData =
+                    await this.odsDataService.AddOdsDataAsync(odsData);
+
+                return Created(addedOdsData);
+            }
+            catch (OdsDataValidationException odsDataValidationException)
+            {
+                return BadRequest(odsDataValidationException.InnerException);
+            }
+            catch (OdsDataDependencyValidationException odsDataDependencyValidationException)
+               when (odsDataDependencyValidationException.InnerException is AlreadyExistsOdsDataException)
+            {
+                return Conflict(odsDataDependencyValidationException.InnerException);
+            }
+            catch (OdsDataDependencyValidationException odsDataDependencyValidationException)
+            {
+                return BadRequest(odsDataDependencyValidationException.InnerException);
+            }
+            catch (OdsDataDependencyException odsDataDependencyException)
+            {
+                return InternalServerError(odsDataDependencyException);
+            }
+            catch (OdsDataServiceException odsDataServiceException)
+            {
+                return InternalServerError(odsDataServiceException);
+            }
+        }
+
         [HttpGet]
         [EnableQuery(PageSize = 25)]
         public async ValueTask<ActionResult<IQueryable<OdsData>>> Get()
@@ -82,6 +115,86 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             catch (OdsDataValidationException odsDataValidationException)
             {
                 return BadRequest(odsDataValidationException.InnerException);
+            }
+            catch (OdsDataDependencyValidationException odsDataDependencyValidationException)
+            {
+                return BadRequest(odsDataDependencyValidationException.InnerException);
+            }
+            catch (OdsDataDependencyException odsDataDependencyException)
+            {
+                return InternalServerError(odsDataDependencyException);
+            }
+            catch (OdsDataServiceException odsDataServiceException)
+            {
+                return InternalServerError(odsDataServiceException);
+            }
+        }
+
+        [HttpPut]
+        public async ValueTask<ActionResult<OdsData>> PutOdsDataAsync([FromBody] OdsData odsData)
+        {
+            try
+            {
+                OdsData modifiedOdsData =
+                    await this.odsDataService.ModifyOdsDataAsync(odsData);
+
+                return Ok(modifiedOdsData);
+            }
+            catch (OdsDataValidationException odsDataValidationException)
+                when (odsDataValidationException.InnerException is NotFoundOdsDataException)
+            {
+                return NotFound(odsDataValidationException.InnerException);
+            }
+            catch (OdsDataValidationException odsDataValidationException)
+            {
+                return BadRequest(odsDataValidationException.InnerException);
+            }
+            catch (OdsDataDependencyValidationException odsDataDependencyValidationException)
+               when (odsDataDependencyValidationException.InnerException is AlreadyExistsOdsDataException)
+            {
+                return Conflict(odsDataDependencyValidationException.InnerException);
+            }
+            catch (OdsDataDependencyValidationException odsDataDependencyValidationException)
+            {
+                return BadRequest(odsDataDependencyValidationException.InnerException);
+            }
+            catch (OdsDataDependencyException odsDataDependencyException)
+            {
+                return InternalServerError(odsDataDependencyException);
+            }
+            catch (OdsDataServiceException odsDataServiceException)
+            {
+                return InternalServerError(odsDataServiceException);
+            }
+        }
+
+        [HttpDelete("{odsDataId}")]
+        public async ValueTask<ActionResult<OdsData>> DeleteOdsDataByIdAsync(Guid odsDataId)
+        {
+            try
+            {
+                OdsData deletedOdsData =
+                    await this.odsDataService.RemoveOdsDataByIdAsync(odsDataId);
+
+                return Ok(deletedOdsData);
+            }
+            catch (OdsDataValidationException odsDataValidationException)
+                when (odsDataValidationException.InnerException is NotFoundOdsDataException)
+            {
+                return NotFound(odsDataValidationException.InnerException);
+            }
+            catch (OdsDataValidationException odsDataValidationException)
+            {
+                return BadRequest(odsDataValidationException.InnerException);
+            }
+            catch (OdsDataDependencyValidationException odsDataDependencyValidationException)
+                when (odsDataDependencyValidationException.InnerException is LockedOdsDataException)
+            {
+                return Locked(odsDataDependencyValidationException.InnerException);
+            }
+            catch (OdsDataDependencyValidationException odsDataDependencyValidationException)
+            {
+                return BadRequest(odsDataDependencyValidationException.InnerException);
             }
             catch (OdsDataDependencyException odsDataDependencyException)
             {
