@@ -72,7 +72,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
 
             var invalidUserAccessProcessingException =
                 new InvalidUserAccessProcessingException(
-                    message: "Invalid bulk user access. Please correct the errors and try again.");
+                    message: "Invalid user access. Please correct the errors and try again.");
 
             invalidUserAccessProcessingException.AddData(
                 key: nameof(BulkUserAccess.EntraUserId),
@@ -84,11 +84,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
 
             invalidUserAccessProcessingException.AddData(
                 key: nameof(BulkUserAccess.OrgCodes),
-                values: "Text is invalid");
+                values: "List is invalid");
 
             var expectedUserAccessProcessingValidationException =
                 new UserAccessProcessingValidationException(
-                    message: "Bulk user access validation error occurred, please fix errors and try again.",
+                    message: "User access processing validation error occurred, please fix errors and try again.",
                     innerException: invalidUserAccessProcessingException);
 
             // when
@@ -102,10 +102,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
             // then
             actualUserAccessProcessingValidationException.Should()
                 .BeEquivalentTo(expectedUserAccessProcessingValidationException);
-
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(

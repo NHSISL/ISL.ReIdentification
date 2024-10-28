@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Models.Processings.UserAccesses.Exceptions;
 
@@ -19,6 +20,11 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
         private static void ValidateOnBulkAddRemoveUserAccessAsync(BulkUserAccess bulkUserAccess)
         {
             ValidateBulkUserAccessIsNotNull(bulkUserAccess);
+
+            Validate(
+                (Rule: IsInvalid(bulkUserAccess.EntraUserId), Parameter: nameof(BulkUserAccess.EntraUserId)),
+                (Rule: IsInvalid(bulkUserAccess.Email), Parameter: nameof(BulkUserAccess.Email)),
+                (Rule: IsInvalid(bulkUserAccess.OrgCodes), Parameter: nameof(BulkUserAccess.OrgCodes)));
         }
 
         private static void ValidateUserAccessIsNotNull(UserAccess userAccess)
@@ -50,6 +56,18 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
         {
             Condition = id == Guid.Empty,
             Message = "Id is invalid"
+        };
+
+        private static dynamic IsInvalid(string name) => new
+        {
+            Condition = String.IsNullOrWhiteSpace(name),
+            Message = "Text is invalid"
+        };
+
+        private static dynamic IsInvalid(List<string> list) => new
+        {
+            Condition = list is null || list.Count == 0,
+            Message = "List is invalid"
         };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
