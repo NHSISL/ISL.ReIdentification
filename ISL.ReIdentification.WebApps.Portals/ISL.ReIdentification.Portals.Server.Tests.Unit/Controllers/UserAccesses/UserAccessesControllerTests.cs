@@ -5,7 +5,7 @@
 using System;
 using System.Linq;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
-using ISL.ReIdentification.Core.Models.Foundations.UserAccesses.Exceptions;
+using ISL.ReIdentification.Core.Models.Processings.UserAccesses.Exceptions;
 using ISL.ReIdentification.Core.Services.Foundations.UserAccesses;
 using ISL.ReIdentification.Portals.Server.Controllers;
 using Moq;
@@ -17,13 +17,13 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.UserAccesse
 {
     public partial class UserAccessesControllerTests : RESTFulController
     {
-        private readonly Mock<IUserAccessService> userAccessServiceMock;
+        private readonly Mock<IUserAccessProcessingService> userAccessProcessingService;
         private readonly UserAccessesController userAccessesController;
 
         public UserAccessesControllerTests()
         {
-            this.userAccessServiceMock = new Mock<IUserAccessService>();
-            this.userAccessesController = new UserAccessesController(userAccessServiceMock.Object);
+            this.userAccessProcessingService = new Mock<IUserAccessProcessingService>();
+            this.userAccessesController = new UserAccessesController(userAccessProcessingService.Object);
         }
 
         public static TheoryData<Xeption> ValidationExceptions()
@@ -33,11 +33,11 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.UserAccesse
 
             return new TheoryData<Xeption>
             {
-                new UserAccessValidationException(
+                new UserAccessProcessingValidationException(
                     message: someMessage,
                     innerException: someInnerException),
 
-                new UserAccessDependencyValidationException(
+                new UserAccessProcessingDependencyValidationException(
                     message: someMessage,
                     innerException: someInnerException)
             };
@@ -50,11 +50,11 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.UserAccesse
 
             return new TheoryData<Xeption>
             {
-                new UserAccessDependencyException(
+                new UserAccessProcessingDependencyException(
                     message: someMessage,
                     innerException: someInnerException),
 
-                new UserAccessServiceException(
+                new UserAccessProcessingServiceException(
                     message: someMessage,
                     innerException: someInnerException)
             };

@@ -22,8 +22,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             string someFilename = GetRandomString();
             string someContainer = GetRandomString();
 
-            this.documentServiceMock.Setup(serivce =>
-                serivce.RemoveDocumentByFileNameAsync(someFilename, someContainer))
+            this.documentServiceMock.Setup(service =>
+                service.RemoveDocumentByFileNameAsync(someFilename, someContainer))
                     .ThrowsAsync(dependencyValidationException);
 
             var expectedIdentificationOrchestrationDependencyValidationException =
@@ -46,8 +46,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             actualIdentificationOrchestrationDependencyValidationException
                 .Should().BeEquivalentTo(expectedIdentificationOrchestrationDependencyValidationException);
 
-            this.documentServiceMock.Verify(serivce =>
-                serivce.RemoveDocumentByFileNameAsync(someFilename, someContainer),
+            this.documentServiceMock.Verify(service =>
+                service.RemoveDocumentByFileNameAsync(someFilename, someContainer),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -55,6 +55,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                    expectedIdentificationOrchestrationDependencyValidationException))),
                        Times.Once);
 
+            this.documentServiceMock.VerifyNoOtherCalls();
             this.accessAuditServiceMock.VerifyNoOtherCalls();
             this.reIdentificationServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
@@ -104,6 +105,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                    expectedIdentificationOrchestrationDependencyException))),
                        Times.Once);
 
+            this.documentServiceMock.VerifyNoOtherCalls();
             this.accessAuditServiceMock.VerifyNoOtherCalls();
             this.reIdentificationServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
@@ -156,6 +158,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                    expectedIdentificationOrchestrationServiceException))),
                        Times.Once);
 
+            this.documentServiceMock.VerifyNoOtherCalls();
             this.accessAuditServiceMock.VerifyNoOtherCalls();
             this.reIdentificationServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
