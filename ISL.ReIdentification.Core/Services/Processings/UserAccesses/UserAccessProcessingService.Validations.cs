@@ -16,11 +16,24 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
         private static void ValidateOnModifyUserAccess(UserAccess userAccess) =>
             ValidateUserAccessIsNotNull(userAccess);
 
+        private static void ValidateOnBulkAddRemoveUserAccessAsync(BulkUserAccess bulkUserAccess)
+        {
+            ValidateBulkUserAccessIsNotNull(bulkUserAccess);
+        }
+
         private static void ValidateUserAccessIsNotNull(UserAccess userAccess)
         {
             if (userAccess is null)
             {
                 throw new NullUserAccessProcessingException("User access is null.");
+            }
+        }
+
+        private static void ValidateBulkUserAccessIsNotNull(BulkUserAccess bulkUserAccess)
+        {
+            if (bulkUserAccess is null)
+            {
+                throw new NullUserAccessProcessingException("Bulk user access is null.");
             }
         }
 

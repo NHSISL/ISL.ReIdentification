@@ -83,8 +83,11 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
             return await this.userAccessService.RetrieveAllActiveOrganisationsUserHasAccessToAsync(entraUserId);
         });
 
-        public async ValueTask BulkAddRemoveUserAccessAsync(BulkUserAccess bulkUserAccess)
+        public ValueTask BulkAddRemoveUserAccessAsync(BulkUserAccess bulkUserAccess) =>
+        TryCatch(async () =>
         {
+            ValidateOnBulkAddRemoveUserAccessAsync(bulkUserAccess);
+
             IQueryable<UserAccess> existingUserAccessQuery =
                 await this.userAccessService.RetrieveAllUserAccessesAsync();
 
@@ -134,6 +137,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
             {
                 await this.userAccessService.AddUserAccessAsync(userAccess);
             }
-        }
+        });
     }
 }
