@@ -1,22 +1,22 @@
 import { debounce } from "lodash";
-import React, { FunctionComponent, useMemo, useState } from "react";
+import { FunctionComponent, useMemo, useState } from "react";
 import { SpinnerBase } from "../bases/spinner/SpinnerBase";
 import { Card, Container, Table } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDatabase } from "@fortawesome/free-solid-svg-icons";
-import { ImpersonationContextView } from "../../models/views/components/impersonationContext/impersonationContextView";
+import { ImpersonationContextView } from "../../models/views/components/impersonationContext/ImpersonationContextView";
 import InfiniteScroll from "../bases/pagers/InfiniteScroll";
 import InfiniteScrollLoader from "../bases/pagers/InfiniteScroll.Loader";
 import { impersonationContextViewService } from "../../services/views/impersonationContext/impersonationContextViewService";
 import SearchBase from "../bases/inputs/SearchBase";
 import ImpersonationContextRow from "./impersonationContextRow";
 
-type ImpersonationContextTableProps = {};
+type ImpersonationContextTableProps = object;
 
-const ImpersonationContextTable: FunctionComponent<ImpersonationContextTableProps> = (props) => {
+const ImpersonationContextTable: FunctionComponent<ImpersonationContextTableProps> = () => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [debouncedTerm, setDebouncedTerm] = useState<string>("");
-    const [showSpinner, setShowSpinner] = useState(false);
+    const [showSpinner] = useState(false);
 
 
     const {
@@ -25,8 +25,6 @@ const ImpersonationContextTable: FunctionComponent<ImpersonationContextTableProp
         fetchNextPage,
         isFetchingNextPage,
         hasNextPage,
-        data,
-        refetch
     } = impersonationContextViewService.useGetAllImpersonationContexts(
         debouncedTerm
     );
@@ -45,7 +43,8 @@ const ImpersonationContextTable: FunctionComponent<ImpersonationContextTableProp
     );
 
     const hasNoMorePages = () => {
-        return !isLoading && data?.pages.at(-1)?.nextPage === undefined;
+        return false;
+        //return !isLoading && data?.pages.at(-1)?.nextPage === undefined;
     };
 
     return (

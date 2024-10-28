@@ -3,7 +3,6 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Models.Processings.UserAccesses.Exceptions;
 
@@ -11,15 +10,11 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
 {
     public partial class UserAccessProcessingService
     {
-        private async ValueTask ValidateOnAddUserAccessAsync(UserAccess userAccess)
-        {
+        private static void ValidateOnAddUserAccess(UserAccess userAccess) =>
             ValidateUserAccessIsNotNull(userAccess);
-        }
 
-        private async ValueTask ValidateOnModifyUserAccessAsync(UserAccess userAccess)
-        {
+        private static void ValidateOnModifyUserAccess(UserAccess userAccess) =>
             ValidateUserAccessIsNotNull(userAccess);
-        }
 
         private static void ValidateUserAccessIsNotNull(UserAccess userAccess)
         {
@@ -29,11 +24,14 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
             }
         }
 
-        private async ValueTask ValidateOnRetrieveUserAccessByIdAsync(Guid userAccessId)
-        {
-            Validate(
-                (Rule: IsInvalid(userAccessId), Parameter: nameof(UserAccess.Id)));
-        }
+        private static void ValidateOnRetrieveUserAccessById(Guid userAccessId) =>
+            Validate((Rule: IsInvalid(userAccessId), Parameter: nameof(UserAccess.Id)));
+
+        private static void ValidateOnRemoveUserAccessById(Guid userAccessId) =>
+            Validate((Rule: IsInvalid(userAccessId), Parameter: nameof(UserAccess.Id)));
+
+        private static void ValidateOnRetrieveAllActiveOrganisationsUserHasAccessTo(Guid userAccessId) =>
+            Validate((Rule: IsInvalid(userAccessId), Parameter: nameof(UserAccess.Id)));
 
         private static dynamic IsInvalid(Guid id) => new
         {

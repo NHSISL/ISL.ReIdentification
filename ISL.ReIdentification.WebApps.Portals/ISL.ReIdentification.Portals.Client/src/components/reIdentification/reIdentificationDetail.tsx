@@ -1,51 +1,33 @@
-import React, { FunctionComponent, useState } from "react";
+import { FunctionComponent } from "react";
 import ReIdentificationDetailCard from "./reIdentificationDetailCard";
 import { lookupViewService } from "../../services/views/lookups/lookupViewService";
-import { reIdentificationService } from "../../services/foundations/reIdentificationService";
-import { AccessRequestView } from "../../models/views/components/accessRequest/accessRequestView";
+import { Container, Row, Spinner } from "react-bootstrap";
 
-type ReIdentificationDetailProps = {
-    children?: React.ReactNode;
-};
+const ReIdentificationDetail: FunctionComponent = () => {
+    const { mappedLookups, isLoading } = lookupViewService.useGetAllLookups("");
 
-const ReIdentificationDetail: FunctionComponent<ReIdentificationDetailProps> = (props) => {
-    const {
-        children
-    } = props;
-
-
-    let { mappedLookups: lookupsRetrieved } = lookupViewService.useGetAllLookups("");
-    const postRequest = reIdentificationService.useRequestReIdentification();
-
-    const [successfullAccessRequest, setSuccessfullAccessRequest] = useState<AccessRequestView | null>(null);
-
-
-    const handleRequest = (accessRequestView: AccessRequestView) => {
-        console.log(accessRequestView);
-
-        return postRequest.mutate(accessRequestView, {
-            onSuccess: (accessRequest: AccessRequestView) => {
-                console.log('Re-identification successful:', accessRequest);
-                setSuccessfullAccessRequest(accessRequest);
-                return accessRequest;
-            },
-            onError: (error) => {
-                console.error('Error during re-identification:', error);
-                throw error;
-            }
-        });
-    };
+    if (isLoading) {
+        return <Spinner />
+    }
 
     return (
         <>
-            {lookupsRetrieved &&
-                <>
-                <ReIdentificationDetailCard
-                    lookups={lookupsRetrieved}
-                    onReIdRequest={handleRequest}
-                    successfullAccessRequest={successfullAccessRequest}/>
-                    {children}
-                </>
+            <div>
+                <h2>Welcome to the re-identifcation Portal</h2>
+                <p>This page provides a simple reidentification for a single patient pseudo identifer</p>
+                <p>To do this please paste the pseudo identifer in the box below and provide a reason why you are identifying this patient.</p>
+                <p>Note: you will only be able to reidentify patients that are present within your organisation.</p>
+                <p>Note: all reidentification requests are subject to breach monitoring and reporting</p>
+                <p>Details of breach thresholds can be found <a href="about:blank" target="blank" >here</a></p>
+            </div>
+            {mappedLookups &&
+                <Container className="text-center">
+                    <Row className="justify-content-md-center">
+                        <ReIdentificationDetailCard
+                            lookups={mappedLookups}
+                        />
+                    </Row>
+                </Container>
             }
         </>
     );

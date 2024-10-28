@@ -28,8 +28,12 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
         private static DateTimeOffset GetRandomDateTime() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private static string GetRandomStringWithLengthOf(int length) =>
-            new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+        private static string GetRandomStringWithLengthOf(int length)
+        {
+            string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+
+            return result.Length > length ? result.Substring(0, length) : result;
+        }
 
         private static AccessAudit UpdateAccessAuditWithRandomValues(AccessAudit inputAccessAudit)
         {
@@ -46,9 +50,8 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
         private async ValueTask<AccessAudit> PostRandomAccessAuditAsync()
         {
             AccessAudit randomAccessAudit = CreateRandomAccessAudit();
-            await this.apiBroker.PostAccessAuditAsync(randomAccessAudit);
 
-            return randomAccessAudit;
+            return await this.apiBroker.PostAccessAuditAsync(randomAccessAudit);
         }
 
         private async ValueTask<List<AccessAudit>> PostRandomAccessAuditsAsync()
@@ -73,7 +76,8 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
                 .OnType<DateTimeOffset?>().Use(now)
-                .OnProperty(userAccess => userAccess.PseudoIdentifier).Use(GetRandomStringWithLengthOf(9))
+                .OnProperty(userAccess => userAccess.PseudoIdentifier).Use(GetRandomStringWithLengthOf(10))
+                .OnProperty(userAccess => userAccess.Email).Use(GetRandomStringWithLengthOf(320))
                 .OnProperty(userAccess => userAccess.CreatedBy).Use(user)
                 .OnProperty(userAccess => userAccess.UpdatedBy).Use(user);
 

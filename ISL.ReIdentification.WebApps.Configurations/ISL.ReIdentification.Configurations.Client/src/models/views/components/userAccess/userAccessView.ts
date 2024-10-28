@@ -1,8 +1,10 @@
 export class UserAccessView {
     public id: string;
-    public firstName: string;
-    public lastName: string;
     public userEmail: string;
+    public displayName: string;
+    public entraGuid: string;
+    public entraUpn: string;
+    public jobTitle: string;
     public orgCodes: string[];
     public activeFrom?: Date;
     public activeTo?: Date;
@@ -13,9 +15,11 @@ export class UserAccessView {
 
     constructor(
         id: string,
-        firstName: string,
-        lastName: string,
         userEmail: string,
+        displayName: string,
+        entraGuid: string,
+        entraUpn: string,
+        jobTitle: string,
         orgCodes: string[],
         activeFrom?: Date,
         activeTo?: Date,
@@ -25,10 +29,12 @@ export class UserAccessView {
         updatedDate?: Date,
     ) {
         this.id = id;
-        this.firstName = firstName || "";
-        this.lastName = lastName || "";
         this.userEmail = userEmail || "";
         this.orgCodes = orgCodes || [];
+        this.displayName = displayName;
+        this.entraGuid = entraGuid;
+        this.entraUpn = entraUpn;
+        this.jobTitle = jobTitle;
         this.activeFrom = activeFrom;
         this.activeTo = activeTo;
         this.createdBy = createdBy !== undefined ? createdBy : '';

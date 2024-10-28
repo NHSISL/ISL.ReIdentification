@@ -28,8 +28,12 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
         private static DateTimeOffset GetRandomDateTime() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private static string GetRandomStringWithLengthOf(int length) =>
-            new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+        private static string GetRandomStringWithLengthOf(int length)
+        {
+            string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+
+            return result.Length > length ? result.Substring(0, length) : result;
+        }
 
         private static ImpersonationContext UpdateImpersonationContextWithRandomValues(
             ImpersonationContext inputImpersonationContext)
@@ -47,9 +51,8 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
         private async ValueTask<ImpersonationContext> PostRandomImpersonationContextAsync()
         {
             ImpersonationContext randomImpersonationContext = CreateRandomImpersonationContext();
-            await this.apiBroker.PostImpersonationContextAsync(randomImpersonationContext);
 
-            return randomImpersonationContext;
+            return await this.apiBroker.PostImpersonationContextAsync(randomImpersonationContext);
         }
 
         private async ValueTask<List<ImpersonationContext>> PostRandomImpersonationContextsAsync()
@@ -79,6 +82,12 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
 
                 .OnProperty(impersonationContext => impersonationContext.ResponsiblePersonEmail)
                     .Use(() => GetRandomStringWithLengthOf(320))
+
+                .OnProperty(impersonationContext => impersonationContext.Organisation)
+                    .Use(() => GetRandomStringWithLengthOf(255))
+
+                .OnProperty(impersonationContext => impersonationContext.ProjectName)
+                    .Use(() => GetRandomStringWithLengthOf(255))
 
                 .OnProperty(impersonationContext => impersonationContext.IdentifierColumn)
                     .Use(() => GetRandomStringWithLengthOf(10))

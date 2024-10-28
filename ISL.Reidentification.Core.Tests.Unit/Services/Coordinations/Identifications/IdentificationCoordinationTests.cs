@@ -4,11 +4,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Text;
 using ISL.ReIdentification.Core.Brokers.CsvHelpers;
+using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Securities;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
@@ -38,7 +40,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
         private readonly Mock<IPersistanceOrchestrationService> persistanceOrchestrationServiceMock;
         private readonly Mock<IIdentificationOrchestrationService> identificationOrchestrationServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
+        private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly IdentificationCoordinationService identificationCoordinationService;
+        private readonly ProjectStorageConfiguration projectStorageConfiguration;
         private readonly ICompareLogic compareLogic;
 
         public IdentificationCoordinationTests()
@@ -49,15 +53,26 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             this.persistanceOrchestrationServiceMock = new Mock<IPersistanceOrchestrationService>();
             this.identificationOrchestrationServiceMock = new Mock<IIdentificationOrchestrationService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
+            this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.compareLogic = new CompareLogic();
 
+            this.projectStorageConfiguration = new ProjectStorageConfiguration
+            {
+                Container = GetRandomString(),
+                LandingFolder = GetRandomString(),
+                PickupFolder = GetRandomString(),
+                ErrorFolder = GetRandomString()
+            };
+
             this.identificationCoordinationService = new IdentificationCoordinationService(
-                this.accessOrchestrationServiceMock.Object,
-                this.persistanceOrchestrationServiceMock.Object,
-                this.identificationOrchestrationServiceMock.Object,
-                this.csvHelperBrokerMock.Object,
-                this.securityBrokerMock.Object,
-                this.loggingBrokerMock.Object);
+                accessOrchestrationService: this.accessOrchestrationServiceMock.Object,
+                persistanceOrchestrationService: this.persistanceOrchestrationServiceMock.Object,
+                identificationOrchestrationService: this.identificationOrchestrationServiceMock.Object,
+                csvHelperBroker: this.csvHelperBrokerMock.Object,
+                securityBroker: this.securityBrokerMock.Object,
+                loggingBroker: this.loggingBrokerMock.Object,
+                dateTimeBroker: this.dateTimeBrokerMock.Object,
+                projectStorageConfiguration);
         }
 
         private static string GetRandomString() =>
@@ -68,8 +83,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
         private static string GetRandomStringWithLengthOf(int length)
         {
-            return new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length)
-                .GetValue();
+            string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+
+            return result.Length > length ? result.Substring(0, length) : result;
         }
 
         private static AccessRequest CreateRandomAccessRequest() =>
@@ -104,11 +120,31 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
         private static Filler<ImpersonationContext> CreateImpersonationContextsFiller(DateTimeOffset dateTimeOffset)
         {
+            string user = Guid.NewGuid().ToString();
             var filler = new Filler<ImpersonationContext>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnType<DateTimeOffset?>().Use((DateTimeOffset?)default);
+                .OnType<DateTimeOffset?>().Use((DateTimeOffset?)default)
+
+                .OnProperty(impersonationContext => impersonationContext.RequesterEmail)
+                    .Use(GetRandomStringWithLengthOf(320))
+
+                .OnProperty(impersonationContext => impersonationContext.ResponsiblePersonEmail)
+                    .Use(GetRandomStringWithLengthOf(320))
+
+                .OnProperty(impersonationContext => impersonationContext.Organisation)
+                    .Use(GetRandomStringWithLengthOf(255))
+
+                .OnProperty(impersonationContext => impersonationContext.ProjectName)
+                    .Use(GetRandomStringWithLengthOf(255))
+
+                .OnProperty(impersonationContext => impersonationContext.IdentifierColumn)
+                    .Use(GetRandomStringWithLengthOf(10))
+
+                .OnProperty(impersonationContext => impersonationContext.CreatedBy).Use(user)
+                .OnProperty(impersonationContext => impersonationContext.UpdatedBy).Use(user);
+
 
             return filler;
         }
@@ -130,6 +166,15 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
                 .OnProperty(csvIdentificationRequest => csvIdentificationRequest.IdentifierColumn)
                     .Use(() => GetRandomStringWithLengthOf(10))
+
+                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.RequesterEmail)
+                    .Use(GetRandomStringWithLengthOf(320))
+
+                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.RecipientEmail)
+                    .Use(GetRandomStringWithLengthOf(320))
+
+                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.Organisation)
+                    .Use(GetRandomStringWithLengthOf(255))
 
                 .OnProperty(csvIdentificationRequest => csvIdentificationRequest.CreatedBy).Use(user)
                 .OnProperty(csvIdentificationRequest => csvIdentificationRequest.UpdatedBy).Use(user);
@@ -179,6 +224,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);
+
+        private Expression<Func<Stream, bool>> SameStreamAs(Stream expectedStream) =>
+            actualStream => this.compareLogic.Compare(expectedStream, actualStream).AreEqual;
+
+        private Expression<Func<AccessRequest, bool>> SameAccessRequestAs(AccessRequest expectedAccessRequest) =>
+            actualAccessRequest => this.compareLogic.Compare(expectedAccessRequest, actualAccessRequest).AreEqual;
 
         public static TheoryData<Xeption> DependencyValidationExceptions()
         {
@@ -260,7 +311,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 Id = Guid.NewGuid(),
                 IdentifierColumn = nameof(CsvIdentificationRequest.IdentifierColumn),
                 Organisation = nameof(CsvIdentificationRequest.Organisation),
-                Purpose = nameof(CsvIdentificationRequest.Purpose),
                 Reason = nameof(CsvIdentificationRequest.Reason),
                 RecipientDisplayName = nameof(CsvIdentificationRequest.RecipientDisplayName),
                 RecipientEmail = nameof(CsvIdentificationRequest.RecipientEmail),
@@ -298,7 +348,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 IdentificationItems = new List<IdentificationItem> { identificationItem },
                 JobTitle = nameof(CsvIdentificationRequest.RecipientJobTitle),
                 Organisation = nameof(IdentificationRequest.Organisation),
-                Purpose = nameof(IdentificationRequest.Purpose),
                 Reason = nameof(IdentificationRequest.Reason),
                 Surname = nameof(CsvIdentificationRequest.RecipientLastName)
             };
@@ -332,7 +381,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 IdentificationItems = new List<IdentificationItem> { identificationItem },
                 JobTitle = nameof(CsvIdentificationRequest.RecipientJobTitle),
                 Organisation = nameof(IdentificationRequest.Organisation),
-                Purpose = nameof(IdentificationRequest.Purpose),
                 Reason = nameof(IdentificationRequest.Reason),
                 Surname = nameof(CsvIdentificationRequest.RecipientLastName)
             };
@@ -342,7 +390,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 Data = Encoding.UTF8.GetBytes(CsvDataString()),
                 Id = Guid.Empty,
                 Organisation = nameof(CsvIdentificationRequest.Organisation),
-                Purpose = nameof(CsvIdentificationRequest.Purpose),
                 Reason = nameof(CsvIdentificationRequest.Reason),
                 RecipientDisplayName = nameof(CsvIdentificationRequest.RecipientDisplayName),
                 RecipientEmail = nameof(CsvIdentificationRequest.RecipientEmail),

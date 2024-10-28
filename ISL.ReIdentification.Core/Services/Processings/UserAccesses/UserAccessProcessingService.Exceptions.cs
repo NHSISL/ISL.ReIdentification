@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
@@ -16,6 +17,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
     {
         private delegate ValueTask<UserAccess> ReturningUserAccessFunction();
         private delegate ValueTask<IQueryable<UserAccess>> ReturningUserAccessesFunction();
+        private delegate ValueTask<List<string>> ReturningStringListFunction();
 
         private async ValueTask<UserAccess> TryCatch(ReturningUserAccessFunction returningUserAccessFunction)
         {
@@ -64,6 +66,43 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
             try
             {
                 return await returningUserAccessesFunction();
+            }
+            catch (UserAccessValidationException userAccessValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(userAccessValidationException);
+            }
+            catch (UserAccessDependencyValidationException userAccessDependencyValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(userAccessDependencyValidationException);
+            }
+            catch (UserAccessDependencyException userAccessDependencyException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(userAccessDependencyException);
+            }
+            catch (UserAccessServiceException userAccessServiceException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(userAccessServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedUserAccessProcessingServiceException =
+                    new FailedUserAccessProcessingServiceException(
+                        message: "Failed user access processing service error occurred, please contact support.",
+                        innerException: exception);
+
+                throw await CreateAndLogServiceExceptionAsync(failedUserAccessProcessingServiceException);
+            }
+        }
+
+        private async ValueTask<List<string>> TryCatch(ReturningStringListFunction returningStringListFunction)
+        {
+            try
+            {
+                return await returningStringListFunction();
+            }
+            catch (InvalidUserAccessProcessingException invalidUserAccessProcessingException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(invalidUserAccessProcessingException);
             }
             catch (UserAccessValidationException userAccessValidationException)
             {

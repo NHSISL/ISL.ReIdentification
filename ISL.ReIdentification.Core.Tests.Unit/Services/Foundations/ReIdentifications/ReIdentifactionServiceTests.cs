@@ -97,7 +97,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
                 {
                     RequestId = identifier,
                     UserIdentifier = identificationRequest.EntraUserId.ToString(),
-                    Purpose = identificationRequest.Purpose,
                     Organisation = identificationRequest.Organisation,
                     Reason = identificationRequest.Reason,
                     PseudonymisedNumbers = identificationRequest.IdentificationItems.Skip(i)
@@ -136,14 +135,22 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
 
-        private static string GetRandomString(int length) =>
-            new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+        private static string GetRandomString(int length)
+        {
+            string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+
+            return result.Length > length ? result.Substring(0, length) : result;
+        }
 
         private static int GetRandomNumber() =>
             new IntRange(max: 15, min: 2).GetValue();
 
-        private static string GetRandomStringWithLength(int length) =>
-            new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+        private static string GetRandomStringWithLength(int length)
+        {
+            string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+
+            return result.Length > length ? result.Substring(0, length) : result;
+        }
 
         private static IdentificationRequest CreateRandomIdentificationRequest(int count) =>
             CreateIdentificationRequestFiller(count).Create();

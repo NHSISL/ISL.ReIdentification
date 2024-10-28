@@ -1,8 +1,8 @@
 import { FunctionComponent, useEffect, useState } from "react";
 import { odsDataService } from "../../services/foundations/odsDataAccessService";
 import { OdsData } from "../../models/odsData/odsData";
-import { toastError } from "../../brokers/toastBroker";
 import { OdsTreeElement } from "./odsTreeElement";
+import { toastError } from "../../brokers/toastBroker.error";
 
 type OdsTreeProps = {
     rootName: string;
@@ -22,7 +22,6 @@ const OdsTree: FunctionComponent<OdsTreeProps> = ({ rootName, selectedRecords, s
         };
 
         if (rootRecord.length != 1) {
-            console.log("Did not receive one Root:");
             toastError("Did not receive one Root:");
             return;
         }

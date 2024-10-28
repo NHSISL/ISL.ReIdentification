@@ -17,6 +17,7 @@ using ISL.ReIdentification.Core.Brokers.Securities;
 using ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Brokers.NECS;
 using ISL.ReIdentification.Core.Models.Brokers.Notifications;
+using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Foundations.Lookups;
@@ -25,6 +26,7 @@ using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Services.Coordinations.Identifications;
 using ISL.ReIdentification.Core.Services.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationRequests;
+using ISL.ReIdentification.Core.Services.Foundations.Documents;
 using ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Services.Foundations.Lookups;
 using ISL.ReIdentification.Core.Services.Foundations.Notifications;
@@ -73,7 +75,7 @@ namespace ISL.ReIdentification.Portals.Server
             AddFoundationServices(builder.Services);
             AddProcessingServices(builder.Services);
             AddOrchestrationServices(builder.Services);
-            AddCoordinationServices(builder.Services);
+            AddCoordinationServices(builder.Services, builder.Configuration);
 
             // Register IConfiguration to be available for dependency injection
             builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
@@ -187,6 +189,7 @@ namespace ISL.ReIdentification.Portals.Server
             services.AddTransient<ICsvIdentificationRequestService, CsvIdentificationRequestService>();
             services.AddTransient<INotificationService, NotificationService>();
             services.AddTransient<IReIdentificationService, ReIdentificationService>();
+            services.AddTransient<IDocumentService, DocumentService>();
         }
 
         private static void AddProcessingServices(IServiceCollection services)
@@ -203,8 +206,14 @@ namespace ISL.ReIdentification.Portals.Server
             services.AddTransient<ICsvIdentificationRequestService, CsvIdentificationRequestService>();
         }
 
-        private static void AddCoordinationServices(IServiceCollection services)
+        private static void AddCoordinationServices(IServiceCollection services, IConfiguration configuration)
         {
+            ProjectStorageConfiguration projectStorageConfiguration = configuration
+                .GetSection("projectStorageConfiguration")
+                    .Get<ProjectStorageConfiguration>();
+
+            services.AddSingleton(projectStorageConfiguration);
+
             services.AddTransient<IIdentificationCoordinationService, IdentificationCoordinationService>();
         }
     }

@@ -5,6 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits.Exceptions;
+using ISL.ReIdentification.Core.Models.Foundations.Documents.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Identifications.Exceptions;
@@ -15,6 +16,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
     public partial class IdentificationOrchestrationService : IIdentificationOrchestrationService
     {
         private delegate ValueTask<IdentificationRequest> ReturningIdentificationRequestFunction();
+        private delegate ValueTask ReturningNothingFunction();
 
         private async ValueTask<IdentificationRequest> TryCatch(
             ReturningIdentificationRequestFunction returningIdentificationRequestFunction)
@@ -66,6 +68,48 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             {
                 throw await CreateAndLogDependencyExceptionAsync(
                     reIdentificationDependencyException);
+            }
+            catch (Exception exception)
+            {
+                var failedServiceIdentificationOrchestrationException =
+                    new FailedServiceIdentificationOrchestrationException(
+                        message: "Failed service identification orchestration error occurred, contact support.",
+                        innerException: exception);
+
+                throw await CreateAndLogServiceExceptionAsync(failedServiceIdentificationOrchestrationException);
+            }
+        }
+
+        private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
+        {
+            try
+            {
+                await returningNothingFunction();
+            }
+            catch (InvalidArgumentIdentificationOrchestrationException
+                invalidArgumentIdentificationOrchestrationException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentIdentificationOrchestrationException);
+            }
+            catch (DocumentValidationException documentValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    documentValidationException);
+            }
+            catch (DocumentDependencyValidationException documentDependencyValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    documentDependencyValidationException);
+            }
+            catch (DocumentDependencyException documentDependencyException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(
+                    documentDependencyException);
+            }
+            catch (DocumentServiceException documentServiceException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(
+                    documentServiceException);
             }
             catch (Exception exception)
             {

@@ -28,12 +28,17 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
         private static string GetRandomString()
         {
             int length = GetRandomNumber();
+            string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
 
-            return new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+            return result.Length > length ? result.Substring(0, length) : result;
         }
 
-        private static string GetRandomStringWithLengthOf(int length) =>
-            new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+        private static string GetRandomStringWithLengthOf(int length)
+        {
+            string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+
+            return result.Length > length ? result.Substring(0, length) : result;
+        }
 
         private static Lookup UpdateLookupWithRandomValues(Lookup inputLookup)
         {
@@ -50,9 +55,8 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
         private async ValueTask<Lookup> PostRandomLookupAsync()
         {
             Lookup randomLookup = CreateRandomLookup();
-            await this.apiBroker.PostLookupAsync(randomLookup);
 
-            return randomLookup;
+            return await this.apiBroker.PostLookupAsync(randomLookup);
         }
 
         private async ValueTask<List<Lookup>> PostRandomLookupsAsync()
@@ -79,7 +83,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
-                .OnProperty(lookup => lookup.Name).Use(() => GetRandomString())
+                .OnProperty(lookup => lookup.Name).Use(() => GetRandomStringWithLengthOf(450))
                 .OnProperty(lookup => lookup.CreatedDate).Use(now)
                 .OnProperty(lookup => lookup.CreatedBy).Use(user)
                 .OnProperty(lookup => lookup.UpdatedDate).Use(now)

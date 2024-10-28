@@ -63,7 +63,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ReIdentifications
                         {
                             RequestId = await this.identifierBroker.GetIdentifierAsync(),
                             UserIdentifier = identificationRequest.EntraUserId.ToString(),
-                            Purpose = identificationRequest.Purpose,
                             Organisation = identificationRequest.Organisation,
                             Reason = identificationRequest.Reason,
                         };
