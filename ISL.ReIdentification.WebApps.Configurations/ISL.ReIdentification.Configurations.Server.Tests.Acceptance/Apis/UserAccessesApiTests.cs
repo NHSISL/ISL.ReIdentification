@@ -87,6 +87,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
         private async ValueTask<UserAccess> PostRandomUserAccess()
         {
             UserAccess randomUserAccess = CreateRandomUserAccess();
+
             return await this.apiBroker.PostUserAccessAsync(randomUserAccess);
         }
     }

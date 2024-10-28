@@ -4,16 +4,16 @@
 
 using System.Linq;
 using System.Threading.Tasks;
-using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
+using ISL.ReIdentification.Core.Models.Foundations.OdsDatas;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using RESTFulSense.Clients.Extensions;
 using RESTFulSense.Models;
 using Xeptions;
 
-namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.UserAccesses
+namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.OdsDatas
 {
-    public partial class UserAccessesControllerTests
+    public partial class OdsDataControllerTests
     {
         [Theory]
         [MemberData(nameof(ServerExceptions))]
@@ -21,30 +21,30 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.User
             Xeption serverException)
         {
             // given
-            IQueryable<UserAccess> someUserAccesses = CreateRandomUserAccesses();
+            IQueryable<OdsData> someOdsDatas = CreateRandomOdsDatas();
 
             InternalServerErrorObjectResult expectedInternalServerErrorObjectResult =
                 InternalServerError(serverException);
 
             var expectedActionResult =
-                new ActionResult<IQueryable<UserAccess>>(expectedInternalServerErrorObjectResult);
+                new ActionResult<IQueryable<OdsData>>(expectedInternalServerErrorObjectResult);
 
-            this.userAccessProcessingService.Setup(service =>
-                service.RetrieveAllUserAccessesAsync())
+            this.odsDataServiceMock.Setup(service =>
+                service.RetrieveAllOdsDatasAsync())
                     .ThrowsAsync(serverException);
 
             // when
-            ActionResult<IQueryable<UserAccess>> actualActionResult =
-                await this.userAccessesController.Get();
+            ActionResult<IQueryable<OdsData>> actualActionResult =
+                await this.odsDataController.Get();
 
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
-            this.userAccessProcessingService.Verify(service =>
-                service.RetrieveAllUserAccessesAsync(),
+            this.odsDataServiceMock.Verify(service =>
+                service.RetrieveAllOdsDatasAsync(),
                     Times.Once);
 
-            this.userAccessProcessingService.VerifyNoOtherCalls();
+            this.odsDataServiceMock.VerifyNoOtherCalls();
         }
     }
 }

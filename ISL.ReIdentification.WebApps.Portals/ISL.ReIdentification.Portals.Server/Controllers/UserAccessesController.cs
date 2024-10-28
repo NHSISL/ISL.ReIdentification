@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses.Exceptions;
+using ISL.ReIdentification.Core.Models.Processings.UserAccesses.Exceptions;
 using ISL.ReIdentification.Core.Services.Foundations.UserAccesses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,10 +21,10 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
     [Route("api/[controller]")]
     public class UserAccessesController : RESTFulController
     {
-        private readonly IUserAccessService userAccessService;
+        private readonly IUserAccessProcessingService userAccessProcessingService;
 
-        public UserAccessesController(IUserAccessService userAccessService) =>
-            this.userAccessService = userAccessService;
+        public UserAccessesController(IUserAccessProcessingService userAccessProcessingService) =>
+            this.userAccessProcessingService = userAccessProcessingService;
 
         [HttpPost]
         public async ValueTask<ActionResult<UserAccess>> PostUserAccessAsync(UserAccess userAccess)
@@ -31,33 +32,32 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             try
             {
                 UserAccess addedUserAccess =
-                    await userAccessService.AddUserAccessAsync(userAccess);
+                    await this.userAccessProcessingService.AddUserAccessAsync(userAccess);
 
                 return Created(addedUserAccess);
             }
-            catch (UserAccessValidationException userAccessValidationException)
+            catch (UserAccessProcessingValidationException userAccessProcessingValidationException)
             {
-                return BadRequest(userAccessValidationException.InnerException);
+                return BadRequest(userAccessProcessingValidationException.InnerException);
             }
-            catch (UserAccessDependencyValidationException lookupDependencyValidationException)
+            catch (UserAccessProcessingDependencyValidationException lookupDependencyValidationException)
                when (lookupDependencyValidationException.InnerException is AlreadyExistsUserAccessException)
             {
                 return Conflict(lookupDependencyValidationException.InnerException);
             }
-            catch (UserAccessDependencyValidationException lookupDependencyValidationException)
+            catch (UserAccessProcessingDependencyValidationException lookupDependencyValidationException)
             {
                 return BadRequest(lookupDependencyValidationException.InnerException);
             }
-            catch (UserAccessDependencyException lookupDependencyException)
+            catch (UserAccessProcessingDependencyException lookupDependencyException)
             {
                 return InternalServerError(lookupDependencyException);
             }
-            catch (UserAccessServiceException lookupServiceException)
+            catch (UserAccessProcessingServiceException lookupServiceException)
             {
                 return InternalServerError(lookupServiceException);
             }
         }
-
 
         [HttpGet]
         [EnableQuery(PageSize = 25)]
@@ -66,17 +66,17 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             try
             {
                 IQueryable<UserAccess> userAccesses =
-                    await userAccessService.RetrieveAllUserAccessesAsync();
+                    await this.userAccessProcessingService.RetrieveAllUserAccessesAsync();
 
                 return Ok(userAccesses);
             }
-            catch (UserAccessDependencyException userAccessDependencyException)
+            catch (UserAccessProcessingDependencyException userAccessProcessingDependencyException)
             {
-                return InternalServerError(userAccessDependencyException);
+                return InternalServerError(userAccessProcessingDependencyException);
             }
-            catch (UserAccessServiceException userAccessServiceException)
+            catch (UserAccessProcessingServiceException userAccessProcessingServiceException)
             {
-                return InternalServerError(userAccessServiceException);
+                return InternalServerError(userAccessProcessingServiceException);
             }
         }
 
@@ -86,30 +86,34 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             try
             {
                 UserAccess userAccess =
-                    await userAccessService.RetrieveUserAccessByIdAsync(userAccessId);
+                    await this.userAccessProcessingService.RetrieveUserAccessByIdAsync(userAccessId);
 
                 return Ok(userAccess);
             }
-            catch (UserAccessValidationException userAccessValidationException)
-                when (userAccessValidationException.InnerException is NotFoundUserAccessException)
+            catch (UserAccessProcessingValidationException userAccessProcessingValidationException)
             {
-                return NotFound(userAccessValidationException.InnerException);
+                return BadRequest(userAccessProcessingValidationException.InnerException);
             }
-            catch (UserAccessValidationException userAccessValidationException)
+            catch (UserAccessProcessingDependencyValidationException userAccessProcessingDependencyValidationException)
+                when (userAccessProcessingDependencyValidationException.InnerException is NotFoundUserAccessException)
             {
-                return BadRequest(userAccessValidationException.InnerException);
+                return NotFound(userAccessProcessingDependencyValidationException.InnerException);
             }
-            catch (UserAccessDependencyValidationException userAccessDependencyValidationException)
+            catch (UserAccessProcessingDependencyValidationException userAccessProcessingDependencyValidationException)
             {
-                return BadRequest(userAccessDependencyValidationException.InnerException);
+                return BadRequest(userAccessProcessingDependencyValidationException.InnerException);
             }
-            catch (UserAccessDependencyException userAccessDependencyException)
+            catch (UserAccessProcessingDependencyException userAccessProcessingDependencyException)
             {
-                return InternalServerError(userAccessDependencyException);
+                return InternalServerError(userAccessProcessingDependencyException);
             }
-            catch (UserAccessServiceException userAccessServiceException)
+            catch (UserAccessProcessingServiceException userAccessProcessingServiceException)
             {
-                return InternalServerError(userAccessServiceException);
+                return InternalServerError(userAccessProcessingServiceException);
+            }
+            catch (Exception ex)
+            {
+                throw;
             }
         }
 
@@ -119,37 +123,37 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             try
             {
                 UserAccess modifiedUserAccess =
-                    await userAccessService.ModifyUserAccessAsync(userAccess);
+                    await this.userAccessProcessingService.ModifyUserAccessAsync(userAccess);
 
                 return Ok(modifiedUserAccess);
             }
-            catch (UserAccessValidationException userAccessValidationException)
-                when (userAccessValidationException.InnerException
+            catch (UserAccessProcessingValidationException userAccessProcessingValidationException)
+                when (userAccessProcessingValidationException.InnerException
                     is NotFoundUserAccessException)
             {
-                return NotFound(userAccessValidationException.InnerException);
+                return NotFound(userAccessProcessingValidationException.InnerException);
             }
-            catch (UserAccessValidationException userAccessValidationException)
+            catch (UserAccessProcessingValidationException userAccessProcessingValidationException)
             {
-                return BadRequest(userAccessValidationException.InnerException);
+                return BadRequest(userAccessProcessingValidationException.InnerException);
             }
-            catch (UserAccessDependencyValidationException userAccessDependencyValidationException)
-                when (userAccessDependencyValidationException.InnerException
+            catch (UserAccessProcessingDependencyValidationException userAccessProcessingDependencyValidationException)
+                when (userAccessProcessingDependencyValidationException.InnerException
                     is AlreadyExistsUserAccessException)
             {
-                return Conflict(userAccessDependencyValidationException.InnerException);
+                return Conflict(userAccessProcessingDependencyValidationException.InnerException);
             }
-            catch (UserAccessDependencyValidationException userAccessDependencyValidationException)
+            catch (UserAccessProcessingDependencyValidationException userAccessProcessingDependencyValidationException)
             {
-                return BadRequest(userAccessDependencyValidationException.InnerException);
+                return BadRequest(userAccessProcessingDependencyValidationException.InnerException);
             }
-            catch (UserAccessDependencyException userAccessDependencyException)
+            catch (UserAccessProcessingDependencyException userAccessProcessingDependencyException)
             {
-                return InternalServerError(userAccessDependencyException);
+                return InternalServerError(userAccessProcessingDependencyException);
             }
-            catch (UserAccessServiceException userAccessServiceException)
+            catch (UserAccessProcessingServiceException userAccessProcessingServiceException)
             {
-                return InternalServerError(userAccessServiceException);
+                return InternalServerError(userAccessProcessingServiceException);
             }
         }
 
@@ -159,37 +163,38 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             try
             {
                 UserAccess deletedUserAccess =
-                    await userAccessService.RemoveUserAccessByIdAsync(userAccessId);
+                    await this.userAccessProcessingService.RemoveUserAccessByIdAsync(userAccessId);
 
                 return Ok(deletedUserAccess);
             }
-            catch (UserAccessValidationException userAccessValidationException)
-                when (userAccessValidationException.InnerException
+            catch (UserAccessProcessingValidationException userAccessProcessingValidationException)
+                when (userAccessProcessingValidationException.InnerException
                     is NotFoundUserAccessException)
             {
-                return NotFound(userAccessValidationException.InnerException);
+                return NotFound(userAccessProcessingValidationException.InnerException);
             }
-            catch (UserAccessValidationException userAccessValidationException)
+            catch (UserAccessProcessingValidationException userAccessProcessingValidationException)
             {
-                return BadRequest(userAccessValidationException.InnerException);
+                return BadRequest(userAccessProcessingValidationException.InnerException);
             }
-            catch (UserAccessDependencyValidationException userAccessDependencyValidationException)
-                when (userAccessDependencyValidationException.InnerException is LockedUserAccessException)
+            catch (UserAccessProcessingDependencyValidationException userAccessProcessingDependencyValidationException)
+                when (userAccessProcessingDependencyValidationException.InnerException is LockedUserAccessException)
             {
-                return Locked(userAccessDependencyValidationException.InnerException);
+                return Locked(userAccessProcessingDependencyValidationException.InnerException);
             }
-            catch (UserAccessDependencyValidationException userAccessDependencyValidationException)
+            catch (UserAccessProcessingDependencyValidationException userAccessProcessingDependencyValidationException)
             {
-                return BadRequest(userAccessDependencyValidationException.InnerException);
+                return BadRequest(userAccessProcessingDependencyValidationException.InnerException);
             }
-            catch (UserAccessDependencyException userAccessDependencyException)
+            catch (UserAccessProcessingDependencyException userAccessProcessingDependencyException)
             {
-                return InternalServerError(userAccessDependencyException);
+                return InternalServerError(userAccessProcessingDependencyException);
             }
-            catch (UserAccessServiceException userAccessServiceException)
+            catch (UserAccessProcessingServiceException userAccessProcessingServiceException)
             {
-                return InternalServerError(userAccessServiceException);
+                return InternalServerError(userAccessProcessingServiceException);
             }
         }
     }
 }
+
