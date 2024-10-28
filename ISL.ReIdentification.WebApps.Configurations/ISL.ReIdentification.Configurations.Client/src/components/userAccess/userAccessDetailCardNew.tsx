@@ -8,7 +8,6 @@ type UserAccessDetailCardNewProps = object;
 const UserAccessDetailCardNew: FunctionComponent<UserAccessDetailCardNewProps> = () => {
     const [selectedUser, setSelectedUser] = useState<entraUser | undefined>()
 
-
     return (
         <>
             {!selectedUser ? <EntraUserSearch selectUser={setSelectedUser}/> : <><Card>

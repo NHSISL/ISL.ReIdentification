@@ -28,6 +28,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { UserAccessNew } from './pages/userAccessNew';
 import "react-toastify/dist/ReactToastify.css";
 import ToastBroker from './brokers/toastBroker';
+import { UserAccessEdit } from './pages/userAccessEdit';
 
 // TODO:
 //      - API Secured Routes
@@ -59,6 +60,10 @@ function App({ instance }: any) {
                 {
                     path: "userAccess/newUser",
                     element: <UserAccessNew />
+                },
+                {
+                    path: "userAccess/:entraUserId",
+                    element: <UserAccessEdit/>
                 },
                 {
                     path: "userAccessDetail/:userDetailId",

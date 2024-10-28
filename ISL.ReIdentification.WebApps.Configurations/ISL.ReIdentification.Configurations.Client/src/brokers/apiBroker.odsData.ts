@@ -28,8 +28,12 @@ class OdsDataBroker {
     async GetAllOdsDataAsync(queryString: string) {
         const url = this.relativeOdsDataUrl + queryString;
 
+        if(!queryString) {
+            return []
+        }
+
         return await this.apiBroker.GetAsync(url)
-            .then(result => result.data.map((odsData: OdsData) => new OdsData(odsData)));
+            .then(result => result.data as OdsData[]);
     }
 
     async GetOdsDataFirstPagesAsync(query: string) {

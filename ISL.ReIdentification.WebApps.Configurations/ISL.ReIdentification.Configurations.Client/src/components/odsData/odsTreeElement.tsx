@@ -20,7 +20,6 @@ export const OdsTreeElement: FunctionComponent<OdsTreeElementProps> = ({ node, a
     const { data, isLoading } = odsDataService.useGetOdsChildren(expandedId);
     const [selected, setIsSelected] = useState(false);
     const [selectedChildren, setSelectedChildren] = useState<OdsData[]>([]); 
-    const [alreadyChecked, setAlreadyChecked]  = useState<boolean>(false);
 
     const toggle = (id: string) => {
         if (isExpanded) {
@@ -33,10 +32,11 @@ export const OdsTreeElement: FunctionComponent<OdsTreeElementProps> = ({ node, a
     }
 
     useEffect(() => { 
-        setAlreadyChecked(selectedRecords.filter((x : OdsData) => x.organisationCode == node.organisationCode).length > 0);
+        setIsSelected(selectedRecords.filter((x : OdsData) => x.organisationCode == node.organisationCode).length > 0)
     },[node, selectedRecords])
 
     useEffect(() => {
+        console.log(selectedRecords);
         selectedRecords.forEach(selectedRecord => {
             if(selectedRecord.odsHierarchy != node.odsHierarchy){
                 if(selectedRecord.odsHierarchy.startsWith(node.odsHierarchy)){
@@ -89,7 +89,7 @@ export const OdsTreeElement: FunctionComponent<OdsTreeElementProps> = ({ node, a
 
         <span>{node.organisationCode}</span>
         &nbsp;
-        <span><Form.Check inline onChange={processCheck} disabled={parentSelected} checked={selected || parentSelected || alreadyChecked  } id={`${node.id}`} /></span>
+        <span><Form.Check inline onChange={processCheck} disabled={parentSelected} checked={selected || parentSelected } id={`${node.id}`} /></span>
         {isLoading && <FontAwesomeIcon icon={faSpinner} pulse />}
         {data && data.map((element: OdsData) => <span key={`${node.id}:${element.id}`}>
             <OdsTreeElement 

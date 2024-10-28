@@ -15,18 +15,18 @@ export const UserAccessNew = () => {
     const {mutate} = userAccessService.useCreateUserAccess();
 
     const saveRecord = () => {
-        const ua = new UserAccess();
+        let ua : UserAccess;
 
         if(selectedUser){
-            ua.displayName = selectedUser.displayName; 
-            ua.userEmail = selectedUser.mail;
-            ua.jobTitle = selectedUser.jobTitle;
-            ua.entraGuid = selectedUser.id;
-            ua.entraUpn = selectedUser.userPrincipalName;
-            ua.orgCodes = selectedOdsRecords.map(o => o.organisationCode);
-        }
-
-        mutate(ua);
+            ua = {...new UserAccess(),                 
+                ...selectedUser,
+                entraUserId: selectedUser.id,
+                email: selectedUser.mail,
+                activeFrom: new Date(),
+                orgCode: selectedOdsRecords[0].organisationCode,
+            }
+            mutate(ua);
+        } 
     }
 
     return (

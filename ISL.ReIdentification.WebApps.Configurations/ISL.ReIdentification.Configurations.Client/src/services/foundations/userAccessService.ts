@@ -26,6 +26,16 @@ export const userAccessService = {
         });
     },
 
+    useRetrieveDistinctUsers: () => { 
+        const broker = new UserAccessBroker();
+
+        return useQuery({
+            queryKey: ["DistinctUsers"],
+            queryFn: () => broker.GetDistinctUsers(),
+            staleTime: Infinity
+        })
+    },
+
     useRetrieveAllUserAccess: (query: string) => {
         const broker = new UserAccessBroker();
 
