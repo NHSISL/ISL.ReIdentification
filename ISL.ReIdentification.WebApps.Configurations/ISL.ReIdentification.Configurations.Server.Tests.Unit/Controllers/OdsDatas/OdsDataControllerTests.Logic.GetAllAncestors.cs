@@ -40,7 +40,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.OdsD
                 new ActionResult<List<OdsData>>(expectedObjectResult);
 
             odsDataServiceMock
-                .Setup(service => service.RetrieveChildrenByParentId(odsDataChildId))
+                .Setup(service => service.RetrieveAllAncestorsByChildId(odsDataChildId))
                     .ReturnsAsync(ancestors);
 
             // when
@@ -51,7 +51,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.OdsD
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
             odsDataServiceMock
-               .Verify(service => service.RetrieveChildrenByParentId(odsDataChildId),
+               .Verify(service => service.RetrieveAllAncestorsByChildId(odsDataChildId),
                    Times.Once);
 
             odsDataServiceMock.VerifyNoOtherCalls();

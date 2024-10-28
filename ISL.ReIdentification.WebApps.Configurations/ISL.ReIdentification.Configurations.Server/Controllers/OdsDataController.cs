@@ -99,8 +99,12 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
         }
 
         [HttpGet("GetAncestors")]
-        public async ValueTask<ActionResult<List<OdsData>>> GetAllAncestors(Guid id) =>
-            throw new NotImplementedException();
+        public async ValueTask<ActionResult<List<OdsData>>> GetAllAncestors(Guid id)
+        {
+            List<OdsData> retrievedOdsDatas = await this.odsDataService.RetrieveAllAncestorsByChildId(id);
+
+            return Ok(retrievedOdsDatas);
+        }
 
         [HttpGet("{odsDataId}")]
         public async ValueTask<ActionResult<OdsData>> GetOdsDataByIdAsync(Guid odsDataId)
