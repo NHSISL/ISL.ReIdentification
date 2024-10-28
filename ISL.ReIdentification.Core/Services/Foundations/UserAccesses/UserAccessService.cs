@@ -87,9 +87,12 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
             ValidateOnRetrieveAllOrganisationUserHasAccessTo(entraUserId);
             List<string> organisations = new List<string>();
             var userAccessQuery = await this.reIdentificationStorageBroker.SelectAllUserAccessesAsync();
+            DateTimeOffset currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
             List<string> userOrganisations = userAccessQuery
-                .Where(userAccess => userAccess.EntraUserId == entraUserId)
+                .Where(userAccess => userAccess.EntraUserId == entraUserId
+                    && userAccess.ActiveFrom <= currentDateTime
+                    && (userAccess.ActiveTo == null || userAccess.ActiveTo > currentDateTime))
                     .Select(userAccess => userAccess.OrgCode).ToList();
 
             foreach (var userOrganisation in userOrganisations)
@@ -108,7 +111,11 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
                         await this.reIdentificationStorageBroker.SelectAllOdsDatasAsync();
 
                     odsDataQuery = odsDataQuery
-                        .Where(ods => ods.OdsHierarchy.IsDescendantOf(parentRecord.OdsHierarchy));
+                        .Where(ods => ods.OdsHierarchy.IsDescendantOf(parentRecord.OdsHierarchy)
+                            && (ods.RelationshipWithParentStartDate == null
+                                || ods.RelationshipWithParentStartDate <= currentDateTime)
+                            && (ods.RelationshipWithParentEndDate == null ||
+                                ods.RelationshipWithParentEndDate > currentDateTime));
 
                     List<string> descendants = odsDataQuery.ToList()
                         .Select(odsData => odsData.OrganisationCode).ToList();
