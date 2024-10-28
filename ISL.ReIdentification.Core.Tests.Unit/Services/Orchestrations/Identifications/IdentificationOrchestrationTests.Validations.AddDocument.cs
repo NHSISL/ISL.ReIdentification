@@ -46,14 +46,14 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                     innerException: invalidArgumentIdentificationOrchestrationException);
 
             // when
-            ValueTask retrieveDocumentByFileNamTask =
+            ValueTask addDocumentTask =
                 this.identificationOrchestrationService
                     .AddDocumentAsync(invalidInput, invalidFileName, invalidContainer);
 
             IdentificationOrchestrationValidationException
                 actualIdentificationOrchestrationValidationException =
                     await Assert.ThrowsAsync<IdentificationOrchestrationValidationException>(
-                        testCode: retrieveDocumentByFileNamTask.AsTask);
+                        testCode: addDocumentTask.AsTask);
 
             // then
             actualIdentificationOrchestrationValidationException
