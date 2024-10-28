@@ -15,7 +15,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
     public partial class UserAccessesTests
     {
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnRetrieveAllOrganisationsUserHasAccessToWhenArgsInvalidAsync()
+        public async Task ShouldThrowValidationExceptionOnRetrieveAllActiveOrganisationsUserHasAccessToWhenArgsInvalidAsync()
         {
             // given
             Guid invalidUserAccessId = Guid.Empty;
@@ -33,12 +33,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
                     innerException: invalidUserAccessException);
 
             // when
-            ValueTask<List<string>> retrieveAllOrganisationUserHasAccessToTask =
+            ValueTask<List<string>> retrieveAllActiveOrganisationsUserHasAccessToTask =
                 this.userAccessService.RetrieveAllActiveOrganisationsUserHasAccessToAsync(invalidUserAccessId);
 
             UserAccessValidationException actualUserAccessValidationException =
                 await Assert.ThrowsAsync<UserAccessValidationException>(
-                    testCode: retrieveAllOrganisationUserHasAccessToTask.AsTask);
+                    testCode: retrieveAllActiveOrganisationsUserHasAccessToTask.AsTask);
 
             // then
             actualUserAccessValidationException.Should().BeEquivalentTo(expectedUserAccessValidationException);
