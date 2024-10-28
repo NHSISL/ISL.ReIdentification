@@ -28,12 +28,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
                     innerException: nullUserAccessProcessingException);
 
             // when
-            ValueTask addUserAccessTask = this.userAccessProcessingService
+            ValueTask bulkAddRemoveUserAccessTask = this.userAccessProcessingService
                 .BulkAddRemoveUserAccessAsync(nullBulkUserAccess);
 
             UserAccessProcessingValidationException actualUserAccessProcessingValidationException =
                 await Assert.ThrowsAsync<UserAccessProcessingValidationException>(
-                    testCode: addUserAccessTask.AsTask);
+                    testCode: bulkAddRemoveUserAccessTask.AsTask);
 
             // then
             actualUserAccessProcessingValidationException.Should()

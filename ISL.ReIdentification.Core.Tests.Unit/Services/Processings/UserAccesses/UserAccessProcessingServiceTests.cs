@@ -122,6 +122,21 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
                 .Create(GetRandomNumber()).ToList();
         }
 
+        private static BulkUserAccess CreateRandomBulkUserAccess()
+        {
+            return new BulkUserAccess
+            {
+                EntraUserId = Guid.NewGuid(),
+                GivenName = GetRandomString(),
+                Surname = GetRandomString(),
+                DisplayName = GetRandomString(),
+                JobTitle = GetRandomString(),
+                Email = GetRandomString(),
+                UserPrincipalName = GetRandomString(),
+                OrgCodes = GetRandomStringsWithLengthOf(10)
+            };
+        }
+
         private static List<UserAccess> CreateRandomUserAccesses(
             DateTimeOffset dateTimeOffset,
             Guid entraUserId,
