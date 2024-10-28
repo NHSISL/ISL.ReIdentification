@@ -9,8 +9,6 @@ using System.Threading.Tasks;
 using Force.DeepCloner;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Loggings;
-using ISL.ReIdentification.Core.Models.Foundations.PdsDatas;
-using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Services.Foundations.PdsDatas;
 using ISL.ReIdentification.Core.Services.Foundations.UserAccesses;
@@ -47,7 +45,8 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Accesses
                 ValidateAccessRequestIsNotNull(accessRequest);
 
                 List<string> userOrgs =
-                    await GetOrganisationsForUserAsync(accessRequest.IdentificationRequest.EntraUserId);
+                    await this.userAccessService
+                        .RetrieveAllActiveOrganisationsUserHasAccessToAsync(accessRequest.IdentificationRequest.EntraUserId);
 
                 AccessRequest validatedAccessRequest = await CheckUserAccessToPatientsAsync(accessRequest, userOrgs);
 
@@ -65,7 +64,8 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Accesses
                 try
                 {
                     identificationItem.HasAccess =
-                        await UserHasAccessToPatientAsync(identificationItem.Identifier, userOrgs);
+                        await this.pdsDataService
+                            .OrganisationsHaveAccessToThisPatient(identificationItem.Identifier, userOrgs);
                 }
                 catch (Exception ex)
                 {
@@ -83,43 +83,6 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Accesses
             }
 
             return accessRequest;
-        }
-
-        virtual internal async ValueTask<List<string>> GetOrganisationsForUserAsync(Guid entraUserId)
-        {
-            ValidateOnGetOrganisationsForUser(entraUserId);
-            DateTimeOffset currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-
-            IQueryable<UserAccess> userAccesses =
-                await this.userAccessService
-                    .RetrieveAllUserAccessesAsync();
-
-            userAccesses = userAccesses
-                .Where(userAccess =>
-                    userAccess.EntraUserId == entraUserId
-                    && userAccess.ActiveFrom <= currentDateTime
-                    && (userAccess.ActiveTo == null || userAccess.ActiveTo > currentDateTime));
-
-            List<string> organisationsForUser = userAccesses
-                .Select(userAccess => userAccess.OrgCode)
-                .ToList();
-
-            return organisationsForUser;
-        }
-
-        virtual internal async ValueTask<bool> UserHasAccessToPatientAsync(string identifier, List<string> organisationCodes)
-        {
-            ValidateOnUserHasAccessToPatientAsync(identifier, organisationCodes);
-
-            DateTimeOffset currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-
-            IQueryable<PdsData> pdsDatas =
-                        await this.pdsDataService.RetrieveAllPdsDatasAsync();
-
-            bool userHasAccess = pdsDatas.Where(pdsData =>
-                pdsData.PseudoNhsNumber == identifier && organisationCodes.Contains(pdsData.OrgCode)).Any();
-
-            return userHasAccess;
         }
     }
 }

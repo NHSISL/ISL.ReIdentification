@@ -40,7 +40,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
                 .BeEquivalentTo(expectedCsvIdentificationRequestValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogErrorAsync(It.Is(SameExceptionAs(expectedCsvIdentificationRequestValidationException))), Times.Once());
+                broker.LogErrorAsync(It.Is(SameExceptionAs(expectedCsvIdentificationRequestValidationException))),
+                    Times.Once());
 
             this.reIdentificationStorageBroker.Verify(broker =>
                 broker.InsertCsvIdentificationRequestAsync(It.IsAny<CsvIdentificationRequest>()),
@@ -55,7 +56,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnAddIfCsvIdentificationRequestIsInvalidAndLogItAsync(string invalidText)
+        public async Task ShouldThrowValidationExceptionOnAddIfCsvIdentificationRequestIsInvalidAndLogItAsync(
+            string invalidText)
         {
             // given
             var invalidCsvIdentificationRequest = new CsvIdentificationRequest
@@ -87,6 +89,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             invalidCsvIdentificationRequestException.AddData(
                 key: nameof(CsvIdentificationRequest.RecipientEmail),
+                values: "Text is invalid");
+
+            invalidCsvIdentificationRequestException.AddData(
+                key: nameof(CsvIdentificationRequest.Filepath),
                 values: "Text is invalid");
 
             invalidCsvIdentificationRequestException.AddData(
@@ -145,7 +151,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
         }
 
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnAddIfCsvIdentificationRequestHasInvalidLengthPropertiesAndLogItAsync()
+        public async Task
+            ShouldThrowValidationExceptionOnAddIfCsvIdentificationRequestHasInvalidLengthPropertiesAndLogItAsync()
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();

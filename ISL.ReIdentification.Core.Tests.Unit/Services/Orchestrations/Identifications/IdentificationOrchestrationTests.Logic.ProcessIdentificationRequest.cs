@@ -20,19 +20,19 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             Guid randomGuid = Guid.NewGuid();
-            int itemCount = 1; //GetRandomNumber();
+            int itemCount = GetRandomNumber();
 
             IdentificationRequest randomIdentificationRequest =
                CreateRandomIdentificationRequest(hasAccess: false, itemCount: itemCount);
 
             IdentificationRequest inputIdentificationRequest = randomIdentificationRequest.DeepClone();
             IdentificationRequest outputIdentificationRequest = inputIdentificationRequest.DeepClone();
-            //outputIdentificationRequest.IdentificationItems.ForEach(item => item.Identifier = "0000000000");
 
             outputIdentificationRequest.IdentificationItems.ForEach(item =>
             {
                 item.Identifier = "0000000000";
-                item.Message = "Failed to Re-Identify. User do not have access to the organisation(s) associated with patient.";
+                item.Message = "Failed to Re-Identify. User do not have access to the organisation(s) " + 
+                    "associated with patient.";
             });
 
             IdentificationRequest expectedIdentificationRequest = outputIdentificationRequest.DeepClone();
