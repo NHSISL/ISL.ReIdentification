@@ -122,8 +122,12 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             return identificationRequest;
         });
 
-        public async ValueTask AddDocumentAsync(Stream input, string fileName, string container) =>
+        public ValueTask AddDocumentAsync(Stream input, string fileName, string container) =>
+        TryCatch(async () =>
+        {
+            ValidateOnAddDocument(input, fileName, container);
             await this.documentService.AddDocumentAsync(input, fileName, container);
+        });
 
         public ValueTask RetrieveDocumentByFileNameAsync(Stream output, string fileName, string container) =>
         TryCatch(async () =>
