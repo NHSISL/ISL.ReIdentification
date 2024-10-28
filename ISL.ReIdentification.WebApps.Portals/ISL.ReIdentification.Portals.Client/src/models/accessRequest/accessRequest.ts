@@ -3,13 +3,13 @@ import { ImpersonationContext } from "../impersonationContext/impersonationConte
 import { IdentificationRequest } from "../ReIdentifications/IdentificationRequest";
 
 export class AccessRequest {
-    public identificationRequest: IdentificationRequest;
+    public identificationRequest?: IdentificationRequest;
     public csvIdentificationRequest?: CsvIdentificationRequest;
     public impersonationContext?: ImpersonationContext;
 
     constructor(accessRequest: AccessRequest) {
-        this.identificationRequest = accessRequest.identificationRequest || {};
+        this.identificationRequest = accessRequest.identificationRequest || new IdentificationRequest();
         this.csvIdentificationRequest = accessRequest.csvIdentificationRequest || {};
-       // this.impersonationContext = accessRequest.impersonationContext || {};
+        this.impersonationContext = accessRequest.impersonationContext || new ImpersonationContext();
     }
 }

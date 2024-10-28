@@ -26,9 +26,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ReIdentifications
                 (Rule: IsInvalid(identificationRequest.Email),
                 Parameter: nameof(IdentificationRequest.Email)),
 
-                (Rule: IsInvalid(identificationRequest.Purpose),
-                Parameter: nameof(IdentificationRequest.Purpose)),
-
                 (Rule: IsInvalid(identificationRequest.Organisation),
                 Parameter: nameof(IdentificationRequest.Organisation)),
 

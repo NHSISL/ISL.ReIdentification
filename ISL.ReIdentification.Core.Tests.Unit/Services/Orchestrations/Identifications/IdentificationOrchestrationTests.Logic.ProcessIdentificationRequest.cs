@@ -71,7 +71,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                     GivenName = randomIdentificationRequest.GivenName,
                     Surname = randomIdentificationRequest.Surname,
                     Email = randomIdentificationRequest.Email,
-                    Purpose = randomIdentificationRequest.Purpose,
                     Reason = randomIdentificationRequest.Reason,
                     Organisation = randomIdentificationRequest.Organisation,
                     HasAccess = (bool)item.HasAccess,
@@ -128,7 +127,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                 DisplayName = inputIdentificationRequest.DisplayName,
                 JobTitle = inputIdentificationRequest.JobTitle,
                 Email = inputIdentificationRequest.Email,
-                Purpose = inputIdentificationRequest.Purpose,
                 Organisation = inputIdentificationRequest.Organisation,
                 Reason = inputIdentificationRequest.Reason
             };
@@ -181,7 +179,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                     GivenName = randomIdentificationRequest.GivenName,
                     Surname = randomIdentificationRequest.Surname,
                     Email = randomIdentificationRequest.Email,
-                    Purpose = randomIdentificationRequest.Purpose,
                     Reason = randomIdentificationRequest.Reason,
                     Organisation = randomIdentificationRequest.Organisation,
                     HasAccess = (bool)item.HasAccess,

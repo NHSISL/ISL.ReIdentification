@@ -1,17 +1,14 @@
 import { useEffect, useState } from "react";
 import { lookupService } from "../../foundations/lookupService";
 import { LookupView } from "../../../models/views/components/lookups/lookupView";
+import { UseQueryResult } from "@tanstack/react-query";
 import { Lookup } from "../../../models/lookups/lookup";
 
-type LookupViewServiceResponse = {
-    mappedLookups: LookupView[] | undefined;
-};
+type LookupViewServiceResponse = UseQueryResult<Lookup[], Error> & {
+    mappedLookups: LookupView[]
+}
 
 export const lookupViewService = {
-    useCreateLookup: () => {
-        return lookupService.useCreatelookup();
-    },
-
     useGetAllLookups: (searchTerm?: string): LookupViewServiceResponse => {
         let query = `?$orderby=createdDate desc`;
 
@@ -19,22 +16,12 @@ export const lookupViewService = {
             query = query + `&$filter=contains(name,'${searchTerm}')`;
         }
 
-        const response = lookupService.useRetrieveAllLookupPages(query);
-        const [mappedLookups, setMappedLookups] = useState<Array<LookupView>>();
+        const response = lookupService.useRetrieveAllLookups(query);
+        const [mappedLookups, setMappedLookups] = useState<Array<LookupView>>([]);
 
         useEffect(() => {
             if (response.data) {
-                const lookups = response.data.pages[0].data.map((lookup: Lookup) =>
-                    new LookupView(
-                        lookup.id,
-                        lookup.name,
-                        lookup.value,
-                        lookup.createdBy,
-                        lookup.createdDate,
-                        lookup.updatedBy,
-                        lookup.updatedDate,
-                    ));
-
+                const lookups = response.data as LookupView[];
                 setMappedLookups(lookups);
             }
         }, [response.data]);
@@ -42,41 +29,5 @@ export const lookupViewService = {
         return {
             mappedLookups, ...response
         }
-    },
-
-    useGetLookupById: (id: string) => {
-        const query = `?$filter=id eq ${id}`;
-        const response = lookupService.useRetrieveAllLookupPages(query);
-        const [mappedLookup, setMappedLookup] = useState<LookupView>();
-
-        useEffect(() => {
-            if (response.data && response.data.pages && response.data.pages[0].data[0]) {
-                const lookup = response.data.pages[0].data[0];
-                const lookupView = new LookupView(
-                    lookup.id,
-                    lookup.name,
-                    lookup.value,
-                    lookup.createdBy,
-                    lookup.createdDate,
-                    lookup.updatedBy,
-                    lookup.updatedDate
-                );
-
-                setMappedLookup(lookupView);
-            }
-        }, [response.data]);
-
-        return {
-            mappedLookup,
-            ...response
-        };
-    },
-
-    useUpdateLookup: () => {
-        return lookupService.useModifyLookup();
-    },
-
-    useRemoveLookup: () => {
-        return lookupService.useRemoveLookup();
     },
 };
