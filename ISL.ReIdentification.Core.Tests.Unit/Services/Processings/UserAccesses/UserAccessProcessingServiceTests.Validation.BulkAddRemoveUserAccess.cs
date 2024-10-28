@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
@@ -43,6 +44,78 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
                     Times.Once());
 
             this.userAccessServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionOnBulkAddRemoveIfUserAccessIsInvalidAndLogItAsync(
+            string invalidText)
+        {
+            // given
+            var invalidUserAccess = new BulkUserAccess
+            {
+                EntraUserId = Guid.Empty,
+                GivenName = invalidText,
+                Surname = invalidText,
+                DisplayName = invalidText,
+                JobTitle = invalidText,
+                Email = invalidText,
+                UserPrincipalName = invalidText,
+                OrgCodes = null,
+            };
+
+            var invalidUserAccessProcessingException =
+                new InvalidUserAccessProcessingException(
+                    message: "Invalid bulk user access. Please correct the errors and try again.");
+
+            invalidUserAccessProcessingException.AddData(
+                key: nameof(BulkUserAccess.EntraUserId),
+                values: "Id is invalid");
+
+            invalidUserAccessProcessingException.AddData(
+                key: nameof(BulkUserAccess.Email),
+                values: "Text is invalid");
+
+            invalidUserAccessProcessingException.AddData(
+                key: nameof(BulkUserAccess.OrgCodes),
+                values: "Text is invalid");
+
+            var expectedUserAccessProcessingValidationException =
+                new UserAccessProcessingValidationException(
+                    message: "Bulk user access validation error occurred, please fix errors and try again.",
+                    innerException: invalidUserAccessProcessingException);
+
+            // when
+            ValueTask bulkAddRemoveUserAccessTask =
+                this.userAccessProcessingService.BulkAddRemoveUserAccessAsync(invalidUserAccess);
+
+            UserAccessProcessingValidationException actualUserAccessProcessingValidationException =
+                await Assert.ThrowsAsync<UserAccessProcessingValidationException>(
+                    testCode: bulkAddRemoveUserAccessTask.AsTask);
+
+            // then
+            actualUserAccessProcessingValidationException.Should()
+                .BeEquivalentTo(expectedUserAccessProcessingValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedUserAccessProcessingValidationException))),
+                        Times.Once);
+
+            this.userAccessServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
