@@ -27,7 +27,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                     Times.Once);
 
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
