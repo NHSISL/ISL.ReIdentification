@@ -1,32 +1,40 @@
-import { Button, ButtonGroup, Card, CardBody, CardFooter, CardHeader, Container } from "react-bootstrap"
-import BreadCrumbBase from "../components/bases/layouts/BreadCrumb/BreadCrumbBase"
-import EntraUserSearch from "../components/EntraUserSearch/entraUserSearch"
+import { Button, ButtonGroup, Card, CardBody, CardFooter, CardHeader, Container, Spinner } from "react-bootstrap"
+import BreadCrumbBase from "../bases/layouts/BreadCrumb/BreadCrumbBase"
+import EntraUserSearch from "../EntraUserSearch/entraUserSearch"
 import { useState } from "react"
-import { entraUser } from "../models/views/components/entraUsers/entraUsers"
-import OdsTree from "../components/odsData/odsTree"
-import { OdsData } from "../models/odsData/odsData"
-import { userAccessService } from "../services/foundations/userAccessService"
-import { UserAccess } from "../models/userAccess/userAccess"
+import { entraUser } from "../../models/views/components/entraUsers/entraUsers"
+import OdsTree from "../odsData/odsTree"
+import { OdsData } from "../../models/odsData/odsData"
+import { userAccessService } from "../../services/foundations/userAccessService"
+import { UserAccess } from "../../models/userAccess/userAccess"
+import { useNavigate } from "react-router-dom"
 
 export const UserAccessNew = () => {
 
     const [selectedUser, setSelectedUser] = useState<entraUser | undefined>();
     const [selectedOdsRecords, setSelectedOdsRecords] = useState<OdsData[]>([]);
-    const {mutate} = userAccessService.useCreateUserAccess();
+    const navigate = useNavigate();
+    const {mutateAsync, isPending, error} = userAccessService.useCreateUserAccess();
 
-    const saveRecord = () => {
-        const ua = new UserAccess();
+    const saveRecord = async () => {
+        let ua : UserAccess;
 
         if(selectedUser){
-            ua.displayName = selectedUser.displayName; 
-            ua.userEmail = selectedUser.mail;
-            ua.jobTitle = selectedUser.jobTitle;
-            ua.entraGuid = selectedUser.id;
-            ua.entraUpn = selectedUser.userPrincipalName;
-            ua.orgCodes = selectedOdsRecords.map(o => o.organisationCode);
-        }
-
-        mutate(ua);
+            ua = {...new UserAccess(),                 
+                ...selectedUser,
+                entraUserId: selectedUser.id,
+                email: selectedUser.mail,
+                activeFrom: new Date(),
+                orgCode: selectedOdsRecords[0].organisationCode,
+            }
+            try {
+                await mutateAsync(ua);
+                navigate("/userAccess");
+            } catch(error) {
+                console.log(error);
+            }
+            
+        } 
     }
 
     return (
@@ -65,12 +73,15 @@ export const UserAccessNew = () => {
                             
                             <CardFooter>
                                 <ButtonGroup>
-                                    <Button onClick={saveRecord}>Save</Button>
+                                    <Button onClick={saveRecord} disabled={isPending}>
+                                        { isPending ? <Spinner /> : "Save"}
+                                    </Button>
                                     <Button onClick={() => {
                                         setSelectedUser(undefined)
                                         setSelectedOdsRecords([]);
                                     } } variant="secondary">Clear</Button>
                                 </ButtonGroup>
+                                {error && <div className="bs-warning">{JSON.stringify(error.message)}</div>}
                             </CardFooter>
                         </Card>
                     }

@@ -90,10 +90,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
             DateTimeOffset currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
             List<string> userOrganisations = userAccessQuery
-                .Where(userAccess => userAccess.EntraUserId == entraUserId
-                    && userAccess.ActiveFrom <= currentDateTime
-                    && (userAccess.ActiveTo == null || userAccess.ActiveTo > currentDateTime))
-                    .Select(userAccess => userAccess.OrgCode).ToList();
+                .Where(userAccess => userAccess.EntraUserId == entraUserId)
+                    .Select(userAccess => userAccess.OrgCode).Distinct().ToList();
 
             foreach (var userOrganisation in userOrganisations)
             {

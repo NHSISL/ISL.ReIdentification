@@ -18,12 +18,54 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
         private delegate ValueTask<UserAccess> ReturningUserAccessFunction();
         private delegate ValueTask<IQueryable<UserAccess>> ReturningUserAccessesFunction();
         private delegate ValueTask<List<string>> ReturningStringListFunction();
+        private delegate ValueTask ReturningNothingFunction();
 
         private async ValueTask<UserAccess> TryCatch(ReturningUserAccessFunction returningUserAccessFunction)
         {
             try
             {
                 return await returningUserAccessFunction();
+            }
+            catch (NullUserAccessProcessingException nullUserAccessProcessingException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(nullUserAccessProcessingException);
+            }
+            catch (InvalidUserAccessProcessingException invalidUserAccessProcessingException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(invalidUserAccessProcessingException);
+            }
+            catch (UserAccessValidationException userAccessValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(userAccessValidationException);
+            }
+            catch (UserAccessDependencyValidationException userAccessDependencyValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(userAccessDependencyValidationException);
+            }
+            catch (UserAccessDependencyException userAccessDependencyException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(userAccessDependencyException);
+            }
+            catch (UserAccessServiceException userAccessServiceException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(userAccessServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedUserAccessProcessingServiceException =
+                    new FailedUserAccessProcessingServiceException(
+                        message: "Failed user access processing service error occurred, please contact support.",
+                        innerException: exception);
+
+                throw await CreateAndLogServiceExceptionAsync(failedUserAccessProcessingServiceException);
+            }
+        }
+
+        private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
+        {
+            try
+            {
+                await returningNothingFunction();
             }
             catch (NullUserAccessProcessingException nullUserAccessProcessingException)
             {

@@ -30,7 +30,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.User
             var expectedActionResult =
                 new ActionResult<UserAccess>(expectedBadRequestObjectResult);
 
-            this.userAccessProcessingService.Setup(service =>
+            this.userAccessProcessingServiceMock.Setup(service =>
                 service.AddUserAccessAsync(It.IsAny<UserAccess>()))
                     .ThrowsAsync(validationException);
 
@@ -41,11 +41,11 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.User
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
-            this.userAccessProcessingService.Verify(service =>
+            this.userAccessProcessingServiceMock.Verify(service =>
                 service.AddUserAccessAsync(It.IsAny<UserAccess>()),
                     Times.Once);
 
-            this.userAccessProcessingService.VerifyNoOtherCalls();
+            this.userAccessProcessingServiceMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -62,7 +62,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.User
             var expectedActionResult =
                 new ActionResult<UserAccess>(expectedBadRequestObjectResult);
 
-            this.userAccessProcessingService.Setup(service =>
+            this.userAccessProcessingServiceMock.Setup(service =>
                 service.AddUserAccessAsync(It.IsAny<UserAccess>()))
                     .ThrowsAsync(validationException);
 
@@ -73,11 +73,11 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.User
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
-            this.userAccessProcessingService.Verify(service =>
+            this.userAccessProcessingServiceMock.Verify(service =>
                 service.AddUserAccessAsync(It.IsAny<UserAccess>()),
                     Times.Once);
 
-            this.userAccessProcessingService.VerifyNoOtherCalls();
+            this.userAccessProcessingServiceMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -105,7 +105,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.User
             var expectedActionResult =
                 new ActionResult<UserAccess>(expectedConflictObjectResult);
 
-            this.userAccessProcessingService.Setup(service =>
+            this.userAccessProcessingServiceMock.Setup(service =>
                 service.AddUserAccessAsync(It.IsAny<UserAccess>()))
                     .ThrowsAsync(userAccessProcessingDependencyValidationException);
 
@@ -116,11 +116,11 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.User
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
-            this.userAccessProcessingService.Verify(service =>
+            this.userAccessProcessingServiceMock.Verify(service =>
                 service.AddUserAccessAsync(It.IsAny<UserAccess>()),
                     Times.Once);
 
-            this.userAccessProcessingService.VerifyNoOtherCalls();
+            this.userAccessProcessingServiceMock.VerifyNoOtherCalls();
         }
     }
 }

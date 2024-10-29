@@ -203,7 +203,6 @@ namespace ISL.ReIdentification.Portals.Server
         {
             services.AddTransient<IAccessOrchestrationService, AccessOrchestrationService>();
             services.AddTransient<IPersistanceOrchestrationService, PersistanceOrchestrationService>();
-            services.AddTransient<IAccessOrchestrationService, AccessOrchestrationService>();
             services.AddTransient<IIdentificationOrchestrationService, IdentificationOrchestrationService>();
             services.AddTransient<ICsvIdentificationRequestService, CsvIdentificationRequestService>();
         }
