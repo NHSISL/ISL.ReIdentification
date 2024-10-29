@@ -25,7 +25,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             MemoryStream outputStream = randomStream;
 
             this.blobStorageBrokerMock
-                .Setup(service => service
+                .Setup(broker => broker
                     .SelectByFileNameAsync(randomStream, randomFileName, randomContainer))
                         .Callback<Stream, string, string>((output, fileName, container) =>
                         {

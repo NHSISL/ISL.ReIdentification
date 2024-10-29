@@ -13,8 +13,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
     public partial class DocumentsTests
     {
         [Theory]
-        [MemberData(nameof(InvalidArgumentsStreamLengthZero))]
-        public async Task ShouldThrowValidationExceptionAddDocumentIfArgumentsInvalidAndLogItAsync(
+        [MemberData(nameof(InvalidArgumentsStreamHasLength))]
+        public async Task ShouldThrowValidationExceptionOnRetrieveDocumentByFileNameIfArgumentsInvalidAndLogItAsync(
             Stream invalidStream, string invalidString)
         {
             // given
@@ -43,7 +43,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
 
             // when
             ValueTask addDocumentTask =
-                this.documentService.AddDocumentAsync(invalidStream, invalidFileName, invalidContainer);
+                this.documentService.RetrieveDocumentByFileNameAsync(invalidStream, invalidFileName, invalidContainer);
 
             DocumentValidationException actualDocumentValidationException =
                 await Assert.ThrowsAsync<DocumentValidationException>(addDocumentTask.AsTask);

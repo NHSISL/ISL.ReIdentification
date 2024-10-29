@@ -58,6 +58,18 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             };
         }
 
+        public static TheoryData<Stream, string> InvalidArgumentsStreamHasLength()
+        {
+            Stream stream = new HasLengthStream();
+
+            return new TheoryData<Stream, string>
+            {
+                { null, null },
+                { stream, ""},
+                { stream, " " }
+            };
+        }
+
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException)
         {
             return actualException =>
