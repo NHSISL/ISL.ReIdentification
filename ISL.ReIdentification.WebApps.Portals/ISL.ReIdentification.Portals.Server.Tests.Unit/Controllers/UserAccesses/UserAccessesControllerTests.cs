@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Models.Processings.UserAccesses.Exceptions;
@@ -17,13 +18,42 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.UserAccesse
 {
     public partial class UserAccessesControllerTests : RESTFulController
     {
-        private readonly Mock<IUserAccessProcessingService> userAccessProcessingService;
+        private readonly Mock<IUserAccessProcessingService> userAccessProcessingServiceMock;
         private readonly UserAccessesController userAccessesController;
 
         public UserAccessesControllerTests()
         {
-            this.userAccessProcessingService = new Mock<IUserAccessProcessingService>();
-            this.userAccessesController = new UserAccessesController(userAccessProcessingService.Object);
+            this.userAccessProcessingServiceMock = new Mock<IUserAccessProcessingService>();
+            this.userAccessesController = new UserAccessesController(userAccessProcessingServiceMock.Object);
+        }
+
+        private static string GetRandomStringWithLengthOf(int length)
+        {
+            string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+
+            return result.Length > length ? result.Substring(0, length) : result;
+        }
+
+        private static List<string> GetRandomStringsWithLengthOf(int length)
+        {
+            return Enumerable.Range(start: 0, count: GetRandomNumber())
+                .Select(selector: _ => GetRandomStringWithLengthOf(length))
+                .ToList();
+        }
+
+        private static BulkUserAccess CreateRandomBulkUserAccess()
+        {
+            return new BulkUserAccess
+            {
+                EntraUserId = Guid.NewGuid(),
+                GivenName = GetRandomString(),
+                Surname = GetRandomString(),
+                DisplayName = GetRandomString(),
+                JobTitle = GetRandomString(),
+                Email = GetRandomString(),
+                UserPrincipalName = GetRandomString(),
+                OrgCodes = GetRandomStringsWithLengthOf(10)
+            };
         }
 
         public static TheoryData<Xeption> ValidationExceptions()
