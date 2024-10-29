@@ -22,7 +22,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             Guid randomEntraUserId = Guid.NewGuid();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             Guid inputEntraUserId = randomEntraUserId;
-            List<UserAccess> validUserAccesses = CreateUserAccesses(count: GetRandomNumber());  // works when count is 1
+            List<UserAccess> validUserAccesses = CreateUserAccesses(count: GetRandomNumber());
             validUserAccesses.ForEach(userAccess => userAccess.EntraUserId = inputEntraUserId);
             List<UserAccess> invalidUserAccesses = CreateUserAccesses(count: GetRandomNumber());
             List<UserAccess> storageUserAccess = new List<UserAccess>();
