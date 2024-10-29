@@ -14,7 +14,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
     {
         [Theory]
         [MemberData(nameof(InvalidArgumentsStreamLengthZero))]
-        public async Task ShouldThrowValidationExceptionAddDocumentIfArgumentsInvalidAndLogItAsync(
+        public async Task ShouldThrowValidationExceptionOnAddDocumentIfArgumentsInvalidAndLogItAsync(
             Stream invalidStream, string invalidString)
         {
             // given
