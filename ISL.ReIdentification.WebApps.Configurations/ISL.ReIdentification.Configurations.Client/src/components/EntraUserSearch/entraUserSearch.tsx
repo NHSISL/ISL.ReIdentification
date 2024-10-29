@@ -1,4 +1,4 @@
-import { debounce } from "lodash";
+import  debounce from "lodash/debounce";
 import { FunctionComponent, useMemo, useState } from "react";
 import { Button, Card, Form, FormGroup, InputGroup, Table } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
