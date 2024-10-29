@@ -1,108 +1,56 @@
-import { debounce } from "lodash";
-import { FunctionComponent, useMemo, useState } from "react";
+import { FunctionComponent } from "react";
 import { SpinnerBase } from "../bases/spinner/SpinnerBase";
-import { Card, Container, Table } from "react-bootstrap";
+import { Button, Card, Container, Table } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDatabase } from "@fortawesome/free-solid-svg-icons";
-import { UserAccessView } from "../../models/views/components/userAccess/userAccessView";
-import InfiniteScroll from "../bases/pagers/InfiniteScroll";
-import InfiniteScrollLoader from "../bases/pagers/InfiniteScroll.Loader";
 import { userAccessViewService } from "../../services/views/userAccess/userAccessViewService";
-import SearchBase from "../bases/inputs/SearchBase";
-import UserAccessRow from "./userAccessRow";
+import { Link } from "react-router-dom";
 
 type UserAccessTableProps = object;
 
 const UserAccessTable: FunctionComponent<UserAccessTableProps> = () => {
-    const [searchTerm, setSearchTerm] = useState<string>("");
-    const [debouncedTerm, setDebouncedTerm] = useState<string>("");
-    const [showSpinner] = useState(false);
-
-
     const {
-        mappedUserAccess: userAccessRetrieved,
         isLoading,
-        fetchNextPage,
-        isFetchingNextPage,
-        hasNextPage
-    } = userAccessViewService.useGetAllUserAccess(
-        debouncedTerm
-    );
-
-    const handleSearchChange = (value: string) => {
-        setSearchTerm(value);
-        handleDebounce(value);
-    };
-
-    const handleDebounce = useMemo(
-        () =>
-            debounce((value: string) => {
-                setDebouncedTerm(value);
-            }, 500),
-        []
-    );
-
-    const hasNoMorePages = () => {
-        return false;
-        //return !isLoading && data?.pages.at(-1)?.nextPage === undefined;
-    };
+        data
+    } = userAccessViewService.useGetDistinctUsers();
 
     return (
         <>
-            <SearchBase id="search" label="Search lookups" value={searchTerm} placeholder="Search User Access"
-                onChange={(e) => { handleSearchChange(e.currentTarget.value) }} />
-            <br />
-
             <Container fluid className="infiniteScrollContainer">
                 <Card>
                     <Card.Header> <FontAwesomeIcon icon={faDatabase} className="me-2" /> User Access</Card.Header>
                     <Card.Body>
-                        <InfiniteScroll loading={isLoading || showSpinner} hasNextPage={hasNextPage || false} loadMore={fetchNextPage}>
 
-                            <Table striped bordered hover variant="light">
-                                <thead>
+                        <Table striped bordered hover variant="light">
+                            <thead>
+                                <tr>
+                                    <th>Display Name</th>
+                                    <th>Email</th>
+                                    <th>Action(s)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {isLoading ? (
                                     <tr>
-                                        <th>First Name</th>
-                                        <th>Last Name</th>
-                                        <th>Email</th>
-                                        <th>Organisation Code</th>
-                                        <th>Active From</th>
-                                        <th>Active To</th>
-                                        <th>Action(s)</th>
+                                        <td colSpan={6} className="text-center">
+                                            <SpinnerBase />
+                                        </td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    {isLoading || showSpinner ? (
-                                        <tr>
-                                            <td colSpan={6} className="text-center">
-                                                <SpinnerBase />
-                                            </td>
-                                        </tr>
-                                    ) : (
-                                        <>
-                                            {userAccessRetrieved?.map(
-                                                (userAccessView: UserAccessView) => (
-                                                    <UserAccessRow
-                                                        key={userAccessView.id.toString()}
-                                                        userAccess={userAccessView}
-                                                    />
-                                                )
-                                            )}
-                                            <tr>
-                                                <td colSpan={7} className="text-center">
-                                                    <InfiniteScrollLoader
-                                                        loading={isLoading || isFetchingNextPage}
-                                                        spinner={<SpinnerBase />}
-                                                        noMorePages={hasNoMorePages()}
-                                                        noMorePagesMessage={<>-- No more pages --</>}
-                                                    />
-                                                    </td>
-                                            </tr>
-                                        </>
-                                    )}
-                                </tbody>
-                            </Table>
-                        </InfiniteScroll>
+                                ) : (
+                                    <>
+                                        {data && data?.map(d => <tr key={d.entraUserId}>
+                                            <td>{d.displayName}</td>
+                                            <td>{d.email}</td>
+                                            <td><Link to={`/userAccess/${d.entraUserId}`} >
+                                                <Button size="sm">
+                                                    Edit
+                                                </Button>
+                                            </Link></td>
+                                        </tr>)}
+                                    </>
+                                )}
+                            </tbody>
+                        </Table>
                     </Card.Body>
                 </Card>
             </Container>

@@ -1,4 +1,4 @@
-import { debounce } from "lodash";
+import  debounce from "lodash/debounce";
 import { FunctionComponent, useMemo, useState } from "react";
 import { SpinnerBase } from "../bases/spinner/SpinnerBase";
 import { Card, Container, Table } from "react-bootstrap";
