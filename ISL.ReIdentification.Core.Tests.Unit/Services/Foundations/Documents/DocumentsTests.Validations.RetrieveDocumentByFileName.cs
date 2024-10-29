@@ -42,11 +42,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                 innerException: invalidDocumentException);
 
             // when
-            ValueTask addDocumentTask =
+            ValueTask retrieveDocumentTask =
                 this.documentService.RetrieveDocumentByFileNameAsync(invalidStream, invalidFileName, invalidContainer);
 
             DocumentValidationException actualDocumentValidationException =
-                await Assert.ThrowsAsync<DocumentValidationException>(addDocumentTask.AsTask);
+                await Assert.ThrowsAsync<DocumentValidationException>(retrieveDocumentTask.AsTask);
 
             // then
             actualDocumentValidationException.Should().BeEquivalentTo(expectedDocumentValidationException);
