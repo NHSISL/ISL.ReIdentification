@@ -33,8 +33,7 @@ const UserAccessSearch: FunctionComponent<UserAccessSearchProps> = ({ selectUser
     }
 
     return (
-
-        <Form>
+        <>
             <FormGroup>
                 <Form.Label className="text-start">Recipient Email Address</Form.Label>
                 <InputGroup>
@@ -67,7 +66,7 @@ const UserAccessSearch: FunctionComponent<UserAccessSearchProps> = ({ selectUser
                     </tbody>
                 </Table>
             </div>
-        </Form>
+        </>
     );
 };
 

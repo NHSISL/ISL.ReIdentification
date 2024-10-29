@@ -14,7 +14,7 @@ export class CsvIdentificationRequest {
     public recipientJobTitle?: string = "";
     public reason?: string = "";
     public organisation?: string = "";
-    public data?: Uint8Array = new Uint8Array();
+    public data?: string = "";
     public sha256Hash?: string = "";
     public identifierColumn?: string = "";
     public createdBy?: string = "";

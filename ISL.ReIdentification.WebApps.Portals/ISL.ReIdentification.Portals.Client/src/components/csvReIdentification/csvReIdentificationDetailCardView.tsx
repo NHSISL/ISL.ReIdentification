@@ -12,11 +12,12 @@ import { toastSuccess } from "../../brokers/toastBroker.success";
 const CsvReIdentificationDetailCardView: FunctionComponent = () => {
 
     const [headerColumns, setHeaderColumns] = useState<string[]>([]);
-    const [csvData, setCsvData] = useState<Uint8Array | null>(null);
+    const [csvData, setCsvData] = useState<string | null>(null);
     const [selectedHeaderColumn, setSelectedHeaderColumn] = useState<string>("");
     const [selectedUser, setSelectedUser] = useState<UserAccessView | undefined>();
-    const { submit, loading } = reIdentificationService.useRequestReIdentification();
+    const { submit, loading } = reIdentificationService.useRequestReIdentificationCsv();
     const [error, setError] = useState("");
+    const [savedSuccessfull, setSavedSuccessfull] = useState(false);
     const account = useMsal();
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -40,15 +41,23 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                 recipientDisplayName: selectedUser?.displayName || "",
                 recipientEmail: selectedUser?.email || "",
                 recipientJobTitle: selectedUser?.jobTitle || "",
-                data: csvData || new Uint8Array(),
+                data: csvData || "",
                 identifierColumn: selectedHeaderColumn,
+                createdBy: acc.username,
+                updatedBy: acc.username,
+                createdDate: new Date(),
+                updatedDate: new Date(),
+                filepath: "pow"
             }
         }
         setError("");
         submit(csvIdentificationRequest).then((d) => {
             console.log("Sent", d);
             toastSuccess("CSV Sent");
+            setSavedSuccessfull(true)
+            //set success and change form below to sent page and what to wait for
         }).catch(() => {
+            setSavedSuccessfull(false)
             setError("Something went wrong");
         })
     };
@@ -62,7 +71,9 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                 const rows = text.split("\n");
                 const headers = rows[0].split(",");
                 setHeaderColumns(headers);
-                setCsvData(new TextEncoder().encode(text));
+                const uint8Array = new TextEncoder().encode(text);
+                const base64String = btoa(String.fromCharCode(...uint8Array));
+                setCsvData(base64String);
             };
             reader.readAsText(file);
         }
@@ -78,60 +89,68 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
         </Tooltip>
     );
 
-   
-        return (
-            <>
-                <Card.Title className="text-start">
-                    <OverlayTrigger placement="right" overlay={renderTooltip}>
-                        <FontAwesomeIcon icon={faCircleInfo} className="text-primary" size="lg" />
-                    </OverlayTrigger>&nbsp;CSV Upload
-                </Card.Title>
 
-                <Card.Subtitle className="text-start text-muted mb-3">
-                    <small>
-                        Please upload your csv below,
-                        provide a reason why you are identifying this patient
-                        and select the column that the identifier is in.
-                    </small>
-                </Card.Subtitle>
-                <Form onSubmit={handleSubmit}>
-                    <UserAccessSearch selectUser={(userAccess) => { setSelectedUser(userAccess) }} />
+    return (
+        <>
+            {!savedSuccessfull ? (
+                <>
+                    <Card.Title className="text-start">
+                        <OverlayTrigger placement="right" overlay={renderTooltip}>
+                            <FontAwesomeIcon icon={faCircleInfo} className="text-primary" size="lg" />
+                        </OverlayTrigger>&nbsp;CSV Upload
+                    </Card.Title>
 
-                    <Form.Group className="text-start">
-                        <Form.Label>Upload CSV:</Form.Label>
-                        <Form.Control
-                            type="file"
-                            name="PseudoCsv"
-                            onChange={handleFileChange}
-                            placeholder="Upload CSV"
-                            required />
-                    </Form.Group>
-                    <br />
-                    {headerColumns.length > 0 && (
+                    <Card.Subtitle className="text-start text-muted mb-3">
+                        <small>
+                            Please upload your csv below,
+                            provide a reason why you are identifying this patient
+                            and select the column that the identifier is in.
+                        </small>
+                    </Card.Subtitle>
+                    <Form onSubmit={handleSubmit}>
+                        <UserAccessSearch selectUser={(userAccess) => { setSelectedUser(userAccess) }} />
+
                         <Form.Group className="text-start">
-                            <Form.Label>Select Identifier Column:</Form.Label>
-                            <Form.Select
-                                value={selectedHeaderColumn}
-                                onChange={handleHeaderColumnChange}
-                                required >
-                                {headerColumns.map((column, index) => (
-                                    <option key={index} value={column}>
-                                        {column}
-                                    </option>
-                                ))}
-                            </Form.Select>
+                            <Form.Label>Upload CSV:</Form.Label>
+                            <Form.Control
+                                type="file"
+                                name="PseudoCsv"
+                                onChange={handleFileChange}
+                                placeholder="Upload CSV"
+                                required />
                         </Form.Group>
-                    )}
-                    <br />
-                    {error && <Alert variant="danger">
-                        Something went Wrong.
-                    </Alert>}
-                    <Button type="submit" disabled={!selectedHeaderColumn || !selectedUser || !selectedHeaderColumn}>
-                        {!loading ? <>Send File</> : <Spinner />}
-                    </Button>
-                </Form>
-            </>
-        );
+                        <br />
+                        {headerColumns.length > 0 && (
+                            <Form.Group className="text-start">
+                                <Form.Label>Select Identifier Column:</Form.Label>
+                                <Form.Select
+                                    value={selectedHeaderColumn}
+                                    onChange={handleHeaderColumnChange}
+                                    required >
+                                    {headerColumns.map((column, index) => (
+                                        <option key={index} value={column}>
+                                            {column}
+                                        </option>
+                                    ))}
+                                </Form.Select>
+                            </Form.Group>
+                        )}
+                        <br />
+                        {error && <Alert variant="danger">
+                            Something went Wrong.
+                        </Alert>}
+                        <Button type="submit" disabled={!selectedHeaderColumn || !selectedUser || !selectedHeaderColumn}>
+                            {!loading ? <>Send File</> : <Spinner />}
+                        </Button>
+                    </Form>
+                </>
+            ) : (
+                    <>
+                        SAVED
+                    </>
+            )}
+        </>
+    );
 
     return <>Something went wrong.</>
 }

@@ -18,5 +18,19 @@ export const reIdentificationService = {
             },
             loading
         };
+    },
+
+    useRequestReIdentificationCsv: () => {
+        const broker = new ReIdentificationBroker();
+        const [loading, setIsLoading] = useState(false);
+        return {
+            submit: (csvIdentificationRequest: AccessRequest) => {
+                setIsLoading(true);
+                return broker.PostReIdentificationCsvAsync(csvIdentificationRequest).finally(() => {
+                    setIsLoading(false);
+                })
+            },
+            loading
+        };
     }
 }
