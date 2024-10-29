@@ -17,8 +17,6 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.Lookups
         public string Email { get; set; } = string.Empty;
         public string UserPrincipalName { get; set; } = string.Empty;
         public string OrgCode { get; set; } = string.Empty;
-        public DateTimeOffset ActiveFrom { get; set; }
-        public DateTimeOffset? ActiveTo { get; set; }
         public string CreatedBy { get; set; } = string.Empty;
         public DateTimeOffset CreatedDate { get; set; }
         public string UpdatedBy { get; set; } = string.Empty;
