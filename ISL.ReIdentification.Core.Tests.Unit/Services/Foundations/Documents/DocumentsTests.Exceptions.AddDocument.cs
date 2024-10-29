@@ -14,21 +14,25 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
     public partial class DocumentsTests
     {
         [Fact]
-        public async Task ShouldThrowServicenExceptionAddDocumentAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionAddDocumentAndLogItAsync()
         {
             // given
             Stream someStream = new HasLengthStream();
             string someFileName = GetRandomString();
             string someContainer = GetRandomString();
-            Exception someException = new Exception();
+            Exception someServiceException = new Exception();
 
             var failedServiceDocumentException = new FailedServiceDocumentException(
                 message: "Failed service document error occurred, contact support.",
-                innerException: someException);
+                innerException: someServiceException);
 
             var expectedDocumentServiceException = new DocumentServiceException(
                 message: "Document service error occurred, contact support.",
                 innerException: failedServiceDocumentException);
+
+            this.blobStorageBrokerMock.Setup(broker =>
+                broker.InsertFileAsync(someStream, someFileName, someContainer))
+                    .ThrowsAsync(someServiceException);
 
             // when
             ValueTask addDocumentTask =
@@ -39,6 +43,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
 
             // then
             actualDocumentServiceException.Should().BeEquivalentTo(expectedDocumentServiceException);
+
+            this.blobStorageBrokerMock.Verify(broker =>
+                broker.InsertFileAsync(someStream, someFileName, someContainer),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
