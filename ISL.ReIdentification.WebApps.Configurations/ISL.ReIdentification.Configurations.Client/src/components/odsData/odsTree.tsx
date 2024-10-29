@@ -3,6 +3,7 @@ import { odsDataService } from "../../services/foundations/odsDataAccessService"
 import { OdsData } from "../../models/odsData/odsData";
 import { OdsTreeElement } from "./odsTreeElement";
 import { toastError } from "../../brokers/toastBroker.error";
+import { Spinner } from "react-bootstrap";
 
 type OdsTreeProps = {
     rootName: string;
@@ -12,7 +13,7 @@ type OdsTreeProps = {
 
 const OdsTree: FunctionComponent<OdsTreeProps> = ({ rootName, selectedRecords, setSelectedRecords }) => {
 
-    const { data: rootRecord } = odsDataService.useRetrieveAllOdsData(`?filter=OrganisationCode eq '${rootName}'`)
+    const { data: rootRecord, isLoading  } = odsDataService.useRetrieveAllOdsData(`?filter=OrganisationCode eq '${rootName}'`)
     const [rootRecordId, setRootRecordId] = useState("");
     const { data } = odsDataService.useGetOdsChildren(rootRecordId);
 
@@ -36,6 +37,11 @@ const OdsTree: FunctionComponent<OdsTreeProps> = ({ rootName, selectedRecords, s
 
     const removeSelectedRecord = (odsRecord: OdsData) => {
         setSelectedRecords([...selectedRecords.filter(o => o.organisationCode != odsRecord.organisationCode)])
+    }
+
+    if(isLoading)
+    {
+        return <Spinner />
     }
 
     return (
