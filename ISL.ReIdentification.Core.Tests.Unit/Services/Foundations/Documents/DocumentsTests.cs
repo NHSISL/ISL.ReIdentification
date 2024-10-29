@@ -38,6 +38,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             public override long Length => 0;
         }
 
+        public class HasLengthStream : MemoryStream
+        {
+            public override long Length => 1;
+        }
+
         public static TheoryData<Stream, string> InvalidArgumentsStreamLengthZero()
         {
             Stream stream = new ZeroLengthStream();
