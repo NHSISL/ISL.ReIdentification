@@ -82,10 +82,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
                 values: "Text is invalid");
 
             invalidUserAccessException.AddData(
-                key: nameof(UserAccess.ActiveFrom),
-                values: "Date is invalid");
-
-            invalidUserAccessException.AddData(
                 key: nameof(UserAccess.CreatedDate),
                 values: "Date is invalid");
 

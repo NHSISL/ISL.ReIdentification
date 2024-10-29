@@ -28,7 +28,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.User
             var expectedActionResult =
                 new ActionResult<IQueryable<UserAccess>>(expectedObjectResult);
 
-            userAccessProcessingService
+            userAccessProcessingServiceMock
                 .Setup(service => service.RetrieveAllUserAccessesAsync())
                     .ReturnsAsync(storageUserAccesses);
 
@@ -39,11 +39,11 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.User
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
-            userAccessProcessingService
+            userAccessProcessingServiceMock
                .Verify(service => service.RetrieveAllUserAccessesAsync(),
                    Times.Once);
 
-            userAccessProcessingService.VerifyNoOtherCalls();
+            userAccessProcessingServiceMock.VerifyNoOtherCalls();
         }
     }
 }
