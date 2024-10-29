@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useState } from "react";
-import { Form, Button, Card, Modal, Spinner, Alert } from "react-bootstrap";
+import { Form, Button, Card, Modal, Spinner, Alert, OverlayTriggerProps, Tooltip, OverlayTrigger } from "react-bootstrap";
 import { LookupView } from "../../models/views/components/lookups/lookupView";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faCopy } from "@fortawesome/free-solid-svg-icons";
@@ -7,6 +7,7 @@ import { reIdentificationService } from "../../services/foundations/reIdentifica
 import { AccessRequest } from "../../models/accessRequest/accessRequest";
 import { IdentificationItem } from "../../models/ReIdentifications/IdentificationItem";
 import { useMsal } from "@azure/msal-react";
+import { faCircleInfo } from "@fortawesome/free-solid-svg-icons/faCircleInfo";
 
 interface Option {
     value: string;
@@ -90,48 +91,61 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
         }
     }
 
+    const renderTooltip = (props: OverlayTriggerProps) => (
+        <Tooltip id="info-tooltip" {...props}>
+            This page provides a way to upload a CSV of pseudo identifiers for reidentification, please also select the column used for the pseudo identifier.
+        </Tooltip>
+    );
+
     if (!reIdResponse) {
         return (
             <>
-            <Card.Subtitle className="text-start text-muted mb-3">
+
+                <Card.Title className="text-start">
+                    <OverlayTrigger placement="right" overlay={renderTooltip}>
+                        <FontAwesomeIcon icon={faCircleInfo} className="text-primary" size="lg" />
+                    </OverlayTrigger>&nbsp;Simple Re-Id
+                </Card.Title>
+
+                <Card.Subtitle className="text-start text-muted mb-3">
                     <small>
                         Please paste the pseudo identifer in the box below and
                         provide a reason why you are identifying this patient.
                     </small>
                 </Card.Subtitle>
-            <Form onSubmit={handleSubmit}>
-                <Form.Group className="text-start">
-                    <Form.Label>Pseudo NHS Number:</Form.Label>
-                    <Form.Control
-                        type="text"
-                        name="PseudoCode"
-                        value={pseudoCode}
-                        maxLength={10}
-                        onChange={handlePseudoCodeChange}
-                        placeholder="Pseudo Number"
-                        required />
-                </Form.Group>
-                <br />
-                <Form.Group className="text-start">
-                    <Form.Label>Reidentification reason:</Form.Label>
-                    <Form.Select
-                        value={selectedLookupId}
-                        onChange={handleLookupChange}
-                        required >
-                        {lookupOptions.map((option) => (
-                            <option key={option.value} value={option.value}>
-                                {option.name}
-                            </option>
-                        ))}
-                    </Form.Select>
-                </Form.Group>
-                <br />
-                {error && <Alert variant="danger">
-                    Something went Wrong.
-                </Alert>}
-                <Button type="submit" disabled={!pseudoCode || !selectedLookupId}>
-                    {!loading ? <>Get NHS Number</> : <Spinner />}
-                </Button>
+                <Form onSubmit={handleSubmit}>
+                    <Form.Group className="text-start">
+                        <Form.Label>Pseudo NHS Number:</Form.Label>
+                        <Form.Control
+                            type="text"
+                            name="PseudoCode"
+                            value={pseudoCode}
+                            maxLength={10}
+                            onChange={handlePseudoCodeChange}
+                            placeholder="Pseudo Number"
+                            required />
+                    </Form.Group>
+                    <br />
+                    <Form.Group className="text-start">
+                        <Form.Label>Reidentification reason:</Form.Label>
+                        <Form.Select
+                            value={selectedLookupId}
+                            onChange={handleLookupChange}
+                            required >
+                            {lookupOptions.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                    {option.name}
+                                </option>
+                            ))}
+                        </Form.Select>
+                    </Form.Group>
+                    <br />
+                    {error && <Alert variant="danger">
+                        Something went Wrong.
+                    </Alert>}
+                    <Button type="submit" disabled={!pseudoCode || !selectedLookupId}>
+                        {!loading ? <>Get NHS Number</> : <Spinner />}
+                    </Button>
                 </Form>
             </>
         );

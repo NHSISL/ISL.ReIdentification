@@ -21,4 +21,8 @@ export class CsvIdentificationRequest {
     public createdDate?: Date | undefined;
     public updatedBy?: string = "";
     public updatedDate?: Date | undefined;
+
+    constructor(data: Partial<CsvIdentificationRequest>) {
+        Object.assign(this, data);
+    }
 }
