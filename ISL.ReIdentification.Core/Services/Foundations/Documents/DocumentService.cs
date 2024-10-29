@@ -30,8 +30,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             await this.blobStorageBroker.InsertFileAsync(input, fileName, container);
         });
 
-        public ValueTask RetrieveDocumentByFileNameAsync(Stream output, string fileName, string container) =>
-             throw new NotImplementedException();
+        public async ValueTask RetrieveDocumentByFileNameAsync(Stream output, string fileName, string container) =>
+             await this.blobStorageBroker.SelectByFileNameAsync(output, fileName, container);
 
         public ValueTask RemoveDocumentByFileNameAsync(string fileName, string container) =>
            throw new NotImplementedException();
