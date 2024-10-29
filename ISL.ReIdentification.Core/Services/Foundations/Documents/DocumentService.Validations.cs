@@ -25,6 +25,13 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
                 (Rule: IsInvalidOutputStream(output), Parameter: nameof(output)));
         }
 
+        private static void ValidateOnRemoveDocumentByFileName(string fileName, string container)
+        {
+            Validate(
+                (Rule: IsInvalid(fileName), Parameter: nameof(fileName)),
+                (Rule: IsInvalid(container), Parameter: nameof(container)));
+        }
+
         private static dynamic IsInvalid(string value) => new
         {
             Condition = string.IsNullOrWhiteSpace(value),

@@ -37,8 +37,12 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             await this.blobStorageBroker.SelectByFileNameAsync(output, fileName, container);
         });
 
-        public async ValueTask RemoveDocumentByFileNameAsync(string fileName, string container) =>
-           await this.blobStorageBroker.DeleteFileAsync(fileName, container);
+        public ValueTask RemoveDocumentByFileNameAsync(string fileName, string container) =>
+        TryCatch(async () =>
+        {
+            ValidateOnRemoveDocumentByFileName(fileName, container);
+            await this.blobStorageBroker.DeleteFileAsync(fileName, container);
+        });
 
         public ValueTask<string> GetDownloadLinkAsync(string fileName, string container) =>
            throw new NotImplementedException();
