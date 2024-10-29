@@ -4,6 +4,9 @@ export class UserAccessView {
     public displayName: string;
     public entraGuid: string;
     public entraUpn: string;
+    public givenName: string ;
+    public surname: string;
+    public userPrincipalName: string;
     public jobTitle: string;
     public orgCodes: string[];
     public activeFrom?: Date;
@@ -19,6 +22,9 @@ export class UserAccessView {
         displayName: string,
         entraGuid: string,
         entraUpn: string,
+        givenName: string,
+        surname: string,
+        userPrincipalName: string,
         jobTitle: string,
         orgCodes: string[],
         activeFrom?: Date,
@@ -34,6 +40,9 @@ export class UserAccessView {
         this.displayName = displayName;
         this.entraGuid = entraGuid;
         this.entraUpn = entraUpn;
+        this.givenName = givenName;
+        this.surname = surname;
+        this.userPrincipalName = userPrincipalName;
         this.jobTitle = jobTitle;
         this.activeFrom = activeFrom;
         this.activeTo = activeTo;

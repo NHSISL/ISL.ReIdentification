@@ -55,11 +55,13 @@ const UserAccessSearch: FunctionComponent<UserAccessSearchProps> = ({ selectUser
             </FormGroup>
 
             <div style={{ paddingTop: "10px" }}>
-                <Table size="sm">
+                <Table size="sm" striped hover>
                     <tbody>
                         {data && data.map((userAccess: UserAccessView) => (
                             <tr onClick={() => selectUser(userAccess)} key={userAccess.id}>
-                                <td>{userAccess.userEmail}</td>
+                                <td><small>{userAccess.displayName}</small></td>
+                                <td><small>{userAccess.email}</small></td>
+                                <td><small>{userAccess.jobTitle}</small></td>
                             </tr>
                         ))}
                     </tbody>

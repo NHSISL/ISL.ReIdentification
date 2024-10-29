@@ -8,7 +8,7 @@ export class CsvIdentificationRequestView {
     public reason: string;
     public purpose: string;
     public organisation: string;
-    public data: Uint8Array;
+    public data: string;
     public sha256Hash: string;
     public identifierColumn: string;
     public createdBy?: string;
@@ -26,7 +26,7 @@ export class CsvIdentificationRequestView {
         reason: string,
         purpose: string,
         organisation: string,
-        data: Uint8Array,
+        data: string,
         sha256Hash: string,
         identifierColumn: string,
         createdBy?: string,
@@ -43,7 +43,7 @@ export class CsvIdentificationRequestView {
         this.reason = reason || "";
         this.purpose = purpose || "";
         this.organisation = organisation || "";
-        this.data = data || 0;
+        this.data = data || "";
         this.sha256Hash = sha256Hash || "";
         this.identifierColumn = identifierColumn || "";
         this.createdBy = createdBy !== undefined ? createdBy : '';

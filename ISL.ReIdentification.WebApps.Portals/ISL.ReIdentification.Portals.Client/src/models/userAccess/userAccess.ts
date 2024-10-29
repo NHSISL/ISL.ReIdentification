@@ -3,7 +3,10 @@ export class UserAccess {
     public displayName: string = "";
     public entraGuid: string = "";
     public entraUpn: string = "";
+    public givenName: string = "";
+    public surname: string = "";
     public userEmail: string = "";
+    public userPrincipalName: string = "";
     public orgCodes: string[] = [];
     public jobTitle: string = "";
     public activeFrom?: Date | undefined;

@@ -1,37 +1,56 @@
 import React, { FunctionComponent, useState } from "react";
-import { Form, Button, Card, Modal, Spinner, Alert } from "react-bootstrap";
-import { LookupView } from "../../models/views/components/lookups/lookupView";
+import { Form, Button, Card, Spinner, Alert, OverlayTrigger, Tooltip, OverlayTriggerProps } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faCopy } from "@fortawesome/free-solid-svg-icons";
+import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 import { reIdentificationService } from "../../services/foundations/reIdentificationService";
 import { AccessRequest } from "../../models/accessRequest/accessRequest";
-import { IdentificationItem } from "../../models/ReIdentifications/IdentificationItem";
 import { useMsal } from "@azure/msal-react";
 import UserAccessSearch from "../userAccessSearch/userAccessSearch";
+import { UserAccessView } from "../../models/views/components/userAccess/userAccessView";
+import { toastSuccess } from "../../brokers/toastBroker.success";
 
-interface Option {
-    value: string;
-    name: string;
-}
+const CsvReIdentificationDetailCardView: FunctionComponent = () => {
 
-interface CsvReIdentificationDetailCardViewProps {
-    lookups: Array<LookupView>;
-}
-
-const CsvReIdentificationDetailCardView: FunctionComponent<CsvReIdentificationDetailCardViewProps> = (props) => {
-    
-    const [selectedLookupId, setSelectedLookupId] = useState<string>("");
     const [headerColumns, setHeaderColumns] = useState<string[]>([]);
+    const [csvData, setCsvData] = useState<Uint8Array | null>(null);
     const [selectedHeaderColumn, setSelectedHeaderColumn] = useState<string>("");
-    const [copiedToPasteBuffer, setCopiedToPasteBuffer] = useState(false);
-    const clipboardAvailable = navigator.clipboard;
+    const [selectedUser, setSelectedUser] = useState<UserAccessView | undefined>();
     const { submit, loading } = reIdentificationService.useRequestReIdentification();
-    const [reIdResponse, setReIdResponse] = useState<IdentificationItem | undefined>();
     const [error, setError] = useState("");
     const account = useMsal();
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        const acc = account.accounts[0];
+
+        const csvIdentificationRequest: AccessRequest = {
+            impersonationContext: undefined,
+            identificationRequest: undefined,
+            csvIdentificationRequest: {
+                id: crypto.randomUUID(),
+                requesterEntraUserId: acc.idTokenClaims?.oid,
+                requesterFirstName: "FIRSTNAME",
+                requesterLastName: "LASTNAME",
+                requesterDisplayName: "LASTNAME",
+                requesterEmail: acc.username,
+                requesterJobTitle: "TODO: Job Title",
+                recipientEntraUserId: selectedUser?.entraUserId || "",
+                recipientFirstName: selectedUser?.givenName || "",
+                recipientLastName: selectedUser?.surname || "",
+                recipientDisplayName: selectedUser?.displayName || "",
+                recipientEmail: selectedUser?.email || "",
+                recipientJobTitle: selectedUser?.jobTitle || "",
+                data: csvData || new Uint8Array(),
+                identifierColumn: selectedHeaderColumn,
+            }
+        }
+        setError("");
+        submit(csvIdentificationRequest).then((d) => {
+            console.log("Sent", d);
+            toastSuccess("CSV Sent");
+        }).catch(() => {
+            setError("Something went wrong");
+        })
     };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,6 +62,7 @@ const CsvReIdentificationDetailCardView: FunctionComponent<CsvReIdentificationDe
                 const rows = text.split("\n");
                 const headers = rows[0].split(",");
                 setHeaderColumns(headers);
+                setCsvData(new TextEncoder().encode(text));
             };
             reader.readAsText(file);
         }
@@ -52,24 +72,21 @@ const CsvReIdentificationDetailCardView: FunctionComponent<CsvReIdentificationDe
         setSelectedHeaderColumn(e.target.value);
     };
 
-    const reset = () => {
-        setReIdResponse(undefined);
-        setSelectedLookupId("");
-        setHeaderColumns([]);
-        setSelectedHeaderColumn("");
-        setCopiedToPasteBuffer(false);
-    }
+    const renderTooltip = (props: OverlayTriggerProps) => (
+        <Tooltip id="info-tooltip" {...props}>
+            This page provides a way to upload a CSV of pseudo identifiers for reidentification, please also select the column used for the pseudo identifier.
+        </Tooltip>
+    );
 
-    const copyToPasteBuffer = () => {
-        if (navigator.clipboard && reIdResponse) {
-            navigator.clipboard.writeText(reIdResponse.identifier);
-            setCopiedToPasteBuffer(true);
-        }
-    }
-
-    if (!reIdResponse) {
+   
         return (
             <>
+                <Card.Title className="text-start">
+                    <OverlayTrigger placement="right" overlay={renderTooltip}>
+                        <FontAwesomeIcon icon={faCircleInfo} className="text-primary" size="lg" />
+                    </OverlayTrigger>&nbsp;CSV Upload
+                </Card.Title>
+
                 <Card.Subtitle className="text-start text-muted mb-3">
                     <small>
                         Please upload your csv below,
@@ -78,6 +95,8 @@ const CsvReIdentificationDetailCardView: FunctionComponent<CsvReIdentificationDe
                     </small>
                 </Card.Subtitle>
                 <Form onSubmit={handleSubmit}>
+                    <UserAccessSearch selectUser={(userAccess) => { setSelectedUser(userAccess) }} />
+
                     <Form.Group className="text-start">
                         <Form.Label>Upload CSV:</Form.Label>
                         <Form.Control
@@ -103,62 +122,16 @@ const CsvReIdentificationDetailCardView: FunctionComponent<CsvReIdentificationDe
                             </Form.Select>
                         </Form.Group>
                     )}
-
-                    <UserAccessSearch />
-                    {/*<Form.Group className="text-start">*/}
-                    {/*    <Form.Label>Name:</Form.Label>*/}
-                    {/*    <Form.Control*/}
-                    {/*        type="text"*/}
-                    {/*        name="PseudoCode"*/}
-                    {/*        value={pseudoCode}*/}
-                    {/*        maxLength={10}*/}
-                    {/*        onChange={handlePseudoCodeChange}*/}
-                    {/*        placeholder="Name"*/}
-                    {/*        required />*/}
-                    {/*</Form.Group>*/}
-                    <br />
                     <br />
                     {error && <Alert variant="danger">
                         Something went Wrong.
                     </Alert>}
-                    <Button type="submit" disabled={!selectedHeaderColumn || !selectedLookupId}>
+                    <Button type="submit" disabled={!selectedHeaderColumn || !selectedUser || !selectedHeaderColumn}>
                         {!loading ? <>Send File</> : <Spinner />}
                     </Button>
                 </Form>
             </>
         );
-    }
-    if (reIdResponse) {
-        return <>
-            <p className="text-start">
-                NHS Number:</p>
-            <Card bg="success" text="white">
-                <Card.Body>
-                    {reIdResponse.identifier}&nbsp;
-                    {reIdResponse.hasAccess && clipboardAvailable &&
-                        <FontAwesomeIcon onClick={copyToPasteBuffer} icon={copiedToPasteBuffer ? faCheck : faCopy} />
-                    }
-                    {!reIdResponse.hasAccess && <Modal show={true}>
-                        <Modal.Header>
-                            <h4>Reidentification not allowed.</h4>
-                        </Modal.Header>
-                        <Modal.Body>
-                            <p>You have tried to reidentify a patient's that our records indicate that you do not have access to.</p>
-                            <p>Check that the patient is registered to an GP practice that you have access to.</p>
-                            <p>To view your ODS organisations configured in the reidentification tool click <a href="about:blank">here</a> and contact your local ICB should you need further access.</p>
-                            <p>Any changes to the patient record regisistration will take 24 hours to apply to the reidentification service </p>
-                        </Modal.Body>
-                        <Modal.Footer>
-                            <Button variant="primary" onClick={reset}>Start Over</Button>
-                        </Modal.Footer>
-                    </Modal>}
-                </Card.Body>
-            </Card>
-            <br />
-
-            <Button onClick={reset} variant="primary">Start Over</Button>
-        </>
-    }
 
     return <>Something went wrong.</>
 }

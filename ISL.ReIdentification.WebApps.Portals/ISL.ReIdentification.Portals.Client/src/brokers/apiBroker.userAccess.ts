@@ -11,12 +11,12 @@ class UserAccessBroker {
             return [];
         }
 
-        const url = `${this.relativeUserAccessUrl}?$filter=startswith(recipientEmail,'${userString}')`;
+        const url = `${this.relativeUserAccessUrl}?$filter=startswith(email,'${userString}')`;
 
         return await this.apiBroker.GetAsync(url)
             .then(result => {
-                if (result.data) {
-                    return result.data as UserAccess[];
+                if (result.data && result.data.value) {
+                    return result.data.value as UserAccess[];
                 }
             })
     }

@@ -1,24 +1,13 @@
 import { FunctionComponent } from "react";
 import { Card } from "react-bootstrap";
-import { LookupView } from "../../models/views/components/lookups/lookupView";
-import ReIdentificationDetailCardView from "../reIdentification/reIdentificationDetailCardView";
 import CsvReIdentificationDetailCardView from "./csvReIdentificationDetailCardView";
 
-interface CsvReIdentificationDetailCardProps {
-    lookups: Array<LookupView>;
-}
-
-const CsvReIdentificationDetailCard: FunctionComponent<CsvReIdentificationDetailCardProps> = (props) => {
-    const {
-        lookups,
-    } = props;
+const CsvReIdentificationDetailCard: FunctionComponent = () => {
 
     return (
-        <Card style={{ width: '25rem' }}>
+        <Card style={{ width: '50rem' }}>
             <Card.Body>
-                <CsvReIdentificationDetailCardView
-                    lookups={lookups}
-                />
+                <CsvReIdentificationDetailCardView/>
             </Card.Body>
         </Card>
     );
