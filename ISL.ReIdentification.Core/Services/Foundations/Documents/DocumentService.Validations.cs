@@ -29,7 +29,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             Message = "Stream is invalid"
         };
 
-
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
             var invalidDocumentException = new InvalidDocumentException(
