@@ -59,6 +59,34 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             }
         }
 
+        [HttpPost("bulk")]
+        public async ValueTask<ActionResult>
+            PostBulkUserAccessAsync([FromBody] BulkUserAccess bulkUserAccess)
+        {
+            try
+            {
+                await this.userAccessProcessingService.BulkAddRemoveUserAccessAsync(bulkUserAccess);
+
+                return Created();
+            }
+            catch (UserAccessProcessingValidationException userAccessProcessingValidationException)
+            {
+                return BadRequest(userAccessProcessingValidationException.InnerException);
+            }
+            catch (UserAccessProcessingDependencyValidationException lookupDependencyValidationException)
+            {
+                return BadRequest(lookupDependencyValidationException.InnerException);
+            }
+            catch (UserAccessProcessingDependencyException lookupDependencyException)
+            {
+                return InternalServerError(lookupDependencyException);
+            }
+            catch (UserAccessProcessingServiceException lookupServiceException)
+            {
+                return InternalServerError(lookupServiceException);
+            }
+        }
+
         [HttpGet]
         [EnableQuery(PageSize = 25)]
         public async ValueTask<ActionResult<IQueryable<UserAccess>>> Get()

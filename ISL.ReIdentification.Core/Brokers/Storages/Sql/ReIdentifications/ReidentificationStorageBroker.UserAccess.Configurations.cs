@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications
@@ -11,6 +12,8 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications
     {
         private void AddUserAccessConfigurations(EntityTypeBuilder<UserAccess> builder)
         {
+            builder.ToTable(userAccess => userAccess.IsTemporal());
+
             builder.Property(userAccess => userAccess.EntraUserId)
                 .IsRequired();
 
@@ -22,11 +25,8 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications
                 .HasMaxLength(15)
                 .IsRequired();
 
-            builder.Property(userAccess => userAccess.ActiveFrom)
-                .IsRequired();
-
-            builder.Property(userAccess => userAccess.ActiveTo)
-                .IsRequired(false);
+            builder.HasIndex(userAccess => new { userAccess.EntraUserId, userAccess.OrgCode })
+                .IsUnique();
 
             builder
                 .Property(userAccess => userAccess.CreatedBy)
