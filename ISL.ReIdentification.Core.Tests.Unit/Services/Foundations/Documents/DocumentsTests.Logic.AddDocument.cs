@@ -16,7 +16,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             // given
             string randomFileName = GetRandomString();
             string randomContainer = GetRandomString();
-            MemoryStream randomStream = new MemoryStream();
+            Stream randomStream = new HasLengthStream();
 
             // when
             await this.documentService.AddDocumentAsync(randomStream, randomFileName, randomContainer);
