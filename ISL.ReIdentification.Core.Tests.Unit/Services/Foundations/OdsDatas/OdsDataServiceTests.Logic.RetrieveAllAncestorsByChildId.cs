@@ -25,9 +25,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
             List<OdsData> storageOdsDatas = new List<OdsData> { storageOdsData };
             storageOdsDatas.AddRange(childrenOdsDatas);
             storageOdsDatas.AddRange(grandChildrenOdsDatas);
-            List<OdsData> expectedOdsDatas = new List<OdsData>();
-            expectedOdsDatas.AddRange(childrenOdsDatas);
-            expectedOdsDatas.Add(storageOdsData);
+            List<OdsData> expectedOdsDatas = storageOdsDatas;
 
             this.reIdentificationStorageBroker.Setup(broker =>
                 broker.SelectOdsDataByIdAsync(grandChildrenOdsDatas[0].Id))
