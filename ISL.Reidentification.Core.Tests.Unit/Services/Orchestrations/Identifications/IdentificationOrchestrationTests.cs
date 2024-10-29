@@ -145,6 +145,23 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             public override long Length => 1;
         }
 
+        public class ZeroLengthStream : MemoryStream
+        {
+            public override long Length => 0;
+        }
+
+        public static TheoryData<Stream, string> InvalidArgumentsStreamLengthZero()
+        {
+            Stream stream = new ZeroLengthStream();
+
+            return new TheoryData<Stream, string>
+            {
+                { null, null },
+                { stream, "" },
+                { stream, " " }
+            };
+        }
+
         public static TheoryData<Stream, string> InvalidArgumentsStreamHasLength()
         {
             Stream stream = new HasLengthStream();
