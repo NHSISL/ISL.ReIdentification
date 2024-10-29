@@ -17,6 +17,14 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
                 (Rule: IsInvalidInputStream(input), Parameter: nameof(input)));
         }
 
+        private static void ValidateOnRetrieveDocumentByFileName(Stream output, string fileName, string container)
+        {
+            Validate(
+                (Rule: IsInvalid(fileName), Parameter: nameof(fileName)),
+                (Rule: IsInvalid(container), Parameter: nameof(container)),
+                (Rule: IsInvalidOutputStream(output), Parameter: nameof(output)));
+        }
+
         private static dynamic IsInvalid(string value) => new
         {
             Condition = string.IsNullOrWhiteSpace(value),
@@ -26,6 +34,12 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
         private static dynamic IsInvalidInputStream(Stream inputStream) => new
         {
             Condition = inputStream is null || inputStream.Length == 0,
+            Message = "Stream is invalid"
+        };
+
+        private static dynamic IsInvalidOutputStream(Stream outputStream) => new
+        {
+            Condition = outputStream is null || outputStream.Length > 0,
             Message = "Stream is invalid"
         };
 

@@ -26,7 +26,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                 message: "Invalid document. Please correct the errors and try again.");
 
             invalidDocumentException.AddData(
-                key: "input",
+                key: "output",
                 values: "Stream is invalid");
 
             invalidDocumentException.AddData(
