@@ -1,5 +1,5 @@
 import { FunctionComponent, useMemo, useState } from "react";
-import { debounce } from "lodash";
+import debounce from "lodash/debounce";
 import { Card, Container, Table } from "react-bootstrap";
 import LookupRow from "./lookupRow";
 import { LookupView } from "../../../models/views/components/lookups/lookupView";
