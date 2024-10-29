@@ -3,14 +3,13 @@
 // ---------------------------------------------------------
 
 using System;
-using Microsoft.EntityFrameworkCore;
 
 namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.OdsDatas
 {
     public class OdsData
     {
         public Guid Id { get; set; }
-        public HierarchyId OdsHierarchy { get; set; }
+        //public HierarchyId OdsHierarchy { get; set; }
         public string OrganisationCode { get; set; }
         public string OrganisationName { get; set; }
         public DateTimeOffset? RelationshipWithParentStartDate { get; set; }
