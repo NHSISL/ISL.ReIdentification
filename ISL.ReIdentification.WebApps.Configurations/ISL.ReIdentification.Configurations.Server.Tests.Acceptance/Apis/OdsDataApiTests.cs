@@ -11,11 +11,11 @@ using Tynamix.ObjectFiller;
 namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
 {
     [Collection(nameof(ApiTestCollection))]
-    public partial class OdsDatasApiTests
+    public partial class OdsDataApiTests
     {
         private readonly ApiBroker apiBroker;
 
-        public OdsDatasApiTests(ApiBroker apiBroker)
+        public OdsDataApiTests(ApiBroker apiBroker)
         {
             this.apiBroker = apiBroker;
         }
@@ -39,7 +39,6 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
         private static Filler<OdsData> CreateOdsDataFiller(
             DateTimeOffset dateTimeOffset, HierarchyId hierarchyId = null)
         {
-            string user = Guid.NewGuid().ToString();
             var filler = new Filler<OdsData>();
 
             if (hierarchyId == null)
@@ -50,8 +49,8 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use((DateTimeOffset?)default)
-                .OnProperty(odsData => odsData.OrganisationCode).Use(GetRandomStringWithLengthOf(15))
-                .OnProperty(odsData => odsData.OrganisationName).Use(GetRandomStringWithLengthOf(30))
+                .OnProperty(odsData => odsData.OrganisationCode).Use(GetRandomStringWithLengthOf(5))
+                .OnProperty(odsData => odsData.OrganisationName).Use(GetRandomStringWithLengthOf(5))
                 .OnProperty(odsData => odsData.OdsHierarchy).Use(hierarchyId);
 
             return filler;

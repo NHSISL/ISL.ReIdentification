@@ -9,7 +9,7 @@ using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.OdsData
 
 namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
 {
-    public partial class OdsDatasApiTests
+    public partial class OdsDataApiTests
     {
         [Fact]
         public async Task ShouldPostOdsDataAsync()
