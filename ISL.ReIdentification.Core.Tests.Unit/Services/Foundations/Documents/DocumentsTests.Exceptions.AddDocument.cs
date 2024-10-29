@@ -14,7 +14,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
     public partial class DocumentsTests
     {
         [Fact]
-        public async Task ShouldThrowServiceExceptionAddDocumentAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnAddDocumentAndLogItAsync()
         {
             // given
             Stream someStream = new HasLengthStream();
