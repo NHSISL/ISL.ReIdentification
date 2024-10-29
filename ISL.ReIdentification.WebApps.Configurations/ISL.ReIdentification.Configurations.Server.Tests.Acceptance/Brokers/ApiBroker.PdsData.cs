@@ -23,6 +23,9 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Brokers
         public async ValueTask<PdsData> GetPdsDataByIdAsync(Guid pdsDataId) =>
             await this.apiFactoryClient.GetContentAsync<PdsData>($"{PdsDataRelativeUrl}/{pdsDataId}");
 
+        public async ValueTask<PdsData> PutPdsDataAsync(PdsData pdsData) =>
+            await this.apiFactoryClient.PutContentAsync(PdsDataRelativeUrl, pdsData);
+
         public async ValueTask<PdsData> DeletePdsDataByIdAsync(Guid pdsDataId) =>
             await this.apiFactoryClient.DeleteContentAsync<PdsData>(
                 $"{PdsDataRelativeUrl}/{pdsDataId}");

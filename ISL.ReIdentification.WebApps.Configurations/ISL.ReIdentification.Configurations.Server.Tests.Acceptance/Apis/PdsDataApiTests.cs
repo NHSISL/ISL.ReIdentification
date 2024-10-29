@@ -34,8 +34,10 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
 
         private static PdsData CreateRandomPdsData() =>
             CreatePdsDataFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
+      
         private static PdsData CreateRandomPdsData(DateTimeOffset dateTimeOffset) =>
             CreatePdsDataFiller(dateTimeOffset).Create();
+      
         private static Filler<PdsData> CreatePdsDataFiller(DateTimeOffset dateTimeOffset)
         {
             string user = Guid.NewGuid().ToString();
@@ -68,6 +70,14 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
             }
 
             return randomPdsDatas;
+        }
+
+        private static PdsData UpdatePdsDataWithRandomValues(PdsData inputPdsData)
+        {
+            var updatedPdsData = CreateRandomPdsData();
+            updatedPdsData.Id = inputPdsData.Id;
+
+            return updatedPdsData;
         }
     }
 }
