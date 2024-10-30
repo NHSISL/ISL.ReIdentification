@@ -3,6 +3,8 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.OdsDatas;
@@ -51,6 +53,26 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
 
             // then
             actualOdsData.Should().NotBeNull();
+        }
+
+        [Fact]
+        public async Task ShouldGetChildrenAsync()
+        {
+            // given
+            OdsData randomOdsData = await PostRandomOdsDataAsync();
+            List<OdsData> randomOdsDatas = await PostRandomChildOdsDatasAsync(randomOdsData.OdsHierarchy);
+            List<OdsData> expectedOdsDatas = randomOdsDatas;
+
+            // when
+            List<OdsData> actualOdsDatas = await this.apiBroker.GetChildrenAsync(randomOdsData.Id);
+
+            // then
+            foreach (OdsData expectedOdsData in expectedOdsDatas)
+            {
+                OdsData actualOdsData = actualOdsDatas.Single(odsData => odsData.Id == expectedOdsData.Id);
+                actualOdsData.Should().BeEquivalentTo(expectedOdsData);
+                await this.apiBroker.DeleteOdsDataByIdAsync(actualOdsData.Id);
+            }
         }
     }
 }
