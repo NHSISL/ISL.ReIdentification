@@ -49,12 +49,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Notification
                 loggingBroker: this.loggingBrokerMock.Object);
 
             // when
-            ValueTask sendCsvPendingApprovalNotificationTask =
+            ValueTask sendCsvApprovedNotificationTask =
                 notificationService.SendCsvApprovedNotificationAsync(invalidAccessRequest);
 
             NotificationDependencyValidationException actualNotificationDependencyValidationException =
                 await Assert.ThrowsAsync<NotificationDependencyValidationException>(
-                    testCode: sendCsvPendingApprovalNotificationTask.AsTask);
+                    testCode: sendCsvApprovedNotificationTask.AsTask);
 
             // then
             actualNotificationDependencyValidationException.Should()
@@ -110,12 +110,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Notification
                     loggingBroker: this.loggingBrokerMock.Object);
 
             // when
-            ValueTask sendCsvPendingApprovalNotificationTask =
+            ValueTask sendCsvApprovedNotificationTask =
                 notificationService.SendCsvApprovedNotificationAsync(invalidAccessRequest);
 
             NotificationDependencyException actualNotificationDependencyException =
                 await Assert.ThrowsAsync<NotificationDependencyException>(
-                    testCode: sendCsvPendingApprovalNotificationTask.AsTask);
+                    testCode: sendCsvApprovedNotificationTask.AsTask);
 
             // then
             actualNotificationDependencyException.Should()
@@ -171,12 +171,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Notification
                     loggingBroker: this.loggingBrokerMock.Object);
 
             // when
-            ValueTask sendCsvPendingApprovalNotificationTask =
+            ValueTask sendCsvApprovedNotificationTask =
                 notificationService.SendCsvApprovedNotificationAsync(invalidAccessRequest);
 
             NotificationServiceException actualNotificationServiceException =
                 await Assert.ThrowsAsync<NotificationServiceException>(
-                    testCode: sendCsvPendingApprovalNotificationTask.AsTask);
+                    testCode: sendCsvApprovedNotificationTask.AsTask);
 
             // then
             actualNotificationServiceException.Should()
