@@ -98,6 +98,12 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             }
         }
 
+        [HttpGet("GetDescendants")]
+        public async ValueTask<ActionResult<List<OdsData>>> GetAllDescendants(Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
         [HttpGet("{odsDataId}")]
         public async ValueTask<ActionResult<OdsData>> GetOdsDataByIdAsync(Guid odsDataId)
         {
