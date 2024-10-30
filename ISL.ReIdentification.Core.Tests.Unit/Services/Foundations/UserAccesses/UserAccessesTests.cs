@@ -118,10 +118,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             DateTimeOffset dateTimeOffset,
             int childrenCount)
         {
-            OdsData futureOdsData = CreateRandomOdsData(orgCode);
+            OdsData futureOdsData = CreateRandomOdsData(GetRandomString());
             futureOdsData.RelationshipWithParentStartDate = dateTimeOffset.AddDays(GetRandomNumber());
             futureOdsData.RelationshipWithParentEndDate = dateTimeOffset.AddDays(GetRandomNumber());
-            OdsData pastOdsData = CreateRandomOdsData(orgCode);
+            OdsData pastOdsData = CreateRandomOdsData(GetRandomString());
             pastOdsData.RelationshipWithParentStartDate = dateTimeOffset.AddDays(-GetRandomNumber());
             pastOdsData.RelationshipWithParentEndDate = dateTimeOffset.AddDays(-1);
             OdsData currentActiveOdsData = CreateRandomOdsData(orgCode);

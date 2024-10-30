@@ -14,6 +14,7 @@ using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.NECS;
 using ISL.ReIdentification.Core.Brokers.Notifications;
 using ISL.ReIdentification.Core.Brokers.Securities;
+using ISL.ReIdentification.Core.Brokers.Storages.Blob;
 using ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Brokers.NECS;
 using ISL.ReIdentification.Core.Models.Brokers.Notifications;
@@ -160,6 +161,7 @@ namespace ISL.ReIdentification.Portals.Server
             services.AddTransient<IReIdentificationStorageBroker, ReIdentificationStorageBroker>();
             services.AddTransient<INotificationBroker, NotificationBroker>();
             services.AddTransient<IHashBroker, HashBroker>();
+            services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
 
             NECSConfiguration necsConfigurations = configuration
                 .GetSection("necsConfiguration")
