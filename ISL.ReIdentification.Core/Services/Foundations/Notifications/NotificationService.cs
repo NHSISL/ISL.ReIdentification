@@ -68,7 +68,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
         TryCatch(async () =>
         {
             ValidateOnSendCsvApprovedNotificationAsync(accessRequest, this.notificationConfigurations);
-
             string toEmail = accessRequest.CsvIdentificationRequest.RequesterEmail;
             string subject = "Request Approved";
             string body = "Your request has been approved";
@@ -97,7 +96,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
             };
 
             ValidateInputsOnSendCsvApprovedNotificationAsync(toEmail, subject, body, personalisation);
-
             await this.notificationBroker.SendEmailAsync(toEmail, subject, body, personalisation);
         });
 
@@ -105,7 +103,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
         TryCatch(async () =>
         {
             ValidateOnSendCsvDeniedNotificationAsync(accessRequest, this.notificationConfigurations);
-
             string toEmail = accessRequest.CsvIdentificationRequest.RequesterEmail;
             string subject = "Request Denied";
             string body = "Your request has been denied";
@@ -134,7 +131,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
             };
 
             ValidateInputsOnSendCsvDeniedNotificationAsync(toEmail, subject, body, personalisation);
-
             await this.notificationBroker.SendEmailAsync(toEmail, subject, body, personalisation);
         });
 
