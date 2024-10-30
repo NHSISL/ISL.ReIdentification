@@ -11,8 +11,9 @@ type UserAccessSearchProps = {
 };
 
 const UserAccessSearch: FunctionComponent<UserAccessSearchProps> = ({ selectUser }) => {
-    const [searchTerm, setSearchTerm] = useState<string>();
+    const [searchTerm, setSearchTerm] = useState<string>("");
     const [debouncedTerm, setDebouncedTerm] = useState<string>("");
+    const [selectedUserName, setSelectedUserName] = useState<string | null>(null);
     const { data } = userAccessService.useSearchUserAccess(debouncedTerm);
 
     const handleSearchChange = (value: string) => {
@@ -30,6 +31,17 @@ const UserAccessSearch: FunctionComponent<UserAccessSearchProps> = ({ selectUser
 
     const clearSearch = () => {
         handleSearchChange("");
+        setSelectedUserName(null);
+    }
+
+    const handleUserSelect = (userAccess: UserAccessView) => {
+        selectUser(userAccess);
+        setSelectedUserName(userAccess.email);
+        setSearchTerm("");
+    }
+
+    const clearSelectedUser = () => {
+        setSelectedUserName(null);
     }
 
     return (
@@ -53,19 +65,30 @@ const UserAccessSearch: FunctionComponent<UserAccessSearchProps> = ({ selectUser
                 </InputGroup>
             </FormGroup>
 
-            <div style={{ paddingTop: "10px" }}>
-                <Table size="sm" striped hover>
-                    <tbody>
-                        {data && data.map((userAccess: UserAccessView) => (
-                            <tr onClick={() => selectUser(userAccess)} key={userAccess.id}>
-                                <td><small>{userAccess.displayName}</small></td>
-                                <td><small>{userAccess.email}</small></td>
-                                <td><small>{userAccess.jobTitle}</small></td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </Table>
-            </div>
+            {selectedUserName ? (
+                <div>
+                    <p>
+                        <small>Selected User: <strong>{selectedUserName}</strong></small>
+                        <Button variant="link" onClick={clearSelectedUser}>
+                            <FontAwesomeIcon icon={faTimes}  />
+                        </Button>
+                    </p>
+                </div>
+            ) : (
+                <div style={{ paddingTop: "10px" }}>
+                    <Table size="sm" striped hover>
+                        <tbody>
+                            {data && data.map((userAccess: UserAccessView) => (
+                                <tr onClick={() => handleUserSelect(userAccess)} key={userAccess.id}>
+                                    <td><small>{userAccess.displayName}</small></td>
+                                    <td><small>{userAccess.email}</small></td>
+                                    <td><small>{userAccess.jobTitle}</small></td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </Table>
+                </div>
+            )}
         </>
     );
 };
