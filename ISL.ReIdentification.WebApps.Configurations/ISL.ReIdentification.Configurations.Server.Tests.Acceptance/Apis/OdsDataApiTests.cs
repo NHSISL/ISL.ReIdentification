@@ -67,8 +67,8 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use((DateTimeOffset?)default)
                 .OnProperty(odsData => odsData.OrganisationCode).Use(GetRandomStringWithLengthOf(5))
-                .OnProperty(odsData => odsData.OrganisationName).Use(GetRandomStringWithLengthOf(5));
-            //.OnProperty(odsData => odsData.OdsHierarchy).Use(hierarchyId);
+                .OnProperty(odsData => odsData.OrganisationName).Use(GetRandomStringWithLengthOf(5))
+                .OnProperty(odsData => odsData.OdsHierarchy).Use(hierarchyId.ToString());
 
             return filler;
         }
