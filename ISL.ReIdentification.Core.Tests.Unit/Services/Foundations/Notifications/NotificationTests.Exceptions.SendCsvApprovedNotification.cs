@@ -49,7 +49,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Notification
                 loggingBroker: this.loggingBrokerMock.Object);
 
             // when
-            ValueTask sendCsvApprovedNotificationTask =n
+            ValueTask sendCsvApprovedNotificationTask =
                 notificationService.SendCsvApprovedNotificationAsync(invalidAccessRequest);
 
             NotificationDependencyValidationException actualNotificationDependencyValidationException =
