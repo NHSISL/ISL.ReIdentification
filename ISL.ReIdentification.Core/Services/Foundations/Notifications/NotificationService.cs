@@ -102,7 +102,41 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
         });
 
         public ValueTask SendCsvDeniedNotificationAsync(AccessRequest accessRequest) =>
-            throw new System.NotImplementedException();
+        TryCatch(async () =>
+        {
+            ValidateOnSendCsvDeniedNotificationAsync(accessRequest, this.notificationConfigurations);
+
+            string toEmail = accessRequest.CsvIdentificationRequest.RequesterEmail;
+            string subject = "Request Denied";
+            string body = "Your request has been denied";
+
+            Dictionary<string, dynamic> personalisation = new Dictionary<string, dynamic>
+            {
+                { "id", accessRequest.CsvIdentificationRequest.Id.ToString() },
+                { "requesterEntraUserId", accessRequest.CsvIdentificationRequest.RequesterEntraUserId.ToString() },
+                { "requesterFirstName", accessRequest.CsvIdentificationRequest.RequesterFirstName },
+                { "requesterLastName", accessRequest.CsvIdentificationRequest.RequesterLastName },
+                { "requesterDisplayName", accessRequest.CsvIdentificationRequest.RequesterDisplayName },
+                { "requesterEmail", accessRequest.CsvIdentificationRequest.RequesterEmail },
+                { "requesterJobTitle", accessRequest.CsvIdentificationRequest.RequesterJobTitle },
+                { "recipientEntraUserId", accessRequest.CsvIdentificationRequest.RecipientEntraUserId.ToString() },
+                { "recipientFirstName", accessRequest.CsvIdentificationRequest.RecipientFirstName },
+                { "recipientLastName", accessRequest.CsvIdentificationRequest.RecipientLastName },
+                { "recipientDisplayName", accessRequest.CsvIdentificationRequest.RecipientDisplayName },
+                { "recipientEmail", accessRequest.CsvIdentificationRequest.RecipientEmail },
+                { "recipientJobTitle", accessRequest.CsvIdentificationRequest.RecipientJobTitle },
+                { "reason", accessRequest.CsvIdentificationRequest.Reason },
+                { "organisation", accessRequest.CsvIdentificationRequest.Organisation },
+                { "identifierColumn", accessRequest.CsvIdentificationRequest.IdentifierColumn },
+                { "templateId", this.notificationConfigurations.CsvPendingApprovalRequestTemplateId },
+                { "configurationBaseUrl", this.notificationConfigurations.ConfigurationBaseUrl },
+                { "portalBaseUrl", this.notificationConfigurations.PortalBaseUrl },
+            };
+
+            ValidateInputsOnSendCsvDeniedNotificationAsync(toEmail, subject, body, personalisation);
+
+            await this.notificationBroker.SendEmailAsync(toEmail, subject, body, personalisation);
+        });
 
         public ValueTask SendImpersonationPendingApprovalNotificationAsync(AccessRequest accessRequest) =>
             throw new System.NotImplementedException();
