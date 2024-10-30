@@ -16,7 +16,7 @@ using RESTFulSense.Controllers;
 
 namespace ISL.ReIdentification.Configurations.Server.Controllers
 {
-    [Authorize(Roles = "Administrators")]
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class UserAccessesController : RESTFulController
@@ -44,6 +44,34 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
                when (lookupDependencyValidationException.InnerException is AlreadyExistsUserAccessException)
             {
                 return Conflict(lookupDependencyValidationException.InnerException);
+            }
+            catch (UserAccessProcessingDependencyValidationException lookupDependencyValidationException)
+            {
+                return BadRequest(lookupDependencyValidationException.InnerException);
+            }
+            catch (UserAccessProcessingDependencyException lookupDependencyException)
+            {
+                return InternalServerError(lookupDependencyException);
+            }
+            catch (UserAccessProcessingServiceException lookupServiceException)
+            {
+                return InternalServerError(lookupServiceException);
+            }
+        }
+
+        [HttpPost("bulk")]
+        public async ValueTask<ActionResult>
+            PostBulkUserAccessAsync([FromBody] BulkUserAccess bulkUserAccess)
+        {
+            try
+            {
+                await this.userAccessProcessingService.BulkAddRemoveUserAccessAsync(bulkUserAccess);
+
+                return Created();
+            }
+            catch (UserAccessProcessingValidationException userAccessProcessingValidationException)
+            {
+                return BadRequest(userAccessProcessingValidationException.InnerException);
             }
             catch (UserAccessProcessingDependencyValidationException lookupDependencyValidationException)
             {
