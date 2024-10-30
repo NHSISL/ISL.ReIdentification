@@ -32,5 +32,33 @@ export const reIdentificationService = {
             },
             loading
         };
+    },
+
+    useGetCsvIdentificationRequestById: (id: string) => {
+        const broker = new ReIdentificationBroker();
+        const [loading, setIsLoading] = useState(false);
+        const [data, setData] = useState<AccessRequest | null>(null);
+        const [error, setError] = useState<Error | null>(null);
+
+        return {
+            fetch: () => {
+                setIsLoading(true);
+                return broker.GetCsvIdentificationRequestByIdAsync(id)
+                    .then(result => {
+                        setData(result);
+                        setError(null);
+                    })
+                    .catch(err => {
+                        setError(err);
+                        setData(null);
+                    })
+                    .finally(() => {
+                        setIsLoading(false);
+                    });
+            },
+            loading,
+            data,
+            error
+        };
     }
 }

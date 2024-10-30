@@ -4,6 +4,7 @@ import ApiBroker from "./apiBroker";
 class SimpleReIdentificationBroker {
     relativeReIdentificationUrl = '/api/reIdentification/';
     relativeReIdentificationCsvUrl = '/api/reIdentification/submitcsv';
+    relativeCsvReIdentificationUrl = '/api/reIdentification/csvreidentification?csvIdentificationRequestId=';
 
     private apiBroker: ApiBroker = new ApiBroker();
 
@@ -14,6 +15,13 @@ class SimpleReIdentificationBroker {
 
     async PostReIdentificationCsvAsync(accessRequestView: AccessRequest) {
         return await this.apiBroker.PostAsync(this.relativeReIdentificationCsvUrl, accessRequestView)
+            .then(result => result.data as AccessRequest);
+    }
+
+    async GetCsvIdentificationRequestByIdAsync(id: string) {
+        const url = `${this.relativeCsvReIdentificationUrl}${id}`;
+
+        return await this.apiBroker.GetAsync(url)
             .then(result => result.data as AccessRequest);
     }
 }

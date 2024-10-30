@@ -10,7 +10,7 @@ export const CsvReIdentificationPage = () => {
                 <BreadCrumbBase
                     link="/"
                     backLink="Home"
-                    currentLink="Csv Re-Identification">
+                    currentLink="Dataset Re-Identification">
                 </BreadCrumbBase>
                 <div className="mt-3">
                     <CsvReIdentificationDetail />

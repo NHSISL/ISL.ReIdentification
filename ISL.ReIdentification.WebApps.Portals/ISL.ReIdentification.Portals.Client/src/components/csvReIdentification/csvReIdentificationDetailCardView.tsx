@@ -55,16 +55,15 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
             console.log("Sent", d);
             toastSuccess("CSV Sent");
             setSavedSuccessfull(true)
-            //set success and change form below to sent page and what to wait for
         }).catch(() => {
             setSavedSuccessfull(false)
-            setError("Something went wrong");
+            setError("Something went wrong when saving, please contact an administrator");
         })
     };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        if (file) {
+        if (file && file.name.endsWith(".csv")) {
             const reader = new FileReader();
             reader.onload = (event) => {
                 const text = event.target?.result as string;
@@ -76,6 +75,8 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                 setCsvData(base64String);
             };
             reader.readAsText(file);
+        } else {
+            setError("Something went wrong.  Please upload a valid .csv file.");
         }
     };
 
@@ -88,7 +89,6 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
             This page provides a way to upload a CSV of pseudo identifiers for reidentification, please also select the column used for the pseudo identifier.
         </Tooltip>
     );
-
 
     return (
         <>
@@ -117,6 +117,7 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                                 name="PseudoCsv"
                                 onChange={handleFileChange}
                                 placeholder="Upload CSV"
+                                accept=".csv"
                                 required />
                         </Form.Group>
                         <br />
@@ -137,7 +138,7 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                         )}
                         <br />
                         {error && <Alert variant="danger">
-                            Something went Wrong.
+                            {error}
                         </Alert>}
                         <Button type="submit" disabled={!selectedHeaderColumn || !selectedUser || !selectedHeaderColumn}>
                             {!loading ? <>Send File</> : <Spinner />}
@@ -145,14 +146,14 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                     </Form>
                 </>
             ) : (
-                    <>
-                        SAVED
-                    </>
+                <>
+                    SENT
+                </>
             )}
         </>
     );
 
-    return <>Something went wrong.</>
+    return <>{error ? error : "Something went wrong."}</>;
 }
 
 export default CsvReIdentificationDetailCardView;

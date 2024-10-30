@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useState } from "react";
-import { Form, Button, Card, Modal, Spinner, Alert, OverlayTriggerProps, Tooltip, OverlayTrigger } from "react-bootstrap";
+import { Form, Button, Card, Modal, Spinner, Alert, Tooltip, OverlayTrigger } from "react-bootstrap";
 import { LookupView } from "../../models/views/components/lookups/lookupView";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faCopy } from "@fortawesome/free-solid-svg-icons";
@@ -71,7 +71,7 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
     };
 
     const lookupOptions: Array<Option> = [
-        { value: "", name: "Select Purpose..." },
+        { value: "", name: "Select Reason..." },
         ...lookups.map((lookup) => ({
             value: lookup.value.toString() || "0",
             name: lookup.name || "",
@@ -94,7 +94,8 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
 
     const renderTooltip = (props: OverlayInjectedProps) => (
         <Tooltip id="info-tooltip" {...props}>
-            This page provides a way to upload a single pseudo identifier for reidentification, please also select the column used for the pseudo identifier.
+            This page provides a way to upload a single pseudo identifier for reidentification,
+            please also select the column used for the pseudo identifier.
         </Tooltip>
     );
 
@@ -121,10 +122,17 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
                             name="PseudoCode"
                             value={pseudoCode}
                             maxLength={10}
+                            minLength={10}
+                            inputMode="numeric"
+                            pattern="\d*"
                             onChange={handlePseudoCodeChange}
                             placeholder="Pseudo Number"
                             required />
                     </Form.Group>
+                    <Form.Text className="text-muted">
+                        <small>Pseudo Numbers need to be 10 characters long and only contain numbers.</small>
+                    </Form.Text>
+                    <br />
                     <br />
                     <Form.Group className="text-start">
                         <Form.Label>Reidentification reason:</Form.Label>

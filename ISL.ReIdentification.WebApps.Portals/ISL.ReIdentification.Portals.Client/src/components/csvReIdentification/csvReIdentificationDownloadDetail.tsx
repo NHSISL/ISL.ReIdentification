@@ -1,6 +1,7 @@
 import { FunctionComponent, useState } from "react";
 import { Alert, Button, Col, Container, Form, Row, Spinner } from "react-bootstrap";
 import { csvIdentificationRequestService } from "../../services/foundations/csvIdentificationRequestService";
+import { reIdentificationService } from "../../services/foundations/reIdentificationService";
 import { LookupView } from "../../models/views/components/lookups/lookupView";
 import { lookupViewService } from "../../services/views/lookups/lookupViewService";
 
@@ -12,7 +13,6 @@ interface Option {
     value: string;
     name: string;
 }
-
 
 const CsvReIdentificationDownloadDetail: FunctionComponent<CsvReIdentificationDownloadDetailProps> = ({ csvIdentificationRequestId }) => {
 
@@ -26,6 +26,9 @@ const CsvReIdentificationDownloadDetail: FunctionComponent<CsvReIdentificationDo
     } = csvIdentificationRequestService
         .useSelectCsvIdentificationByCsvIdentificationRequestIdRequest(
             csvIdentificationRequestId!);
+
+    const { fetch, loading: fetchLoading, data: fetchData, error: fetchError }
+        = reIdentificationService.useGetCsvIdentificationRequestById(csvIdentificationRequestId!);
 
     if (isLoading) {
         return <p><Spinner /></p>;
@@ -51,10 +54,24 @@ const CsvReIdentificationDownloadDetail: FunctionComponent<CsvReIdentificationDo
         setSelectedLookupId(e.target.value);
     };
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        try {
+            await fetch(data.id);
+            if (fetchData) {
+                const blob = new Blob([fetchData], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'reidentification.csv';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            }
+        } catch (error) {
+            console.error("Error downloading the file", error);
+        }
     }
-
 
     return (
         <Container fluid>
@@ -64,7 +81,6 @@ const CsvReIdentificationDownloadDetail: FunctionComponent<CsvReIdentificationDo
                 <Alert variant="info">
                     <Row>
                         <Col md={4} className="mb-3">
-                            <div><strong>Requester Entra User ID:</strong> <span>{data.requesterEntraUserId}</span></div>
                             <div><strong>Requester First Name:</strong> <span>{data.requesterFirstName}</span></div>
                             <div><strong>Requester Last Name:</strong> <span>{data.requesterLastName}</span></div>
                             <div><strong>Requester Display Name:</strong> <span>{data.requesterDisplayName}</span></div>
@@ -73,7 +89,6 @@ const CsvReIdentificationDownloadDetail: FunctionComponent<CsvReIdentificationDo
                         </Col>
                         <Col md={4} className="mb-3">
 
-                            <div><strong>Recipient Entra User ID:</strong> <span>{data.recipientEntraUserId}</span></div>
                             <div><strong>Recipient First Name:</strong> <span>{data.recipientFirstName}</span></div>
                             <div><strong>Recipient Last Name:</strong> <span>{data.recipientLastName}</span></div>
                             <div><strong>Recipient Display Name:</strong> <span>{data.recipientDisplayName}</span></div>
@@ -84,7 +99,6 @@ const CsvReIdentificationDownloadDetail: FunctionComponent<CsvReIdentificationDo
 
                             <div><strong>Reason:</strong> <span>{data.reason}</span></div>
                             <div><strong>Organisation:</strong> <span>{data.organisation}</span></div>
-                            <div><strong>SHA256 Hash:</strong> <span>{data.sha256Hash}</span></div>
                             <div><strong>Identifier Column:</strong> <span>{data.identifierColumn}</span></div>
                         </Col>
                     </Row>
@@ -111,13 +125,13 @@ const CsvReIdentificationDownloadDetail: FunctionComponent<CsvReIdentificationDo
                         {error && <Alert variant="danger">
                             Something went Wrong.
                         </Alert>}
-                        <Button type="submit" disabled={!selectedLookupId}>
-                            {!loading ? <>Download</> : <Spinner />}
+                        <Button type="submit" disabled={!selectedLookupId || fetchLoading}>
+                            {!fetchLoading ? <>Download</> : <Spinner />}
                         </Button>
                     </Form>
 
-                       TODO:  Implement Download link
-               
+                    TODO:  Implement Download link
+
                 </Row>
             </Row>
         </Container>
