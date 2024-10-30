@@ -9,7 +9,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.Ods
     public class OdsData
     {
         public Guid Id { get; set; }
-        //public HierarchyId OdsHierarchy { get; set; }
+        public string OdsHierarchy { get; set; }
         public string OrganisationCode { get; set; }
         public string OrganisationName { get; set; }
         public DateTimeOffset? RelationshipWithParentStartDate { get; set; }
