@@ -61,6 +61,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
             // given
             OdsData randomOdsData = await PostRandomOdsDataAsync();
             List<OdsData> randomOdsDatas = await PostRandomChildOdsDatasAsync(randomOdsData.OdsHierarchy);
+            List<OdsData> grandchildrenDatas = await PostRandomChildOdsDatasAsync(randomOdsDatas[0].OdsHierarchy);
             List<OdsData> expectedOdsDatas = randomOdsDatas;
 
             // when
@@ -73,6 +74,13 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
                 actualOdsData.Should().BeEquivalentTo(expectedOdsData);
                 await this.apiBroker.DeleteOdsDataByIdAsync(actualOdsData.Id);
             }
+
+            foreach (OdsData grandchildOdsData in grandchildrenDatas)
+            {
+                await this.apiBroker.DeleteOdsDataByIdAsync(grandchildOdsData.Id);
+            }
+
+            await this.apiBroker.DeleteOdsDataByIdAsync(randomOdsData.Id);
         }
     }
 }
