@@ -138,6 +138,31 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
                     $"{nameof(NotificationConfigurations.PortalBaseUrl)}"));
         }
 
+        private static void ValidateOnSendImpersonationDeniedNotificationAsync(
+            AccessRequest accessRequest,
+            NotificationConfigurations notificationConfigurations)
+        {
+            Validate(
+                (Rule: IsInvalid(accessRequest), Parameter: nameof(AccessRequest)),
+                (Rule: IsInvalid(notificationConfigurations), Parameter: nameof(NotificationConfigurations)));
+
+            Validate(
+                (Rule: IsInvalid(accessRequest.CsvIdentificationRequest),
+                Parameter: $"{nameof(AccessRequest)}.{nameof(AccessRequest.CsvIdentificationRequest)}"),
+
+                (Rule: IsInvalid(notificationConfigurations.CsvPendingApprovalRequestTemplateId),
+                Parameter: $"{nameof(NotificationConfigurations)}." +
+                    $"{nameof(NotificationConfigurations.CsvPendingApprovalRequestTemplateId)}"),
+
+                (Rule: IsInvalid(notificationConfigurations.ConfigurationBaseUrl),
+                Parameter: $"{nameof(NotificationConfigurations)}." +
+                    $"{nameof(NotificationConfigurations.ConfigurationBaseUrl)}"),
+
+                (Rule: IsInvalid(notificationConfigurations.PortalBaseUrl),
+                Parameter: $"{nameof(NotificationConfigurations)}." +
+                    $"{nameof(NotificationConfigurations.PortalBaseUrl)}"));
+        }
+
         private static void ValidateInputsOnSendCsvPendingApprovalNotificationAsync(
             string toEmail,
             string subject,
@@ -191,6 +216,19 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
         }
 
         private static void ValidateInputsOnSendImpersonationApprovedNotificationAsync(
+            string toEmail,
+            string subject,
+            string body,
+            Dictionary<string, dynamic> personalisation)
+        {
+            Validate(
+                (Rule: IsInvalid(toEmail), Parameter: nameof(toEmail)),
+                (Rule: IsInvalid(subject), Parameter: nameof(subject)),
+                (Rule: IsInvalid(body), Parameter: nameof(body)),
+                (Rule: IsInvalid(personalisation), Parameter: nameof(personalisation)));
+        }
+
+        private static void ValidateInputsOnSendImpersonationDeniedNotificationAsync(
             string toEmail,
             string subject,
             string body,
