@@ -101,7 +101,9 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
         [HttpGet("GetDescendants")]
         public async ValueTask<ActionResult<List<OdsData>>> GetAllDescendants(Guid id)
         {
-            throw new NotImplementedException();
+            List<OdsData> retrievedOdsDatas = await this.odsDataService.RetrieveAllDecendentsByParentId(id);
+
+            return Ok(retrievedOdsDatas);
         }
 
         [HttpGet("{odsDataId}")]
