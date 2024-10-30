@@ -13,7 +13,7 @@ import { Home } from './pages/home';
 import { ReIdentificationPage } from './pages/reIdentification';
 import { CsvReIdentificationPage } from './pages/csvReIdentification';
 import { ReIdReportHome } from './pages/reidReportHome';
-import { ReIdReport } from './pages/reidReport';
+import ReportsHome from './components/reports/reportsHome';
 
 function App({ instance }: any) {
 
@@ -50,8 +50,8 @@ function App({ instance }: any) {
             ]
         },
         {
-            path: "report/:reportGroupId/:reportId/:psuedoColumn/:reportPage?",
-            element: <ReIdReport />
+            path: "report/:reportGroupId/:reportId/:pseudoColumn/:reportPage?",
+            element: <ReportsHome />
         },
     ]);
 
