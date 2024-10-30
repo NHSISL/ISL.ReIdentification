@@ -3,6 +3,8 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.OdsDatas;
@@ -30,14 +32,23 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
             await this.apiBroker.DeleteOdsDataByIdAsync(actualOdsData.Id);
         }
 
-        [Fact(Skip = "Need to refactor tests and add other crud operations")]
+        [Fact]
         public async Task ShouldGetAllOdsDatasAsync()
         {
+            // given
+            List<OdsData> randomOdsDatas = await PostRandomOdsDatasAsync();
+            List<OdsData> expectedOdsDatas = randomOdsDatas;
+
             // when
-            var actualOdsDatas = await this.apiBroker.GetAllOdsDatasAsync();
+            List<OdsData> actualOdsDatas = await this.apiBroker.GetAllOdsDatasAsync();
 
             // then
-            actualOdsDatas.Should().NotBeNull();
+            foreach (OdsData expectedOdsData in expectedOdsDatas)
+            {
+                OdsData actualOdsData = actualOdsDatas.Single(approval => approval.Id == expectedOdsData.Id);
+                actualOdsData.Should().BeEquivalentTo(expectedOdsData);
+                await this.apiBroker.DeleteOdsDataByIdAsync(actualOdsData.Id);
+            }
         }
 
         [Fact(Skip = "Need to refactor tests and add other crud operations")]
