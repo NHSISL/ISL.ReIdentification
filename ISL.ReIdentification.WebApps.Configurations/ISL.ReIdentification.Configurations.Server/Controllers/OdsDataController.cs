@@ -117,6 +117,25 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             }
         }
 
+        [HttpGet("GetAncestors")]
+        public async ValueTask<ActionResult<List<OdsData>>> GetAllAncestors(Guid id)
+        {
+            try
+            {
+                List<OdsData> retrievedOdsDatas = await this.odsDataService.RetrieveAllAncestorsByChildId(id);
+
+                return Ok(retrievedOdsDatas);
+            }
+            catch (OdsDataDependencyException odsDataDependencyException)
+            {
+                return InternalServerError(odsDataDependencyException);
+            }
+            catch (OdsDataServiceException odsDataServiceException)
+            {
+                return InternalServerError(odsDataServiceException);
+            }
+        }
+
         [HttpGet("{odsDataId}")]
         public async ValueTask<ActionResult<OdsData>> GetOdsDataByIdAsync(Guid odsDataId)
         {
