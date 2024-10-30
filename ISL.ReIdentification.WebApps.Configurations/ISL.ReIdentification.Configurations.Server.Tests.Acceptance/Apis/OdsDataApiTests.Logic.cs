@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.OdsDatas;
+using RESTFulSense.Exceptions;
 
 namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
 {
@@ -51,6 +52,28 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
 
             // then
             actualOdsData.Should().NotBeNull();
+        }
+
+        [Fact]
+        public async Task ShouldDeleteOdsDataAsync()
+        {
+            // given
+            OdsData randomOdsData = await PostRandomOdsDataAsync();
+            OdsData inputOdsData = randomOdsData;
+            OdsData expectedOdsData = inputOdsData;
+
+            // when
+            OdsData deletedOdsData =
+                await this.apiBroker.DeleteOdsDataByIdAsync(inputOdsData.Id);
+
+            ValueTask<OdsData> getOdsDatabyIdTask =
+                this.apiBroker.GetOdsDataByIdAsync(inputOdsData.Id);
+
+            // then
+            deletedOdsData.Should().BeEquivalentTo(expectedOdsData);
+
+            await Assert.ThrowsAsync<HttpResponseNotFoundException>(
+                testCode: getOdsDatabyIdTask.AsTask);
         }
     }
 }

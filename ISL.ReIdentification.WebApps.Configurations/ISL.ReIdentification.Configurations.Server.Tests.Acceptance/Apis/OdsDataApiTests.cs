@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Threading.Tasks;
 using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Brokers;
 using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.OdsDatas;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +19,13 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
         public OdsDataApiTests(ApiBroker apiBroker)
         {
             this.apiBroker = apiBroker;
+        }
+
+        private async ValueTask<OdsData> PostRandomOdsDataAsync()
+        {
+            OdsData randomOdsData = CreateRandomOdsData();
+
+            return await this.apiBroker.PostOdsDataAsync(randomOdsData);
         }
 
         private static string GetRandomStringWithLengthOf(int length)
