@@ -31,7 +31,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
         TryCatch(async () =>
         {
             ValidateOnSendCsvPendingApprovalNotificationAsync(accessRequest, this.notificationConfigurations);
-
             string toEmail = accessRequest.CsvIdentificationRequest.RecipientEmail;
             string subject = "Pending Approval";
             string body = "Your request is pending approval";
@@ -68,7 +67,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
         TryCatch(async () =>
         {
             ValidateOnSendCsvApprovedNotificationAsync(accessRequest, this.notificationConfigurations);
-
             string toEmail = accessRequest.CsvIdentificationRequest.RequesterEmail;
             string subject = "Request Approved";
             string body = "Your request has been approved";
@@ -97,7 +95,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
             };
 
             ValidateInputsOnSendCsvApprovedNotificationAsync(toEmail, subject, body, personalisation);
-
             await this.notificationBroker.SendEmailAsync(toEmail, subject, body, personalisation);
         });
 
@@ -105,7 +102,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
         TryCatch(async () =>
         {
             ValidateOnSendCsvDeniedNotificationAsync(accessRequest, this.notificationConfigurations);
-
             string toEmail = accessRequest.CsvIdentificationRequest.RequesterEmail;
             string subject = "Request Denied";
             string body = "Your request has been denied";
@@ -134,7 +130,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
             };
 
             ValidateInputsOnSendCsvDeniedNotificationAsync(toEmail, subject, body, personalisation);
-
             await this.notificationBroker.SendEmailAsync(toEmail, subject, body, personalisation);
         });
 
@@ -142,7 +137,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
         TryCatch(async () =>
         {
             ValidateOnSendImpersonationPendingApprovalNotificationAsync(accessRequest, this.notificationConfigurations);
-
             string toEmail = accessRequest.CsvIdentificationRequest.RecipientEmail;
             string subject = "Pending Approval";
             string body = "Your request is pending approval";
@@ -171,7 +165,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
             };
 
             ValidateInputsOnSendImpersonationPendingApprovalNotificationAsync(toEmail, subject, body, personalisation);
-
             await this.notificationBroker.SendEmailAsync(toEmail, subject, body, personalisation);
         });
 
@@ -179,7 +172,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
         TryCatch(async () =>
         {
             ValidateOnSendImpersonationApprovedNotificationAsync(accessRequest, this.notificationConfigurations);
-
             string toEmail = accessRequest.CsvIdentificationRequest.RequesterEmail;
             string subject = "Request Approved";
             string body = "Your request has been approved";
@@ -208,7 +200,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
             };
 
             ValidateInputsOnSendImpersonationApprovedNotificationAsync(toEmail, subject, body, personalisation);
-
             await this.notificationBroker.SendEmailAsync(toEmail, subject, body, personalisation);
         });
 
@@ -216,7 +207,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
         TryCatch(async () =>
         {
             ValidateOnSendImpersonationDeniedNotificationAsync(accessRequest, this.notificationConfigurations);
-
             string toEmail = accessRequest.CsvIdentificationRequest.RequesterEmail;
             string subject = "Request Denied";
             string body = "Your request has been denied";
@@ -245,7 +235,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
             };
 
             ValidateInputsOnSendImpersonationDeniedNotificationAsync(toEmail, subject, body, personalisation);
-
             await this.notificationBroker.SendEmailAsync(toEmail, subject, body, personalisation);
         });
     }
