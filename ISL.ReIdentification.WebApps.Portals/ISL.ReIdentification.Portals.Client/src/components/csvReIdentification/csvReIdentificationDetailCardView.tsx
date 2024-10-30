@@ -97,7 +97,7 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                     <Card.Title className="text-start">
                         <OverlayTrigger placement="right" overlay={renderTooltip}>
                             <FontAwesomeIcon icon={faCircleInfo} className="text-primary" size="lg" />
-                        </OverlayTrigger>&nbsp;CSV Upload
+                        </OverlayTrigger>&nbsp;Dataset Upload
                     </Card.Title>
 
                     <Card.Subtitle className="text-start text-muted mb-3">

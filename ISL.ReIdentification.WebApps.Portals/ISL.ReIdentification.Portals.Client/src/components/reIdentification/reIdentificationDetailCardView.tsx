@@ -8,6 +8,7 @@ import { AccessRequest } from "../../models/accessRequest/accessRequest";
 import { IdentificationItem } from "../../models/ReIdentifications/IdentificationItem";
 import { useMsal } from "@azure/msal-react";
 import { faCircleInfo } from "@fortawesome/free-solid-svg-icons/faCircleInfo";
+import { OverlayInjectedProps } from "react-bootstrap/esm/Overlay";
 
 interface Option {
     value: string;
@@ -91,20 +92,19 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
         }
     }
 
-    const renderTooltip = (props: OverlayTriggerProps) => (
+    const renderTooltip = (props: OverlayInjectedProps) => (
         <Tooltip id="info-tooltip" {...props}>
-            This page provides a way to upload a CSV of pseudo identifiers for reidentification, please also select the column used for the pseudo identifier.
+            This page provides a way to upload a single pseudo identifier for reidentification, please also select the column used for the pseudo identifier.
         </Tooltip>
     );
 
     if (!reIdResponse) {
         return (
             <>
-
                 <Card.Title className="text-start">
                     <OverlayTrigger placement="right" overlay={renderTooltip}>
                         <FontAwesomeIcon icon={faCircleInfo} className="text-primary" size="lg" />
-                    </OverlayTrigger>&nbsp;Simple Re-Id
+                    </OverlayTrigger>&nbsp;Reidentify Single Patient
                 </Card.Title>
 
                 <Card.Subtitle className="text-start text-muted mb-3">
