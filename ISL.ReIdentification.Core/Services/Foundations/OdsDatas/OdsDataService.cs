@@ -102,12 +102,46 @@ namespace ISL.ReIdentification.Core.Services.Foundations.OdsDatas
                 .SelectOdsDataByIdAsync(odsDataParentId);
 
             ValidateStorageOdsData(parentRecord, odsDataParentId);
-
             IQueryable<OdsData> query = await this.reIdentificationStorageBroker.SelectAllOdsDatasAsync();
             query = query.Where(ods => ods.OdsHierarchy.IsDescendantOf(parentRecord.OdsHierarchy));
             List<OdsData> descendants = query.ToList();
 
             return descendants;
+        });
+
+        public ValueTask<List<OdsData>> RetrieveAllAncestorsByChildId(Guid odsDataChildId) =>
+        TryCatch(async () =>
+        {
+            ValidateOdsDataId(odsDataChildId);
+
+            OdsData childRecord = await this.reIdentificationStorageBroker
+                 .SelectOdsDataByIdAsync(odsDataChildId);
+
+            ValidateStorageOdsData(childRecord, odsDataChildId);
+            OdsData currentNode = childRecord;
+            List<OdsData> ancestors = new List<OdsData>();
+            ancestors.Add(currentNode);
+            IQueryable<OdsData> odsDatas = await this.reIdentificationStorageBroker.SelectAllOdsDatasAsync();
+
+            while (currentNode.OdsHierarchy.GetLevel() >= 1)
+            {
+                int level = currentNode.OdsHierarchy.GetLevel();
+
+                OdsData ancestor = odsDatas.FirstOrDefault(odsData =>
+                    odsData.OdsHierarchy == currentNode.OdsHierarchy.GetAncestor(1));
+
+                if (ancestor is not null)
+                {
+                    ancestors.Add(ancestor);
+                    currentNode = ancestor;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            return ancestors;
         });
     }
 }
