@@ -5,11 +5,31 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.OdsDatas;
 
 namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
 {
-    public partial class OdsDatasApiTests
+    public partial class OdsDataApiTests
     {
+        [Fact]
+        public async Task ShouldPostOdsDataAsync()
+        {
+            // given
+            OdsData randomOdsData = CreateRandomOdsData();
+            OdsData inputOdsData = randomOdsData;
+            OdsData expectedOdsData = inputOdsData;
+
+            // when 
+            await this.apiBroker.PostOdsDataAsync(inputOdsData);
+
+            OdsData actualOdsData =
+                await this.apiBroker.GetOdsDataByIdAsync(inputOdsData.Id);
+
+            // then
+            actualOdsData.Should().BeEquivalentTo(expectedOdsData);
+            await this.apiBroker.DeleteOdsDataByIdAsync(actualOdsData.Id);
+        }
+
         [Fact(Skip = "Need to refactor tests and add other crud operations")]
         public async Task ShouldGetAllOdsDatasAsync()
         {
