@@ -239,7 +239,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
                 { "reason", accessRequest.CsvIdentificationRequest.Reason },
                 { "organisation", accessRequest.CsvIdentificationRequest.Organisation },
                 { "identifierColumn", accessRequest.CsvIdentificationRequest.IdentifierColumn },
-                { "templateId", this.notificationConfigurations.CsvPendingApprovalRequestTemplateId },
+                { "templateId", this.notificationConfigurations.ImpersonationDeniedRequestTemplateId },
                 { "configurationBaseUrl", this.notificationConfigurations.ConfigurationBaseUrl },
                 { "portalBaseUrl", this.notificationConfigurations.PortalBaseUrl },
             };
