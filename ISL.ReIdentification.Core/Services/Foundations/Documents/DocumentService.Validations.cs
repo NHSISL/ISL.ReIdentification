@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
@@ -23,6 +23,13 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
                 (Rule: IsInvalid(fileName), Parameter: nameof(fileName)),
                 (Rule: IsInvalid(container), Parameter: nameof(container)),
                 (Rule: IsInvalidOutputStream(output), Parameter: nameof(output)));
+        }
+
+        private static void ValidateOnRemoveDocumentByFileName(string fileName, string container)
+        {
+            Validate(
+                (Rule: IsInvalid(fileName), Parameter: nameof(fileName)),
+                (Rule: IsInvalid(container), Parameter: nameof(container)));
         }
 
         private static dynamic IsInvalid(string value) => new
