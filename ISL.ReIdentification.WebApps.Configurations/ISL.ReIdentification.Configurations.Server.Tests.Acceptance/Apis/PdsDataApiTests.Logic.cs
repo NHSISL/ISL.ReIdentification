@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -52,7 +51,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
             }
         }
 
-        [Fact(Skip = "Need to refactor tests and add other crud operations")]
+        [Fact]
         public async Task ShouldGetPdsDataByIdAsync()
         {
             // given
@@ -66,7 +65,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
             actualPdsData.Should().BeEquivalentTo(expectedPdsData);
             await this.apiBroker.DeletePdsDataByIdAsync(actualPdsData.Id);
         }
-      
+
         [Fact]
         public async Task ShouldPutPdsDataAsync()
         {
