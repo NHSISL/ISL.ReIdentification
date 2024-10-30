@@ -21,6 +21,15 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
             this.apiBroker = apiBroker;
         }
 
+        private static OdsData UpdateOdsDataWithRandomValues(OdsData inputOdsData)
+        {
+            DateTimeOffset now = DateTimeOffset.UtcNow;
+            var updatedOdsData = CreateRandomOdsData();
+            updatedOdsData.Id = inputOdsData.Id;
+
+            return updatedOdsData;
+        }
+
         private async ValueTask<OdsData> PostRandomOdsDataAsync()
         {
             OdsData randomOdsData = CreateRandomOdsData();

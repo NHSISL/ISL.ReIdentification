@@ -79,15 +79,20 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.OdsD
                     .AsQueryable();
         }
 
-        private static List<OdsData> CreateRandomOdsDataChildren(HierarchyId parentHierarchyId)
+        private static List<OdsData> CreateRandomOdsDataChildren(HierarchyId parentHierarchyId, int count = 0)
         {
             if (parentHierarchyId == null)
             {
                 parentHierarchyId = HierarchyId.Parse("/");
             }
 
+            if (count == 0)
+            {
+                count = GetRandomNumber();
+            }
+
             List<OdsData> children = CreateOdsDataFiller(dateTimeOffset: GetRandomDateTimeOffset())
-                .Create(count: GetRandomNumber())
+                .Create(count)
                     .ToList();
 
             HierarchyId lastChildHierarchy = null;
