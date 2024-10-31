@@ -16,6 +16,7 @@ import { Home } from './pages/home';
 import { ReIdentificationPage } from './pages/reIdentification';
 import { CsvReIdentificationPage } from './pages/csvReIdentification';
 import { CsvReIdentificationDownloadPage } from './pages/csvReIdentificationDownload';
+import { CsvReIdentificationWorklistPage } from './pages/csvReIdentificationWorklist';
 
 function App({ instance }: any) {
 
@@ -40,6 +41,10 @@ function App({ instance }: any) {
                 {
                     path: "csvReIdentification",
                     element: <CsvReIdentificationPage />
+                },
+                {
+                    path: "csvReIdentificationWorklist",
+                    element: <CsvReIdentificationWorklistPage />
                 },
                 {
                     path: "csvReIdentification/:csvIdentificationRequestId",

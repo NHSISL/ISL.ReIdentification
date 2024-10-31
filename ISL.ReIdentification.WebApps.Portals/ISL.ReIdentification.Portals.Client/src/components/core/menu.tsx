@@ -40,6 +40,13 @@ const MenuComponent: React.FC = () => {
                 <SecuredLink to="/csvReIdentification">ReIdentify Dataset</SecuredLink>
             </ListGroup.Item>
 
+            <ListGroup.Item
+                className={`bg-dark text-white ${activePath === '/csvReIdentificationWorklist' ? 'active' : ''}`}
+                onClick={() => handleItemClick('/csvReIdentificationWorklist')}>
+                <FontAwesomeIcon icon={faListAlt} className="me-2 fa-icon" />
+                <SecuredLink to="/csvReIdentificationWorklist">My CSV Worklist</SecuredLink>
+            </ListGroup.Item>
+
         </ListGroup>
     );
 }
