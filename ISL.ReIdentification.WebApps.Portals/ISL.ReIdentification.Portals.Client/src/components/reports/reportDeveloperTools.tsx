@@ -21,7 +21,7 @@ const ReportDeveloperTools: FunctionComponent<ReportDeveloperToolsProps> = (prop
                 <Button onClick={() => { setDeveloperToolsLocation("") }}>Close</Button>
             </ButtonGroup>
             <div style={{overflowY: "auto"}}>
-                <Accordion >
+                <Accordion>
                     {eventsList.map((e, i) => <Accordion.Item eventKey={"" + i}>
                         <Accordion.Header>{e.message}</Accordion.Header>
                         <Accordion.Body>

@@ -20,7 +20,7 @@ const ReportToast : FunctionComponent<ReportToastProps> = (props) => {
 
 
 
-    return  <ToastContainer position={position || "bottom-end"} hidden={hidden} style={{marginTop:"33px"}}>
+    return  <ToastContainer position={position || "bottom-end"} hidden={hidden || reidentifications.length===0} style={{marginTop:"33px"}}>
     <Toast onClose={() => hide(true)}>
         <Toast.Header>
             <strong className="me-auto">Reidentification</strong>
@@ -29,7 +29,8 @@ const ReportToast : FunctionComponent<ReportToastProps> = (props) => {
         <Toast.Body>
             <Table size="sm" bordered>
                 <tbody>
-                    {reidentifications.map((ri) => <tr className={lastSelectedPseudo && ri.pseudo === lastSelectedPseudo ? "table-active" : ""}>
+                    {reidentifications.map((ri) => <tr key={ri.pseudo}
+                                                        className={lastSelectedPseudo && ri.pseudo === lastSelectedPseudo ? "table-active" : ""}>
                         <td>{ri.pseudo}</td>
                         <td>
                             {ri.loading ?  <FontAwesomeIcon icon={faSpinner} pulse/> : <>{ri.nhsnumber}</> }
