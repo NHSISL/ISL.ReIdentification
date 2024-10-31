@@ -5,7 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.Lookups;
+using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.UserAccesses;
 
 namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Brokers
 {
@@ -15,6 +15,10 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Brokers
 
         public async ValueTask<UserAccess> PostUserAccessAsync(UserAccess userAccess) =>
             await this.apiFactoryClient.PostContentAsync(userAccessesRelativeUrl, userAccess);
+
+        public async ValueTask PostBulkUserAccessAsync(BulkUserAccess bulkUserAccess) =>
+            await this.apiFactoryClient
+                .PostContentWithNoResponseAsync($"{userAccessesRelativeUrl}/bulk", bulkUserAccess);
 
         public async ValueTask<List<UserAccess>> GetAllUserAccessesAsync() =>
             await this.apiFactoryClient.GetContentAsync<List<UserAccess>>($"{userAccessesRelativeUrl}/");

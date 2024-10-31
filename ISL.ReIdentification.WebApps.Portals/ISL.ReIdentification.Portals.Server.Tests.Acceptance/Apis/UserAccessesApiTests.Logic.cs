@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.Lookups;
+using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.UserAccesses;
 using RESTFulSense.Exceptions;
 
 namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
@@ -30,6 +30,29 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             // then
             actualUserAccess.Should().BeEquivalentTo(expectedUserAccess);
             await this.apiBroker.DeleteUserAccessByIdAsync(inputUserAccess.Id);
+        }
+
+        [Fact]
+        public async Task ShouldPostBulkUserAccessAsync()
+        {
+            // given
+            BulkUserAccess randomBulkUserAccess = CreateRandomBulkUserAccess();
+            BulkUserAccess inputBulkUserAccess = randomBulkUserAccess;
+
+            // when
+            await this.apiBroker.PostBulkUserAccessAsync(inputBulkUserAccess);
+            List<UserAccess> actualUserAccesses = await this.apiBroker.GetAllUserAccessesAsync();
+
+            // then
+            actualUserAccesses.Should().Contain(ua => ua.EntraUserId == inputBulkUserAccess.EntraUserId);
+
+            foreach (UserAccess actualUserAccess in actualUserAccesses)
+            {
+                if (actualUserAccess.EntraUserId == inputBulkUserAccess.EntraUserId)
+                {
+                    await this.apiBroker.DeleteUserAccessByIdAsync(actualUserAccess.Id);
+                }
+            }
         }
 
         [Fact]

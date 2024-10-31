@@ -4,9 +4,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Brokers;
-using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.Lookups;
+using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.UserAccesses;
 using Tynamix.ObjectFiller;
 
 namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
@@ -25,14 +26,36 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private static UserAccess CreateRandomUserAccess() =>
-            CreateRandomUserAccessFiller().Create();
-
         private static string GetRandomStringWithLengthOf(int length)
         {
             string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
 
             return result.Length > length ? result.Substring(0, length) : result;
+        }
+
+        private static List<string> GetRandomStringsWithLengthOf(int length)
+        {
+            return Enumerable.Range(start: 0, count: GetRandomNumber())
+                .Select(selector: _ => GetRandomStringWithLengthOf(length))
+                .ToList();
+        }
+
+        private static UserAccess CreateRandomUserAccess() =>
+            CreateRandomUserAccessFiller().Create();
+
+        private static BulkUserAccess CreateRandomBulkUserAccess()
+        {
+            return new BulkUserAccess
+            {
+                EntraUserId = Guid.NewGuid(),
+                GivenName = GetRandomStringWithLengthOf(255),
+                Surname = GetRandomStringWithLengthOf(255),
+                DisplayName = GetRandomStringWithLengthOf(50),
+                JobTitle = GetRandomStringWithLengthOf(50),
+                Email = GetRandomStringWithLengthOf(320),
+                UserPrincipalName = GetRandomStringWithLengthOf(50),
+                OrgCodes = GetRandomStringsWithLengthOf(10)
+            };
         }
 
         private static Filler<UserAccess> CreateRandomUserAccessFiller()
@@ -58,6 +81,23 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
                 .OnProperty(userAccess => userAccess.CreatedBy).Use(user)
                 .OnProperty(userAccess => userAccess.UpdatedDate).Use(now)
                 .OnProperty(userAccess => userAccess.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
+        private static Filler<BulkUserAccess> CreateRandomBulkUserAccessFiller()
+        {
+            var filler = new Filler<BulkUserAccess>();
+
+            filler.Setup()
+                .OnProperty(userAccess => userAccess.GivenName)
+                    .Use(() => GetRandomStringWithLengthOf(255))
+
+                .OnProperty(userAccess => userAccess.Surname)
+                    .Use(() => GetRandomStringWithLengthOf(255))
+
+                .OnProperty(userAccess => userAccess.Email)
+                    .Use(() => GetRandomStringWithLengthOf(320));
 
             return filler;
         }
