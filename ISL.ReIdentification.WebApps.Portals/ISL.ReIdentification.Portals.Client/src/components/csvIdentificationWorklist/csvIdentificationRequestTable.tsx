@@ -50,7 +50,7 @@ const CsvIdentificationRequestWorklistTable: FunctionComponent<CsvIdentification
 
     return (
         <>
-            <SearchBase id="search" label="Search lookups" value={searchTerm} placeholder="Search Csv Identitfation Requests"
+            <SearchBase id="search" label="Search lookups" value={searchTerm} placeholder="Search Csv Reidentification Requests"
                 onChange={(e) => { handleSearchChange(e.currentTarget.value) }} />
             <br />
 
@@ -84,6 +84,7 @@ const CsvIdentificationRequestWorklistTable: FunctionComponent<CsvIdentification
                                                 <CsvIdentificationRequestRow
                                                     key={csvIdentificationRequestView.id.toString()}
                                                     csvIdentificationRequest={csvIdentificationRequestView}
+
                                                 />
                                             )
                                         )}

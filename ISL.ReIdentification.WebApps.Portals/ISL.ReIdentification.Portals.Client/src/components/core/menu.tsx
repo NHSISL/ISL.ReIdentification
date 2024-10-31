@@ -5,6 +5,7 @@ import { ListGroup } from 'react-bootstrap';
 import { useLocation } from 'react-router-dom';
 import { SecuredLink } from '../securitys/securedLinks';
 import { faListAlt } from '@fortawesome/free-solid-svg-icons/faListAlt';
+import { faTable } from '@fortawesome/free-solid-svg-icons/faTable';
 
 
 const MenuComponent: React.FC = () => {
@@ -27,6 +28,13 @@ const MenuComponent: React.FC = () => {
             </ListGroup.Item>
 
             <ListGroup.Item
+                className={`bg-dark text-white ${activePath === '/csvReIdentificationWorklist' ? 'active' : ''}`}
+                onClick={() => handleItemClick('/csvReIdentificationWorklist')}>
+                <FontAwesomeIcon icon={faTable} className="me-2 fa-icon" />
+                <SecuredLink to="/csvReIdentificationWorklist">My CSV Worklist</SecuredLink>
+            </ListGroup.Item>
+
+            <ListGroup.Item
                 className={`bg-dark text-white ${activePath === '/reIdentification' ? 'active' : ''}`}
                 onClick={() => handleItemClick('/reIdentification')}>
                 <FontAwesomeIcon icon={faPerson} className="me-2 fa-icon" />
@@ -39,14 +47,6 @@ const MenuComponent: React.FC = () => {
                 <FontAwesomeIcon icon={faListAlt} className="me-2 fa-icon" />
                 <SecuredLink to="/csvReIdentification">ReIdentify Dataset</SecuredLink>
             </ListGroup.Item>
-
-            <ListGroup.Item
-                className={`bg-dark text-white ${activePath === '/csvReIdentificationWorklist' ? 'active' : ''}`}
-                onClick={() => handleItemClick('/csvReIdentificationWorklist')}>
-                <FontAwesomeIcon icon={faListAlt} className="me-2 fa-icon" />
-                <SecuredLink to="/csvReIdentificationWorklist">My CSV Worklist</SecuredLink>
-            </ListGroup.Item>
-
         </ListGroup>
     );
 }

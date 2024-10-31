@@ -1,6 +1,7 @@
 import { FunctionComponent } from "react";
 import { Button } from "react-bootstrap";
 import { CsvIdentificationRequest } from "../../models/csvIdentificationRequest/csvIdentificationRequest";
+import { Link } from "react-router-dom";
 
 type CsvIdentificationRequestRowProps = {
     csvIdentificationRequest: CsvIdentificationRequest;
@@ -21,9 +22,11 @@ const CsvIdentificationRequestRow: FunctionComponent<CsvIdentificationRequestRow
             <td>{csvIdentificationRequest.filepath}</td>
             <td>{csvIdentificationRequest.reason}</td>
             <td>
-                <Button variant="link" onClick={() => { }}>
-                    View to Download
-                </Button>
+                <Link to={`/csvReIdentification/${csvIdentificationRequest.id}`} >
+                    <Button size="sm" variant="link">
+                        View to Download
+                    </Button>
+                </Link>
             </td>
         </tr>
     );
