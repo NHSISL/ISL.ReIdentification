@@ -31,7 +31,6 @@ const UserAccessSearch: FunctionComponent<UserAccessSearchProps> = ({ selectUser
 
     const clearSearch = () => {
         handleSearchChange("");
-        setSelectedUserName(null);
     }
 
     const handleUserSelect = (userAccess: UserAccessView) => {
@@ -68,9 +67,9 @@ const UserAccessSearch: FunctionComponent<UserAccessSearchProps> = ({ selectUser
             {selectedUserName ? (
                 <div>
                     <p>
-                        <small>Selected User: <strong>{selectedUserName}</strong></small>
+                        <small>Selected User: <span className="text-success">{selectedUserName}</span></small>
                         <Button variant="link" onClick={clearSelectedUser}>
-                            <FontAwesomeIcon icon={faTimes}  />
+                            <FontAwesomeIcon icon={faTimes} style={{color:"red"}} />
                         </Button>
                     </p>
                 </div>
@@ -83,6 +82,15 @@ const UserAccessSearch: FunctionComponent<UserAccessSearchProps> = ({ selectUser
                                     <td><small>{userAccess.displayName}</small></td>
                                     <td><small>{userAccess.email}</small></td>
                                     <td><small>{userAccess.jobTitle}</small></td>
+                                    <td>
+                                        <Button
+                                            size="sm"
+                                            variant="link"
+                                            onClick={() => handleUserSelect(userAccess)}
+                                            key={userAccess.id}>
+                                            Select
+                                        </Button>
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>

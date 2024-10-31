@@ -18,11 +18,13 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
     const { submit, loading } = reIdentificationService.useRequestReIdentificationCsv();
     const [error, setError] = useState("");
     const [savedSuccessfull, setSavedSuccessfull] = useState(false);
+    const [fileName, setFileName] = useState<string>("");
     const account = useMsal();
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const acc = account.accounts[0];
+        const [firstName, lastName] = acc.name ? acc.name.split(" ") : ["", ""];
 
         const csvIdentificationRequest: AccessRequest = {
             impersonationContext: undefined,
@@ -30,9 +32,9 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
             csvIdentificationRequest: {
                 id: crypto.randomUUID(),
                 requesterEntraUserId: acc.idTokenClaims?.oid,
-                requesterFirstName: "FIRSTNAME",
-                requesterLastName: "LASTNAME",
-                requesterDisplayName: "LASTNAME",
+                requesterFirstName: firstName,
+                requesterLastName: lastName,
+                requesterDisplayName: acc.name,
                 requesterEmail: acc.username,
                 requesterJobTitle: "TODO: Job Title",
                 recipientEntraUserId: selectedUser?.entraUserId || "",
@@ -43,11 +45,12 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                 recipientJobTitle: selectedUser?.jobTitle || "",
                 data: csvData || "",
                 identifierColumn: selectedHeaderColumn,
+                organisation: selectedUser?.orgCode || "",
                 createdBy: acc.username,
                 updatedBy: acc.username,
                 createdDate: new Date(),
                 updatedDate: new Date(),
-                filepath: "pow"
+                filepath: fileName.replace(/\.csv$/i, "") 
             }
         }
         setError("");
@@ -64,6 +67,7 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file && file.name.endsWith(".csv")) {
+            setFileName(file.name); // Set the filename
             const reader = new FileReader();
             reader.onload = (event) => {
                 const text = event.target?.result as string;
@@ -86,7 +90,7 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
 
     const renderTooltip = (props: OverlayTriggerProps) => (
         <Tooltip id="info-tooltip" {...props}>
-            This page provides a way to upload a CSV of pseudo identifiers for reidentification, please also select the column used for the pseudo identifier.
+            This page provides a way to upload a CSV of pseudo identifiers for reidentification.
         </Tooltip>
     );
 

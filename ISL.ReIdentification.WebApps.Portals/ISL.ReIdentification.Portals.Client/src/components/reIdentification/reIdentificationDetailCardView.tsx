@@ -57,9 +57,10 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
         setError("");
         submit(identificationRequest).then((d) => {
             setReIdResponse(d.identificationRequest?.identificationItems[0]);
-        }).catch(() => {
-            setError("Something went wrong");
-        })
+        }).catch((error) => {
+            console.error("Submit failed with error:", error);
+            setError("Something went wrong.");
+        });
     };
 
     const handlePseudoCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -94,8 +95,7 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
 
     const renderTooltip = (props: OverlayInjectedProps) => (
         <Tooltip id="info-tooltip" {...props}>
-            This page provides a way to upload a single pseudo identifier for reidentification,
-            please also select the column used for the pseudo identifier.
+            This page provides a way to upload a single pseudo identifier for reidentification.
         </Tooltip>
     );
 
@@ -135,7 +135,7 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
                     <br />
                     <br />
                     <Form.Group className="text-start">
-                        <Form.Label>Reidentification reason:</Form.Label>
+                        <Form.Label>Reidentification Reason:</Form.Label>
                         <Form.Select
                             value={selectedLookupId}
                             onChange={handleLookupChange}
