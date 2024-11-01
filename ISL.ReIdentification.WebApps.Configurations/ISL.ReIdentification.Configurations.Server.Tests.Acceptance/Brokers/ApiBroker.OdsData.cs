@@ -26,7 +26,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Brokers
             await this.apiFactoryClient.PutContentAsync(odsDataRelativeUrl, odsData);
 
         public async ValueTask<List<OdsData>> GetAncestorsAsync(Guid odsDataId) =>
-            throw new NotImplementedException();
+            await this.apiFactoryClient.GetContentAsync<List<OdsData>>($"{odsDataRelativeUrl}/GetAncestors/{odsDataId}");
 
         public async ValueTask<OdsData> DeleteOdsDataByIdAsync(Guid odsDataId) =>
             await this.apiFactoryClient.DeleteContentAsync<OdsData>($"{odsDataRelativeUrl}/{odsDataId}");

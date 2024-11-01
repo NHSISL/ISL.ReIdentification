@@ -78,6 +78,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
             OdsData randomOdsData = await PostRandomOdsDataAsync();
             List<OdsData> childOdsDatas = await PostRandomChildOdsDatasAsync(randomOdsData.OdsHierarchy);
             List<OdsData> grandchildrenOdsDatas = await PostRandomChildOdsDatasAsync(childOdsDatas[0].OdsHierarchy);
+
             List<OdsData> expectedOdsDatas = new List<OdsData>()
             {
                 randomOdsData,
@@ -85,8 +86,10 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
                 grandchildrenOdsDatas[0]
             };
 
+            Guid inputOdsDataId = grandchildrenOdsDatas[0].Id;
+
             // when
-            List<OdsData> actualOdsDatas = await this.apiBroker.GetAncestorsAsync(randomOdsData.Id);
+            List<OdsData> actualOdsDatas = await this.apiBroker.GetAncestorsAsync(inputOdsDataId);
 
             // then
             foreach (OdsData expectedOdsData in expectedOdsDatas)
