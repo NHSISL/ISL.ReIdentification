@@ -4,7 +4,7 @@
 
 using System;
 
-namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.Lookups
+namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.UserAccesses
 {
     public class UserAccess
     {
