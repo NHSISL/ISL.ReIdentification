@@ -1,4 +1,3 @@
-import { AuthenticatedTemplate, UnauthenticatedTemplate, useMsal } from "@azure/msal-react";
 import { FunctionComponent } from "react";
 import { Button, Card, Container, Form, FormGroup, Spinner } from "react-bootstrap";
 import { lookupViewService } from "../../services/views/lookups/lookupViewService";
@@ -11,7 +10,6 @@ type ReportReasonPageProps = {
 
 const ReportsReasonPage: FunctionComponent<ReportReasonPageProps> = (props: ReportReasonPageProps) => {
     const { setReidReason, launchReport, reidReason } = props
-    const { instance } = useMsal();
     const { mappedLookups, isLoading } = lookupViewService.useGetAllLookups("");
 
     return <><Container>
@@ -26,10 +24,6 @@ const ReportsReasonPage: FunctionComponent<ReportReasonPageProps> = (props: Repo
                     <p><strong>Note:</strong> all reidentification requests are subject to breach monitoring and reporting</p>
                     <p>Details of breach thresholds can be found <a href="about:blank" target="blank" >here</a></p>
                 </div>
-                <UnauthenticatedTemplate>
-                    <Button onClick={() => { instance.loginPopup() }}>Login</Button>
-                </UnauthenticatedTemplate>
-                <AuthenticatedTemplate>
                     <Form>
                         <FormGroup>
                             <Form.Label>Please select the reason why you are identifying the patients on this report:</Form.Label>
@@ -42,7 +36,6 @@ const ReportsReasonPage: FunctionComponent<ReportReasonPageProps> = (props: Repo
                         <br/>
                         <Button onClick={launchReport} disabled={!reidReason}>Launch Report</Button>
                     </Form>
-                </AuthenticatedTemplate>
             </Card.Body>
         </Card>
     </Container></>
