@@ -98,7 +98,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             }
         }
 
-        [HttpGet("GetDescendants")]
+        [HttpGet("GetDescendants/{id}")]
         public async ValueTask<ActionResult<List<OdsData>>> GetAllDescendants(Guid id)
         {
             try
