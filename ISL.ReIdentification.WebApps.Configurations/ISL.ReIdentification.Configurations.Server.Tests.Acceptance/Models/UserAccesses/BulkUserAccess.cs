@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 
 namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.UserAccesses
 {
