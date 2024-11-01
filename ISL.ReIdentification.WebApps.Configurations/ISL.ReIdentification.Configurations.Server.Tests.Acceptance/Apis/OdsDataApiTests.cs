@@ -39,24 +39,14 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
                 parentHierarchyId = HierarchyId.Parse(parentHierarchyIdString);
             }
 
-            List<OdsData> children = CreateOdsDataFiller(dateTimeOffset: GetRandomDateTimeOffset())
-                 .Create(count: GetRandomNumber())
-                     .ToList();
+        private static OdsData UpdateOdsDataWithRandomValues(OdsData inputOdsData)
+        {
+            DateTimeOffset now = DateTimeOffset.UtcNow;
+            var updatedOdsData = CreateRandomOdsData();
+            updatedOdsData.Id = inputOdsData.Id;
 
-            HierarchyId lastChildHierarchy = null;
-
-            foreach (var child in children)
-            {
-                child.OdsHierarchy = parentHierarchyId.GetDescendant(lastChildHierarchy, null).ToString();
-                lastChildHierarchy = HierarchyId.Parse(child.OdsHierarchy);
-                await this.apiBroker.PostOdsDataAsync(child);
-            }
-
-            return children;
+            return updatedOdsData;
         }
-
-        private static int GetRandomNumber() =>
-            new IntRange(min: 2, max: 10).GetValue();
 
         private static string GetRandomStringWithLengthOf(int length)
         {
