@@ -1,15 +1,12 @@
 import { IReportEmbedConfiguration } from "powerbi-client";
 import { PowerBIEmbed } from "powerbi-client-react";
-import { FunctionComponent, useEffect, useState } from "react";
+import { FunctionComponent, useState } from "react";
 import ReportToast from "./reportToast";
-import { ReIdRecord } from "../../types/ReIdRecord";
 import { ToastPosition } from "react-bootstrap/esm/ToastContainer";
 import { DeveloperEvents } from "../../types/DeveloperEvents";
 import { useParams } from "react-router-dom";
 import { PBIEvent } from "../../types/PBIEvent";
-import { reIdentificationService } from "../../services/foundations/reIdentificationService";
-import { AccessRequest } from "../../models/accessRequest/accessRequest";
-import { useMsal } from "@azure/msal-react";
+import { useReidentification } from "../../hooks/useReidentification";
 
 type ReportLaunchPageProps = {
     reportConfig: IReportEmbedConfiguration
@@ -21,12 +18,10 @@ const ReportsLaunchPage: FunctionComponent<ReportLaunchPageProps> = (props) => {
 
     const { reportConfig, addDeveloperEvent, toastPostion } = props;
     const { pseudoColumn } = useParams();
-    const [reidentifications, setReidentifications] = useState<ReIdRecord[]>([]);
     const [toastHidden, setToastHidden] = useState(false);
-    const [lastSelectedPseudo, setLastSelectedPseudo] = useState<string>("");
-    const { submit } = reIdentificationService.useRequestReIdentification();
+    const { reidentify, reidentifications, lastPseudo, clearList } = useReidentification("TODO");
 
-    const { accounts } = useMsal();
+/*    const { accounts } = useMsal();
 
     const reid = async (record: string) => {
         setReidentifications((reidentifications) => {
@@ -92,7 +87,7 @@ const ReportsLaunchPage: FunctionComponent<ReportLaunchPageProps> = (props) => {
 
     }, [reidentifications, setReidentifications, accounts, submit])
 
-
+*/
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const bindEvents = (embedObject: any) => {
@@ -116,7 +111,7 @@ const ReportsLaunchPage: FunctionComponent<ReportLaunchPageProps> = (props) => {
                     addDeveloperEvent({
                         message: `dataSelected: pseudo (${pseudo[0].equals}) found`
                     })
-                    reid("" + pseudo[0].equals);
+                    reidentify("" + pseudo[0].equals);
                 } else {
                     addDeveloperEvent({
                         message: "dataSelected: no datapoints found",
@@ -134,9 +129,9 @@ const ReportsLaunchPage: FunctionComponent<ReportLaunchPageProps> = (props) => {
             getEmbeddedComponent={bindEvents}
         />
         <ReportToast
-            clearList={() => { setReidentifications([]) }}
+            clearList={clearList}
             hidden={toastHidden} hide={() => { setToastHidden(true) }}
-            lastSelectedPseudo={lastSelectedPseudo}
+            lastSelectedPseudo={lastPseudo}
             position={toastPostion}
             reidentifications={reidentifications} />
     </div>

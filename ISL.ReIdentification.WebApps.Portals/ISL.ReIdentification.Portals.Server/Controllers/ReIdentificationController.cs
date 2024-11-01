@@ -3,6 +3,8 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
@@ -27,36 +29,48 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
         }
 
         [HttpPost]
-        public async ValueTask<ActionResult<AccessRequest>>
-            PostIdentificationRequestsAsync([FromBody] AccessRequest accessRequest)
+        public async ValueTask<ActionResult<AccessRequest>>PostIdentificationRequestsAsync([FromBody] AccessRequest accessRequest)
         {
-            try
-            {
-                AccessRequest addedAccessRequest = await identificationCoordinationService
-                    .ProcessIdentificationRequestsAsync(accessRequest);
-
-                return Created(addedAccessRequest);
-            }
-            catch (IdentificationCoordinationValidationException identificationCoordinationValidationException)
-            {
-                return BadRequest(identificationCoordinationValidationException.InnerException);
-            }
-            catch (IdentificationCoordinationDependencyValidationException
-                identificationCoordinationDependencyValidationException)
-            {
-                return BadRequest(identificationCoordinationDependencyValidationException.InnerException);
-            }
-            catch (IdentificationCoordinationDependencyException identificationCoordinationDependencyException)
-            {
-                return InternalServerError(identificationCoordinationDependencyException);
-            }
-            catch (IdentificationCoordinationServiceException identificationCoordinationServiceException)
-            {
-                return InternalServerError(identificationCoordinationServiceException);
-            }
+            Thread.Sleep(1000);
+            accessRequest.IdentificationRequest.IdentificationItems.First().HasAccess = true;
+            accessRequest.IdentificationRequest.IdentificationItems.First().IsReidentified = true;
+            accessRequest.IdentificationRequest.IdentificationItems.First().Identifier = "Re" + accessRequest.IdentificationRequest.IdentificationItems.First().Identifier;
+            return accessRequest;
         }
 
-        [HttpPost("submitcsv")]
+
+
+            /*    [HttpPost]
+                public async ValueTask<ActionResult<AccessRequest>>
+                    PostIdentificationRequestsAsync([FromBody] AccessRequest accessRequest)
+                {
+                    try
+                    {
+                        AccessRequest addedAccessRequest = await identificationCoordinationService
+                            .ProcessIdentificationRequestsAsync(accessRequest);
+
+                        return Created(addedAccessRequest);
+                    }
+                    catch (IdentificationCoordinationValidationException identificationCoordinationValidationException)
+                    {
+                        return BadRequest(identificationCoordinationValidationException.InnerException);
+                    }
+                    catch (IdentificationCoordinationDependencyValidationException
+                        identificationCoordinationDependencyValidationException)
+                    {
+                        return BadRequest(identificationCoordinationDependencyValidationException.InnerException);
+                    }
+                    catch (IdentificationCoordinationDependencyException identificationCoordinationDependencyException)
+                    {
+                        return InternalServerError(identificationCoordinationDependencyException);
+                    }
+                    catch (IdentificationCoordinationServiceException identificationCoordinationServiceException)
+                    {
+                        return InternalServerError(identificationCoordinationServiceException);
+                    }
+                }*/
+
+            [HttpPost("submitcsv")]
         public async ValueTask<ActionResult<AccessRequest>>
             PostCsvIdentificationRequestAsync([FromBody] AccessRequest accessRequest)
         {
