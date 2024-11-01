@@ -93,11 +93,6 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
                 await this.apiBroker.DeleteOdsDataByIdAsync(actualOdsData.Id);
             }
 
-            foreach (OdsData grandchildOdsData in grandchildrenOdsDatas)
-            {
-                await this.apiBroker.DeleteOdsDataByIdAsync(grandchildOdsData.Id);
-            }
-
             await this.apiBroker.DeleteOdsDataByIdAsync(randomOdsData.Id);
         }
     }
