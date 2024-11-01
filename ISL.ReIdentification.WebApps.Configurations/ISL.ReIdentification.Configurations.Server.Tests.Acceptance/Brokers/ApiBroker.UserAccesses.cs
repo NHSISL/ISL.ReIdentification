@@ -17,6 +17,10 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Brokers
         public async ValueTask<UserAccess> PostUserAccessAsync(UserAccess userAccess) =>
             await this.apiFactoryClient.PostContentAsync(userAccessesRelativeUrl, userAccess);
 
+        public async ValueTask PostBulkUserAccessAsync(BulkUserAccess bulkUserAccess) =>
+            await this.apiFactoryClient
+                .PostContentWithNoResponseAsync($"{userAccessesRelativeUrl}/bulk", bulkUserAccess);
+
         public async ValueTask<List<UserAccess>> GetAllUserAccessesAsync() =>
             await this.apiFactoryClient.GetContentAsync<List<UserAccess>>($"{userAccessesRelativeUrl}/");
 
