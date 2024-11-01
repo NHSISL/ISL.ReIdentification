@@ -42,7 +42,7 @@ const ReportsLaunchPage: FunctionComponent<ReportLaunchPageProps> = (props) => {
     }
 
     return <>
-        <div className="flex-grow-1" style={{ background: "pink", position: "absolute", width: "100%", height: (visualViewport ? visualViewport.height : 500) - 40, inset: "33px 0 0 0" }}>
+        <div className="flex-grow-1" style={{ position: "absolute", width: "100%", height: (visualViewport ? visualViewport.height : 500) - 40, inset: "33px 0 0 0" }}>
             <PowerBIEmbed
                 embedConfig={reportConfig as IReportEmbedConfiguration}
                 cssClassName="report-container"

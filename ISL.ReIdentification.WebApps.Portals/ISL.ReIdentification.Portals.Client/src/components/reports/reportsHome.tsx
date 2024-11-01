@@ -21,7 +21,6 @@ const ReportsHome: FunctionComponent = () => {
     const [lastEvent, setLastEvent] = useState<DeveloperEvents>();
     const [noAccess, setNoAccess] = useState(false);
 
-
     const aquireAccessToken = async () => {
         await instance.initialize();
         const activeAccount = instance.getActiveAccount();

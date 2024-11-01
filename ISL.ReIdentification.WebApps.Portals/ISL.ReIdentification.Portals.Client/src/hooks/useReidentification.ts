@@ -18,11 +18,15 @@ export function useReidentification(reason: string) {
     const { submit } = reIdentificationService.useRequestReIdentification();
 
     function isHx(hxNumber: string) {
-        return false;
+        return hxNumber.indexOf("-") !== -1
     }
 
     function convertHx(hxNumber: string) {
-        return hxNumber;
+        const cleanedID = hxNumber.replace(/-/g, '');
+
+        const originalHex = cleanedID.split('').reverse().join('');
+
+        return parseInt(originalHex, 16).toString();
     }
 
     useEffect(() => {
@@ -36,7 +40,7 @@ export function useReidentification(reason: string) {
                 reidentificationsToCall.forEach(async x => {
                     const pseudoNumber = x.accessRequest.identificationRequest?.identificationItems[0].identifier;
 
-                    if(reidentifications.filter(x => x.pseudo === pseudoNumber).length) {
+                    if (reidentifications.filter(x => x.pseudo === pseudoNumber).length) {
                         // number has already been re-id'd or is in the proces of.
                         return;
                     }
@@ -49,7 +53,7 @@ export function useReidentification(reason: string) {
                         const next = [...reidentifications];
                         next.push({
                             pseudo: x.accessRequest.identificationRequest?.identificationItems[0].identifier as string,
-                            loading: true, hasCalled: true
+                            loading: true, hasAccess: false
                         }
                         );
                         return next;
@@ -63,6 +67,7 @@ export function useReidentification(reason: string) {
                         recordsToUpdate.forEach(item => {
                             item.nhsnumber = result.identificationRequest?.identificationItems[0].identifier;
                             item.loading = false;
+                            item.hasAccess = result.identificationRequest?.identificationItems[0].hasAccess ? result.identificationRequest?.identificationItems[0].hasAccess : false;
                         })
                         console.log(next);
                         return next;
@@ -91,7 +96,7 @@ export function useReidentification(reason: string) {
                     identificationItems: [{
                         rowNumber: "1",
                         identifier: pseudoNumber,
-                        hasAccess: undefined,
+                        hasAccess: false,
                         message: undefined,
                         isReidentified: undefined,
                     }],
