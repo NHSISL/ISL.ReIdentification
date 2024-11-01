@@ -52,5 +52,21 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
             // then
             actualOdsData.Should().NotBeNull();
         }
+
+        [Fact]
+        public async Task ShouldPutOdsDataAsync()
+        {
+            // given
+            OdsData randomOdsData = await PostRandomOdsDataAsync();
+            OdsData modifiedOdsData = UpdateOdsDataWithRandomValues(randomOdsData);
+
+            // when
+            await this.apiBroker.PutOdsDataAsync(modifiedOdsData);
+            OdsData actualOdsData = await this.apiBroker.GetOdsDataByIdAsync(randomOdsData.Id);
+
+            // then
+            actualOdsData.Should().BeEquivalentTo(modifiedOdsData);
+            await this.apiBroker.DeleteOdsDataByIdAsync(actualOdsData.Id);
+        }
     }
 }
