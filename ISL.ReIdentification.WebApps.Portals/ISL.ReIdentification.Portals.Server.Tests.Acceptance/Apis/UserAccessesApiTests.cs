@@ -26,6 +26,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
+        
         private static string GetRandomStringWithLengthOf(int length)
         {
             string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();

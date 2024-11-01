@@ -26,8 +26,35 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
+        private static List<string> GetRandomStringsWithLengthOf(int length, int count = 0)
+        {
+            if (count == 0)
+            {
+                count = GetRandomNumber();
+            }
+
+            return Enumerable.Range(start: 0, count)
+                .Select(selector: _ => GetRandomStringWithLengthOf(length))
+                .ToList();
+        }
+
         private static UserAccess CreateRandomUserAccess() =>
             CreateRandomUserAccessFiller().Create();
+
+        private static BulkUserAccess CreateRandomBulkUserAccess()
+        {
+            return new BulkUserAccess
+            {
+                EntraUserId = Guid.NewGuid(),
+                GivenName = GetRandomStringWithLengthOf(255),
+                Surname = GetRandomStringWithLengthOf(255),
+                DisplayName = GetRandomStringWithLengthOf(50),
+                JobTitle = GetRandomStringWithLengthOf(50),
+                Email = GetRandomStringWithLengthOf(320),
+                UserPrincipalName = GetRandomStringWithLengthOf(50),
+                OrgCodes = GetRandomStringsWithLengthOf(10)
+            };
+        }
 
         private static string GetRandomStringWithLengthOf(int length)
         {
