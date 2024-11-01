@@ -2,12 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Brokers;
 using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.UserAccesses;
-using Tynamix.ObjectFiller;
 
 namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
 {
@@ -89,6 +85,36 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
             UserAccess randomUserAccess = CreateRandomUserAccess();
 
             return await this.apiBroker.PostUserAccessAsync(randomUserAccess);
+        }
+
+        private async ValueTask<BulkUserAccess> SetupBulkUserAccessesAsync(BulkUserAccess bulkUserAccess)
+        {
+            foreach (var orgCode in bulkUserAccess.OrgCodes)
+            {
+                var userId = Guid.NewGuid().ToString();
+                var currentDateTime = DateTimeOffset.UtcNow;
+
+                UserAccess randomUserAccess = new UserAccess
+                {
+                    Id = Guid.NewGuid(),
+                    DisplayName = bulkUserAccess.DisplayName,
+                    Email = bulkUserAccess.Email,
+                    OrgCode = orgCode,
+                    GivenName = bulkUserAccess.GivenName,
+                    EntraUserId = bulkUserAccess.EntraUserId,
+                    JobTitle = bulkUserAccess.JobTitle,
+                    Surname = bulkUserAccess.Surname,
+                    UserPrincipalName = bulkUserAccess.UserPrincipalName,
+                    CreatedBy = userId,
+                    CreatedDate = currentDateTime,
+                    UpdatedBy = userId,
+                    UpdatedDate = currentDateTime
+                };
+
+                await this.apiBroker.PostUserAccessAsync(randomUserAccess);
+            }
+
+            return bulkUserAccess;
         }
     }
 }

@@ -33,9 +33,14 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             return result.Length > length ? result.Substring(0, length) : result;
         }
 
-        private static List<string> GetRandomStringsWithLengthOf(int length)
+        private static List<string> GetRandomStringsWithLengthOf(int length, int count = 0)
         {
-            return Enumerable.Range(start: 0, count: GetRandomNumber())
+            if (count == 0)
+            {
+                count = GetRandomNumber();
+            }
+
+            return Enumerable.Range(start: 0, count)
                 .Select(selector: _ => GetRandomStringWithLengthOf(length))
                 .ToList();
         }
@@ -132,6 +137,36 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             UserAccess randomUserAccess = CreateRandomUserAccess();
 
             return await this.apiBroker.PostUserAccessAsync(randomUserAccess);
+        }
+
+        private async ValueTask<BulkUserAccess> SetupBulkUserAccessesAsync(BulkUserAccess bulkUserAccess)
+        {
+            foreach (var orgCode in bulkUserAccess.OrgCodes)
+            {
+                var userId = Guid.NewGuid().ToString();
+                var currentDateTime = DateTimeOffset.UtcNow;
+
+                UserAccess randomUserAccess = new UserAccess
+                {
+                    Id = Guid.NewGuid(),
+                    DisplayName = bulkUserAccess.DisplayName,
+                    Email = bulkUserAccess.Email,
+                    OrgCode = orgCode,
+                    GivenName = bulkUserAccess.GivenName,
+                    EntraUserId = bulkUserAccess.EntraUserId,
+                    JobTitle = bulkUserAccess.JobTitle,
+                    Surname = bulkUserAccess.Surname,
+                    UserPrincipalName = bulkUserAccess.UserPrincipalName,
+                    CreatedBy = userId,
+                    CreatedDate = currentDateTime,
+                    UpdatedBy = userId,
+                    UpdatedDate = currentDateTime
+                };
+
+                await this.apiBroker.PostUserAccessAsync(randomUserAccess);
+            }
+
+            return bulkUserAccess;
         }
     }
 }
