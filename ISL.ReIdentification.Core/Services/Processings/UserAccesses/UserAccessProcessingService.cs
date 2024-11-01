@@ -6,19 +6,34 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ISL.ReIdentification.Core.Brokers.DateTimes;
+using ISL.ReIdentification.Core.Brokers.Identifiers;
 using ISL.ReIdentification.Core.Brokers.Loggings;
+using ISL.ReIdentification.Core.Brokers.Securities;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
+using ISL.ReIdentification.Core.Models.Securities;
 
 namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
 {
     public partial class UserAccessProcessingService : IUserAccessProcessingService
     {
         private readonly IUserAccessService userAccessService;
+        private readonly IDateTimeBroker dateTimeBroker;
+        private readonly IIdentifierBroker identifierBroker;
+        private readonly ISecurityBroker securityBroker;
         private readonly ILoggingBroker loggingBroker;
 
-        public UserAccessProcessingService(IUserAccessService userAccessService, ILoggingBroker loggingBroker)
+        public UserAccessProcessingService(
+            IUserAccessService userAccessService,
+            IDateTimeBroker dateTimeBroker,
+            IIdentifierBroker identifierBroker,
+            ISecurityBroker securityBroker,
+            ILoggingBroker loggingBroker)
         {
             this.userAccessService = userAccessService;
+            this.dateTimeBroker = dateTimeBroker;
+            this.identifierBroker = identifierBroker;
+            this.securityBroker = securityBroker;
             this.loggingBroker = loggingBroker;
         }
 
@@ -68,7 +83,60 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
             return await this.userAccessService.RetrieveAllActiveOrganisationsUserHasAccessToAsync(entraUserId);
         });
 
-        public ValueTask<BulkUserAccess> BulkAddRemoveUserAccessAsync(BulkUserAccess bulkUserAccess) =>
-            throw new NotImplementedException();
+        public ValueTask BulkAddRemoveUserAccessAsync(BulkUserAccess bulkUserAccess) =>
+        TryCatch(async () =>
+        {
+            ValidateOnBulkAddRemoveUserAccessAsync(bulkUserAccess);
+
+            IQueryable<UserAccess> existingUserAccessQuery =
+                await this.userAccessService.RetrieveAllUserAccessesAsync();
+
+            List<UserAccess> existingUserAccess = existingUserAccessQuery
+                .Where(userAccess => userAccess.EntraUserId == bulkUserAccess.EntraUserId).ToList();
+
+
+            foreach (UserAccess userAccess in existingUserAccess)
+            {
+                if (!bulkUserAccess.OrgCodes.Contains(userAccess.OrgCode))
+                {
+                    await this.userAccessService.RemoveUserAccessByIdAsync(userAccess.Id);
+                }
+            }
+
+            List<UserAccess> newUserAccess = new List<UserAccess>();
+            EntraUser user = await this.securityBroker.GetCurrentUser();
+            var existingOrgCodes = new HashSet<string>(existingUserAccess.Select(ua => ua.OrgCode));
+
+            foreach (string orgCode in bulkUserAccess.OrgCodes)
+            {
+                if (!existingOrgCodes.Contains(orgCode))
+                {
+                    Guid id = await this.identifierBroker.GetIdentifierAsync();
+                    DateTimeOffset now = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+
+                    newUserAccess.Add(new UserAccess
+                    {
+                        Id = id,
+                        EntraUserId = bulkUserAccess.EntraUserId,
+                        GivenName = bulkUserAccess.GivenName,
+                        Surname = bulkUserAccess.Surname,
+                        DisplayName = bulkUserAccess.DisplayName,
+                        JobTitle = bulkUserAccess.JobTitle,
+                        Email = bulkUserAccess.Email,
+                        UserPrincipalName = bulkUserAccess.UserPrincipalName,
+                        OrgCode = orgCode,
+                        CreatedBy = user.EntraUserId.ToString(),
+                        CreatedDate = now,
+                        UpdatedBy = user.EntraUserId.ToString(),
+                        UpdatedDate = now
+                    });
+                }
+            }
+
+            foreach (UserAccess userAccess in newUserAccess)
+            {
+                await this.userAccessService.AddUserAccessAsync(userAccess);
+            }
+        });
     }
 }

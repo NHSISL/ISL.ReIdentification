@@ -1,0 +1,61 @@
+﻿// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
+using System;
+using System.Threading.Tasks;
+using ISL.ReIdentification.Core.Models.Foundations.Documents.Exceptions;
+using Xeptions;
+
+namespace ISL.ReIdentification.Core.Services.Foundations.Documents
+{
+    public partial class DocumentService : IDocumentService
+    {
+        private delegate ValueTask ReturningNothingFunction();
+
+        private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
+        {
+            try
+            {
+                await returningNothingFunction();
+            }
+            catch (InvalidDocumentException invalidDocumentException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(invalidDocumentException);
+            }
+            catch (Exception exception)
+            {
+                var failedServiceDocumentException =
+                    new FailedServiceDocumentException(
+                        message: "Failed service document error occurred, contact support.",
+                        innerException: exception);
+
+                throw await CreateAndLogServiceExceptionAsync(failedServiceDocumentException);
+            }
+        }
+
+        private async ValueTask<DocumentValidationException> CreateAndLogValidationExceptionAsync(Xeption exception)
+        {
+            var documentValidationException =
+                new DocumentValidationException(
+                    message: "Document validation error occurred, please fix errors and try again.",
+                    innerException: exception);
+
+            await this.loggingBroker.LogErrorAsync(documentValidationException);
+
+            return documentValidationException;
+        }
+
+        private async ValueTask<DocumentServiceException> CreateAndLogServiceExceptionAsync(Xeption exception)
+        {
+            var documentServiceException =
+                new DocumentServiceException(
+                    message: "Document service error occurred, contact support.",
+                    innerException: exception);
+
+            await this.loggingBroker.LogErrorAsync(documentServiceException);
+
+            return documentServiceException;
+        }
+    }
+}

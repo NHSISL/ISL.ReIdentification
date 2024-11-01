@@ -396,12 +396,6 @@ namespace ISL.ReIdentification.Core.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTimeOffset>("ActiveFrom")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<DateTimeOffset?>("ActiveTo")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -432,6 +426,16 @@ namespace ISL.ReIdentification.Core.Migrations
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
 
+                    b.Property<DateTime>("PeriodEnd")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("PeriodEnd");
+
+                    b.Property<DateTime>("PeriodStart")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("PeriodStart");
+
                     b.Property<string>("Surname")
                         .HasColumnType("nvarchar(max)");
 
@@ -448,7 +452,21 @@ namespace ISL.ReIdentification.Core.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("EntraUserId", "OrgCode")
+                        .IsUnique();
+
                     b.ToTable("UserAccesses");
+
+                    b.ToTable(tb => tb.IsTemporal(ttb =>
+                            {
+                                ttb.UseHistoryTable("UserAccessesHistory");
+                                ttb
+                                    .HasPeriodStart("PeriodStart")
+                                    .HasColumnName("PeriodStart");
+                                ttb
+                                    .HasPeriodEnd("PeriodEnd")
+                                    .HasColumnName("PeriodEnd");
+                            }));
                 });
 #pragma warning restore 612, 618
         }

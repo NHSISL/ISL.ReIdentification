@@ -17,8 +17,6 @@ namespace ISL.ReIdentification.Core.Models.Foundations.UserAccesses
         public string Email { get; set; }
         public string UserPrincipalName { get; set; }
         public string OrgCode { get; set; }
-        public DateTimeOffset ActiveFrom { get; set; }
-        public DateTimeOffset? ActiveTo { get; set; }
         public string CreatedBy { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
         public string UpdatedBy { get; set; }
