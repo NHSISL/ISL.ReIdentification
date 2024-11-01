@@ -2,6 +2,12 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using FluentAssertions;
+using Force.DeepCloner;
+using RESTFulSense.Exceptions;
 using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.UserAccesses;
 
 namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis

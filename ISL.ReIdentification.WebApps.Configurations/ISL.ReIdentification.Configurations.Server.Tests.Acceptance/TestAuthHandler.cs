@@ -2,6 +2,14 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
+using System.Security.Claims;
+using System.Text.Encodings.Web;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+
 namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance
 {
     public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
