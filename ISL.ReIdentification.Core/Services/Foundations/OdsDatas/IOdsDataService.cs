@@ -19,5 +19,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.OdsDatas
         ValueTask<OdsData> RemoveOdsDataByIdAsync(Guid odsDataId);
         ValueTask<List<OdsData>> RetrieveChildrenByParentId(Guid odsDataId);
         ValueTask<List<OdsData>> RetrieveAllDecendentsByParentId(Guid odsDataId);
+        ValueTask<List<OdsData>> RetrieveAllAncestorsByChildId(Guid odsDataId);
     }
 }
