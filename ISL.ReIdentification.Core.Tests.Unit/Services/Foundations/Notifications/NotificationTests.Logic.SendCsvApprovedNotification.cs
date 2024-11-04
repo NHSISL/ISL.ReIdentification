@@ -39,6 +39,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Notification
                 { "reason", accessRequest.CsvIdentificationRequest.Reason },
                 { "organisation", accessRequest.CsvIdentificationRequest.Organisation },
                 { "identifierColumnIndex" , accessRequest.CsvIdentificationRequest.IdentifierColumnIndex },
+                { "hasHeaderRecord" , accessRequest.CsvIdentificationRequest.HasHeaderRecord },
                 { "templateId", this.notificationConfigurations.CsvApprovedRequestTemplateId },
                 { "configurationBaseUrl", this.notificationConfigurations.ConfigurationBaseUrl },
                 { "portalBaseUrl", this.notificationConfigurations.PortalBaseUrl },

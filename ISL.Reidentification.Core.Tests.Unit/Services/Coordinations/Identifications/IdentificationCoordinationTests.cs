@@ -307,6 +307,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 Data = Convert.FromBase64String("Um93TnVtYmVyLElkZW50aWZpZXIKVGVzdFJvd051bWJlcixUZXN0SWRlbnRpZmllcg=="),
                 Id = Guid.NewGuid(),
                 IdentifierColumnIndex = 0,
+                HasHeaderRecord = false,
                 Organisation = nameof(CsvIdentificationRequest.Organisation),
                 Reason = nameof(CsvIdentificationRequest.Reason),
                 RecipientDisplayName = nameof(CsvIdentificationRequest.RecipientDisplayName),

@@ -41,6 +41,9 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications
             builder.Property(csvIdentificationRequest => csvIdentificationRequest.IdentifierColumnIndex)
                 .IsRequired();
 
+            builder.Property(csvIdentificationRequest => csvIdentificationRequest.HasHeaderRecord)
+                .IsRequired();
+
             builder
                 .Property(csvIdentificationRequest => csvIdentificationRequest.CreatedBy)
                 .HasMaxLength(255)
