@@ -9,9 +9,11 @@ import { IReportEmbedConfiguration } from "embed";
 import ReportDeveloperTools from "./reportDeveloperTools";
 import { DeveloperEvents } from "../../types/DeveloperEvents";
 import { ToastPosition } from "react-bootstrap/esm/ToastContainer";
+import { useParams } from "react-router-dom";
 
 const ReportsHome: FunctionComponent = () => {
     const { accounts, instance } = useMsal();
+    const {reportGroupId, reportId, reportPage } = useParams();
     const [toastPostion, setToastPosition] = useState<ToastPosition>("bottom-end")
     const [showDeveloperTools, setShowDeveloperTools] = useState("");
     const [reidReason, setReidReason] = useState("");
@@ -20,6 +22,7 @@ const ReportsHome: FunctionComponent = () => {
     const [developerEvents, setDeveloperEvents] = useState<DeveloperEvents[]>([]);
     const [lastEvent, setLastEvent] = useState<DeveloperEvents>();
     const [noAccess, setNoAccess] = useState(false);
+    const [toastHidden, setToastHidden] = useState(false);
 
     const aquireAccessToken = async () => {
         await instance.initialize();
@@ -44,7 +47,7 @@ const ReportsHome: FunctionComponent = () => {
     }
 
     const aquireReportEmbeddingUrl = async (accessToken: string) => {
-        return axios.get("https://api.powerbi.com/v1.0/myorg/groups/" + "68fc89a2-5471-452c-bee0-d37a0b3cd99f" + "/reports/" + "df06f0a1-f4f1-44d4-b94c-cdbda9de5bad",
+        return axios.get("https://api.powerbi.com/v1.0/myorg/groups/" + reportGroupId + "/reports/" + reportId,
             {
                 headers: {
                     "Authorization": "Bearer " + accessToken
@@ -99,6 +102,7 @@ const ReportsHome: FunctionComponent = () => {
                         <Navbar.Brand style={{ fontSize: "1em", padding: 0 }}>
                             ISL Reidentification Portal
                         </Navbar.Brand>
+                        {toastHidden && <Button onClick={() => setToastHidden(false)}>Show reidentification window</Button>}
                         {accounts.length > 0 &&
                             <AuthenticatedTemplate>
                                 <Navbar.Text style={{ padding: 1 }}>
@@ -144,7 +148,12 @@ const ReportsHome: FunctionComponent = () => {
                             <ReportsLaunchPage
                                 reportConfig={reportConfig}
                                 addDeveloperEvent={raiseEvent}
-                                toastPostion={toastPostion} />
+                                toastPostion={toastPostion} 
+                                activePage={reportPage}
+                                toastHidden={toastHidden}
+                                reidReason={reidReason}
+                                hideToast={() => setToastHidden(true)}
+                                />
                         }
                     </AuthenticatedTemplate>
                 </Col>
