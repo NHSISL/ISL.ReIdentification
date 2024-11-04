@@ -28,6 +28,9 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Brokers
         public async ValueTask<List<OdsData>> GetChildrenAsync(Guid odsDataId) =>
             await this.apiFactoryClient.GetContentAsync<List<OdsData>>($"{odsDataRelativeUrl}/GetChildren/{odsDataId}");
 
+        public async ValueTask<List<OdsData>> GetDescendantsAsync(Guid odsDataId) =>
+            await this.apiFactoryClient.GetContentAsync<List<OdsData>>($"{odsDataRelativeUrl}/GetDescendants/{odsDataId}");
+
         public async ValueTask<List<OdsData>> GetAncestorsAsync(Guid odsDataId) =>
             await this.apiFactoryClient.GetContentAsync<List<OdsData>>($"{odsDataRelativeUrl}/GetAncestors/{odsDataId}");
 
