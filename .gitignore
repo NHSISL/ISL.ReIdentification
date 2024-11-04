@@ -376,3 +376,4 @@ local.appsettings.json
 /LHDS.Core.Tests.Integration.EmisLandings/local.appsettings.json
 /ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Server/appsettings.Development.json
 /ISL.Reidentification.WebApps.Configurations/ISL.Reidentification.Configurations.Server/appsettings.Development.json
+/ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Server/appsettings.Development.json
