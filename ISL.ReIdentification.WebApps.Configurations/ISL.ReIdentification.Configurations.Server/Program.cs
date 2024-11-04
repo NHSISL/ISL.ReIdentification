@@ -6,16 +6,21 @@ using System.Text.Json;
 using ISL.Providers.Notifications.Abstractions;
 using ISL.Providers.Notifications.GovukNotify.Models;
 using ISL.Providers.Notifications.GovukNotify.Providers.Notifications;
+using ISL.Providers.ReIdentification.Abstractions;
+using ISL.Providers.ReIdentification.Necs.Models.Brokers.NECS;
+using ISL.Providers.ReIdentification.Necs.Providers.NecsReIdentifications;
+using ISL.Providers.ReIdentification.OfflineFileSources.Models;
+using ISL.Providers.ReIdentification.OfflineFileSources.Providers.OfflineFileSources;
 using ISL.ReIdentification.Core.Brokers.CsvHelpers;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Hashing;
 using ISL.ReIdentification.Core.Brokers.Identifiers;
 using ISL.ReIdentification.Core.Brokers.Loggings;
-using ISL.ReIdentification.Core.Brokers.NECS;
 using ISL.ReIdentification.Core.Brokers.Notifications;
+using ISL.ReIdentification.Core.Brokers.ReIdentifications;
 using ISL.ReIdentification.Core.Brokers.Securities;
+using ISL.ReIdentification.Core.Brokers.Storages.Blob;
 using ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications;
-using ISL.ReIdentification.Core.Models.Brokers.NECS;
 using ISL.ReIdentification.Core.Models.Brokers.Notifications;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
@@ -156,6 +161,30 @@ namespace ISL.ReIdentification.Configurations.Server
             services.AddSingleton(notifyConfigurations);
             services.AddTransient<INotificationAbstractionProvider, NotificationAbstractionProvider>();
             services.AddTransient<INotificationProvider, GovukNotifyProvider>();
+
+            bool reIdentificationProviderOfflineMode = configuration
+                .GetSection("reIdentificationProviderOfflineMode").Get<bool>();
+
+            if (reIdentificationProviderOfflineMode == true)
+            {
+                OfflineSourceReIdentificationConfigurations offlineSourceReIdentificationConfigurations = configuration
+                    .GetSection("offlineSourceReIdentificationConfigurations")
+                        .Get<OfflineSourceReIdentificationConfigurations>();
+
+                services.AddSingleton(offlineSourceReIdentificationConfigurations);
+                services.AddTransient<IReIdentificationProvider, OfflineFileSourceReIdentificationProvider>();
+            }
+            else
+            {
+                NecsReIdentificationConfigurations necsReIdentificationConfigurations = configuration
+                    .GetSection("necsReIdentificationConfigurations")
+                        .Get<NecsReIdentificationConfigurations>();
+
+                services.AddSingleton(necsReIdentificationConfigurations);
+                services.AddTransient<IReIdentificationProvider, NecsReIdentificationProvider>();
+            }
+
+            services.AddTransient<IReIdentificationAbstractionProvider, ReIdentificationAbstractionProvider>();
         }
 
         private static void AddBrokers(IServiceCollection services, IConfiguration configuration)
@@ -168,21 +197,8 @@ namespace ISL.ReIdentification.Configurations.Server
             services.AddTransient<IReIdentificationStorageBroker, ReIdentificationStorageBroker>();
             services.AddTransient<INotificationBroker, NotificationBroker>();
             services.AddTransient<IHashBroker, HashBroker>();
-
-            NECSConfiguration necsConfigurations = configuration
-                .GetSection("necsConfiguration")
-                    .Get<NECSConfiguration>();
-
-            NECSConfiguration necsConfiguration = new NECSConfiguration
-            {
-                ApiUrl = necsConfigurations.ApiUrl,
-                ApiKey = necsConfigurations.ApiKey,
-                ApiMaxBatchSize = necsConfigurations.ApiMaxBatchSize,
-            };
-
-            services.AddSingleton(necsConfigurations);
-            services.AddSingleton(necsConfiguration);
-            services.AddTransient<INECSBroker, NECSBroker>();
+            services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
+            services.AddTransient<IReIdentificationBroker, ReIdentificationBroker>();
         }
 
         private static void AddFoundationServices(IServiceCollection services)

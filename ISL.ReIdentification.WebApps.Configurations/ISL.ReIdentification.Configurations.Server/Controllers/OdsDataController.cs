@@ -79,12 +79,50 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             }
         }
 
-        [HttpGet("GetChildren")]
+        [HttpGet("GetChildren/{id}")]
         public async ValueTask<ActionResult<List<OdsData>>> GetAllChildren(Guid id)
         {
             try
             {
                 List<OdsData> retrievedOdsDatas = await this.odsDataService.RetrieveChildrenByParentId(id);
+
+                return Ok(retrievedOdsDatas);
+            }
+            catch (OdsDataDependencyException odsDataDependencyException)
+            {
+                return InternalServerError(odsDataDependencyException);
+            }
+            catch (OdsDataServiceException odsDataServiceException)
+            {
+                return InternalServerError(odsDataServiceException);
+            }
+        }
+
+        [HttpGet("GetDescendants/{id}")]
+        public async ValueTask<ActionResult<List<OdsData>>> GetAllDescendants(Guid id)
+        {
+            try
+            {
+                List<OdsData> retrievedOdsDatas = await this.odsDataService.RetrieveAllDecendentsByParentId(id);
+
+                return Ok(retrievedOdsDatas);
+            }
+            catch (OdsDataDependencyException odsDataDependencyException)
+            {
+                return InternalServerError(odsDataDependencyException);
+            }
+            catch (OdsDataServiceException odsDataServiceException)
+            {
+                return InternalServerError(odsDataServiceException);
+            }
+        }
+
+        [HttpGet("GetAncestors")]
+        public async ValueTask<ActionResult<List<OdsData>>> GetAllAncestors(Guid id)
+        {
+            try
+            {
+                List<OdsData> retrievedOdsDatas = await this.odsDataService.RetrieveAllAncestorsByChildId(id);
 
                 return Ok(retrievedOdsDatas);
             }
