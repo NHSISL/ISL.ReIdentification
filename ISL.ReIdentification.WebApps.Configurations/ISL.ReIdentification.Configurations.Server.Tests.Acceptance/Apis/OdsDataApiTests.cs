@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Brokers;
 using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.OdsDatas;
@@ -36,6 +37,22 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
 
             return await this.apiBroker.PostOdsDataAsync(randomOdsData);
         }
+
+        private async ValueTask<List<OdsData>> PostRandomOdsDatasAsync()
+        {
+            int randomNumber = GetRandomNumber();
+            var randomOdsDatas = new List<OdsData>();
+
+            for (int i = 0; i < randomNumber; i++)
+            {
+                randomOdsDatas.Add(await PostRandomOdsDataAsync());
+            }
+
+            return randomOdsDatas;
+        }
+
+        private int GetRandomNumber() =>
+            new IntRange(min: 2, max: 10).GetValue();
 
         private static string GetRandomStringWithLengthOf(int length)
         {
