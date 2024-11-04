@@ -1,6 +1,6 @@
 import { Container } from "react-bootstrap";
 import BreadCrumbBase from "../components/bases/layouts/BreadCrumb/BreadCrumbBase";
-import CsvIdentificationRequestWorklistTable from "../components/csvIdentificationWorklist/csvIdentificationRequestTable";
+import CsvIdentificationWorklistTable from "../components/csvIdentificationWorklist/csvIdentificationWorklistTable";
 
 export const CsvReIdentificationWorklistPage = () => {
 
@@ -13,7 +13,7 @@ export const CsvReIdentificationWorklistPage = () => {
                     currentLink="CSV Worklist">
                 </BreadCrumbBase>
                 <div className="mt-3">
-                    <CsvIdentificationRequestWorklistTable />
+                    <CsvIdentificationWorklistTable />
                 </div>
             </section>
         </Container>

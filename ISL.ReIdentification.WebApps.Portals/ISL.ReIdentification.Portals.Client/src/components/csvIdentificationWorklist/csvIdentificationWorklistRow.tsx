@@ -1,12 +1,12 @@
 import { FunctionComponent } from "react";
 import { CsvIdentificationRequest } from "../../models/csvIdentificationRequest/csvIdentificationRequest";
-import CsvIdentificationRequestRowView from "./csvIdentificationRequestRowView";
+import CsvIdentificationRequestRowView from "./csvIdentificationWorklistRowView";
 
-type CsvIdentificationRequestRowProps = {
+type CsvIdentificationWorklistRowProps = {
     csvIdentificationRequest: CsvIdentificationRequest;
 };
 
-const CsvIdentificationRequestRow: FunctionComponent<CsvIdentificationRequestRowProps> = (props) => {
+const CsvIdentificationWorklistRow: FunctionComponent<CsvIdentificationWorklistRowProps> = (props) => {
     const {
         csvIdentificationRequest
     } = props;
@@ -19,4 +19,4 @@ const CsvIdentificationRequestRow: FunctionComponent<CsvIdentificationRequestRow
     );
 };
 
-export default CsvIdentificationRequestRow;
+export default CsvIdentificationWorklistRow;

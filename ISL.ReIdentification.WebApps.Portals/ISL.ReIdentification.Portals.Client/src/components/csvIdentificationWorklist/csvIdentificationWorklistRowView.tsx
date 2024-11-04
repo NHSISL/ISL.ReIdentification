@@ -3,11 +3,11 @@ import { Button } from "react-bootstrap";
 import { CsvIdentificationRequest } from "../../models/csvIdentificationRequest/csvIdentificationRequest";
 import { Link } from "react-router-dom";
 
-type CsvIdentificationRequestRowProps = {
+type CsvIdentificationWorklistRowProps = {
     csvIdentificationRequest: CsvIdentificationRequest;
 }
 
-const CsvIdentificationRequestRow: FunctionComponent<CsvIdentificationRequestRowProps> = (props) => {
+const CsvIdentificationWorklistRow: FunctionComponent<CsvIdentificationWorklistRowProps> = (props) => {
     const {
         csvIdentificationRequest
     } = props;
@@ -32,4 +32,4 @@ const CsvIdentificationRequestRow: FunctionComponent<CsvIdentificationRequestRow
     );
 }
 
-export default CsvIdentificationRequestRow;
+export default CsvIdentificationWorklistRow;

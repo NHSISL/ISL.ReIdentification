@@ -18,11 +18,16 @@ class SimpleReIdentificationBroker {
             .then(result => result.data as AccessRequest);
     }
 
-    async GetCsvIdentificationRequestByIdAsync(id: string) {
+    async GetCsvIdentificationRequestByIdAsync(id: string): Promise<AccessRequest> {
         const url = `${this.relativeCsvReIdentificationUrl}${id}`;
 
-        return await this.apiBroker.GetAsync(url)
-            .then(result => result.data as AccessRequest);
+        try {
+            const result = await this.apiBroker.GetAsync(url);
+            return result.data as AccessRequest;
+        } catch (error) {
+            console.error("Error fetching CSV Identification Request by ID:", error);
+            throw error;
+        }
     }
 }
 

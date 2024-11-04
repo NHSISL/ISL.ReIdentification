@@ -1,20 +1,18 @@
 import debounce from "lodash/debounce";
 import { FunctionComponent, useMemo, useState } from "react";
 import { SpinnerBase } from "../bases/spinner/SpinnerBase";
-import { Card, Container, Table } from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDatabase } from "@fortawesome/free-solid-svg-icons";
+import {  Container, Table } from "react-bootstrap";
 import { CsvIdentificationRequestView } from "../../models/views/components/csvIdentificationRequest/csvIdentificationRequestView";
 import InfiniteScroll from "../bases/pagers/InfiniteScroll";
 import InfiniteScrollLoader from "../bases/pagers/InfiniteScroll.Loader";
 import SearchBase from "../bases/inputs/SearchBase";
-import CsvIdentificationRequestRow from "./csvIdentificationRequestRow";
+import CsvIdentificationRequestRow from "./csvIdentificationWorklistRow";
 import { csvIdentificationRequestViewService } from "../../services/views/csvIdentificationRequest/csvIdentificationRequestViewService";
 import { useMsal } from "@azure/msal-react";
 
-type CsvIdentificationRequestWorklistTableProps = object;
+type CsvIdentificationWorklistTableProps = object;
 
-const CsvIdentificationRequestWorklistTable: FunctionComponent<CsvIdentificationRequestWorklistTableProps> = () => {
+const CsvIdentificationWorklistTable: FunctionComponent<CsvIdentificationWorklistTableProps> = () => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [debouncedTerm, setDebouncedTerm] = useState<string>("");
     const [showSpinner] = useState(false);
@@ -109,4 +107,4 @@ const CsvIdentificationRequestWorklistTable: FunctionComponent<CsvIdentification
     );
 };
 
-export default CsvIdentificationRequestWorklistTable;
+export default CsvIdentificationWorklistTable;
