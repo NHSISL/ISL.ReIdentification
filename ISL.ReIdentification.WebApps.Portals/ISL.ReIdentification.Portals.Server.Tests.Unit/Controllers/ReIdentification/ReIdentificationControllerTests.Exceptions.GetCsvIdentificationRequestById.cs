@@ -20,6 +20,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.ReIdentific
         {
             // given
             Guid someCsvIdentificationRequestId = Guid.NewGuid();
+            string someReason = GetRandomString();
 
             BadRequestObjectResult expectedBadRequestObjectResult =
                 BadRequest(validationException.InnerException);
@@ -28,19 +29,19 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.ReIdentific
                 new ActionResult<object>(expectedBadRequestObjectResult);
 
             this.identificationCoordinationServiceMock.Setup(service =>
-                service.ProcessCsvIdentificationRequestAsync(someCsvIdentificationRequestId))
+                service.ProcessCsvIdentificationRequestAsync(someCsvIdentificationRequestId, someReason))
                     .ThrowsAsync(validationException);
 
             // when
             ActionResult<object> actualActionResult =
                 await this.reIdentificationController
-                    .GetCsvIdentificationRequestByIdAsync(someCsvIdentificationRequestId);
+                    .GetCsvIdentificationRequestByIdAsync(someCsvIdentificationRequestId, someReason);
 
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
             this.identificationCoordinationServiceMock.Verify(service =>
-                service.ProcessCsvIdentificationRequestAsync(someCsvIdentificationRequestId),
+                service.ProcessCsvIdentificationRequestAsync(someCsvIdentificationRequestId, someReason),
                     Times.Once);
 
             this.identificationCoordinationServiceMock.VerifyNoOtherCalls();
@@ -53,6 +54,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.ReIdentific
         {
             // given
             Guid someCsvIdentificationRequestId = Guid.NewGuid();
+            string someReason = GetRandomString();
 
             InternalServerErrorObjectResult expectedBadRequestObjectResult =
                 InternalServerError(validationException);
@@ -61,19 +63,19 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.ReIdentific
                 new ActionResult<object>(expectedBadRequestObjectResult);
 
             this.identificationCoordinationServiceMock.Setup(service =>
-                service.ProcessCsvIdentificationRequestAsync(someCsvIdentificationRequestId))
+                service.ProcessCsvIdentificationRequestAsync(someCsvIdentificationRequestId, someReason))
                     .ThrowsAsync(validationException);
 
             // when
             ActionResult<object> actualActionResult =
                 await this.reIdentificationController
-                    .GetCsvIdentificationRequestByIdAsync(someCsvIdentificationRequestId);
+                    .GetCsvIdentificationRequestByIdAsync(someCsvIdentificationRequestId, someReason);
 
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
             this.identificationCoordinationServiceMock.Verify(service =>
-                service.ProcessCsvIdentificationRequestAsync(someCsvIdentificationRequestId),
+                service.ProcessCsvIdentificationRequestAsync(someCsvIdentificationRequestId, someReason),
                     Times.Once);
 
             this.identificationCoordinationServiceMock.VerifyNoOtherCalls();
