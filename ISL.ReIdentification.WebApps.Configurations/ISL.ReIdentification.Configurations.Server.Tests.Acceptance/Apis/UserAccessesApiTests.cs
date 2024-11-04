@@ -4,9 +4,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Brokers;
-using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.Lookups;
+using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.UserAccesses;
 using Tynamix.ObjectFiller;
 
 namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
@@ -25,8 +26,35 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
+        private static List<string> GetRandomStringsWithLengthOf(int length, int count = 0)
+        {
+            if (count == 0)
+            {
+                count = GetRandomNumber();
+            }
+
+            return Enumerable.Range(start: 0, count)
+                .Select(selector: _ => GetRandomStringWithLengthOf(length))
+                .ToList();
+        }
+
         private static UserAccess CreateRandomUserAccess() =>
             CreateRandomUserAccessFiller().Create();
+
+        private static BulkUserAccess CreateRandomBulkUserAccess()
+        {
+            return new BulkUserAccess
+            {
+                EntraUserId = Guid.NewGuid(),
+                GivenName = GetRandomStringWithLengthOf(255),
+                Surname = GetRandomStringWithLengthOf(255),
+                DisplayName = GetRandomStringWithLengthOf(50),
+                JobTitle = GetRandomStringWithLengthOf(50),
+                Email = GetRandomStringWithLengthOf(320),
+                UserPrincipalName = GetRandomStringWithLengthOf(50),
+                OrgCodes = GetRandomStringsWithLengthOf(10)
+            };
+        }
 
         private static string GetRandomStringWithLengthOf(int length)
         {
@@ -89,6 +117,36 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
             UserAccess randomUserAccess = CreateRandomUserAccess();
 
             return await this.apiBroker.PostUserAccessAsync(randomUserAccess);
+        }
+
+        private async ValueTask<BulkUserAccess> SetupBulkUserAccessesAsync(BulkUserAccess bulkUserAccess)
+        {
+            foreach (var orgCode in bulkUserAccess.OrgCodes)
+            {
+                var userId = Guid.NewGuid().ToString();
+                var currentDateTime = DateTimeOffset.UtcNow;
+
+                UserAccess randomUserAccess = new UserAccess
+                {
+                    Id = Guid.NewGuid(),
+                    DisplayName = bulkUserAccess.DisplayName,
+                    Email = bulkUserAccess.Email,
+                    OrgCode = orgCode,
+                    GivenName = bulkUserAccess.GivenName,
+                    EntraUserId = bulkUserAccess.EntraUserId,
+                    JobTitle = bulkUserAccess.JobTitle,
+                    Surname = bulkUserAccess.Surname,
+                    UserPrincipalName = bulkUserAccess.UserPrincipalName,
+                    CreatedBy = userId,
+                    CreatedDate = currentDateTime,
+                    UpdatedBy = userId,
+                    UpdatedDate = currentDateTime
+                };
+
+                await this.apiBroker.PostUserAccessAsync(randomUserAccess);
+            }
+
+            return bulkUserAccess;
         }
     }
 }

@@ -12,7 +12,7 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
     {
         ValueTask<AccessRequest> ProcessIdentificationRequestsAsync(AccessRequest accessRequest);
         ValueTask<AccessRequest> PersistsCsvIdentificationRequestAsync(AccessRequest accessRequest);
-        ValueTask<AccessRequest> ProcessCsvIdentificationRequestAsync(Guid csvIdentificationRequestId);
+        ValueTask<AccessRequest> ProcessCsvIdentificationRequestAsync(Guid csvIdentificationRequestId, string reason);
         ValueTask<AccessRequest> PersistsImpersonationContextAsync(AccessRequest accessRequest);
         ValueTask<AccessRequest> ProcessImpersonationContextRequestAsync(AccessRequest accessRequest);
     }

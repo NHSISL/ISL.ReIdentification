@@ -21,6 +21,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
         {
             // given
             Guid someCsvIdentificationRequestId = Guid.NewGuid();
+            string someReason = GetRandomString();
 
             this.persistanceOrchestrationServiceMock.Setup(service =>
                 service.RetrieveCsvIdentificationRequestByIdAsync(someCsvIdentificationRequestId))
@@ -35,7 +36,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             // when
             ValueTask<AccessRequest> accessRequestTask =
                 this.identificationCoordinationService
-                    .ProcessCsvIdentificationRequestAsync(someCsvIdentificationRequestId);
+                    .ProcessCsvIdentificationRequestAsync(someCsvIdentificationRequestId, someReason);
 
             IdentificationCoordinationDependencyValidationException
                 actualIdentificationCoordinationDependencyValidationException =
@@ -70,6 +71,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
         {
             // given
             Guid someCsvIdentificationRequestId = Guid.NewGuid();
+            string someReason = GetRandomString();
 
             this.persistanceOrchestrationServiceMock.Setup(service =>
                 service.RetrieveCsvIdentificationRequestByIdAsync(someCsvIdentificationRequestId))
@@ -84,7 +86,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             // when
             ValueTask<AccessRequest> accessRequestTask =
                 this.identificationCoordinationService
-                    .ProcessCsvIdentificationRequestAsync(someCsvIdentificationRequestId);
+                    .ProcessCsvIdentificationRequestAsync(someCsvIdentificationRequestId, someReason);
 
             IdentificationCoordinationDependencyException
                 actualIdentificationCoordinationDependencyException =
@@ -117,6 +119,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
         {
             // given
             Guid someCsvIdentificationRequestId = Guid.NewGuid();
+            string someReason = GetRandomString();
             Exception someException = new Exception();
 
             this.persistanceOrchestrationServiceMock.Setup(service =>
@@ -132,7 +135,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             // when
             ValueTask<AccessRequest> accessRequestTask =
                 this.identificationCoordinationService
-                    .ProcessCsvIdentificationRequestAsync(someCsvIdentificationRequestId);
+                    .ProcessCsvIdentificationRequestAsync(someCsvIdentificationRequestId, someReason);
 
             IdentificationCoordinationServiceException
                 actualIdentificationCoordinationServiceException =

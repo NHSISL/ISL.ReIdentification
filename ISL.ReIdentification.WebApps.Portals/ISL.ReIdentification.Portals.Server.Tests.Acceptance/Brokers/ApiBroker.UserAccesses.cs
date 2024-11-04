@@ -5,7 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.Lookups;
+using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.UserAccesses;
 
 namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Brokers
 {
