@@ -49,8 +49,8 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
             }
 
             List<OdsData> children = CreateOdsDataFiller(dateTimeOffset: GetRandomDateTimeOffset())
-                 .Create(count: GetRandomNumber())
-                     .ToList();
+                .Create(count: GetRandomNumber())
+                    .ToList();
 
             HierarchyId lastChildHierarchy = null;
 
