@@ -115,19 +115,21 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             }
         }
 
-        [HttpGet("{csvreidentification}")]
+        [HttpGet("{csvIdentificationRequestId}/{reason}")]
         public async ValueTask<ActionResult> GetCsvIdentificationRequestByIdAsync(
-            Guid csvIdentificationRequestId)
+            Guid csvIdentificationRequestId, string reason)
         {
             try
             {
-                AccessRequest reIdentifiedAccessRequest = await this.identificationCoordinationService
-                    .ProcessCsvIdentificationRequestAsync(csvIdentificationRequestId);
+                AccessRequest reIdentifiedAccessRequest = await identificationCoordinationService
+                    .ProcessCsvIdentificationRequestAsync(csvIdentificationRequestId, reason);
 
-                string fileName = "data.csv";
                 string contentType = "text/csv";
 
-                return File(reIdentifiedAccessRequest.CsvIdentificationRequest.Data, contentType, fileName);
+                return File(
+                    reIdentifiedAccessRequest.CsvIdentificationRequest.Data,
+                    contentType,
+                    reIdentifiedAccessRequest.CsvIdentificationRequest.Filepath);
             }
             catch (IdentificationCoordinationValidationException identificationCoordinationValidationException)
             {

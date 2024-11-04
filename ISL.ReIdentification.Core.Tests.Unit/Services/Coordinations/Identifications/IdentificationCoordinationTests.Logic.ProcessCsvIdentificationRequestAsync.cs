@@ -33,6 +33,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             { CallBase = true };
 
             Guid inputCsvIdentificationRequestId = Guid.NewGuid();
+            string inputReason = GetRandomString();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            DateTimeOffset outputDateTimeOffset = randomDateTimeOffset;
+            string outputTimestamp = outputDateTimeOffset.ToString("yyyyMMddHHmms");
             AccessRequest outputPersistanceOrchestrationAccessRequest = CreateRandomAccessRequest(); ;
             IdentificationRequest outputConversionIdentificationRequest = CreateRandomIdentificationRequest();
             EntraUser outputEntraUser = CreateRandomEntraUser();
@@ -50,6 +54,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             resultingAccessRequest.IdentificationRequest = null;
             resultingAccessRequest.ImpersonationContext = null;
             AccessRequest expectedAccessRequest = resultingAccessRequest.DeepClone();
+            string expectedFileName = $"data_{outputTimestamp}.csv";
+            expectedAccessRequest.CsvIdentificationRequest.Filepath = expectedFileName;
 
             this.persistanceOrchestrationServiceMock.Setup(service =>
                 service.RetrieveCsvIdentificationRequestByIdAsync(inputCsvIdentificationRequestId))
@@ -78,13 +84,17 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                     outputOrchestrationIdentificationRequest))
                 .ReturnsAsync(outputConversionCsvIdentificationRequest);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(outputDateTimeOffset);
+
             IdentificationCoordinationService identificationCoordinationService =
                 identificationCoordinationServiceMock.Object;
 
             // when
             AccessRequest actualAccessRequest =
                 await identificationCoordinationService
-                    .ProcessCsvIdentificationRequestAsync(inputCsvIdentificationRequestId);
+                    .ProcessCsvIdentificationRequestAsync(inputCsvIdentificationRequestId, inputReason);
 
             // then
             actualAccessRequest.Should().BeEquivalentTo(expectedAccessRequest);
@@ -114,6 +124,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             identificationCoordinationServiceMock.Verify(service =>
                 service.ConvertIdentificationRequestToCsvIdentificationRequest(
                     outputOrchestrationIdentificationRequest),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             identificationCoordinationServiceMock.VerifyNoOtherCalls();

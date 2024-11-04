@@ -19,30 +19,34 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.ReIdentific
         {
             // given
             Guid inputCsvIdentificationRequestId = Guid.NewGuid();
+            string inputReason = GetRandomString();
             AccessRequest randomAccessRequest = CreateRandomAccessRequest();
             AccessRequest inputAccessRequest = randomAccessRequest;
             AccessRequest addedAccessRequest = inputAccessRequest.DeepClone();
             AccessRequest expectedAccessRequest = addedAccessRequest.DeepClone();
             string contentType = "text/csv";
-            string fileName = "data.csv";
-            var expectedObjectResult = File(expectedAccessRequest.CsvIdentificationRequest.Data, contentType, fileName);
+
+            var expectedObjectResult = File(
+                expectedAccessRequest.CsvIdentificationRequest.Data,
+                contentType,
+                expectedAccessRequest.CsvIdentificationRequest.Filepath);
 
             var expectedActionResult = expectedObjectResult;
 
-            identificationCoordinationServiceMock
-                .Setup(service => service.ProcessCsvIdentificationRequestAsync(inputCsvIdentificationRequestId))
+            identificationCoordinationServiceMock.Setup(service =>
+                service.ProcessCsvIdentificationRequestAsync(inputCsvIdentificationRequestId, inputReason))
                     .ReturnsAsync(addedAccessRequest);
 
             // when
             ActionResult actualActionResult = await reIdentificationController
-                .GetCsvIdentificationRequestByIdAsync(inputCsvIdentificationRequestId);
+                .GetCsvIdentificationRequestByIdAsync(inputCsvIdentificationRequestId, inputReason);
 
             // then
             actualActionResult.Should().BeEquivalentTo(expectedActionResult);
 
-            identificationCoordinationServiceMock
-               .Verify(service => service.ProcessCsvIdentificationRequestAsync(inputCsvIdentificationRequestId),
-                   Times.Once);
+            identificationCoordinationServiceMock.Verify(service =>
+                service.ProcessCsvIdentificationRequestAsync(inputCsvIdentificationRequestId, inputReason),
+                    Times.Once);
 
             identificationCoordinationServiceMock.VerifyNoOtherCalls();
         }
