@@ -157,5 +157,45 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
 
             await this.apiBroker.DeleteOdsDataByIdAsync(randomOdsData.Id);
         }
+
+        [Fact]
+        public async Task ShouldGetAncestorsAsync()
+        {
+            // given
+            OdsData randomOdsData = await PostRandomOdsDataAsync();
+            List<OdsData> childOdsDatas = await PostRandomChildOdsDatasAsync(randomOdsData.OdsHierarchy);
+            List<OdsData> grandchildrenOdsDatas = await PostRandomChildOdsDatasAsync(childOdsDatas[0].OdsHierarchy);
+
+            List<OdsData> expectedOdsDatas = new List<OdsData>()
+            {
+                randomOdsData,
+                childOdsDatas[0],
+                grandchildrenOdsDatas[0]
+            };
+
+            Guid inputOdsDataId = grandchildrenOdsDatas[0].Id;
+
+            // when
+            List<OdsData> actualOdsDatas = await this.apiBroker.GetAncestorsAsync(inputOdsDataId);
+
+            // then
+            foreach (OdsData expectedOdsData in expectedOdsDatas)
+            {
+                OdsData actualOdsData = actualOdsDatas.Single(odsData => odsData.Id == expectedOdsData.Id);
+                actualOdsData.Should().BeEquivalentTo(expectedOdsData);
+            }
+
+            foreach (OdsData odsData in childOdsDatas)
+            {
+                await this.apiBroker.DeleteOdsDataByIdAsync(odsData.Id);
+            }
+
+            foreach (OdsData odsData in grandchildrenOdsDatas)
+            {
+                await this.apiBroker.DeleteOdsDataByIdAsync(odsData.Id);
+            }
+
+            await this.apiBroker.DeleteOdsDataByIdAsync(randomOdsData.Id);
+        }
     }
 }
