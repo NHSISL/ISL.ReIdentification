@@ -75,8 +75,10 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             }
         }
 
-        public static void ValidateCsvIdentificationRequestId(Guid csvIdentificationRequestId) =>
-            Validate((Rule: IsInvalid(csvIdentificationRequestId), Parameter: nameof(CsvIdentificationRequest.Id)));
+        public static void ValidateOnProcessCsvIdentificationRequest(Guid csvIdentificationRequestId, string reason) =>
+            Validate(
+                (Rule: IsInvalid(csvIdentificationRequestId), Parameter: nameof(CsvIdentificationRequest.Id)),
+                (Rule: IsInvalid(reason), Parameter: nameof(CsvIdentificationRequest.Reason)));
 
         private static dynamic IsInvalid(Guid id) => new
         {

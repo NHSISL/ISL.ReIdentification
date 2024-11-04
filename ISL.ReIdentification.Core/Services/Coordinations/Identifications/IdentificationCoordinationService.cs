@@ -87,42 +87,47 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             return await this.persistanceOrchestrationService.PersistCsvIdentificationRequestAsync(accessRequest);
         });
 
-        public ValueTask<AccessRequest> ProcessCsvIdentificationRequestAsync(Guid csvIdentificationRequestId) =>
-            TryCatch(async () =>
-            {
-                ValidateCsvIdentificationRequestId(csvIdentificationRequestId);
+        public ValueTask<AccessRequest> ProcessCsvIdentificationRequestAsync(
+            Guid csvIdentificationRequestId, string reason) =>
+        TryCatch(async () =>
+        {
+            ValidateOnProcessCsvIdentificationRequest(csvIdentificationRequestId, reason);
 
-                AccessRequest maybeAccessRequest = await this.persistanceOrchestrationService
-                    .RetrieveCsvIdentificationRequestByIdAsync(csvIdentificationRequestId);
+            AccessRequest maybeAccessRequest = await this.persistanceOrchestrationService
+                .RetrieveCsvIdentificationRequestByIdAsync(csvIdentificationRequestId);
 
-                IdentificationRequest identificationRequest =
-                    await ConvertCsvIdentificationRequestToIdentificationRequest(
-                        maybeAccessRequest.CsvIdentificationRequest);
+            IdentificationRequest identificationRequest =
+                await ConvertCsvIdentificationRequestToIdentificationRequest(
+                    maybeAccessRequest.CsvIdentificationRequest);
 
-                AccessRequest convertedAccessRequest = new AccessRequest();
-                EntraUser currentUser = await this.securityBroker.GetCurrentUser();
+            AccessRequest convertedAccessRequest = new AccessRequest();
+            EntraUser currentUser = await this.securityBroker.GetCurrentUser();
 
-                IdentificationRequest currentUserIdentificationRequest =
-                    OverrideIdentificationRequestUserDetails(identificationRequest, currentUser);
+            IdentificationRequest currentUserIdentificationRequest =
+                OverrideIdentificationRequestUserDetails(identificationRequest, currentUser, reason);
 
-                convertedAccessRequest.IdentificationRequest = currentUserIdentificationRequest;
+            convertedAccessRequest.IdentificationRequest = currentUserIdentificationRequest;
 
-                var returnedAccessRequest = await this.accessOrchestrationService
-                        .ValidateAccessForIdentificationRequestAsync(convertedAccessRequest);
+            var returnedAccessRequest = await this.accessOrchestrationService
+                    .ValidateAccessForIdentificationRequestAsync(convertedAccessRequest);
 
-                IdentificationRequest returnedIdentificationOrchestrationIdentificationRequest =
-                    await this.identificationOrchestrationService.
-                        ProcessIdentificationRequestAsync(returnedAccessRequest.IdentificationRequest);
+            IdentificationRequest returnedIdentificationOrchestrationIdentificationRequest =
+                await this.identificationOrchestrationService.
+                    ProcessIdentificationRequestAsync(returnedAccessRequest.IdentificationRequest);
 
-                CsvIdentificationRequest csvIdentificationRequest =
-                    await ConvertIdentificationRequestToCsvIdentificationRequest(
-                        returnedIdentificationOrchestrationIdentificationRequest);
+            CsvIdentificationRequest csvIdentificationRequest =
+                await ConvertIdentificationRequestToCsvIdentificationRequest(
+                    returnedIdentificationOrchestrationIdentificationRequest);
 
-                AccessRequest reIdentifiedAccessRequest = new AccessRequest();
-                reIdentifiedAccessRequest.CsvIdentificationRequest = csvIdentificationRequest;
+            AccessRequest reIdentifiedAccessRequest = new AccessRequest();
+            reIdentifiedAccessRequest.CsvIdentificationRequest = csvIdentificationRequest;
+            DateTimeOffset dateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            string timestamp = dateTimeOffset.ToString("yyyyMMddHHmms");
+            string fileName = $"data_{timestamp}.csv";
+            reIdentifiedAccessRequest.CsvIdentificationRequest.Filepath = fileName;
 
-                return reIdentifiedAccessRequest;
-            });
+            return reIdentifiedAccessRequest;
+        });
 
         public ValueTask<AccessRequest> PersistsImpersonationContextAsync(AccessRequest accessRequest) =>
         TryCatch(async () =>
@@ -281,7 +286,8 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
 
         private IdentificationRequest OverrideIdentificationRequestUserDetails(
             IdentificationRequest identificationRequest,
-            EntraUser currentUser)
+            EntraUser currentUser,
+            string reason)
         {
             identificationRequest.EntraUserId = currentUser.EntraUserId;
             identificationRequest.Email = currentUser.Email;
@@ -289,6 +295,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             identificationRequest.DisplayName = currentUser.DisplayName;
             identificationRequest.GivenName = currentUser.GivenName;
             identificationRequest.Surname = currentUser.Surname;
+            identificationRequest.Reason = reason;
 
             return identificationRequest;
         }

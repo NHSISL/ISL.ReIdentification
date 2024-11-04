@@ -5,7 +5,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
-using ISL.ReIdentification.Core.Models.Brokers.NECS.Requests;
+using ISL.Providers.ReIdentification.Abstractions.Models;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications.Exceptions;
 using Moq;
@@ -44,11 +44,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
                 broker.LogErrorAsync(It.Is(SameExceptionAs(expectedIdentificationRequestValidationException))),
                     Times.Once());
 
-            this.necsBrokerMock.Verify(broker =>
-                broker.ReIdAsync(It.IsAny<NecsReIdentificationRequest>()),
+            this.reIdentificationBrokerMock.Verify(broker =>
+                broker.ReIdentifyAsync(It.IsAny<ReIdentificationRequest>()),
                     Times.Never);
 
-            this.necsBrokerMock.VerifyNoOtherCalls();
+            this.reIdentificationBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -118,12 +118,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
                     expectedIdentificationRequestValidationException))),
                         Times.Once);
 
-            this.necsBrokerMock.Verify(broker =>
-                broker.ReIdAsync(It.IsAny<NecsReIdentificationRequest>()),
+            this.reIdentificationBrokerMock.Verify(broker =>
+                broker.ReIdentifyAsync(It.IsAny<ReIdentificationRequest>()),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.necsBrokerMock.VerifyNoOtherCalls();
+            this.reIdentificationBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -132,7 +132,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
             // Given
             int randomCount = GetRandomNumber();
             string duplicateRowNumber = GetRandomString();
-            int batchSize = this.necsConfiguration.ApiMaxBatchSize;
             IdentificationRequest randomIdentificationRequest = CreateRandomIdentificationRequest(count: randomCount);
             randomIdentificationRequest.IdentificationItems.ForEach(item => item.RowNumber = duplicateRowNumber);
             IdentificationRequest invalidIdentificationRequest = randomIdentificationRequest;
@@ -167,12 +166,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
                     expectedIdentificationRequestValidationException))),
                         Times.Once);
 
-            this.necsBrokerMock.Verify(broker =>
-                broker.ReIdAsync(It.IsAny<NecsReIdentificationRequest>()),
+            this.reIdentificationBrokerMock.Verify(broker =>
+                broker.ReIdentifyAsync(It.IsAny<ReIdentificationRequest>()),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.necsBrokerMock.VerifyNoOtherCalls();
+            this.reIdentificationBrokerMock.VerifyNoOtherCalls();
         }
     }
 }
