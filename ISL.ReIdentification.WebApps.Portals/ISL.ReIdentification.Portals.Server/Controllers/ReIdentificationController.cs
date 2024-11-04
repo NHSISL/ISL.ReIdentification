@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications.Exceptions;
-using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Services.Coordinations.Identifications;
 using Microsoft.AspNetCore.Authorization;
@@ -118,19 +117,21 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             }
         }
 
-        [HttpGet("{csvreidentification}")]
+        [HttpGet("{csvIdentificationRequestId}/{reason}")]
         public async ValueTask<ActionResult> GetCsvIdentificationRequestByIdAsync(
-            Guid csvIdentificationRequestId)
+            Guid csvIdentificationRequestId, string reason)
         {
             try
             {
                 AccessRequest reIdentifiedAccessRequest = await identificationCoordinationService
-                    .ProcessCsvIdentificationRequestAsync(csvIdentificationRequestId);
+                    .ProcessCsvIdentificationRequestAsync(csvIdentificationRequestId, reason);
 
-                string fileName = "data.csv";
                 string contentType = "text/csv";
 
-                return File(reIdentifiedAccessRequest.CsvIdentificationRequest.Data, contentType, fileName);
+                return File(
+                    reIdentifiedAccessRequest.CsvIdentificationRequest.Data,
+                    contentType,
+                    reIdentifiedAccessRequest.CsvIdentificationRequest.Filepath);
             }
             catch (IdentificationCoordinationValidationException identificationCoordinationValidationException)
             {

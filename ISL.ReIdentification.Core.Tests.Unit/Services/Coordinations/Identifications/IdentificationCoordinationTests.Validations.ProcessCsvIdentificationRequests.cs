@@ -14,11 +14,15 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 {
     public partial class IdentificationCoordinationTests
     {
-        [Fact]
-        public async Task ShouldThrowValidationExceptionOnProcessIfIdIsInvalidAndLogItAsync()
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionOnProcessIfIdIsInvalidAndLogItAsync(string invalidString)
         {
             // given
             var invalidCsvIdentificationRequestId = Guid.Empty;
+            string invalidReason = invalidString;
 
             var invalidIdentificationCoordinationException =
                 new InvalidIdentificationCoordinationException(
@@ -27,6 +31,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             invalidIdentificationCoordinationException.AddData(
                 key: nameof(CsvIdentificationRequest.Id),
                 values: "Id is invalid");
+
+            invalidIdentificationCoordinationException.AddData(
+                key: nameof(CsvIdentificationRequest.Reason),
+                values: "Text is invalid");
 
             var expectedCsvIdentificationRequestValidationException =
                 new IdentificationCoordinationValidationException(
@@ -37,7 +45,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             // when
             ValueTask<AccessRequest> processCsvIdentificationRequestTask =
                 this.identificationCoordinationService
-                    .ProcessCsvIdentificationRequestAsync(invalidCsvIdentificationRequestId);
+                    .ProcessCsvIdentificationRequestAsync(invalidCsvIdentificationRequestId, invalidReason);
 
             IdentificationCoordinationValidationException actualCsvIdentificationRequestValidationException =
                 await Assert.ThrowsAsync<IdentificationCoordinationValidationException>(

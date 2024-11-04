@@ -79,7 +79,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             }
         }
 
-        [HttpGet("GetChildren")]
+        [HttpGet("GetChildren/{id}")]
         public async ValueTask<ActionResult<List<OdsData>>> GetAllChildren(Guid id)
         {
             try
@@ -98,7 +98,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             }
         }
 
-        [HttpGet("GetDescendants")]
+        [HttpGet("GetDescendants/{id}")]
         public async ValueTask<ActionResult<List<OdsData>>> GetAllDescendants(Guid id)
         {
             try
@@ -117,7 +117,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             }
         }
 
-        [HttpGet("GetAncestors")]
+        [HttpGet("GetAncestors/{id}")]
         public async ValueTask<ActionResult<List<OdsData>>> GetAllAncestors(Guid id)
         {
             try
