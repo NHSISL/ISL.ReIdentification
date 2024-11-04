@@ -5,8 +5,8 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
+using ISL.Providers.ReIdentification.Abstractions.Models;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
-using ISL.ReIdentification.Core.Services.Foundations.ReIdentifications;
 using Moq;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifications
@@ -18,38 +18,36 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
         {
             // Given
             int randomCount = GetRandomNumber();
-            int batchSize = this.necsConfiguration.ApiMaxBatchSize;
             IdentificationRequest randomIdentificationRequest = CreateRandomIdentificationRequest(count: randomCount);
             IdentificationRequest inputIdentificationRequest = randomIdentificationRequest;
-            IdentificationRequest storageIdentificationRequest = inputIdentificationRequest.DeepClone();
-            IdentificationRequest expectedIdentificationRequest = storageIdentificationRequest.DeepClone();
+            ReIdentificationRequest reIdentificationRequest = MapToReIdentificationRequest(randomIdentificationRequest);
+            ReIdentificationRequest inputReIdentificationRequest = reIdentificationRequest;
+            ReIdentificationRequest storageReIdentificationRequest = reIdentificationRequest.DeepClone();
+            storageReIdentificationRequest.ReIdentificationItems.ForEach(item =>
+            {
+                item.Identifier = GetRandomString();
+                item.Message = "OK";
+            });
 
-            Mock<ReIdentificationService> reIdentificationServiceMock =
-                new Mock<ReIdentificationService>(
-                    this.necsBrokerMock.Object,
-                    this.identifierBrokerMock.Object,
-                    this.necsConfiguration,
-                    this.loggingBrokerMock.Object)
-                { CallBase = true };
+            IdentificationRequest expectedIdentificationRequest =
+                MapToIdentificationRequest(storageReIdentificationRequest, inputIdentificationRequest).DeepClone();
 
-            reIdentificationServiceMock.Setup(service =>
-                service.BulkProcessRequestsAsync(inputIdentificationRequest, batchSize))
-                    .ReturnsAsync(storageIdentificationRequest);
-
-            ReIdentificationService service = reIdentificationServiceMock.Object;
+            reIdentificationBrokerMock.Setup(service =>
+                service.ReIdentifyAsync(It.Is(SameReIdentificationRequestAs(inputReIdentificationRequest))))
+                    .ReturnsAsync(storageReIdentificationRequest);
 
             // When
-            IdentificationRequest actualIdentificationRequest = await service
+            IdentificationRequest actualIdentificationRequest = await reIdentificationService
                 .ProcessReIdentificationRequest(inputIdentificationRequest);
 
             // Then
             actualIdentificationRequest.Should().BeEquivalentTo(expectedIdentificationRequest);
 
-            reIdentificationServiceMock.Verify(service =>
-                service.BulkProcessRequestsAsync(inputIdentificationRequest, batchSize),
+            reIdentificationBrokerMock.Verify(service =>
+                service.ReIdentifyAsync(It.Is(SameReIdentificationRequestAs(inputReIdentificationRequest))),
                     Times.Once());
 
-            this.necsBrokerMock.VerifyNoOtherCalls();
+            this.reIdentificationBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

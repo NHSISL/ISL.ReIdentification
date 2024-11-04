@@ -6,12 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using ISL.ReIdentification.Core.Brokers.Identifiers;
+using ISL.Providers.ReIdentification.Abstractions.Models;
 using ISL.ReIdentification.Core.Brokers.Loggings;
-using ISL.ReIdentification.Core.Brokers.NECS;
-using ISL.ReIdentification.Core.Models.Brokers.NECS;
-using ISL.ReIdentification.Core.Models.Brokers.NECS.Requests;
-using ISL.ReIdentification.Core.Models.Brokers.NECS.Responses;
+using ISL.ReIdentification.Core.Brokers.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
 using ISL.ReIdentification.Core.Services.Foundations.ReIdentifications;
 using KellermanSoftware.CompareNetObjects;
@@ -24,38 +21,26 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
 {
     public partial class ReIdentificationServiceTests
     {
-        private readonly Mock<INECSBroker> necsBrokerMock = new Mock<INECSBroker>();
-        private readonly Mock<IIdentifierBroker> identifierBrokerMock = new Mock<IIdentifierBroker>();
+        private readonly Mock<IReIdentificationBroker> reIdentificationBrokerMock = new Mock<IReIdentificationBroker>();
         private readonly Mock<ILoggingBroker> loggingBrokerMock = new Mock<ILoggingBroker>();
-        private NECSConfiguration necsConfiguration;
         private readonly IReIdentificationService reIdentificationService;
         private readonly ICompareLogic compareLogic;
 
         public ReIdentificationServiceTests()
         {
             this.compareLogic = new CompareLogic();
-            this.necsBrokerMock = new Mock<INECSBroker>();
-            this.identifierBrokerMock = new Mock<IIdentifierBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
-            this.necsConfiguration = new NECSConfiguration
-            {
-                ApiUrl = GetRandomString(),
-                ApiKey = GetRandomString(),
-                ApiMaxBatchSize = GetRandomNumber()
-            };
 
             this.reIdentificationService = new ReIdentificationService(
-                necsBroker: this.necsBrokerMock.Object,
-                identifierBroker: this.identifierBrokerMock.Object,
-                necsConfiguration: necsConfiguration,
+                reIdentificationBroker: this.reIdentificationBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
         }
 
-        private Expression<Func<NecsReIdentificationRequest, bool>> SameNecsReIdentificationRequestAs(
-            NecsReIdentificationRequest expectedNecsReIdentificationRequest)
+        private Expression<Func<ReIdentificationRequest, bool>> SameReIdentificationRequestAs(
+            ReIdentificationRequest expectedReIdentificationRequest)
         {
-            return actualNecsReIdentificationRequest =>
-                this.compareLogic.Compare(expectedNecsReIdentificationRequest, actualNecsReIdentificationRequest)
+            return actualReIdentificationRequest =>
+                this.compareLogic.Compare(expectedReIdentificationRequest, actualReIdentificationRequest)
                     .AreEqual;
         }
 
@@ -85,45 +70,45 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
             };
         }
 
-        private (List<NecsReIdentificationRequest> requests, List<NecsReIdentificationResponse> responses)
+        private (List<ReIdentificationRequest> requests, List<ReIdentificationRequest> responses)
             CreateBatchedItems(IdentificationRequest identificationRequest, int batchSize, Guid identifier)
         {
-            List<NecsReIdentificationRequest> requests = new List<NecsReIdentificationRequest>();
-            List<NecsReIdentificationResponse> responses = new List<NecsReIdentificationResponse>();
+            List<ReIdentificationRequest> requests = new List<ReIdentificationRequest>();
+            List<ReIdentificationRequest> responses = new List<ReIdentificationRequest>();
 
             for (int i = 0; i < identificationRequest.IdentificationItems.Count; i += batchSize)
             {
-                NecsReIdentificationRequest necsReIdentificationRequest = new NecsReIdentificationRequest
+                ReIdentificationRequest necsReIdentificationRequest = new ReIdentificationRequest
                 {
                     RequestId = identifier,
                     UserIdentifier = identificationRequest.EntraUserId.ToString(),
                     Organisation = identificationRequest.Organisation,
                     Reason = identificationRequest.Reason,
-                    PseudonymisedNumbers = identificationRequest.IdentificationItems.Skip(i)
+                    ReIdentificationItems = identificationRequest.IdentificationItems.Skip(i)
                     .Take(batchSize).ToList().Select(item =>
-                        new NecsPseudonymisedItem { RowNumber = item.RowNumber, Psuedo = item.Identifier })
+                        new ReIdentificationItem { RowNumber = item.RowNumber, Identifier = item.Identifier })
                             .ToList()
                 };
 
                 requests.Add(necsReIdentificationRequest);
 
-                NecsReIdentificationResponse necsReIdentificationResponse = new NecsReIdentificationResponse
+                ReIdentificationRequest reIdentificationResponse = new ReIdentificationRequest
                 {
-                    UniqueRequestId = identifier,
-                    ElapsedTime = GetRandomNumber(),
-                    ProcessedCount = necsReIdentificationRequest.PseudonymisedNumbers.Count,
-                    Results = identificationRequest.IdentificationItems.Skip(i)
+                    RequestId = identifier,
+                    Organisation = necsReIdentificationRequest.Organisation,
+                    Reason = necsReIdentificationRequest.Reason,
+                    ReIdentificationItems = identificationRequest.IdentificationItems.Skip(i)
                         .Take(batchSize).ToList().Select(item =>
-                            new NecsReidentifiedItem
+                            new ReIdentificationItem
                             {
                                 RowNumber = item.RowNumber,
-                                NhsNumber = $"{item.Identifier}R",
+                                Identifier = $"{item.Identifier}R",
                                 Message = $"{item.Message}M",
                             })
                         .ToList()
                 };
 
-                responses.Add(necsReIdentificationResponse);
+                responses.Add(reIdentificationResponse);
             }
 
             return (requests, responses);
@@ -152,8 +137,56 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
             return result.Length > length ? result.Substring(0, length) : result;
         }
 
+        private static ReIdentificationRequest MapToReIdentificationRequest(IdentificationRequest identificationRequest)
+        {
+            var request = new ReIdentificationRequest
+            {
+                RequestId = identificationRequest.Id,
+                UserIdentifier = identificationRequest.EntraUserId.ToString(),
+                Organisation = identificationRequest.Organisation,
+                Reason = identificationRequest.Reason,
+                ReIdentificationItems = identificationRequest.IdentificationItems
+                    .Select(item => new ReIdentificationItem
+                    {
+                        RowNumber = item.RowNumber,
+                        Identifier = item.Identifier
+                    }).ToList()
+            };
+
+            return request;
+        }
+
+        private static IdentificationRequest MapToIdentificationRequest(
+            ReIdentificationRequest reIdentificationRequest,
+            IdentificationRequest identificationRequest)
+        {
+            var request = new IdentificationRequest
+            {
+                Id = identificationRequest.Id,
+                EntraUserId = identificationRequest.EntraUserId,
+                Organisation = identificationRequest.Organisation,
+                Reason = identificationRequest.Reason,
+                DisplayName = identificationRequest.DisplayName,
+                Email = identificationRequest.Email,
+                GivenName = identificationRequest.GivenName,
+                JobTitle = identificationRequest.JobTitle,
+                Surname = identificationRequest.Surname,
+                IdentificationItems = reIdentificationRequest.ReIdentificationItems
+                    .Select(item => new IdentificationItem
+                    {
+                        RowNumber = item.RowNumber,
+                        Identifier = item.Identifier,
+                        IsReidentified = true,
+                        Message = "OK",
+                        HasAccess = true
+                    }).ToList()
+            };
+
+            return request;
+        }
+
         private static IdentificationRequest CreateRandomIdentificationRequest(int count) =>
-            CreateIdentificationRequestFiller(count).Create();
+        CreateIdentificationRequestFiller(count).Create();
 
         private static Filler<IdentificationRequest> CreateIdentificationRequestFiller(int count)
         {
@@ -177,6 +210,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
             var filler = new Filler<IdentificationItem>();
 
             filler.Setup()
+                .OnProperty(address => address.Message).Use("OK")
                 .OnProperty(address => address.HasAccess).Use(true)
                 .OnProperty(address => address.IsReidentified).Use(false);
 
