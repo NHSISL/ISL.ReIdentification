@@ -1,9 +1,10 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Brokers;
 using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.OdsDatas;
@@ -21,7 +22,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
         {
             this.apiBroker = apiBroker;
         }
-
+        
         private static OdsData UpdateOdsDataWithRandomValues(OdsData inputOdsData)
         {
             DateTimeOffset now = DateTimeOffset.UtcNow;
@@ -30,12 +31,37 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
 
             return updatedOdsData;
         }
-
+        
         private async ValueTask<OdsData> PostRandomOdsDataAsync()
         {
             OdsData randomOdsData = CreateRandomOdsData();
 
             return await this.apiBroker.PostOdsDataAsync(randomOdsData);
+        }
+
+        private async ValueTask<List<OdsData>> PostRandomChildOdsDatasAsync(string parentHierarchyIdString)
+        {
+            HierarchyId parentHierarchyId = HierarchyId.Parse("/");
+
+            if (parentHierarchyIdString is not null)
+            {
+                parentHierarchyId = HierarchyId.Parse(parentHierarchyIdString);
+            }
+
+            List<OdsData> children = CreateOdsDataFiller(dateTimeOffset: GetRandomDateTimeOffset())
+                 .Create(count: GetRandomNumber())
+                     .ToList();
+
+            HierarchyId lastChildHierarchy = null;
+
+            foreach (var child in children)
+            {
+                child.OdsHierarchy = parentHierarchyId.GetDescendant(lastChildHierarchy, null).ToString();
+                lastChildHierarchy = HierarchyId.Parse(child.OdsHierarchy);
+                await this.apiBroker.PostOdsDataAsync(child);
+            }
+
+            return children;
         }
 
         private async ValueTask<List<OdsData>> PostRandomOdsDatasAsync()

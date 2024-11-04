@@ -104,5 +104,33 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
             await Assert.ThrowsAsync<HttpResponseNotFoundException>(
                 testCode: getOdsDatabyIdTask.AsTask);
         }
+
+        [Fact]
+        public async Task ShouldGetChildrenAsync()
+        {
+            // given
+            OdsData randomOdsData = await PostRandomOdsDataAsync();
+            List<OdsData> randomOdsDatas = await PostRandomChildOdsDatasAsync(randomOdsData.OdsHierarchy);
+            List<OdsData> grandchildrenDatas = await PostRandomChildOdsDatasAsync(randomOdsDatas[0].OdsHierarchy);
+            List<OdsData> expectedOdsDatas = randomOdsDatas;
+
+            // when
+            List<OdsData> actualOdsDatas = await this.apiBroker.GetChildrenAsync(randomOdsData.Id);
+
+            // then
+            foreach (OdsData expectedOdsData in expectedOdsDatas)
+            {
+                OdsData actualOdsData = actualOdsDatas.Single(odsData => odsData.Id == expectedOdsData.Id);
+                actualOdsData.Should().BeEquivalentTo(expectedOdsData);
+                await this.apiBroker.DeleteOdsDataByIdAsync(actualOdsData.Id);
+            }
+
+            foreach (OdsData grandchildOdsData in grandchildrenDatas)
+            {
+                await this.apiBroker.DeleteOdsDataByIdAsync(grandchildOdsData.Id);
+            }
+
+            await this.apiBroker.DeleteOdsDataByIdAsync(randomOdsData.Id);
+        }
     }
 }
