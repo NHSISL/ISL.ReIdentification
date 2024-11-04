@@ -4,6 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
+using ISL.Providers.ReIdentification.Abstractions.Models.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications.Exceptions;
 using RESTFulSense.Exceptions;
@@ -22,32 +23,24 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ReIdentifications
             {
                 await returningNothingFunction();
             }
-            catch (HttpResponseUnauthorizedException httpResponseUnauthorizedException)
+            catch (ReIdentificationProviderValidationException reIdentificationProviderValidationException)
             {
                 var failedClientReIdentificationException = new FailedClientReIdentificationException(
-                        message: "Failed NECS client error occurred, please contact support.",
-                        innerException: httpResponseUnauthorizedException,
-                        data: httpResponseUnauthorizedException.Data);
+                        message: "Failed provider validation error occurred, please contact support.",
+                        innerException: reIdentificationProviderValidationException,
+                        data: reIdentificationProviderValidationException.Data);
 
                 throw await CreateAndLogDependencyValidationExceptionAsync(failedClientReIdentificationException);
             }
-            catch (HttpResponseUrlNotFoundException httpResponseUrlNotFoundException)
+            catch (ReIdentificationProviderDependencyException reIdentificationProviderDependencyException)
             {
-                var failedClientReIdentificationException = new FailedClientReIdentificationException(
-                    message: "Failed NECS client error occurred, please contact support.",
-                    innerException: httpResponseUrlNotFoundException,
-                    data: httpResponseUrlNotFoundException.Data);
+                var failedServerReIdentificationException =
+                    new FailedServerReIdentificationException(
+                        message: "Failed NECS server error occurred, please contact support.",
+                        innerException: reIdentificationProviderDependencyException,
+                        data: reIdentificationProviderDependencyException.Data);
 
-                throw await CreateAndLogDependencyValidationExceptionAsync(failedClientReIdentificationException);
-            }
-            catch (HttpResponseBadRequestException httpResponseBadRequestException)
-            {
-                var failedClientReIdentificationException = new FailedClientReIdentificationException(
-                        message: "Failed NECS client error occurred, please contact support.",
-                        innerException: httpResponseBadRequestException,
-                        data: httpResponseBadRequestException.Data);
-
-                throw await CreateAndLogDependencyValidationExceptionAsync(failedClientReIdentificationException);
+                throw await CreateAndLogDependencyExceptionAsync(failedServerReIdentificationException);
             }
             catch (HttpResponseInternalServerErrorException httpResponseInternalServerErrorException)
             {
@@ -59,6 +52,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ReIdentifications
 
                 throw await CreateAndLogDependencyExceptionAsync(failedServerReIdentificationException);
             }
+
             catch (Exception exception)
             {
                 var failedServiceIdentificationRequestException =
