@@ -17,12 +17,14 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Lookups
 
             Validate(
                 (Rule: IsInvalid(lookup.Id), Parameter: nameof(Lookup.Id)),
+                (Rule: IsInvalid(lookup.GroupName), Parameter: nameof(Lookup.GroupName)),
                 (Rule: IsInvalid(lookup.Name), Parameter: nameof(Lookup.Name)),
                 (Rule: IsInvalid(lookup.CreatedDate), Parameter: nameof(Lookup.CreatedDate)),
                 (Rule: IsInvalid(lookup.CreatedBy), Parameter: nameof(Lookup.CreatedBy)),
                 (Rule: IsInvalid(lookup.UpdatedDate), Parameter: nameof(Lookup.UpdatedDate)),
                 (Rule: IsInvalid(lookup.UpdatedBy), Parameter: nameof(Lookup.UpdatedBy)),
-                (Rule: IsInvalidLength(lookup.Name, 450), Parameter: nameof(Lookup.Name)),
+                (Rule: IsInvalidLength(lookup.GroupName, 220), Parameter: nameof(Lookup.GroupName)),
+                (Rule: IsInvalidLength(lookup.Name, 220), Parameter: nameof(Lookup.Name)),
                 (Rule: IsInvalidLength(lookup.CreatedBy, 255), Parameter: nameof(Lookup.CreatedBy)),
                 (Rule: IsInvalidLength(lookup.UpdatedBy, 255), Parameter: nameof(Lookup.UpdatedBy)),
 
@@ -49,12 +51,14 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Lookups
 
             Validate(
                 (Rule: IsInvalid(lookup.Id), Parameter: nameof(Lookup.Id)),
+                (Rule: IsInvalid(lookup.GroupName), Parameter: nameof(Lookup.GroupName)),
                 (Rule: IsInvalid(lookup.Name), Parameter: nameof(Lookup.Name)),
                 (Rule: IsInvalid(lookup.CreatedDate), Parameter: nameof(Lookup.CreatedDate)),
                 (Rule: IsInvalid(lookup.CreatedBy), Parameter: nameof(Lookup.CreatedBy)),
                 (Rule: IsInvalid(lookup.UpdatedDate), Parameter: nameof(Lookup.UpdatedDate)),
                 (Rule: IsInvalid(lookup.UpdatedBy), Parameter: nameof(Lookup.UpdatedBy)),
-                (Rule: IsInvalidLength(lookup.Name, 450), Parameter: nameof(Lookup.Name)),
+                (Rule: IsInvalidLength(lookup.GroupName, 220), Parameter: nameof(Lookup.GroupName)),
+                (Rule: IsInvalidLength(lookup.Name, 220), Parameter: nameof(Lookup.Name)),
                 (Rule: IsInvalidLength(lookup.CreatedBy, 255), Parameter: nameof(Lookup.CreatedBy)),
                 (Rule: IsInvalidLength(lookup.UpdatedBy, 255), Parameter: nameof(Lookup.UpdatedBy)),
 
