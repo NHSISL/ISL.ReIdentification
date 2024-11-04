@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Brokers;
-using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.Lookups;
+using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.UserAccesses;
 using Tynamix.ObjectFiller;
 
 namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
@@ -27,7 +27,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
 
         private static UserAccess CreateRandomUserAccess() =>
             CreateRandomUserAccessFiller().Create();
-
+        
         private static string GetRandomStringWithLengthOf(int length)
         {
             string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
