@@ -64,7 +64,20 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
             return children;
         }
 
-        private static int GetRandomNumber() =>
+        private async ValueTask<List<OdsData>> PostRandomOdsDatasAsync()
+        {
+            int randomNumber = GetRandomNumber();
+            var randomOdsDatas = new List<OdsData>();
+
+            for (int i = 0; i < randomNumber; i++)
+            {
+                randomOdsDatas.Add(await PostRandomOdsDataAsync());
+            }
+
+            return randomOdsDatas;
+        }
+
+        private int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
         private static string GetRandomStringWithLengthOf(int length)
