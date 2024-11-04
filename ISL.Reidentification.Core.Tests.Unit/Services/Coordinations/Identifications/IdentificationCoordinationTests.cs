@@ -164,9 +164,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
 
-                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.IdentifierColumn)
-                    .Use(() => GetRandomStringWithLengthOf(10))
-
                 .OnProperty(csvIdentificationRequest => csvIdentificationRequest.RequesterEmail)
                     .Use(GetRandomStringWithLengthOf(320))
 
@@ -309,7 +306,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 CreatedDate = DateTimeOffset.UtcNow,
                 Data = Convert.FromBase64String("Um93TnVtYmVyLElkZW50aWZpZXIKVGVzdFJvd051bWJlcixUZXN0SWRlbnRpZmllcg=="),
                 Id = Guid.NewGuid(),
-                IdentifierColumn = nameof(CsvIdentificationRequest.IdentifierColumn),
+                IdentifierColumnIndex = 0,
                 Organisation = nameof(CsvIdentificationRequest.Organisation),
                 Reason = nameof(CsvIdentificationRequest.Reason),
                 RecipientDisplayName = nameof(CsvIdentificationRequest.RecipientDisplayName),

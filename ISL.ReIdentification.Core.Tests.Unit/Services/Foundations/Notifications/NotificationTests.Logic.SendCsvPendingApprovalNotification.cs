@@ -38,7 +38,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Notification
                 { "recipientJobTitle", accessRequest.CsvIdentificationRequest.RecipientJobTitle },
                 { "reason", accessRequest.CsvIdentificationRequest.Reason },
                 { "organisation", accessRequest.CsvIdentificationRequest.Organisation },
-                { "identifierColumn", accessRequest.CsvIdentificationRequest.IdentifierColumn },
+                { "identifierColumnIndex" , accessRequest.CsvIdentificationRequest.IdentifierColumnIndex },
                 { "templateId", this.notificationConfigurations.CsvPendingApprovalRequestTemplateId },
                 { "configurationBaseUrl", this.notificationConfigurations.ConfigurationBaseUrl },
                 { "portalBaseUrl", this.notificationConfigurations.PortalBaseUrl },
