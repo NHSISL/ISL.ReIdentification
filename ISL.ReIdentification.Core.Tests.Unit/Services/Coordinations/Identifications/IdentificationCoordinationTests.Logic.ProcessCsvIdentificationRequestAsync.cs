@@ -37,22 +37,18 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             DateTimeOffset outputDateTimeOffset = randomDateTimeOffset;
             string outputTimestamp = outputDateTimeOffset.ToString("yyyyMMddHHmms");
-            AccessRequest outputPersistanceOrchestrationAccessRequest = CreateRandomAccessRequest(); ;
-            IdentificationRequest outputConversionIdentificationRequest = CreateRandomIdentificationRequest();
+
+            AccessRequest outputPersistanceOrchestrationAccessRequest =
+                CreateRandomCsvIdentificationRequestAccessRequest();
+
+            AccessRequest outputConversionAccessRequest = CreateRandomIdentificationRequestAccessRequest();
             EntraUser outputEntraUser = CreateRandomEntraUser();
             AccessRequest outputOrchestrationAccessRequest = CreateRandomAccessRequest();
             IdentificationRequest outputOrchestrationIdentificationRequest = CreateRandomIdentificationRequest();
-
-            AccessRequest inputAccessOrchestrationAccessRequest = new AccessRequest
-            {
-                IdentificationRequest = outputConversionIdentificationRequest,
-            };
-
+            AccessRequest inputAccessOrchestrationAccessRequest = outputConversionAccessRequest;
             CsvIdentificationRequest outputConversionCsvIdentificationRequest = CreateRandomCsvIdentificationRequest();
-            AccessRequest resultingAccessRequest = CreateRandomAccessRequest();
+            AccessRequest resultingAccessRequest = CreateRandomCsvIdentificationRequestAccessRequest();
             resultingAccessRequest.CsvIdentificationRequest = outputConversionCsvIdentificationRequest;
-            resultingAccessRequest.IdentificationRequest = null;
-            resultingAccessRequest.ImpersonationContext = null;
             AccessRequest expectedAccessRequest = resultingAccessRequest.DeepClone();
             string expectedFileName = $"data_{outputTimestamp}.csv";
             expectedAccessRequest.CsvIdentificationRequest.Filepath = expectedFileName;
@@ -63,8 +59,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
             identificationCoordinationServiceMock.Setup(service =>
                 service.ConvertCsvIdentificationRequestToIdentificationRequest(
-                    outputPersistanceOrchestrationAccessRequest.CsvIdentificationRequest))
-                .ReturnsAsync(outputConversionIdentificationRequest);
+                    outputPersistanceOrchestrationAccessRequest))
+                .ReturnsAsync(outputConversionAccessRequest);
 
             this.securityBrokerMock.Setup(broker =>
                 broker.GetCurrentUser())
@@ -105,7 +101,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
             identificationCoordinationServiceMock.Verify(service =>
                 service.ConvertCsvIdentificationRequestToIdentificationRequest(
-                    outputPersistanceOrchestrationAccessRequest.CsvIdentificationRequest),
+                    outputPersistanceOrchestrationAccessRequest),
                     Times.Once);
 
             this.securityBrokerMock.Verify(broker =>

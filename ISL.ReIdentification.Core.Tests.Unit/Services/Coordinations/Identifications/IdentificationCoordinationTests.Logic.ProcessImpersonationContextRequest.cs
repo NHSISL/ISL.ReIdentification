@@ -47,11 +47,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             AccessRequest outputPersistanceOrchestrationAccessRequest = CreateRandomAccessRequest();
             ImpersonationContext outputImpersonationContext = CreateRandomImpersonationContext();
             outputPersistanceOrchestrationAccessRequest.ImpersonationContext = outputImpersonationContext;
-            IdentificationRequest outputConversionIdentificationRequest = CreateRandomIdentificationRequest();
+            AccessRequest outputConversionAccessRequest = CreateRandomAccessRequest();
 
             AccessRequest inputAccessOrchestrationAccessRequest = new AccessRequest
             {
-                IdentificationRequest = outputConversionIdentificationRequest,
+                IdentificationRequest = outputConversionAccessRequest.IdentificationRequest,
             };
 
             AccessRequest outputOrchestrationAccessRequest = CreateRandomAccessRequest();
@@ -89,8 +89,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
             identificationCoordinationServiceMock.Setup(service =>
                 service.ConvertCsvIdentificationRequestToIdentificationRequest(
-                    inputAccessRequest.CsvIdentificationRequest))
-                        .ReturnsAsync(outputConversionIdentificationRequest);
+                    inputAccessRequest))
+                        .ReturnsAsync(outputConversionAccessRequest);
 
             this.persistanceOrchestrationServiceMock.Setup(service =>
                 service.RetrieveImpersonationContextByIdAsync(contextId))
@@ -127,7 +127,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
             identificationCoordinationServiceMock.Verify(service =>
                 service.ConvertCsvIdentificationRequestToIdentificationRequest(
-                    inputAccessRequest.CsvIdentificationRequest),
+                    inputAccessRequest),
                         Times.Once);
 
             this.persistanceOrchestrationServiceMock.Verify(service =>
@@ -235,7 +235,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
             identificationCoordinationServiceMock.Setup(service =>
                 service.ConvertCsvIdentificationRequestToIdentificationRequest(
-                    inputAccessRequest.CsvIdentificationRequest))
+                    inputAccessRequest))
                         .ThrowsAsync(someException);
 
             IdentificationCoordinationService identificationCoordinationService =
@@ -256,7 +256,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
             identificationCoordinationServiceMock.Verify(service =>
                 service.ConvertCsvIdentificationRequestToIdentificationRequest(
-                    inputAccessRequest.CsvIdentificationRequest),
+                    inputAccessRequest),
                         Times.Once);
 
             this.identificationOrchestrationServiceMock.Verify(service =>

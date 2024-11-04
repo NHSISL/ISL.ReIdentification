@@ -91,6 +91,24 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
         private static AccessRequest CreateRandomAccessRequest() =>
             CreateAccessRequestFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
 
+        private static AccessRequest CreateRandomCsvIdentificationRequestAccessRequest()
+        {
+            AccessRequest accessRequest = CreateAccessRequestFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
+            accessRequest.IdentificationRequest = null;
+            accessRequest.ImpersonationContext = null;
+
+            return accessRequest;
+        }
+
+        private static AccessRequest CreateRandomIdentificationRequestAccessRequest()
+        {
+            AccessRequest accessRequest = CreateAccessRequestFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
+            accessRequest.CsvIdentificationRequest = null;
+            accessRequest.ImpersonationContext = null;
+
+            return accessRequest;
+        }
+
         private static Filler<AccessRequest> CreateAccessRequestFiller(DateTimeOffset dateTimeOffset)
         {
             var filler = new Filler<AccessRequest>();
@@ -179,6 +197,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             return filler;
         }
 
+        private static Filler<CsvIdentificationItem> CreateCsvIdentificationItemFiller() =>
+            new Filler<CsvIdentificationItem>();
+
         private static EntraUser CreateRandomEntraUser()
         {
             Guid randomId = Guid.NewGuid();
@@ -197,16 +218,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             return entraUser;
         }
 
-        private static List<CsvIdentificationItem> RandomCsvIdentificationItems()
-        {
-            CsvIdentificationItem csvIdentificationItem = new CsvIdentificationItem
-            {
-                Identifier = "TestIdentifier",
-                RowNumber = "TestRowNumber"
-            };
-
-            return new List<CsvIdentificationItem> { csvIdentificationItem };
-        }
+        private static IQueryable<CsvIdentificationItem> CreateRandomCsvIdentificationItems() =>
+            CreateCsvIdentificationItemFiller().Create(GetRandomNumber()).AsQueryable();
 
         private static string CsvDataString() =>
             "Um93TnVtYmVyLElkZW50aWZpZXIKVGVzdFJvd051bWJlcixUZXN0SWRlbnRpZmllcg==";
@@ -293,66 +306,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 new IdentificationOrchestrationServiceException(
                     message: "Identification orchestration service error occurred, please contact support.",
                     innerException),
-            };
-        }
-
-        public static TheoryData<CsvIdentificationRequest, IdentificationRequest> InputCsvIdentificationRequest()
-        {
-            Guid entraId = Guid.NewGuid();
-
-            CsvIdentificationRequest csvIdentificationRequest = new CsvIdentificationRequest
-            {
-                CreatedBy = nameof(CsvIdentificationRequest.CreatedBy),
-                CreatedDate = DateTimeOffset.UtcNow,
-                Data = Convert.FromBase64String("Um93TnVtYmVyLElkZW50aWZpZXIKVGVzdFJvd051bWJlcixUZXN0SWRlbnRpZmllcg=="),
-                Id = Guid.NewGuid(),
-                IdentifierColumnIndex = 0,
-                HasHeaderRecord = false,
-                Organisation = nameof(CsvIdentificationRequest.Organisation),
-                Reason = nameof(CsvIdentificationRequest.Reason),
-                RecipientDisplayName = nameof(CsvIdentificationRequest.RecipientDisplayName),
-                RecipientEmail = nameof(CsvIdentificationRequest.RecipientEmail),
-                RecipientEntraUserId = entraId,
-                RecipientFirstName = nameof(CsvIdentificationRequest.RecipientFirstName),
-                RecipientJobTitle = nameof(CsvIdentificationRequest.RecipientJobTitle),
-                RecipientLastName = nameof(CsvIdentificationRequest.RecipientLastName),
-                RequesterDisplayName = nameof(CsvIdentificationRequest.RequesterDisplayName),
-                RequesterEmail = nameof(CsvIdentificationRequest.RequesterEmail),
-                RequesterEntraUserId = Guid.NewGuid(),
-                RequesterFirstName = nameof(CsvIdentificationRequest.RequesterFirstName),
-                RequesterJobTitle = nameof(CsvIdentificationRequest.RequesterJobTitle),
-                RequesterLastName = nameof(CsvIdentificationRequest.RequesterLastName),
-                Sha256Hash = nameof(CsvIdentificationRequest.Sha256Hash),
-                UpdatedBy = nameof(CsvIdentificationRequest.UpdatedBy),
-                UpdatedDate = DateTimeOffset.UtcNow
-            };
-
-            IdentificationItem identificationItem = new IdentificationItem
-            {
-                HasAccess = false,
-                Identifier = "TestIdentifier",
-                IsReidentified = false,
-                Message = String.Empty,
-                RowNumber = "TestRowNumber"
-            };
-
-            IdentificationRequest identificationRequest = new IdentificationRequest
-            {
-                DisplayName = nameof(CsvIdentificationRequest.RecipientDisplayName),
-                Email = nameof(CsvIdentificationRequest.RecipientEmail),
-                EntraUserId = entraId,
-                GivenName = nameof(CsvIdentificationRequest.RecipientFirstName),
-                Id = Guid.Empty,
-                IdentificationItems = new List<IdentificationItem> { identificationItem },
-                JobTitle = nameof(CsvIdentificationRequest.RecipientJobTitle),
-                Organisation = nameof(IdentificationRequest.Organisation),
-                Reason = nameof(IdentificationRequest.Reason),
-                Surname = nameof(CsvIdentificationRequest.RecipientLastName)
-            };
-
-            return new TheoryData<CsvIdentificationRequest, IdentificationRequest>
-            {
-                { csvIdentificationRequest, identificationRequest }
             };
         }
 

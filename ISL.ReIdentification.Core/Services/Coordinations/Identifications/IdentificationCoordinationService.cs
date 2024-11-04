@@ -96,15 +96,18 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             AccessRequest maybeAccessRequest = await this.persistanceOrchestrationService
                 .RetrieveCsvIdentificationRequestByIdAsync(csvIdentificationRequestId);
 
-            IdentificationRequest identificationRequest =
+            AccessRequest csvConvertedAccessRequest =
                 await ConvertCsvIdentificationRequestToIdentificationRequest(
-                    maybeAccessRequest.CsvIdentificationRequest);
+                    maybeAccessRequest);
 
             AccessRequest convertedAccessRequest = new AccessRequest();
             EntraUser currentUser = await this.securityBroker.GetCurrentUser();
 
             IdentificationRequest currentUserIdentificationRequest =
-                OverrideIdentificationRequestUserDetails(identificationRequest, currentUser, reason);
+                OverrideIdentificationRequestUserDetails(
+                    csvConvertedAccessRequest.IdentificationRequest,
+                    currentUser,
+                    reason);
 
             convertedAccessRequest.IdentificationRequest = currentUserIdentificationRequest;
 
@@ -145,9 +148,9 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
 
             try
             {
-                IdentificationRequest identificationRequest =
+                AccessRequest csvConvertedAccessRequest =
                     await ConvertCsvIdentificationRequestToIdentificationRequest(
-                        accessRequest.CsvIdentificationRequest);
+                        accessRequest);
 
                 AccessRequest convertedAccessRequest = new AccessRequest();
 
@@ -157,7 +160,8 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
 
                 IdentificationRequest currentIdentificationRequest =
                     OverrideIdentificationRequestUserDetails(
-                        identificationRequest, returnedAccessRequestWithImpersonationContext.ImpersonationContext);
+                        csvConvertedAccessRequest.IdentificationRequest,
+                        returnedAccessRequestWithImpersonationContext.ImpersonationContext);
 
                 convertedAccessRequest.IdentificationRequest = currentIdentificationRequest;
 
@@ -205,45 +209,43 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             }
         });
 
-        virtual async internal ValueTask<IdentificationRequest> ConvertCsvIdentificationRequestToIdentificationRequest(
-            CsvIdentificationRequest csvIdentificationRequest)
+        virtual async internal ValueTask<AccessRequest> ConvertCsvIdentificationRequestToIdentificationRequest(
+            AccessRequest accessRequest)
         {
-            string data = Encoding.UTF8.GetString(csvIdentificationRequest.Data);
+            string data = Encoding.UTF8.GetString(accessRequest.CsvIdentificationRequest.Data);
+
+            Dictionary<string, int> fieldMappings = new Dictionary<string, int>
+                {
+                    { nameof(CsvIdentificationItem.Identifier), accessRequest.CsvIdentificationRequest.IdentifierColumnIndex }
+                };
 
             var mappedItems =
                 await this.csvHelperBroker.MapCsvToObjectAsync<CsvIdentificationItem>(
                     data: data,
-                    hasHeaderRecord: true,
-                    fieldMappings: null);
+                    hasHeaderRecord: accessRequest.CsvIdentificationRequest.HasHeaderRecord,
+                    fieldMappings: fieldMappings);
 
             var identificationItems = new List<IdentificationItem>();
 
-            foreach (var mappedItem in mappedItems)
+            for (var index = 0; index < mappedItems.Count; index++)
             {
                 var identificationItem = new IdentificationItem
                 {
                     HasAccess = false,
-                    Identifier = mappedItem.Identifier,
+                    Identifier = mappedItems[index].Identifier,
                     IsReidentified = false,
                     Message = String.Empty,
-                    RowNumber = mappedItem.RowNumber
+                    RowNumber = index.ToString()
                 };
 
                 identificationItems.Add(identificationItem);
             }
 
-            var identificationRequest = new IdentificationRequest();
-            identificationRequest.DisplayName = csvIdentificationRequest.RecipientDisplayName;
-            identificationRequest.Email = csvIdentificationRequest.RecipientEmail;
-            identificationRequest.EntraUserId = csvIdentificationRequest.RecipientEntraUserId;
-            identificationRequest.GivenName = csvIdentificationRequest.RecipientFirstName;
-            identificationRequest.JobTitle = csvIdentificationRequest.RecipientJobTitle;
-            identificationRequest.Organisation = csvIdentificationRequest.Organisation;
-            identificationRequest.Reason = csvIdentificationRequest.Reason;
-            identificationRequest.Surname = csvIdentificationRequest.RecipientLastName;
-            identificationRequest.IdentificationItems = identificationItems;
+            accessRequest.IdentificationRequest = new IdentificationRequest();
+            accessRequest.IdentificationRequest.IdentificationItems = identificationItems;
+            accessRequest.CsvIdentificationRequest = null;
 
-            return identificationRequest;
+            return accessRequest;
         }
 
         virtual internal async ValueTask<CsvIdentificationRequest> ConvertIdentificationRequestToCsvIdentificationRequest(
