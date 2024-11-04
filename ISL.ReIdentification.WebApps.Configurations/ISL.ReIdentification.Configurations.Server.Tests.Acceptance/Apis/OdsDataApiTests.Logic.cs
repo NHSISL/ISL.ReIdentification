@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.OdsDatas;
+using RESTFulSense.Exceptions;
 
 namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
 {
@@ -51,17 +52,19 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
             }
         }
 
-        [Fact(Skip = "Need to refactor tests and add other crud operations")]
+        [Fact]
         public async Task ShouldGetOdsDataByIdAsync()
         {
             // given
-            Guid randomOdsDataId = Guid.NewGuid();
+            OdsData randomOdsData = await PostRandomOdsDataAsync();
+            OdsData expectedOdsData = randomOdsData;
 
             // when
-            var actualOdsData = await this.apiBroker.GetOdsDataByIdAsync(randomOdsDataId);
+            OdsData actualOdsData = await this.apiBroker.GetOdsDataByIdAsync(randomOdsData.Id);
 
             // then
-            actualOdsData.Should().NotBeNull();
+            actualOdsData.Should().BeEquivalentTo(expectedOdsData);
+            await this.apiBroker.DeleteOdsDataByIdAsync(actualOdsData.Id);
         }
 
         [Fact]
@@ -78,6 +81,28 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
             // then
             actualOdsData.Should().BeEquivalentTo(modifiedOdsData);
             await this.apiBroker.DeleteOdsDataByIdAsync(actualOdsData.Id);
+        }
+      
+        [Fact]
+        public async Task ShouldDeleteOdsDataAsync()
+        {
+            // given
+            OdsData randomOdsData = await PostRandomOdsDataAsync();
+            OdsData inputOdsData = randomOdsData;
+            OdsData expectedOdsData = inputOdsData;
+
+            // when
+            OdsData deletedOdsData =
+                await this.apiBroker.DeleteOdsDataByIdAsync(inputOdsData.Id);
+
+            ValueTask<OdsData> getOdsDatabyIdTask =
+                this.apiBroker.GetOdsDataByIdAsync(inputOdsData.Id);
+
+            // then
+            deletedOdsData.Should().BeEquivalentTo(expectedOdsData);
+
+            await Assert.ThrowsAsync<HttpResponseNotFoundException>(
+                testCode: getOdsDatabyIdTask.AsTask);
         }
     }
 }
