@@ -10,6 +10,7 @@ using ISL.Providers.ReIdentification.Abstractions;
 using ISL.Providers.ReIdentification.Necs.Models.Brokers.NECS;
 using ISL.Providers.ReIdentification.Necs.Providers.NecsReIdentifications;
 using ISL.Providers.ReIdentification.OfflineFileSources.Models;
+using ISL.Providers.ReIdentification.OfflineFileSources.Providers.OfflineFileSources;
 using ISL.ReIdentification.Core.Brokers.CsvHelpers;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Hashing;
@@ -153,20 +154,29 @@ namespace ISL.ReIdentification.Portals.Server
             services.AddTransient<INotificationAbstractionProvider, NotificationAbstractionProvider>();
             services.AddTransient<INotificationProvider, GovukNotifyProvider>();
 
-            NecsReIdentificationConfigurations necsReIdentificationConfigurations = configuration
-                .GetSection("necsReIdentificationConfigurations")
-                    .Get<NecsReIdentificationConfigurations>();
+            bool reIdentificationProviderOfflineMode = configuration
+                .GetSection("reIdentificationProviderOfflineMode").Get<bool>();
 
-            services.AddSingleton(necsReIdentificationConfigurations);
+            if (reIdentificationProviderOfflineMode == true)
+            {
+                OfflineSourceReIdentificationConfigurations offlineSourceReIdentificationConfigurations = configuration
+                    .GetSection("offlineSourceReIdentificationConfigurations")
+                        .Get<OfflineSourceReIdentificationConfigurations>();
 
-            OfflineSourceReIdentificationConfigurations offlineSourceReIdentificationConfigurations = configuration
-                .GetSection("offlineSourceReIdentificationConfigurations")
-                    .Get<OfflineSourceReIdentificationConfigurations>();
+                services.AddSingleton(offlineSourceReIdentificationConfigurations);
+                services.AddTransient<IReIdentificationProvider, OfflineFileSourceReIdentificationProvider>();
+            }
+            else
+            {
+                NecsReIdentificationConfigurations necsReIdentificationConfigurations = configuration
+                    .GetSection("necsReIdentificationConfigurations")
+                        .Get<NecsReIdentificationConfigurations>();
 
-            services.AddSingleton(offlineSourceReIdentificationConfigurations);
+                services.AddSingleton(necsReIdentificationConfigurations);
+                services.AddTransient<IReIdentificationProvider, NecsReIdentificationProvider>();
+            }
+
             services.AddTransient<IReIdentificationAbstractionProvider, ReIdentificationAbstractionProvider>();
-            services.AddTransient<IReIdentificationProvider, NecsReIdentificationProvider>();
-            //services.AddTransient<IReIdentificationProvider, OfflineFileSourceReIdentificationProvider>();
         }
 
         private static void AddBrokers(IServiceCollection services, IConfiguration configuration)
