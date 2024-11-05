@@ -36,7 +36,7 @@ steps:
     command: 'build'
     projects: '**/ISL.ReIdentification.Portals.Server.csproj'
     arguments: --output $(System.DefaultWorkingDirectory)/publish_output_website_frontend_portal --configuration Release
-    azureSubscription: 
+
 - task: DotNetCoreCLI@2
   displayName: "Dotnet Publish Portal (Development)"
   inputs:
@@ -46,11 +46,7 @@ steps:
     arguments: "-o $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_frontend_portal --configuration Release"
     zipAfterPublish: true
     modifyOutputPath: false
-- task: ArchiveFiles@2
-  displayName: 'Archive files - Portal'
-  inputs:
-    rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output_website_frontend_portal'
-    includeRootFolder: false
-    archiveType: zip
-    archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_frontend_portal
-    replaceExistingArchive: true
+
+- publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_frontend_portal
+  displayName: 'Publish Artifact - frontend portal'
+  artifact: drop-frontend-portal
