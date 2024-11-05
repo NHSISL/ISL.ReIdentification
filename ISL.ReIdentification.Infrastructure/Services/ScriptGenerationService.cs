@@ -27,7 +27,12 @@ namespace ISL.ReIdentification.Infrastructure.Services
                 OnEvents = new Events
                 {
                     Push = new PushEvent { Branches = [branchName] },
-                    PullRequest = new PullRequestEvent { Branches = [branchName] }
+
+                    PullRequest = new PullRequestEvent
+                    {
+                        Types = ["opened", "synchronize", "reopened", "closed"],
+                        Branches = [branchName]
+                    }
                 },
 
                 Jobs = new Dictionary<string, Job>
