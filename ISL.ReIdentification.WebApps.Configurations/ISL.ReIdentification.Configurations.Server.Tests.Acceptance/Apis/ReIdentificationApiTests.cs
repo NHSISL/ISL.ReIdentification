@@ -1,14 +1,4 @@
-﻿// ---------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
-
-using System;
-using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Brokers;
-using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.Accesses;
-using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.ImpersonationContexts;
-using Tynamix.ObjectFiller;
-
-namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
+﻿namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
 {
     [Collection(nameof(ApiTestCollection))]
     public partial class ReIdentificationApiTests

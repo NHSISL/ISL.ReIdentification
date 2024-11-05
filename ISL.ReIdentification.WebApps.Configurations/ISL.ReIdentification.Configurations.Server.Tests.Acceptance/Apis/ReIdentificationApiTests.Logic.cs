@@ -1,13 +1,4 @@
-﻿// ---------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
-
-using System.Threading.Tasks;
-using FluentAssertions;
-using Force.DeepCloner;
-using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.Accesses;
-
-namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
+﻿namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
 {
     public partial class ReIdentificationApiTests
     {

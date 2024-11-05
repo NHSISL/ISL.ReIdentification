@@ -1,0 +1,16 @@
+﻿namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.ReIdentifications
+{
+    public class IdentificationRequest
+    {
+        public Guid Id { get; set; }
+        public List<IdentificationItem> IdentificationItems { get; set; }
+        public Guid EntraUserId { get; set; }
+        public string GivenName { get; set; }
+        public string Surname { get; set; }
+        public string DisplayName { get; set; }
+        public string JobTitle { get; set; }
+        public string Email { get; set; }
+        public string Organisation { get; set; }
+        public string Reason { get; set; }
+    }
+}
