@@ -11,7 +11,6 @@ const ReportHelper: FunctionComponent = () => {
     const [url, setUrl] = useState("");
     const [hasCopied, setHasCopied] = useState(false)
 
-
     function generateUrl(): void {
         let url = `${window.location.href}/${reportGroupId}/${reportId}/${psuedoColumn}`;
         if(reportPage){
