@@ -9,6 +9,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.Loo
     public class Lookup
     {
         public Guid Id { get; set; }
+        public string GroupName { get; set; }
         public string Name { get; set; }
         public string Value { get; set; }
         public int SortOrder { get; set; }

@@ -26,10 +26,17 @@ const MenuComponent: React.FC = () => {
             </ListGroup.Item>
 
             <ListGroup.Item
+                className={`bg-dark text-white ${activePath === '/reports' ? 'active' : ''}`}
+                onClick={() => handleItemClick('/report')}>
+                <FontAwesomeIcon icon={faHome} className="me-2 fa-icon" />
+                <SecuredLink to="/report">Report Reidentification</SecuredLink>
+            </ListGroup.Item>
+
+            <ListGroup.Item
                 className={`bg-dark text-white ${activePath === '/reIdentification' ? 'active' : ''}`}
                 onClick={() => handleItemClick('/reIdentification')}>
                 <FontAwesomeIcon icon={faHome} className="me-2 fa-icon" />
-                <SecuredLink to="/reIdentification">Product 4 - Simple Re-Id</SecuredLink>
+                <SecuredLink to="/reIdentification">Reidentify Single Patient</SecuredLink>
             </ListGroup.Item>
 
             <ListGroup.Item
