@@ -75,7 +75,7 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
         { value: "", name: "Select Reason..." },
         ...lookups.map((lookup) => ({
             value: lookup.value.toString() || "0",
-            name: lookup.name || "",
+            name: lookup.value || "",
         })),
     ];
 

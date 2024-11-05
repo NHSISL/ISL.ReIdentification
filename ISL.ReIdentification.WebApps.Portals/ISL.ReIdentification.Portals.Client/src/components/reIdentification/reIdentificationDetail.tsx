@@ -4,7 +4,7 @@ import { lookupViewService } from "../../services/views/lookups/lookupViewServic
 import { Alert, Container, Row, Spinner } from "react-bootstrap";
 
 const ReIdentificationDetail: FunctionComponent = () => {
-    const { mappedLookups, isLoading } = lookupViewService.useGetAllLookups("");
+    const { mappedLookups, isLoading } = lookupViewService.useGetAllLookups("", "Reason_");
 
     if (isLoading) {
         return <Spinner />

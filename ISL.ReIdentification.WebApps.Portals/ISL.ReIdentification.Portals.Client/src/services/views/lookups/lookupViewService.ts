@@ -9,11 +9,12 @@ type LookupViewServiceResponse = UseQueryResult<Lookup[], Error> & {
 }
 
 export const lookupViewService = {
-    useGetAllLookups: (searchTerm?: string): LookupViewServiceResponse => {
-        let query = `?$orderby=createdDate desc`;
+    useGetAllLookups: (searchTerm?: string, filter?: string): LookupViewServiceResponse => {
+          let query = `?$orderby=sortorder desc&$filter=startswith(name,'${filter}')`;
+        //let query = `?$orderby=sortorder desc`;
 
         if (searchTerm) {
-            query = query + `&$filter=contains(name,'${searchTerm}')`;
+            query = query + `&$filter=contains(value,'${searchTerm}')`;
         }
 
         const response = lookupService.useRetrieveAllLookups(query);
