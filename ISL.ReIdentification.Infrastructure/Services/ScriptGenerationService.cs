@@ -72,6 +72,18 @@ namespace ISL.ReIdentification.Infrastructure.Services
                                     Name = "Build"
                                 },
 
+                                new GithubTask
+                                {
+                                    Name = "Install EF Tools",
+                                    Run = "dotnet tool install --global dotnet-ef"
+                                },
+
+                                new GithubTask
+                                {
+                                    Name = "Deploy Database",
+                                    Run = $"dotnet ef database update --project {projectName}/{projectName}.csproj --startup-project {projectName}/{projectName}.csproj"
+                                },
+
                                 new TestTask
                                 {
                                     Name = "Test"
