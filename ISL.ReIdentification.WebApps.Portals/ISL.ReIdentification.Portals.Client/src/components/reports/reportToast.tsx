@@ -1,7 +1,7 @@
 import { faCheck, faCircleInfo, faCopy, faLeftLong, faRightLong, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { FunctionComponent, useState } from "react";
-import { Button, Card, CardBody, Col, Modal, Row, Table, Toast, ToastContainer } from "react-bootstrap";
+import { Button, Card, CardBody, Col, Modal, Row, Spinner, Table, Toast, ToastContainer } from "react-bootstrap";
 import { ToastPosition } from "react-bootstrap/esm/ToastContainer";
 import { ReIdRecord } from "../../types/ReIdRecord";
 import CopyIcon from "../core/copyIcon";
@@ -12,7 +12,8 @@ type ReportToastProps = {
     hide: (hide: boolean) => void;
     clearList: () => void;
     reidentifications: ReIdRecord[];
-    lastSelectedPseudo?: string;
+    lastSelectedPseudo?: ReIdRecord;
+    recordLoading: boolean;
 }
 
 const ReportToast: FunctionComponent<ReportToastProps> = (props) => {
@@ -32,6 +33,30 @@ const ReportToast: FunctionComponent<ReportToastProps> = (props) => {
         }
     }
 
+    function getCard(reidRecord: ReIdRecord) {
+        if (reidRecord.loading)
+            return <Card>
+                <CardBody><Spinner /></CardBody>
+            </Card>
+        if (!reidRecord.hasAccess) {
+            return <Card bg="danger" text="white">
+                <CardBody>
+                    You do not have permissions to reidentify this patient.
+                </CardBody>
+            </Card>
+        }
+
+        return <Card bg="success" text="white">
+            <Card.Body>
+                Last Selected Record:&nbsp;
+                {reidentifications[0].nhsnumber}&nbsp;
+                {clipboardAvailable &&
+                    <FontAwesomeIcon onClick={() => copyToPasteBuffer(reidentifications[0].nhsnumber)} icon={copiedToPasteBuffer ? faCheck : faCopy} />
+                }
+            </Card.Body>
+        </Card>
+    }
+
     return <ToastContainer position={position || "bottom-end"} hidden={hidden || reidentifications.length === 0} style={{ marginTop: "33px" }}>
         <Toast onClose={() => hide(true)}>
             <Toast.Header>
@@ -40,29 +65,14 @@ const ReportToast: FunctionComponent<ReportToastProps> = (props) => {
             </Toast.Header>
             <Toast.Body>
                 {reidentifications.length > 0 && <>
-                    {reidentifications[0].hasAccess ? <Card bg="success" text="white">
-                        <Card.Body>
-                            Last Selected Record:&nbsp;
-                            {reidentifications[0].nhsnumber}&nbsp;
-                            {clipboardAvailable &&
-                                <FontAwesomeIcon onClick={() => copyToPasteBuffer(reidentifications[0].nhsnumber)} icon={copiedToPasteBuffer ? faCheck : faCopy} />
-                            }
-                        </Card.Body>
-                    </Card>
-                        :
-                        <Card bg="danger" text="white">
-                            <CardBody>
-                                You do not have permissions to reidentify this patient.
-                            </CardBody>
-                        </Card>
-                    }
+                    {getCard(reidentifications[0])}
                 </>}
 
                 {showHistory &&
                     <> <br />
                         <Table size="sm" bordered>
                             <tbody>
-                                {reidentifications.slice(pageNumber * itemsPerPage, (pageNumber * itemsPerPage) + itemsPerPage).map((ri) => <tr key={ri.identifer}>
+                                {reidentifications.slice(pageNumber * itemsPerPage, (pageNumber * itemsPerPage) + itemsPerPage).map((ri) => <tr key={crypto.randomUUID()}>
                                     <td>{ri.isHx ? ri.pseudo : "---"}</td>
                                     {ri.loading ? <td>
                                         <FontAwesomeIcon icon={faSpinner} pulse />
@@ -97,7 +107,6 @@ const ReportToast: FunctionComponent<ReportToastProps> = (props) => {
                                     if (pageNumber + 1 !== Math.ceil(reidentifications.length / itemsPerPage))
                                         setPageNumber(pageNumber + 1)
                                 }}>
-
                                     <FontAwesomeIcon icon={faRightLong} />
                                 </Button>
                             </Col>

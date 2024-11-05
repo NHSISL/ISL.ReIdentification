@@ -24,7 +24,7 @@ const ReportsLaunchPage: FunctionComponent<ReportLaunchPageProps> = (props) => {
     const { pseudoColumn } = useParams();
     const [pseudosToReid, setPseudosToReid] = useState<string[]>([]);
     const [promptForReid, setPromptForReid] = useState(false);
-    const { reidentify, reidentifications, lastPseudo, clearList } = useReidentification(reidReason);
+    const { reidentify, reidentifications, lastPseudo, clearList, isLoading } = useReidentification(reidReason);
 
     const reIdBulk = () => {
         setPromptForReid(false)
@@ -48,7 +48,7 @@ const ReportsLaunchPage: FunctionComponent<ReportLaunchPageProps> = (props) => {
                 embedObject.setPage(pageToActivate[0].name);
             }
 
-            embedObject.on('dataSelected', (event?: CustomEvent<PBIEvent>) => {
+            embedObject.on('dataSelected', async (event?: CustomEvent<PBIEvent>) => {
                 addDeveloperEvent({ message: "dataSelected" });
                 if (event && event.detail.dataPoints[0]) {
                     // pseudo data could be held in either an identity or value field.
@@ -99,7 +99,7 @@ const ReportsLaunchPage: FunctionComponent<ReportLaunchPageProps> = (props) => {
                         setPseudosToReid(uniquePseudos);
                         setPromptForReid(true)
                     } else {
-                        reidentify(uniquePseudos);
+                        await reidentify(uniquePseudos);
                     }
                 } else {
                     addDeveloperEvent({ message: "dataSelected: no datapoints found", eventDetails: event });
@@ -128,6 +128,7 @@ const ReportsLaunchPage: FunctionComponent<ReportLaunchPageProps> = (props) => {
                 clearList={clearList}
                 hidden={toastHidden} hide={hideToast}
                 lastSelectedPseudo={lastPseudo}
+                recordLoading={isLoading}
                 position={toastPostion}
                 reidentifications={reidentifications} />
         </div>
