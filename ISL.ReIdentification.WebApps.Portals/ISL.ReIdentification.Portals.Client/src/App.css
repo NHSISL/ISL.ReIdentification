@@ -81,3 +81,8 @@
     width: 100%;
     text-align: center;
 }
+
+.report-container {
+    height: 100%;
+    border: 0;
+}

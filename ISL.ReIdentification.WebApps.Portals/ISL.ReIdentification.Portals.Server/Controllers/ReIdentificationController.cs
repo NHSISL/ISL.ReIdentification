@@ -3,6 +3,8 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
@@ -27,7 +29,7 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
 
         [HttpPost]
         public async ValueTask<ActionResult<AccessRequest>>
-            PostIdentificationRequestsAsync([FromBody] AccessRequest accessRequest)
+                    PostIdentificationRequestsAsync([FromBody] AccessRequest accessRequest)
         {
             try
             {
@@ -57,7 +59,7 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
 
         [HttpPost("submitcsv")]
         public async ValueTask<ActionResult<AccessRequest>>
-            PostCsvIdentificationRequestAsync([FromBody] AccessRequest accessRequest)
+        PostCsvIdentificationRequestAsync([FromBody] AccessRequest accessRequest)
         {
             try
             {
