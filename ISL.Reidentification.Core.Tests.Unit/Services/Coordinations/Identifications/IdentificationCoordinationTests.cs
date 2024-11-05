@@ -4,11 +4,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
-using System.Text;
 using ISL.ReIdentification.Core.Brokers.CsvHelpers;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Loggings;
@@ -200,6 +200,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
         private static Filler<CsvIdentificationItem> CreateCsvIdentificationItemFiller() =>
             new Filler<CsvIdentificationItem>();
 
+        private static Filler<IdentificationItem> CreateIdentificationItemFiller() =>
+            new Filler<IdentificationItem>();
+
         private static EntraUser CreateRandomEntraUser()
         {
             Guid randomId = Guid.NewGuid();
@@ -218,8 +221,31 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             return entraUser;
         }
 
-        private static IQueryable<CsvIdentificationItem> CreateRandomCsvIdentificationItems() =>
-            CreateCsvIdentificationItemFiller().Create(GetRandomNumber()).AsQueryable();
+        private static IQueryable<CsvIdentificationItem> CreateRandomCsvIdentificationItems(int count = 0)
+        {
+            if (count == 0)
+            {
+                count = GetRandomNumber();
+            }
+
+            IQueryable<CsvIdentificationItem> csvIdentificationItems =
+                CreateCsvIdentificationItemFiller().Create(count).AsQueryable();
+
+            return csvIdentificationItems;
+        }
+
+        private static IQueryable<IdentificationItem> CreateRandomIdentificationItems(int count = 0)
+        {
+            if (count == 0)
+            {
+                count = GetRandomNumber();
+            }
+
+            IQueryable<IdentificationItem> identificationItems =
+                CreateIdentificationItemFiller().Create(count).AsQueryable();
+
+            return identificationItems;
+        }
 
         private static string CsvDataString() =>
             "Um93TnVtYmVyLElkZW50aWZpZXIKVGVzdFJvd051bWJlcixUZXN0SWRlbnRpZmllcg==";
@@ -232,6 +258,27 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 .Select(_ => new Claim(type: randomString, value: randomString)).ToList();
         }
 
+        private static List<dynamic> CreateRandomDynamicObjects(int count = 0)
+        {
+            List<dynamic> dynamicObjects = new List<dynamic>();
+
+            if (count == 0)
+            {
+                count = GetRandomNumber();
+            }
+
+            for (int i = 0; i < count; i++)
+            {
+                dynamic obj = new ExpandoObject();
+                obj.Property1 = $"value{i}";
+                obj.Property2 = i;
+                obj.Identifier = GetRandomString();
+                dynamicObjects.Add(obj);
+            }
+
+            return dynamicObjects;
+        }
+
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);
 
@@ -240,6 +287,16 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
         private Expression<Func<AccessRequest, bool>> SameAccessRequestAs(AccessRequest expectedAccessRequest) =>
             actualAccessRequest => this.compareLogic.Compare(expectedAccessRequest, actualAccessRequest).AreEqual;
+
+        private Expression<Func<string, bool>> SameStringAs(string expectedString) =>
+            actualString => this.compareLogic.Compare(expectedString, actualString).AreEqual;
+
+        private Expression<Func<List<dynamic>, bool>> SameDynamicListAs(List<dynamic> expectedDynamicList) =>
+            actualDynamicList => this.compareLogic.Compare(expectedDynamicList, actualDynamicList).AreEqual;
+
+        private Expression<Func<List<CsvIdentificationItem>, bool>> SameCsvIdentificationItemListAs(
+            List<CsvIdentificationItem> expectedList) =>
+                actualList => this.compareLogic.Compare(expectedList, actualList).AreEqual;
 
         public static TheoryData<Xeption> DependencyValidationExceptions()
         {
@@ -306,53 +363,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 new IdentificationOrchestrationServiceException(
                     message: "Identification orchestration service error occurred, please contact support.",
                     innerException),
-            };
-        }
-
-        public static TheoryData<IdentificationRequest, CsvIdentificationRequest> InputIdentificationRequest()
-        {
-            Guid entraId = Guid.NewGuid();
-
-            IdentificationItem identificationItem = new IdentificationItem
-            {
-                HasAccess = false,
-                Identifier = "TestIdentifier",
-                IsReidentified = false,
-                Message = String.Empty,
-                RowNumber = "TestRowNumber"
-            };
-
-            IdentificationRequest identificationRequest = new IdentificationRequest
-            {
-                DisplayName = nameof(CsvIdentificationRequest.RecipientDisplayName),
-                Email = nameof(CsvIdentificationRequest.RecipientEmail),
-                EntraUserId = entraId,
-                GivenName = nameof(CsvIdentificationRequest.RecipientFirstName),
-                Id = Guid.Empty,
-                IdentificationItems = new List<IdentificationItem> { identificationItem },
-                JobTitle = nameof(CsvIdentificationRequest.RecipientJobTitle),
-                Organisation = nameof(IdentificationRequest.Organisation),
-                Reason = nameof(IdentificationRequest.Reason),
-                Surname = nameof(CsvIdentificationRequest.RecipientLastName)
-            };
-
-            CsvIdentificationRequest csvIdentificationRequest = new CsvIdentificationRequest
-            {
-                Data = Encoding.UTF8.GetBytes(CsvDataString()),
-                Id = Guid.Empty,
-                Organisation = nameof(CsvIdentificationRequest.Organisation),
-                Reason = nameof(CsvIdentificationRequest.Reason),
-                RecipientDisplayName = nameof(CsvIdentificationRequest.RecipientDisplayName),
-                RecipientEmail = nameof(CsvIdentificationRequest.RecipientEmail),
-                RecipientEntraUserId = entraId,
-                RecipientFirstName = nameof(CsvIdentificationRequest.RecipientFirstName),
-                RecipientJobTitle = nameof(CsvIdentificationRequest.RecipientJobTitle),
-                RecipientLastName = nameof(CsvIdentificationRequest.RecipientLastName),
-            };
-
-            return new TheoryData<IdentificationRequest, CsvIdentificationRequest>
-            {
-                { identificationRequest, csvIdentificationRequest }
             };
         }
     }

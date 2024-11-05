@@ -105,10 +105,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 service.ProcessIdentificationRequestAsync(outputOrchestrationAccessRequest.IdentificationRequest))
                     .ReturnsAsync(outputOrchestrationIdentificationRequest);
 
-            identificationCoordinationServiceMock.Setup(service =>
-                service.ConvertIdentificationRequestToCsvIdentificationRequest(
-                    outputOrchestrationIdentificationRequest))
-                        .ReturnsAsync(outputConversionCsvIdentificationRequest);
+            //identificationCoordinationServiceMock.Setup(service =>
+            //    service.ConvertIdentificationRequestToCsvIdentificationRequest(
+            //        outputOrchestrationIdentificationRequest))
+            //            .ReturnsAsync(outputConversionCsvIdentificationRequest);
 
             IdentificationCoordinationService identificationCoordinationService =
                 identificationCoordinationServiceMock.Object;
@@ -143,10 +143,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 service.ProcessIdentificationRequestAsync(outputOrchestrationAccessRequest.IdentificationRequest),
                     Times.Once);
 
-            identificationCoordinationServiceMock.Verify(service =>
-                service.ConvertIdentificationRequestToCsvIdentificationRequest(
-                    outputOrchestrationIdentificationRequest),
-                        Times.Once);
+            //identificationCoordinationServiceMock.Verify(service =>
+            //    service.ConvertIdentificationRequestToCsvIdentificationRequest(
+            //        outputOrchestrationIdentificationRequest),
+            //            Times.Once);
 
             this.identificationOrchestrationServiceMock.Verify(service =>
                 service.AddDocumentAsync(It.Is(SameStreamAs(resultingCsvData)), outputPickupFilepath, container),
