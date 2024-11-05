@@ -11,11 +11,18 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications
     {
         private void AddLookupConfigurations(EntityTypeBuilder<Lookup> builder)
         {
-            builder.Property(userAccess => userAccess.Name)
-                .HasMaxLength(450)
+            builder.Property(userAccess => userAccess.GroupName)
+                .HasMaxLength(220)
                 .IsRequired();
 
-            builder.HasIndex(userAccess => userAccess.Name)
+            builder.Property(userAccess => userAccess.Name)
+                .HasMaxLength(220)
+                .IsRequired();
+
+            builder.HasIndex(userAccess => userAccess.GroupName)
+                .IsUnique();
+
+            builder.HasIndex(userAccess => new { userAccess.GroupName, userAccess.Name })
                 .IsUnique();
 
             builder.Property(userAccess => userAccess.Value)

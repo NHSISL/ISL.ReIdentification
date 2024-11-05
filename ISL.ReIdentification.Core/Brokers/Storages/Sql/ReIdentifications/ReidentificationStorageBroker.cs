@@ -4,6 +4,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using EFxceptions;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
@@ -13,6 +14,7 @@ using ISL.ReIdentification.Core.Models.Foundations.Lookups;
 using ISL.ReIdentification.Core.Models.Foundations.OdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.PdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using STX.EFCore.Client.Clients;
@@ -27,7 +29,17 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications
         public ReIdentificationStorageBroker(IConfiguration configuration)
         {
             this.configuration = configuration;
-            Database.Migrate();
+
+            try
+            {
+                Database.Migrate();
+            }
+            catch (SqlException sqlException)
+            {
+                Thread.Sleep(millisecondsTimeout: 10000);
+                Database.Migrate();
+            }
+
             efCoreClient = new EFCoreClient(this);
         }
 
