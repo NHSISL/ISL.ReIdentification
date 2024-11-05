@@ -19,9 +19,6 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications
                 .HasMaxLength(220)
                 .IsRequired();
 
-            builder.HasIndex(userAccess => userAccess.GroupName)
-                .IsUnique();
-
             builder.HasIndex(userAccess => new { userAccess.GroupName, userAccess.Name })
                 .IsUnique();
 
