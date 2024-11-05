@@ -10,7 +10,7 @@ type ReportReasonPageProps = {
 
 const ReportsReasonPage: FunctionComponent<ReportReasonPageProps> = (props: ReportReasonPageProps) => {
     const { setReidReason, launchReport, reidReason } = props
-    const { mappedLookups, isLoading } = lookupViewService.useGetAllLookups("");
+    const { mappedLookups, isLoading } = lookupViewService.useGetAllLookups("", "Reasons");
 
     return <><Container>
         <Card>
