@@ -15,11 +15,20 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-- task: NuGetToolInstaller@1
-
-- task: NuGetCommand@2
+- task: UseDotNet@2
+  displayName: "Install .NET Core SDK"
   inputs:
-    restoreSolution: '$(solution)'
+    version: 8.x
+    performMultiLevelLookup: true
+    includePreviewVersions: true # Required for preview versions
+
+- task: DotNetCoreCLI@2
+  displayName: "Dotnet Restore"
+  inputs:
+    command: "restore"
+    feedsToUse: "select"
+    projects: "**/*.csproj"
+    includeNuGetOrg: true
 
 - task: DotNetCoreCLI@2
   displayName: "Dotnet Build (Portal)"
