@@ -65,6 +65,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
             // given 
             var invalidLookup = new Lookup
             {
+                GroupName = invalidText,
                 Name = invalidText
             };
 
@@ -75,6 +76,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
             invalidLookupException.AddData(
                 key: nameof(Lookup.Id),
                 values: "Id is invalid");
+
+            invalidLookupException.AddData(
+                key: nameof(Lookup.GroupName),
+                values: "Text is invalid");
 
             invalidLookupException.AddData(
                 key: nameof(Lookup.Name),
@@ -142,12 +147,17 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             Lookup invalidLookup = CreateRandomModifyLookup(randomDateTimeOffset);
             var inputCreatedByUpdatedByString = GetRandomStringWithLengthOf(256);
-            invalidLookup.Name = GetRandomStringWithLengthOf(451);
+            invalidLookup.GroupName = GetRandomStringWithLengthOf(221);
+            invalidLookup.Name = GetRandomStringWithLengthOf(221);
             invalidLookup.CreatedBy = inputCreatedByUpdatedByString;
             invalidLookup.UpdatedBy = inputCreatedByUpdatedByString;
 
             var invalidLookupException = new InvalidLookupException(
                 message: "Invalid lookup. Please correct the errors and try again.");
+
+            invalidLookupException.AddData(
+                key: nameof(Lookup.GroupName),
+                values: $"Text exceed max length of {invalidLookup.GroupName.Length - 1} characters");
 
             invalidLookupException.AddData(
                 key: nameof(Lookup.Name),
