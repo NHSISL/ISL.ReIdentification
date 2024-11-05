@@ -1,6 +1,12 @@
-﻿namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.CsvIdentificationRequests
+﻿// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
+using System;
+
+namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.CsvIdentificationRequests
 {
-    public class CsvIdentificationRequest : IKey, IAudit
+    public class CsvIdentificationRequest
     {
         public Guid Id { get; set; }
         public Guid RequesterEntraUserId { get; set; } = Guid.Empty;

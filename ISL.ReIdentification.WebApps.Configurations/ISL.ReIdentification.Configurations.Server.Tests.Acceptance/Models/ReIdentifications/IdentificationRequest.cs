@@ -1,4 +1,11 @@
-﻿namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.ReIdentifications
+﻿// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
+using System;
+using System.Collections.Generic;
+
+namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.ReIdentifications
 {
     public class IdentificationRequest
     {

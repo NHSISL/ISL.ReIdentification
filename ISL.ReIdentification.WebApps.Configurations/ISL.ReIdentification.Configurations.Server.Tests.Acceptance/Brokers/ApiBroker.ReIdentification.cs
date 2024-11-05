@@ -1,4 +1,11 @@
-﻿namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Brokers
+﻿// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
+using System.Threading.Tasks;
+using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.Accesses;
+
+namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Brokers
 {
     public partial class ApiBroker
     {

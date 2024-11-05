@@ -3,11 +3,10 @@
 // ---------------------------------------------------------
 
 using System;
-using ISL.ReIdentification.Core.Models;
 
 namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.CsvIdentificationRequests
 {
-    public class CsvIdentificationRequest : IKey, IAudit
+    public class CsvIdentificationRequest
     {
         public Guid Id { get; set; }
         public Guid RequesterEntraUserId { get; set; } = Guid.Empty;
