@@ -50,6 +50,11 @@ namespace ISL.ReIdentification.Infrastructure.Services
                             Name = "Build",
                             RunsOn = BuildMachines.WindowsLatest,
 
+                            EnvironmentVariables = new Dictionary<string, string>
+                            {
+                                { "NOTIFICATIONCONFIGURATIONS__APIKEY", "${{ secrets.NOTIFICATIONCONFIGURATIONS__APIKEY }}" },
+                            },
+
                             Steps = new List<GithubTask>
                             {
                                 new CheckoutTaskV3

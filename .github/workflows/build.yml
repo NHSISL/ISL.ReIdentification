@@ -104,6 +104,8 @@ jobs:
       run: dotnet ef database update --project ISL.ReIdentification.Core/ISL.ReIdentification.Core.csproj --startup-project ISL.ReIdentification.Core/ISL.ReIdentification.Core.csproj
     - name: Test
       run: dotnet test --no-build --verbosity normal
+    env:
+      NOTIFICATIONCONFIGURATIONS__APIKEY: ${{ secrets.NOTIFICATIONCONFIGURATIONS__APIKEY }}
   add_tag:
     name: Tag and Release
     runs-on: ubuntu-latest
