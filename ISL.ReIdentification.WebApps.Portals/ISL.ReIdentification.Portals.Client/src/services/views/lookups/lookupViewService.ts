@@ -9,9 +9,8 @@ type LookupViewServiceResponse = UseQueryResult<Lookup[], Error> & {
 }
 
 export const lookupViewService = {
-    useGetAllLookups: (searchTerm?: string, filter?: string): LookupViewServiceResponse => {
-          let query = `?$orderby=sortorder desc&$filter=startswith(name,'${filter}')`;
-        //let query = `?$orderby=sortorder desc`;
+    useGetAllLookups: (searchTerm?: string, groupName?: string): LookupViewServiceResponse => {
+        let query = `?$orderby=createdDate desc&$filter=groupName eq '${groupName}'`;
 
         if (searchTerm) {
             query = query + `&$filter=contains(value,'${searchTerm}')`;

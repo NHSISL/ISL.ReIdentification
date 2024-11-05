@@ -41,7 +41,7 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
                 identificationItems: [{
                     rowNumber: "1",
                     identifier: pseudoCode,
-                    hasAccess: undefined,
+                    hasAccess: false,
                     message: undefined,
                     isReidentified: undefined,
                 }],
