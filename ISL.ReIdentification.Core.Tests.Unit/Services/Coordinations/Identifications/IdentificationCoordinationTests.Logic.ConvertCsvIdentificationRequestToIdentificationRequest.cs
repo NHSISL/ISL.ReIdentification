@@ -47,12 +47,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 convertedIdentificationItems.Add(identificationItem);
             }
 
-            AccessRequest randomOutputAccessRequest = CreateRandomAccessRequest();
-            randomOutputAccessRequest.IdentificationRequest = new IdentificationRequest();
-            randomOutputAccessRequest.IdentificationRequest.IdentificationItems = convertedIdentificationItems;
-            randomOutputAccessRequest.CsvIdentificationRequest = null;
-            randomOutputAccessRequest.ImpersonationContext = null;
-            AccessRequest outputAccessRequest = randomOutputAccessRequest.DeepClone();
+            AccessRequest outputAccessRequest = randomAccessRequest.DeepClone();
+            outputAccessRequest.IdentificationRequest = new IdentificationRequest();
+            outputAccessRequest.IdentificationRequest.IdentificationItems = convertedIdentificationItems;
 
             Dictionary<string, int> fieldMappings = new Dictionary<string, int>
             {
