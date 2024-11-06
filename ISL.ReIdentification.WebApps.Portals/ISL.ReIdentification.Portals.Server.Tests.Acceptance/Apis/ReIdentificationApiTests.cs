@@ -48,6 +48,19 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
         private static ImpersonationContext CreateRandomImpersonationContext() =>
            CreateRandomImpersonationContextFiller().Create();
 
+        private static ImpersonationContext UpdateImpersonationContextWithRandomValues(
+            ImpersonationContext inputImpersonationContext)
+        {
+            DateTimeOffset now = DateTimeOffset.UtcNow;
+            var updatedImpersonationContext = CreateRandomImpersonationContext();
+            updatedImpersonationContext.Id = inputImpersonationContext.Id;
+            updatedImpersonationContext.CreatedDate = inputImpersonationContext.CreatedDate;
+            updatedImpersonationContext.CreatedBy = inputImpersonationContext.CreatedBy;
+            updatedImpersonationContext.UpdatedDate = now;
+
+            return updatedImpersonationContext;
+        }
+
         private static Filler<ImpersonationContext> CreateRandomImpersonationContextFiller()
         {
             string user = Guid.NewGuid().ToString();
