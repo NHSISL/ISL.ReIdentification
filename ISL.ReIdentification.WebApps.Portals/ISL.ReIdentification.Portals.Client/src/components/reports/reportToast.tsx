@@ -14,16 +14,20 @@ type ReportToastProps = {
     reidentifications: ReIdRecord[];
     lastSelectedPseudo?: ReIdRecord;
     recordLoading: boolean;
+    lastPseudos: string[];
 }
 
 const ReportToast: FunctionComponent<ReportToastProps> = (props) => {
-    const { position, hidden, hide, clearList, reidentifications } = props;
+    const { position, hidden, hide, clearList, reidentifications, lastPseudos } = props;
     const [copiedToPasteBuffer, setCopiedToPasteBuffer] = useState(false);
     const [showNoAccessInfo, setShowNoAccessInfo] = useState(false);
     const [pageNumber, setPageNumber] = useState(0);
     const [showHistory, setShowHistory] = useState(false);
+    const [copyAllClicked, setCopyAllClicked] = useState(false);
     const itemsPerPage = 10;
     const clipboardAvailable = navigator.clipboard;
+
+    const [bulkModalShown, setBulkModalShown] = useState(true);
 
     const copyToPasteBuffer = (identifer?: string) => {
         if (navigator.clipboard && identifer) {
@@ -33,7 +37,7 @@ const ReportToast: FunctionComponent<ReportToastProps> = (props) => {
         }
     }
 
-    function getCard(reidRecord: ReIdRecord) {
+    function getSingleRecordCard(reidRecord: ReIdRecord) {
         if (reidRecord.loading)
             return <Card>
                 <CardBody><Spinner /></CardBody>
@@ -57,6 +61,87 @@ const ReportToast: FunctionComponent<ReportToastProps> = (props) => {
         </Card>
     }
 
+    function getNhsNumbers(listOfPseudos: string[], reIdRecords: ReIdRecord[]) {
+        const records = reIdRecords
+            .filter(x => listOfPseudos.indexOf(x.pseudo) !== -1)
+            .flatMap(x => `${x.isHx ? x.pseudo : 'PseudoNumberRedacted'},  ${x.hasAccess ? x.nhsnumber : 'NHSNumberRedacted'}`)
+        setCopyAllClicked(true);
+        setTimeout(() => setCopyAllClicked(false), 1000);
+        return [... new Set(records)].join('\n');; // shortcut to return distinct list of values
+    }
+
+    function getMultiRecordCard(listOfPseudos: string[], reIdRecords: ReIdRecord[]) {
+        if (listOfPseudos.length > 15) {
+            return <><Modal show={bulkModalShown} scrollable onHide={() => { setBulkModalShown(false) }} >
+                <Modal.Header closeButton>
+                    Re-id Records
+                </Modal.Header>
+                <Modal.Body>
+                    <Table size="sm" bordered>
+                        <tbody>
+                            {listOfPseudos.map(ls => {
+                                const reIdRecord = reIdRecords.find(x => x.pseudo === ls)
+                                if (!reIdRecord) {
+                                    return <></>
+                                }
+                                return (<>
+                                    {reIdTableRow(reIdRecord)}
+                                </>)
+                            }
+                            )}
+                        </tbody>
+                    </Table>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button onClick={() => { navigator.clipboard.writeText(getNhsNumbers(listOfPseudos, reIdRecords)) }}>
+                        {copyAllClicked ? <FontAwesomeIcon icon={faCheck} /> : 'Copy All'}
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+                {!bulkModalShown && <div>
+                    <p>You have requested to re-identify {listOfPseudos.length} identifiers which is too many to display here.</p>
+                    <Button onClick={() => { setBulkModalShown(true) }}>Show Bulk Re-id Screen</Button>
+                </div>}
+            </>
+
+        }
+
+        return <>
+            <Table size="sm" bordered>
+                <tbody>
+                    {listOfPseudos.map(ls => {
+                        const reIdRecord = reIdRecords.find(x => x.pseudo === ls)
+                        if (!reIdRecord) {
+                            return <></>
+                        }
+                        return (<>
+                            {reIdTableRow(reIdRecord)}
+                        </>)
+                    }
+                    )}
+                </tbody>
+            </Table>
+        </>
+    }
+
+    function reIdTableRow(reIdRecord: ReIdRecord) {
+        return <tr key={crypto.randomUUID()}>
+            <td>{reIdRecord.isHx ? reIdRecord.pseudo : "---"}</td>
+            {reIdRecord.loading ? <td>
+                <FontAwesomeIcon icon={faSpinner} pulse />
+            </td> : <>
+                {reIdRecord.hasAccess ? <>
+                    <td>{reIdRecord.nhsnumber}</td><td><CopyIcon content={reIdRecord.nhsnumber || ""} resetTime={1000} />
+                    </td>
+                </>
+                    : <td colSpan={2}>
+                        NO ACCESS <FontAwesomeIcon icon={faCircleInfo} color="red" onClick={() => setShowNoAccessInfo(true)} />
+                    </td>}
+            </>
+            }
+        </tr>
+    }
+
     return <ToastContainer position={position || "bottom-end"} hidden={hidden || reidentifications.length === 0} style={{ marginTop: "33px" }}>
         <Toast onClose={() => hide(true)}>
             <Toast.Header>
@@ -64,8 +149,12 @@ const ReportToast: FunctionComponent<ReportToastProps> = (props) => {
                 <Button size="sm" onClick={clearList}>Clear History</Button>
             </Toast.Header>
             <Toast.Body>
-                {reidentifications.length > 0 && <>
-                    {getCard(reidentifications[0])}
+                {lastPseudos.length === 1 && reidentifications.length > 0 && <>
+                    {getSingleRecordCard(reidentifications[0])}
+                </>}
+
+                {lastPseudos.length > 1 && <>
+                    {getMultiRecordCard(lastPseudos, reidentifications)}
                 </>}
 
                 {showHistory &&
