@@ -23,7 +23,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Notification
             Xeption dependencyValidationException)
         {
             // given
-            AccessRequest invalidAccessRequest = CreateRandomCsvAccessRequest();
+            AccessRequest invalidAccessRequest = CreateImpersonationContextAccessRequest();
             NotificationConfigurations invalidNotificationConfigurations = this.notificationConfigurations;
 
             ClientNotificationException clientNotificationException = new ClientNotificationException(
@@ -83,7 +83,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Notification
             Xeption dependencyException)
         {
             // given
-            AccessRequest invalidAccessRequest = CreateRandomCsvAccessRequest();
+            AccessRequest invalidAccessRequest = CreateImpersonationContextAccessRequest();
             NotificationConfigurations invalidNotificationConfigurations = this.notificationConfigurations;
 
             ServerNotificationException serverNotificationException = new ServerNotificationException(
@@ -142,7 +142,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Notification
         public async Task ShouldThrowServiceExceptionOnSendImpersonationDeniedNotificationAndLogItAsync()
         {
             // given
-            AccessRequest invalidAccessRequest = CreateRandomCsvAccessRequest();
+            AccessRequest invalidAccessRequest = CreateImpersonationContextAccessRequest();
             NotificationConfigurations invalidNotificationConfigurations = this.notificationConfigurations;
             Exception someException = new Exception();
 

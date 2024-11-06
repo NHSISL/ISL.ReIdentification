@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.ReIdentification.Core.Models.Brokers.Notifications;
-using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
+using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Foundations.Notifications.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Services.Foundations.Notifications;
@@ -89,12 +89,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Notification
 
             invalidArgumentsNotificationException.AddData(
                 key: $"{nameof(AccessRequest)}." +
-                    $"{nameof(AccessRequest.CsvIdentificationRequest)}",
-                values: $"{nameof(CsvIdentificationRequest)} is invalid");
+                    $"{nameof(AccessRequest.ImpersonationContext)}",
+                values: $"{nameof(ImpersonationContext)} is invalid");
 
             invalidArgumentsNotificationException.AddData(
                 key: $"{nameof(NotificationConfigurations)}." +
-                    $"{nameof(NotificationConfigurations.CsvPendingApprovalRequestTemplateId)}",
+                    $"{nameof(NotificationConfigurations.ImpersonationDeniedRequestTemplateId)}",
                 values: "Text is invalid");
 
             invalidArgumentsNotificationException.AddData(
@@ -154,7 +154,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Notification
             // given
             AccessRequest invalidAccessRequest = new AccessRequest
             {
-                CsvIdentificationRequest = new CsvIdentificationRequest()
+                ImpersonationContext = new ImpersonationContext()
             };
 
             NotificationConfigurations invalidNotificationConfigurations = this.notificationConfigurations;

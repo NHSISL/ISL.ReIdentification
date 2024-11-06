@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using ISL.ReIdentification.Core.Models.Brokers.Notifications;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
+using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Foundations.Notifications.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 
@@ -97,12 +98,12 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
                 (Rule: IsInvalid(notificationConfigurations), Parameter: nameof(NotificationConfigurations)));
 
             Validate(
-                (Rule: IsInvalid(accessRequest.CsvIdentificationRequest),
-                Parameter: $"{nameof(AccessRequest)}.{nameof(AccessRequest.CsvIdentificationRequest)}"),
+                (Rule: IsInvalid(accessRequest.ImpersonationContext),
+                Parameter: $"{nameof(AccessRequest)}.{nameof(AccessRequest.ImpersonationContext)}"),
 
-                (Rule: IsInvalid(notificationConfigurations.CsvPendingApprovalRequestTemplateId),
+                (Rule: IsInvalid(notificationConfigurations.ImpersonationPendingApprovalRequestTemplateId),
                 Parameter: $"{nameof(NotificationConfigurations)}." +
-                    $"{nameof(NotificationConfigurations.CsvPendingApprovalRequestTemplateId)}"),
+                    $"{nameof(NotificationConfigurations.ImpersonationPendingApprovalRequestTemplateId)}"),
 
                 (Rule: IsInvalid(notificationConfigurations.ConfigurationBaseUrl),
                 Parameter: $"{nameof(NotificationConfigurations)}." +
@@ -122,12 +123,12 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
                 (Rule: IsInvalid(notificationConfigurations), Parameter: nameof(NotificationConfigurations)));
 
             Validate(
-                (Rule: IsInvalid(accessRequest.CsvIdentificationRequest),
-                Parameter: $"{nameof(AccessRequest)}.{nameof(AccessRequest.CsvIdentificationRequest)}"),
+                (Rule: IsInvalid(accessRequest.ImpersonationContext),
+                Parameter: $"{nameof(AccessRequest)}.{nameof(AccessRequest.ImpersonationContext)}"),
 
-                (Rule: IsInvalid(notificationConfigurations.CsvPendingApprovalRequestTemplateId),
+                (Rule: IsInvalid(notificationConfigurations.ImpersonationApprovedRequestTemplateId),
                 Parameter: $"{nameof(NotificationConfigurations)}." +
-                    $"{nameof(NotificationConfigurations.CsvPendingApprovalRequestTemplateId)}"),
+                    $"{nameof(NotificationConfigurations.ImpersonationApprovedRequestTemplateId)}"),
 
                 (Rule: IsInvalid(notificationConfigurations.ConfigurationBaseUrl),
                 Parameter: $"{nameof(NotificationConfigurations)}." +
@@ -147,12 +148,12 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
                 (Rule: IsInvalid(notificationConfigurations), Parameter: nameof(NotificationConfigurations)));
 
             Validate(
-                (Rule: IsInvalid(accessRequest.CsvIdentificationRequest),
-                Parameter: $"{nameof(AccessRequest)}.{nameof(AccessRequest.CsvIdentificationRequest)}"),
+                (Rule: IsInvalid(accessRequest.ImpersonationContext),
+                Parameter: $"{nameof(AccessRequest)}.{nameof(AccessRequest.ImpersonationContext)}"),
 
-                (Rule: IsInvalid(notificationConfigurations.CsvPendingApprovalRequestTemplateId),
+                (Rule: IsInvalid(notificationConfigurations.ImpersonationDeniedRequestTemplateId),
                 Parameter: $"{nameof(NotificationConfigurations)}." +
-                    $"{nameof(NotificationConfigurations.CsvPendingApprovalRequestTemplateId)}"),
+                    $"{nameof(NotificationConfigurations.ImpersonationDeniedRequestTemplateId)}"),
 
                 (Rule: IsInvalid(notificationConfigurations.ConfigurationBaseUrl),
                 Parameter: $"{nameof(NotificationConfigurations)}." +
@@ -257,6 +258,12 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
         {
             Condition = csvIdentificationRequest is null,
             Message = $"{nameof(CsvIdentificationRequest)} is invalid"
+        };
+
+        private static dynamic IsInvalid(ImpersonationContext impersonationContext) => new
+        {
+            Condition = impersonationContext is null,
+            Message = $"{nameof(ImpersonationContext)} is invalid"
         };
 
         private static dynamic IsInvalid(Dictionary<string, dynamic> personalisation) => new
