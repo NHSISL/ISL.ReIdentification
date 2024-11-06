@@ -288,6 +288,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
         private Expression<Func<AccessRequest, bool>> SameAccessRequestAs(AccessRequest expectedAccessRequest) =>
             actualAccessRequest => this.compareLogic.Compare(expectedAccessRequest, actualAccessRequest).AreEqual;
 
+        private Expression<Func<IdentificationRequest, bool>> SameIdentificationRequestAs(
+            IdentificationRequest expectedIdentificationRequest) =>
+                actualIdentificationRequest => this.compareLogic.Compare(
+                    expectedIdentificationRequest,
+                    actualIdentificationRequest).AreEqual;
+
         private Expression<Func<string, bool>> SameStringAs(string expectedString) =>
             actualString => this.compareLogic.Compare(expectedString, actualString).AreEqual;
 
