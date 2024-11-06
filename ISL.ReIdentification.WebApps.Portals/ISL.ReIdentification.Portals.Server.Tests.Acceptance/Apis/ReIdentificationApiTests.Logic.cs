@@ -21,7 +21,8 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             AccessRequest expectedAccessRequest = inputAccessRequest.DeepClone();
 
             // when
-            AccessRequest actualAccessRequest = await this.apiBroker.PostImpersonationContextRequestAsync(inputAccessRequest);
+            AccessRequest actualAccessRequest =
+                await this.apiBroker.PostImpersonationContextRequestAsync(inputAccessRequest);
 
             // then
             actualAccessRequest.Should().BeEquivalentTo(expectedAccessRequest);
@@ -29,7 +30,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
         }
 
         [Fact]
-        public async Task ShouldPostImpersonationContextApprovedAsync()
+        public async Task ShouldPostImpersonationContextSendApprovedAsync()
         {
             // given
             ImpersonationContext randomImpersonationContext = CreateRandomImpersonationContext();
@@ -59,7 +60,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
         }
 
         [Fact]
-        public async Task ShouldPostImpersonationContextDeniedAsync()
+        public async Task ShouldPostImpersonationContextSendDeniedAsync()
         {
             // given
             ImpersonationContext randomImpersonationContext = CreateRandomImpersonationContext();
