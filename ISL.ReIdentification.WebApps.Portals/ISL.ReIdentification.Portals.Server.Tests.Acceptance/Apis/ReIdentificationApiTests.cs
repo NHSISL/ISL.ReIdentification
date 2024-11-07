@@ -3,9 +3,16 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Brokers;
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.Accesses;
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.ImpersonationContexts;
+using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.OdsDatas;
+using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.PdsDatas;
+using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.ReIdentifications;
+using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.UserAccesses;
+using Microsoft.EntityFrameworkCore;
 using Tynamix.ObjectFiller;
 
 namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
@@ -21,8 +28,20 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
+        private static int GetRandomNegativeNumber() =>
+            -1 * new IntRange(min: 2, max: 10).GetValue();
+
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static DateTimeOffset GetRandomPastDateTimeOffset()
+        {
+            DateTime now = DateTimeOffset.UtcNow.Date;
+            int randomDaysInPast = GetRandomNegativeNumber();
+            DateTime pastDateTime = now.AddDays(randomDaysInPast).Date;
+
+            return new DateTimeRange(earliestDate: pastDateTime, latestDate: now).GetValue();
+        }
 
         private static string GetRandomStringWithLengthOf(int length)
         {
@@ -39,11 +58,170 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             return randomPrefix + emailSuffix;
         }
 
+        private async ValueTask<OdsData> PostRandomOdsDataAsync()
+        {
+            OdsData randomOdsData = CreateRandomOdsData();
+
+            return await this.apiBroker.PostOdsDataAsync(randomOdsData);
+        }
+
+        private async ValueTask<List<OdsData>> PostRandomOdsDatasAsync()
+        {
+            int randomNumber = GetRandomNumber();
+            var randomOdsDatas = new List<OdsData>();
+
+            for (int i = 0; i < randomNumber; i++)
+            {
+                randomOdsDatas.Add(await PostRandomOdsDataAsync());
+            }
+
+            return randomOdsDatas;
+        }
+
+        private static OdsData CreateRandomOdsData() =>
+            CreateOdsDataFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
+
+        private static OdsData CreateRandomOdsData(DateTimeOffset dateTimeOffset) =>
+            CreateOdsDataFiller(dateTimeOffset).Create();
+
+        private static Filler<OdsData> CreateOdsDataFiller(
+            DateTimeOffset dateTimeOffset, HierarchyId hierarchyId = null)
+        {
+            var filler = new Filler<OdsData>();
+
+            if (hierarchyId == null)
+            {
+                hierarchyId = HierarchyId.Parse("/");
+            }
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(GetRandomPastDateTimeOffset())
+                .OnType<DateTimeOffset?>().Use((DateTimeOffset?)default)
+                .OnProperty(odsData => odsData.OrganisationCode).Use(GetRandomStringWithLengthOf(5))
+                .OnProperty(odsData => odsData.OrganisationName).Use(GetRandomStringWithLengthOf(5))
+                .OnProperty(odsData => odsData.OdsHierarchy).Use(hierarchyId.ToString());
+
+            return filler;
+        }
+
+        private async ValueTask<PdsData> PostPdsDataAsync(string orgCode, string orgName)
+        {
+            PdsData randomPdsData = CreateRandomPdsData(orgCode, orgName);
+
+            return await this.apiBroker.PostPdsDataAsync(randomPdsData);
+        }
+
+        private static PdsData CreateRandomPdsData(string orgCode, string orgName) =>
+            CreatePdsDataFiller(dateTimeOffset: GetRandomDateTimeOffset(), orgCode, orgName).Create();
+
+        private static PdsData CreateRandomPdsData(DateTimeOffset dateTimeOffset, string orgCode, string orgName) =>
+            CreatePdsDataFiller(dateTimeOffset, orgCode, orgName).Create();
+
+        private static Filler<PdsData> CreatePdsDataFiller(DateTimeOffset dateTimeOffset, string orgCode, string orgName)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<PdsData>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(GetRandomPastDateTimeOffset())
+                .OnType<DateTimeOffset?>().Use((DateTimeOffset?)default)
+                .OnProperty(pdsData => pdsData.PseudoNhsNumber).Use(GetRandomStringWithLengthOf(9))
+                .OnProperty(pdsData => pdsData.OrgCode).Use(orgCode)
+                .OnProperty(pdsData => pdsData.OrganisationName).Use(orgName);
+
+            return filler;
+        }
+
+        private static UserAccess CreateRandomUserAccess(string orgCode) =>
+            CreateRandomUserAccessFiller(orgCode).Create();
+
+        private static Filler<UserAccess> CreateRandomUserAccessFiller(string orgCode)
+        {
+            string user = Guid.NewGuid().ToString();
+            DateTime now = DateTime.UtcNow;
+            var filler = new Filler<UserAccess>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
+
+                .OnProperty(userAccess => userAccess.GivenName)
+                    .Use(() => GetRandomStringWithLengthOf(255))
+
+                .OnProperty(userAccess => userAccess.Surname)
+                    .Use(() => GetRandomStringWithLengthOf(255))
+
+                .OnProperty(userAccess => userAccess.Email)
+                    .Use(() => GetRandomStringWithLengthOf(320))
+
+                .OnProperty(userAccess => userAccess.OrgCode).Use(orgCode)
+                .OnProperty(userAccess => userAccess.CreatedDate).Use(now)
+                .OnProperty(userAccess => userAccess.CreatedBy).Use(user)
+                .OnProperty(userAccess => userAccess.UpdatedDate).Use(now)
+                .OnProperty(userAccess => userAccess.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
+        private async ValueTask<UserAccess> PostRandomUserAccessAsync(string orgCode)
+        {
+            UserAccess randomUserAccess = CreateRandomUserAccess(orgCode);
+
+            return await this.apiBroker.PostUserAccessAsync(randomUserAccess);
+        }
+
+        private static AccessRequest CreateIdentificationRequestAccessRequestGivenPds(
+            Guid entraUserId, List<PdsData> pdsDatas)
+        {
+            return new AccessRequest
+            {
+                IdentificationRequest = CreateRandomIdentificationRequest(entraUserId, pdsDatas)
+            };
+        }
+
         private static AccessRequest CreateImpersonationContextAccessRequest() =>
             new AccessRequest
             {
                 ImpersonationContext = CreateRandomImpersonationContext()
             };
+
+        private static IdentificationRequest CreateRandomIdentificationRequest(Guid entraUserId, List<PdsData> pdsDatas) =>
+            CreateIdentificationRequestFiller(entraUserId, pdsDatas).Create();
+
+        private static Filler<IdentificationRequest> CreateIdentificationRequestFiller(
+            Guid entraUserId, List<PdsData> pdsDatas)
+        {
+            var filler = new Filler<IdentificationRequest>();
+
+            filler.Setup()
+                .OnProperty(request => request.EntraUserId).Use(entraUserId)
+                .OnProperty(request => request.IdentificationItems).Use(CreateRandomIdentificationItems(pdsDatas));
+
+            return filler;
+        }
+
+        private static List<IdentificationItem> CreateRandomIdentificationItems(List<PdsData> pdsDatas)
+        {
+            List<IdentificationItem> identificationItems = new List<IdentificationItem>();
+
+            foreach (PdsData pdsData in pdsDatas)
+            {
+                IdentificationItem identificationItem = CreateIdentificationItemFiller(pdsData.PseudoNhsNumber).Create();
+                identificationItems.Add(identificationItem);
+            }
+
+            return identificationItems;
+        }
+
+        private static Filler<IdentificationItem> CreateIdentificationItemFiller(string psuedoNhsNumber)
+        {
+            var filler = new Filler<IdentificationItem>();
+
+            filler.Setup()
+                .OnProperty(item => item.Identifier).Use(psuedoNhsNumber);
+
+            return filler;
+        }
 
         private static ImpersonationContext CreateRandomImpersonationContext() =>
            CreateRandomImpersonationContextFiller().Create();

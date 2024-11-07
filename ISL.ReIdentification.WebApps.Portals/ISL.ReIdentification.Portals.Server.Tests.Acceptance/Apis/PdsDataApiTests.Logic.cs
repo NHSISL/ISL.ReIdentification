@@ -5,11 +5,32 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.PdsDatas;
+using RESTFulSense.Exceptions;
 
 namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
 {
     public partial class PdsDataApiTests
     {
+        [Fact]
+        public async Task ShouldPostPdsDataAsync()
+        {
+            // given
+            PdsData randomPdsData = CreateRandomPdsData();
+            PdsData inputPdsData = randomPdsData;
+            PdsData expectedPdsData = inputPdsData;
+
+            // when 
+            await this.apiBroker.PostPdsDataAsync(inputPdsData);
+
+            PdsData actuaPdsData =
+                await this.apiBroker.GetPdsDataByIdAsync(inputPdsData.Id);
+
+            // then
+            actuaPdsData.Should().BeEquivalentTo(expectedPdsData);
+            await this.apiBroker.DeletePdsDataByIdAsync(actuaPdsData.Id);
+        }
+
         [Fact(Skip = "Need to refactor tests and add other crud operations")]
         public async Task ShouldGetAllPdsDataAsync()
         {
@@ -31,6 +52,28 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
 
             // then
             actualPdsData.Should().NotBeNull();
+        }
+
+        [Fact]
+        public async Task ShouldDeletePdsDataAsync()
+        {
+            // given
+            PdsData randomPdsData = await PostRandomPdsDataAsync();
+            PdsData inputPdsData = randomPdsData;
+            PdsData expectedPdsData = inputPdsData;
+
+            // when
+            PdsData deletedPdsData =
+                await this.apiBroker.DeletePdsDataByIdAsync(inputPdsData.Id);
+
+            ValueTask<PdsData> getPdsDatabyIdTask =
+                this.apiBroker.GetPdsDataByIdAsync(inputPdsData.Id);
+
+            // then
+            deletedPdsData.Should().BeEquivalentTo(expectedPdsData);
+
+            await Assert.ThrowsAsync<HttpResponseNotFoundException>(
+                testCode: getPdsDatabyIdTask.AsTask);
         }
     }
 }
