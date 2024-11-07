@@ -118,10 +118,11 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                 await this.identificationOrchestrationService.
                     ProcessIdentificationRequestAsync(returnedAccessRequest.IdentificationRequest);
 
-            returnedAccessRequest.IdentificationRequest = returnedIdentificationOrchestrationIdentificationRequest;
+            AccessRequest processedAccessRequest = returnedAccessRequest.DeepClone();
+            processedAccessRequest.IdentificationRequest = returnedIdentificationOrchestrationIdentificationRequest;
 
             AccessRequest reIdentifiedAccessRequest = await ConvertIdentificationRequestToCsvIdentificationRequest(
-                    returnedAccessRequest);
+                    processedAccessRequest);
 
             DateTimeOffset dateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
             string timestamp = dateTimeOffset.ToString("yyyyMMddHHmms");
