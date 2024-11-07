@@ -12,6 +12,8 @@ export class CsvIdentificationRequestView {
     public recipientEmail?: string;
     public reason?: string;
     public organisation?: string;
+    public hasHeaderRecord?: boolean;
+    public identifierColumnIndex?: number;
 
     constructor(
         id?: string,
@@ -27,7 +29,8 @@ export class CsvIdentificationRequestView {
         recipientEmail?: string,
         reason?: string,
         organisation?: string,
- 
+        hasHeaderRecord?: boolean,
+        identifierColumnIndex?: number,
     ) {
         this.id = id;
         this.requesterEntraUserId = requesterEntraUserId || ""
@@ -42,6 +45,7 @@ export class CsvIdentificationRequestView {
         this.recipientEmail = recipientEmail || "";
         this.reason = reason || "";
         this.organisation = organisation || "";
-        
+        this.hasHeaderRecord = hasHeaderRecord || false;
+        this.identifierColumnIndex = identifierColumnIndex;
     }
 }

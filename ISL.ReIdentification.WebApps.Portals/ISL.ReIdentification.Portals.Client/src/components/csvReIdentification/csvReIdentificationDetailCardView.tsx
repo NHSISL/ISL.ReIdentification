@@ -7,18 +7,20 @@ import { AccessRequest } from "../../models/accessRequest/accessRequest";
 import { useMsal } from "@azure/msal-react";
 import UserAccessSearch from "../userAccessSearch/userAccessSearch";
 import { UserAccessView } from "../../models/views/components/userAccess/userAccessView";
-import { toastSuccess } from "../../brokers/toastBroker.success";
 
 const CsvReIdentificationDetailCardView: FunctionComponent = () => {
 
     const [headerColumns, setHeaderColumns] = useState<string[]>([]);
     const [csvData, setCsvData] = useState<string | null>(null);
     const [selectedHeaderColumn, setSelectedHeaderColumn] = useState<string>("");
+    const [selectedHeaderColumnIndex, setSelectedHeaderColumnIndex] = useState<number>(0);
     const [selectedUser, setSelectedUser] = useState<UserAccessView | undefined>();
     const { submit, loading } = reIdentificationService.useRequestReIdentificationCsv();
     const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
     const [savedSuccessfull, setSavedSuccessfull] = useState(false);
     const [fileName, setFileName] = useState<string>("");
+    const [hasHeaderRecord, setHasHeaderRecord] = useState<boolean>(false);
     const account = useMsal();
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -36,7 +38,7 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                 requesterLastName: lastName,
                 requesterDisplayName: acc.name,
                 requesterEmail: acc.username,
-                requesterJobTitle: "TODO: Job Title",
+                requesterJobTitle: " ",
                 recipientEntraUserId: selectedUser?.entraUserId || "",
                 recipientFirstName: selectedUser?.givenName || "",
                 recipientLastName: selectedUser?.surname || "",
@@ -44,29 +46,26 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                 recipientEmail: selectedUser?.email || "",
                 recipientJobTitle: selectedUser?.jobTitle || "",
                 data: csvData || "",
-                identifierColumn: selectedHeaderColumn,
+                //identifierColumn: selectedHeaderColumn,
                 organisation: selectedUser?.orgCode || "",
                 createdBy: acc.username,
                 updatedBy: acc.username,
                 createdDate: new Date(),
                 updatedDate: new Date(),
-                filepath: fileName.replace(/\.csv$/i, "") 
+                filepath: fileName.replace(/\.csv$/i, ""),
+                hasHeaderRecord: hasHeaderRecord,
+                identifierColumnIndex: selectedHeaderColumnIndex
             }
         }
         setError("");
         submit(csvIdentificationRequest).then((d) => {
             console.log("Sent", d);
-            toastSuccess("CSV Sent");
             setSavedSuccessfull(true)
         }).catch(() => {
             setSavedSuccessfull(false)
             setError("Something went wrong when saving, please contact an administrator");
         })
     };
-
-
-    //Check for blank rows
-    //
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setError("");
@@ -85,7 +84,8 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                 setFileName(file.name);
                 const reader = new FileReader();
                 reader.onload = (event) => {
-                    const text = event.target?.result as string;
+                    let text = event.target?.result as string;
+                    text = text.replace(/\r/g, "");
                     const rows = text.split("\n");
                     const headers = rows[0].split(",");
 
@@ -109,7 +109,31 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
     };
 
     const handleHeaderColumnChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setSelectedHeaderColumn(e.target.value);
+        const selectedColumn = e.target.value;
+        setSelectedHeaderColumn(selectedColumn);
+        const index = headerColumns.indexOf(selectedColumn);
+        setSelectedHeaderColumnIndex(index);
+
+        if (csvData) {
+            const decodedData = atob(csvData);
+            const rows = decodedData.split("\n");
+
+            if (rows.length > 1) {
+                const nextRow = rows[1].split(",");
+                const value = nextRow[index];
+
+                if (/^\d{10}$/.test(value)) {
+                    setError("");
+                    setSuccess(`The value "${value}" in the next row at the selected column index is 10 digits long and is a valid Pseudo Identifier.`);
+                } else {
+                    setSuccess("");
+                    setError(`The value "${value }" in the next row for the selected column index is not a valid Pseudo Identifier, please follow the guidance in the help section.`);
+                }
+            }
+        }
+    };
+    const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setHasHeaderRecord(e.target.checked);
     };
 
     const renderTooltip = (props: OverlayTriggerProps) => (
@@ -140,6 +164,13 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
 
                         <Form.Group className="text-start">
                             <Form.Label>Upload CSV:</Form.Label>
+
+                            <Form.Check
+                                type="checkbox"
+                                label="Has Header Record"
+                                id="hasHeadRecord"
+                                onChange={handleCheckboxChange} />
+
                             <Form.Control
                                 type="file"
                                 name="PseudoCsv"
@@ -148,7 +179,7 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                                 accept=".csv"
                                 required />
                         </Form.Group>
-                        <br />
+
                         {headerColumns.length > 0 && (
                             <Form.Group className="text-start">
                                 <Form.Label>Select Identifier Column:</Form.Label>
@@ -158,17 +189,21 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                                     required>
                                     {headerColumns.map((column, index) => (
                                         <option key={index} value={column}>
-                                            {column}
+                                            {`Col-${index} - ${column}`}
                                         </option>
                                     ))}
                                 </Form.Select>
                             </Form.Group>
                         )}
                         <br />
+
                         {error && <Alert variant="danger">
                             {error}
                         </Alert>}
-                        <Button type="submit" disabled={!selectedHeaderColumn || !selectedUser || !selectedHeaderColumn}>
+                        {success && <Alert variant="success">
+                            {success}
+                        </Alert>}
+                        <Button type="submit" disabled={!selectedHeaderColumn || !selectedUser || !selectedHeaderColumn || !hasHeaderRecord || error}>
                             {!loading ? <>Send File</> : <Spinner />}
                         </Button>
                     </Form>

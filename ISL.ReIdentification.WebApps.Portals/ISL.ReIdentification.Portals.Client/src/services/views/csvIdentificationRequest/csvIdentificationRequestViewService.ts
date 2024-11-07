@@ -45,7 +45,9 @@ export const csvIdentificationRequestViewService = {
                             csvIdentificationRequest.recipientDisplayName,
                             csvIdentificationRequest.recipientEmail,
                             csvIdentificationRequest.reason,
-                            csvIdentificationRequest.organisation
+                            csvIdentificationRequest.organisation,
+                            csvIdentificationRequest.hasHeaderRecord,
+                            csvIdentificationRequest.identifierColumnIndex,
                         ));
                     });
                 });

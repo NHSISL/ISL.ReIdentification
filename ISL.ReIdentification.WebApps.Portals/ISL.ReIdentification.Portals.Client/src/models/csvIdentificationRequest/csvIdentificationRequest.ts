@@ -18,6 +18,8 @@ export class CsvIdentificationRequest {
     public sha256Hash?: string = "";
     public identifierColumn?: string = "";
     public filepath?: string = "";
+    public hasHeaderRecord?: boolean = false;
+    public identifierColumnIndex?: number = 0;
     public createdBy?: string = "";
     public createdDate?: Date | undefined;
     public updatedBy?: string = "";
