@@ -19,7 +19,6 @@ const CsvIdentificationWorklistRow: FunctionComponent<CsvIdentificationWorklistR
             <td>{csvIdentificationRequest.requesterEmail}</td>
             <td>{csvIdentificationRequest.recipientDisplayName}</td>
             <td>{csvIdentificationRequest.recipientEmail}</td>
-            <td>{csvIdentificationRequest.filepath}</td>
             <td>{csvIdentificationRequest.reason}</td>
             <td>
                 <Link to={`/csvReIdentification/${csvIdentificationRequest.id}`} >

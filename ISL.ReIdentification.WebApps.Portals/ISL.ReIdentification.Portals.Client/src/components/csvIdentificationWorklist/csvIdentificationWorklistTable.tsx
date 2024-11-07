@@ -63,7 +63,6 @@ const CsvIdentificationWorklistTable: FunctionComponent<CsvIdentificationWorklis
                                     <th>Requester Email</th>
                                     <th>Recipient DisplayName</th>
                                     <th>Recipient Email</th>
-                                    <th>FilePath</th>
                                     <th>Reason</th>
                                     <th>Action(s)</th>
                                 </tr>
