@@ -30,10 +30,6 @@ function App({ instance }: any) {
                     element: <Home />
                 },
                 {
-                    path: "page1/:id",
-                    element: <Page1 />
-                },
-                {
                     path: "reIdentification",
                     element: <SecuredRoute allowedRoles={securityPoints.reIdentification.view}><ReIdentificationPage /></SecuredRoute>
                 },
@@ -44,16 +40,14 @@ function App({ instance }: any) {
                 {
                     path: "report",
                     element: <ReIdReportHome />
+                },
+                {
                     path: "csvReIdentificationWorklist",
                     element: <CsvReIdentificationWorklistPage />
-                },
+},
                 {
                     path: "csvReIdentification/:csvIdentificationRequestId",
                     element: <CsvReIdentificationDownloadPage />
-                },
-                {
-                    path: "page3",
-                    element: <Page3 />
                 },
                 {
                     index: true,
