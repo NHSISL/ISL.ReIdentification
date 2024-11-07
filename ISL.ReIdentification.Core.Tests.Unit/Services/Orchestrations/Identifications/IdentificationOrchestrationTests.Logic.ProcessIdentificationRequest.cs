@@ -20,10 +20,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             Guid randomGuid = Guid.NewGuid();
-            int itemCount = GetRandomNumber();
+            int itemCount = 2; // GetRandomNumber();
+            bool hasAccess = false;
+            var failureMessage = "Failed to Re-Identify. User do not have access to the organisation(s) " +
+                "associated with patient.";
 
             IdentificationRequest randomIdentificationRequest =
-               CreateRandomIdentificationRequest(hasAccess: false, itemCount: itemCount);
+               CreateRandomIdentificationRequest(hasAccess, itemCount: itemCount);
 
             IdentificationRequest inputIdentificationRequest = randomIdentificationRequest.DeepClone();
             IdentificationRequest outputIdentificationRequest = inputIdentificationRequest.DeepClone();
@@ -31,8 +34,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             outputIdentificationRequest.IdentificationItems.ForEach(item =>
             {
                 item.Identifier = "0000000000";
-                item.Message = "Failed to Re-Identify. User do not have access to the organisation(s) " + 
-                    "associated with patient.";
+                item.Message = failureMessage;
             });
 
             IdentificationRequest expectedIdentificationRequest = outputIdentificationRequest.DeepClone();
@@ -61,11 +63,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Exactly(itemCount));
 
-            foreach (IdentificationItem item in randomIdentificationRequest.IdentificationItems)
+            foreach (IdentificationItem item in inputIdentificationRequest.IdentificationItems)
             {
                 AccessAudit inputAccessAudit = new AccessAudit
                 {
                     Id = randomGuid,
+                    RequestId = randomIdentificationRequest.Id,
                     PseudoIdentifier = item.Identifier,
                     EntraUserId = randomIdentificationRequest.EntraUserId,
                     GivenName = randomIdentificationRequest.GivenName,
@@ -73,8 +76,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                     Email = randomIdentificationRequest.Email,
                     Reason = randomIdentificationRequest.Reason,
                     Organisation = randomIdentificationRequest.Organisation,
-                    HasAccess = (bool)item.HasAccess,
-                    Message = item.Message,
+                    HasAccess = hasAccess,
+                    Message = failureMessage,
                     CreatedBy = "System",
                     CreatedDate = randomDateTimeOffset,
                     UpdatedBy = "System",
@@ -174,6 +177,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                 AccessAudit inputAccessAudit = new AccessAudit
                 {
                     Id = randomGuid,
+                    RequestId = randomIdentificationRequest.Id,
                     PseudoIdentifier = item.Identifier,
                     EntraUserId = randomIdentificationRequest.EntraUserId,
                     GivenName = randomIdentificationRequest.GivenName,

@@ -52,10 +52,13 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             {
                 var now = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
                 var accessAuditId = await this.identifierBroker.GetIdentifierAsync();
+                var failureMessage = "Failed to Re-Identify. User do not have access to the organisation(s) " +
+                        "associated with patient.";
 
                 AccessAudit accessAudit = new AccessAudit
                 {
                     Id = accessAuditId,
+                    RequestId = identificationRequest.Id,
                     PseudoIdentifier = item.Identifier,
                     EntraUserId = identificationRequest.EntraUserId,
                     GivenName = identificationRequest.GivenName,
@@ -64,21 +67,20 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                     Reason = identificationRequest.Reason,
                     Organisation = identificationRequest.Organisation,
                     HasAccess = item.HasAccess,
-                    Message = item.Message,
+                    Message = item.HasAccess == false ? failureMessage : item.Message,
                     CreatedBy = "System",
                     CreatedDate = now,
                     UpdatedBy = "System",
                     UpdatedDate = now
                 };
 
-                await this.accessAuditService.AddAccessAuditAsync(accessAudit);
-
                 if (item.HasAccess is false)
                 {
                     item.Identifier = "0000000000";
-                    item.Message = "Failed to Re-Identify. User do not have access to the organisation(s) " + 
-                        "associated with patient.";
+                    item.Message = failureMessage;
                 }
+
+                await this.accessAuditService.AddAccessAuditAsync(accessAudit);
             }
 
             var hasAccessIdentificationItems =

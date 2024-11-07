@@ -99,6 +99,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             var filler = new Filler<IdentificationItem>();
 
             filler.Setup()
+                .OnProperty(item => item.Message).IgnoreIt()
                 .OnProperty(item => item.HasAccess).Use(hasAccess);
 
             return filler;
