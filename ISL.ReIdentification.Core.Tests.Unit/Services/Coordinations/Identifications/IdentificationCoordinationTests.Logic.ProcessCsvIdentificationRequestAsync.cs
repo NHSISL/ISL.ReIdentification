@@ -6,7 +6,6 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Models.Securities;
@@ -37,22 +36,20 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             DateTimeOffset outputDateTimeOffset = randomDateTimeOffset;
             string outputTimestamp = outputDateTimeOffset.ToString("yyyyMMddHHmms");
-            AccessRequest outputPersistanceOrchestrationAccessRequest = CreateRandomAccessRequest(); ;
-            IdentificationRequest outputConversionIdentificationRequest = CreateRandomIdentificationRequest();
+
+            AccessRequest outputPersistanceOrchestrationAccessRequest =
+                CreateRandomCsvIdentificationRequestAccessRequest();
+
+            AccessRequest outputConversionAccessRequest = outputPersistanceOrchestrationAccessRequest.DeepClone();
+            outputConversionAccessRequest.IdentificationRequest = CreateRandomIdentificationRequest();
             EntraUser outputEntraUser = CreateRandomEntraUser();
             AccessRequest outputOrchestrationAccessRequest = CreateRandomAccessRequest();
             IdentificationRequest outputOrchestrationIdentificationRequest = CreateRandomIdentificationRequest();
-
-            AccessRequest inputAccessOrchestrationAccessRequest = new AccessRequest
-            {
-                IdentificationRequest = outputConversionIdentificationRequest,
-            };
-
-            CsvIdentificationRequest outputConversionCsvIdentificationRequest = CreateRandomCsvIdentificationRequest();
-            AccessRequest resultingAccessRequest = CreateRandomAccessRequest();
-            resultingAccessRequest.CsvIdentificationRequest = outputConversionCsvIdentificationRequest;
-            resultingAccessRequest.IdentificationRequest = null;
-            resultingAccessRequest.ImpersonationContext = null;
+            AccessRequest inputAccessOrchestrationAccessRequest = outputConversionAccessRequest;
+            AccessRequest inputIdentificationOrchestrationAccessRequest = outputOrchestrationAccessRequest.DeepClone();
+            AccessRequest inputConversionAccessRequest = outputOrchestrationAccessRequest.DeepClone();
+            inputConversionAccessRequest.IdentificationRequest = outputOrchestrationIdentificationRequest;
+            AccessRequest resultingAccessRequest = CreateRandomCsvIdentificationRequestAccessRequest();
             AccessRequest expectedAccessRequest = resultingAccessRequest.DeepClone();
             string expectedFileName = $"data_{outputTimestamp}.csv";
             expectedAccessRequest.CsvIdentificationRequest.Filepath = expectedFileName;
@@ -63,8 +60,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
             identificationCoordinationServiceMock.Setup(service =>
                 service.ConvertCsvIdentificationRequestToIdentificationRequest(
-                    outputPersistanceOrchestrationAccessRequest.CsvIdentificationRequest))
-                .ReturnsAsync(outputConversionIdentificationRequest);
+                    It.Is(SameAccessRequestAs(outputPersistanceOrchestrationAccessRequest))))
+                .ReturnsAsync(outputConversionAccessRequest);
 
             this.securityBrokerMock.Setup(broker =>
                 broker.GetCurrentUser())
@@ -76,13 +73,14 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                         .ReturnsAsync(outputOrchestrationAccessRequest);
 
             this.identificationOrchestrationServiceMock.Setup(service =>
-                service.ProcessIdentificationRequestAsync(outputOrchestrationAccessRequest.IdentificationRequest))
-                    .ReturnsAsync(outputOrchestrationIdentificationRequest);
+                service.ProcessIdentificationRequestAsync(
+                        It.Is(SameIdentificationRequestAs(inputIdentificationOrchestrationAccessRequest.IdentificationRequest))))
+                            .ReturnsAsync(outputOrchestrationIdentificationRequest);
 
             identificationCoordinationServiceMock.Setup(service =>
                 service.ConvertIdentificationRequestToCsvIdentificationRequest(
-                    outputOrchestrationIdentificationRequest))
-                .ReturnsAsync(outputConversionCsvIdentificationRequest);
+                    It.Is(SameAccessRequestAs(inputConversionAccessRequest))))
+                .ReturnsAsync(resultingAccessRequest);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
@@ -105,7 +103,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
             identificationCoordinationServiceMock.Verify(service =>
                 service.ConvertCsvIdentificationRequestToIdentificationRequest(
-                    outputPersistanceOrchestrationAccessRequest.CsvIdentificationRequest),
+                    It.Is(SameAccessRequestAs(outputPersistanceOrchestrationAccessRequest))),
                     Times.Once);
 
             this.securityBrokerMock.Verify(broker =>
@@ -118,12 +116,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                         Times.Once);
 
             this.identificationOrchestrationServiceMock.Verify(service =>
-                service.ProcessIdentificationRequestAsync(outputOrchestrationAccessRequest.IdentificationRequest),
+                service.ProcessIdentificationRequestAsync(
+                        It.Is(SameIdentificationRequestAs(inputIdentificationOrchestrationAccessRequest.IdentificationRequest))),
                     Times.Once);
 
             identificationCoordinationServiceMock.Verify(service =>
                 service.ConvertIdentificationRequestToCsvIdentificationRequest(
-                    outputOrchestrationIdentificationRequest),
+                    It.Is(SameAccessRequestAs(inputConversionAccessRequest))),
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>

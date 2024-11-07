@@ -2,40 +2,74 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Force.DeepCloner;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
-using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
+using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using Moq;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifications
 {
     public partial class IdentificationCoordinationTests
     {
-        [Theory]
-        [MemberData(nameof(InputCsvIdentificationRequest))]
-        public async Task ShouldConvertCsvIdentificationRequestToIdentificationRequest(
-            CsvIdentificationRequest csvIdentificationRequest,
-            IdentificationRequest identificationRequest)
+        [Fact]
+        public async Task ShouldConvertCsvIdentificationRequestToIdentificationRequest()
         {
             // given
-            string csvDataString = Encoding.UTF8.GetString(csvIdentificationRequest.Data);
+            Guid entraUserId = Guid.NewGuid();
+            AccessRequest randomAccessRequest = CreateRandomAccessRequest();
+            randomAccessRequest.CsvIdentificationRequest.RecipientEntraUserId = entraUserId;
+            randomAccessRequest.IdentificationRequest = null;
+            randomAccessRequest.ImpersonationContext = null;
+            AccessRequest inputAccessRequest = randomAccessRequest.DeepClone();
+            string csvDataString = Encoding.UTF8.GetString(inputAccessRequest.CsvIdentificationRequest.Data);
+            bool hasHeaderRecord = inputAccessRequest.CsvIdentificationRequest.HasHeaderRecord;
+            List<CsvIdentificationItem> randomCsvIdentificationItems = CreateRandomCsvIdentificationItems().ToList();
+            List<IdentificationItem> convertedIdentificationItems = new List<IdentificationItem>();
+
+            for (var index = 0; index < randomCsvIdentificationItems.Count; index++)
+            {
+                var identificationItem = new IdentificationItem
+                {
+                    HasAccess = false,
+                    Identifier = randomCsvIdentificationItems[index].Identifier,
+                    IsReidentified = false,
+                    Message = String.Empty,
+                    RowNumber = index.ToString()
+                };
+
+                convertedIdentificationItems.Add(identificationItem);
+            }
+
+            AccessRequest outputAccessRequest = randomAccessRequest.DeepClone();
+            outputAccessRequest.IdentificationRequest = new IdentificationRequest();
+            outputAccessRequest.IdentificationRequest.IdentificationItems = convertedIdentificationItems;
+
+            Dictionary<string, int> fieldMappings = new Dictionary<string, int>
+            {
+                { nameof(CsvIdentificationItem.Identifier),
+                    randomAccessRequest.CsvIdentificationRequest.IdentifierColumnIndex }
+            };
 
             this.csvHelperBrokerMock.Setup(broker =>
-                broker.MapCsvToObjectAsync<CsvIdentificationItem>(csvDataString, true, null))
-                    .ReturnsAsync(RandomCsvIdentificationItems);
+                broker.MapCsvToObjectAsync<CsvIdentificationItem>(csvDataString, hasHeaderRecord, fieldMappings))
+                    .ReturnsAsync(randomCsvIdentificationItems);
 
             // when
-            IdentificationRequest actualResult = await this.identificationCoordinationService
-                .ConvertCsvIdentificationRequestToIdentificationRequest(csvIdentificationRequest);
+            AccessRequest actualResult = await this.identificationCoordinationService
+                .ConvertCsvIdentificationRequestToIdentificationRequest(inputAccessRequest);
 
             // then
-            actualResult.Should().BeEquivalentTo(identificationRequest);
+            actualResult.Should().BeEquivalentTo(outputAccessRequest);
 
             this.csvHelperBrokerMock.Verify(service =>
-                service.MapCsvToObjectAsync<CsvIdentificationItem>(csvDataString, true, null),
+                service.MapCsvToObjectAsync<CsvIdentificationItem>(csvDataString, hasHeaderRecord, fieldMappings),
                     Times.Once);
 
             this.csvHelperBrokerMock.VerifyNoOtherCalls();

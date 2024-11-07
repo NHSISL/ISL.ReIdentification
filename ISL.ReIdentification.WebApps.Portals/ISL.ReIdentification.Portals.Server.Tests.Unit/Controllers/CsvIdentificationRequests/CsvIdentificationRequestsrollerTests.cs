@@ -94,9 +94,6 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.CsvIdentifi
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
 
-                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.IdentifierColumn)
-                    .Use(() => GetRandomStringWithLengthOf(10))
-
                 .OnProperty(csvIdentificationRequest => csvIdentificationRequest.RequesterEmail)
                     .Use(GetRandomStringWithLengthOf(320))
 
