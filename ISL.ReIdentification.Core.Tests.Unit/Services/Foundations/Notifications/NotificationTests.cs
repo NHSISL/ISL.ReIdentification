@@ -10,6 +10,7 @@ using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Notifications;
 using ISL.ReIdentification.Core.Models.Brokers.Notifications;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
+using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Services.Foundations.Notifications;
 using KellermanSoftware.CompareNetObjects;
@@ -38,6 +39,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Notification
                 CsvPendingApprovalRequestTemplateId = GetRandomString(),
                 CsvApprovedRequestTemplateId = GetRandomString(),
                 CsvDeniedRequestTemplateId = GetRandomString(),
+                ImpersonationPendingApprovalRequestTemplateId = GetRandomString(),
+                ImpersonationApprovedRequestTemplateId = GetRandomString(),
+                ImpersonationDeniedRequestTemplateId = GetRandomString(),
                 ConfigurationBaseUrl = GetRandomString(),
                 PortalBaseUrl = GetRandomString()
             };
@@ -90,6 +94,47 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Notification
 
                 .OnProperty(csvIdentificationRequest => csvIdentificationRequest.CreatedBy).Use(user)
                 .OnProperty(csvIdentificationRequest => csvIdentificationRequest.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
+        private static AccessRequest CreateImpersonationContextAccessRequest() =>
+            new AccessRequest
+            {
+                ImpersonationContext = CreateRandomImpersonationContext()
+            };
+
+        private static ImpersonationContext CreateRandomImpersonationContext() =>
+           CreateRandomImpersonationContextFiller().Create();
+
+        private static Filler<ImpersonationContext> CreateRandomImpersonationContextFiller()
+        {
+            string user = Guid.NewGuid().ToString();
+            DateTimeOffset now = DateTimeOffset.UtcNow;
+            var filler = new Filler<ImpersonationContext>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(now)
+
+                .OnProperty(impersonationContext => impersonationContext.RequesterEmail)
+                    .Use(() => GetRandomStringWithLengthOf(320))
+
+                .OnProperty(impersonationContext => impersonationContext.ResponsiblePersonEmail)
+                    .Use(() => GetRandomStringWithLengthOf(320))
+
+                .OnProperty(impersonationContext => impersonationContext.Organisation)
+                    .Use(() => GetRandomStringWithLengthOf(255))
+
+                .OnProperty(impersonationContext => impersonationContext.ProjectName)
+                    .Use(() => GetRandomStringWithLengthOf(255))
+
+                .OnProperty(impersonationContext => impersonationContext.IdentifierColumn)
+                    .Use(() => GetRandomStringWithLengthOf(10))
+
+                .OnProperty(impersonationContext => impersonationContext.CreatedDate).Use(now)
+                .OnProperty(impersonationContext => impersonationContext.CreatedBy).Use(user)
+                .OnProperty(impersonationContext => impersonationContext.UpdatedDate).Use(now)
+                .OnProperty(impersonationContext => impersonationContext.UpdatedBy).Use(user);
 
             return filler;
         }
