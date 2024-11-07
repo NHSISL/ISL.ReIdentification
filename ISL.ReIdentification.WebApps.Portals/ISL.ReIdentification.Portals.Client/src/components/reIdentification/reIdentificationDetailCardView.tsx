@@ -1,6 +1,4 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
-import { Form, Button, Card, Modal, Spinner } from "react-bootstrap";
-import React, { FunctionComponent, useState } from "react";
 import { Form, Button, Card, Modal, Spinner, Alert, Tooltip, OverlayTrigger } from "react-bootstrap";
 import { LookupView } from "../../models/views/components/lookups/lookupView";
 import { reIdentificationService } from "../../services/foundations/reIdentificationService";
@@ -8,6 +6,7 @@ import { AccessRequest } from "../../models/accessRequest/accessRequest";
 import { useMsal } from "@azure/msal-react";
 import CopyIcon from "../core/copyIcon";
 import { faCircleInfo } from "@fortawesome/free-solid-svg-icons/faCircleInfo";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { OverlayInjectedProps } from "react-bootstrap/esm/Overlay";
 
 interface Option {
@@ -26,6 +25,7 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
     const clipboardAvailable = navigator.clipboard;
     const { submit, loading, data } = reIdentificationService.useRequestReIdentification();
     const [submittedPseudoCode, setSubmittedPseudoCode] = useState("");
+    const [error, setError] = useState("");
     const account = useMsal();
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -49,13 +49,16 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
                 reason: selectedLookupId
             }
         }
-        setError("");
-        submit(identificationRequest).then((d) => {
-            setReIdResponse(d.identificationRequest?.identificationItems[0]);
-        }).catch((error) => {
-            console.error("Submit failed with error:", error);
-            setError("Something went wrong.");
-        });
+
+        setSubmittedPseudoCode(pseudoCode);
+        submit(identificationRequest);
+        //setError("");
+        //submit(identificationRequest).then((d) => {
+        //    submit(d.identificationRequest?.identificationItems[0]);
+        //}).catch((error) => {
+        //    console.error("Submit failed with error:", error);
+        //    setError("Something went wrong.");
+        //});
     };
 
     const handlePseudoCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -84,14 +87,13 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
         setSelectedLookupId("");
     }
 
-    const copyToPasteBuffer = () => {
-        if (navigator.clipboard && reIdResponse) {
-            navigator.clipboard.writeText(reIdResponse.identifier);
-            setCopiedToPasteBuffer(true);
-        }
-    }
+    const renderTooltip = (props: OverlayInjectedProps) => (
+        <Tooltip id="info-tooltip" {...props}>
+            This page provides a way to upload a single pseudo identifier for reidentification.
+        </Tooltip>
+    );
 
-    if (!reIdResponse) {
+    if (!submittedPseudoCode) {
         return (
             <>
                 <Card.Title className="text-start">
@@ -140,6 +142,8 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
                         </Form.Select>
                     </Form.Group>
                     <br />
+
+
                     {error && <Alert variant="danger">
                         Something went Wrong.
                     </Alert>}
