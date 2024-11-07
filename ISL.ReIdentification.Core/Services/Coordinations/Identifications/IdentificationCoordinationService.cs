@@ -170,11 +170,11 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                     await this.identificationOrchestrationService
                         .ProcessIdentificationRequestAsync(returnedAccessRequest.IdentificationRequest);
 
-                returnedAccessRequest.IdentificationRequest = returnedIdentificationRequest;
+                AccessRequest processedAccessRequest = returnedAccessRequest.DeepClone();
+                processedAccessRequest.IdentificationRequest = returnedIdentificationRequest;
 
                 AccessRequest reIdentifiedAccessRequest =
-                    await ConvertIdentificationRequestToCsvIdentificationRequest(returnedAccessRequest);
-
+                    await ConvertIdentificationRequestToCsvIdentificationRequest(processedAccessRequest);
 
                 MemoryStream csvData = new MemoryStream(reIdentifiedAccessRequest.CsvIdentificationRequest.Data);
 
@@ -186,7 +186,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                     .RemoveDocumentByFileNameAsync(
                         filepathData.LandingFilepath, projectStorageConfiguration.Container);
 
-                return returnedAccessRequest;
+                return reIdentifiedAccessRequest;
             }
             catch (Exception)
             {
