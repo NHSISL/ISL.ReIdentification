@@ -15,9 +15,7 @@ export const reIdentificationService = {
 
         function convertHx(hxNumber: string) {
             const cleanedID = hxNumber.replace(/-/g, '');
-    
             const originalHex = cleanedID.split('').reverse().join('');
-    
             return parseInt(originalHex, 16).toString();
         }
 
@@ -28,8 +26,6 @@ export const reIdentificationService = {
 
                 if (request && request.identificationRequest && request.identificationRequest?.identificationItems) {
                     setRequest(undefined);
-                    console.log('wow');
-                    setIsLoading(true);
                     const reIdRecords: ReIdRecord[] = request.identificationRequest?.identificationItems.map(ii => {
                         return {
                             identifier: `0000000000000${isHx(ii.identifier) ? convertHx(ii.identifier) : ii.identifier}`.slice(-10),
@@ -53,7 +49,7 @@ export const reIdentificationService = {
                         return;
                     }
 
-                    
+                    setIsLoading(true);
                     await broker.PostReIdentificationAsync(request)
                         .then((response) => {
                             setData((data) => {
@@ -80,8 +76,6 @@ export const reIdentificationService = {
                         }).finally(() => {
                             setIsLoading(false);
                         })
-
-
                 }
             }
 
@@ -89,10 +83,8 @@ export const reIdentificationService = {
 
         }, [data, request]);
 
-
         return {
             submit: (identificationRequest: AccessRequest) => {
-                setIsLoading(true);
                 setRequest(identificationRequest);
             },
             loading,

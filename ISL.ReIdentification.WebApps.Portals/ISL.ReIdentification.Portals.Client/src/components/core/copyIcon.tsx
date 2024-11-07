@@ -3,13 +3,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { FunctionComponent, useState } from "react";
 
 type CopyIconProps = {
-    content: string;
+    content?: string;
     resetTime?: number;
     iconText?: string;
 }
 
-const CopyIcon : FunctionComponent<CopyIconProps> = (props) => {
-    const {content, resetTime, iconText} = props
+const CopyIcon : FunctionComponent<CopyIconProps> = ({content = "", resetTime = 2000, iconText = ""}) => {
     const [copied, setCopied] = useState(false);
 
     const copyToClipboard = (content: string) => {
