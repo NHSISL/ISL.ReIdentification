@@ -24,18 +24,19 @@ const ReportsReasonPage: FunctionComponent<ReportReasonPageProps> = (props: Repo
                     <p><strong>Note:</strong> all reidentification requests are subject to breach monitoring and reporting</p>
                     <p>Details of breach thresholds can be found <a href="about:blank" target="blank" >here</a></p>
                 </div>
-                    <Form>
-                        <FormGroup>
-                            <Form.Label>Please select the reason why you are identifying the patients on this report:</Form.Label>
-                            {isLoading && <Spinner />}
+                <Form>
+                    <FormGroup>
+                        <Form.Label>Please select the reason why you are identifying the patients on this report:</Form.Label>
+                        {isLoading ? <div><Spinner /></div> :
                             <Form.Select onChange={(e) => { setReidReason(e.target.value) }}>
                                 <option value="">--- Select Reason ---</option>
                                 {mappedLookups.map(l => <option key={l.id} value={l.name}>{l.name}</option>)}
                             </Form.Select>
-                        </FormGroup>
-                        <br/>
-                        <Button onClick={launchReport} disabled={!reidReason}>Launch Report</Button>
-                    </Form>
+                        }
+                    </FormGroup>
+                    <br />
+                    <Button onClick={launchReport} disabled={!reidReason}>Launch Report</Button>
+                </Form>
             </Card.Body>
         </Card>
     </Container></>

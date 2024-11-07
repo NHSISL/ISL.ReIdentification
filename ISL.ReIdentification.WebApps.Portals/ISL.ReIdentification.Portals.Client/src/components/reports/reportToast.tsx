@@ -1,7 +1,7 @@
-import { faCheck, faCircleInfo, faCopy, faLeftLong, faRightLong, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { faCircleInfo, faLeftLong, faRightLong, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { FunctionComponent, useState } from "react";
-import { Button, Card, CardBody, Col, Modal, Row, Table, Toast, ToastContainer } from "react-bootstrap";
+import { Button, Card, CardBody, Col, Modal, Row, Spinner, Table, Toast, ToastContainer } from "react-bootstrap";
 import { ToastPosition } from "react-bootstrap/esm/ToastContainer";
 import { ReIdRecord } from "../../types/ReIdRecord";
 import CopyIcon from "../core/copyIcon";
@@ -12,57 +12,103 @@ type ReportToastProps = {
     hide: (hide: boolean) => void;
     clearList: () => void;
     reidentifications: ReIdRecord[];
-    lastSelectedPseudo?: string;
+    lastSelectedPseudo?: ReIdRecord;
+    recordLoading: boolean;
+    lastPseudos: string[];
 }
 
 const ReportToast: FunctionComponent<ReportToastProps> = (props) => {
-    const { position, hidden, hide, clearList, reidentifications } = props;
-    const [copiedToPasteBuffer, setCopiedToPasteBuffer] = useState(false);
+    const { position, hidden, hide, reidentifications, lastPseudos } = props;
     const [showNoAccessInfo, setShowNoAccessInfo] = useState(false);
     const [pageNumber, setPageNumber] = useState(0);
     const [showHistory, setShowHistory] = useState(false);
+    const [bulkModalShown, setBulkModalShown] = useState(true);
     const itemsPerPage = 10;
     const clipboardAvailable = navigator.clipboard;
 
-    const copyToPasteBuffer = (identifer?: string) => {
-        if (navigator.clipboard && identifer) {
-            navigator.clipboard.writeText(identifer);
-            setCopiedToPasteBuffer(true);
-            setTimeout(() => setCopiedToPasteBuffer(false), 1000);
+    function getSingleRecordCard(reidRecords: ReIdRecord[], pseudoToShow: string) {
+        const reidRecord = reidRecords.find(rec => pseudoToShow === rec.pseudo);
+
+        if (!reidRecord) {
+            return <Card>
+                <CardBody><Spinner /></CardBody>
+            </Card>
         }
+
+        if (!reidRecord.hasAccess) {
+            return <Card bg="danger" text="white" className="mb-1">
+                <CardBody>
+                    You do not have permissions to reidentify {reidRecord.pseudo}.
+                </CardBody>
+            </Card>
+        }
+
+        return <Card bg="success" text="white" className="mb-1">
+            <Card.Body>
+                <b>Pseudo:&nbsp;</b>
+                {reidRecord.pseudo}&nbsp;
+                <b>NHS:</b> {reidRecord.nhsnumber}&nbsp;&nbsp;
+                {clipboardAvailable &&
+                    <CopyIcon content={reidRecord.nhsnumber || ""} resetTime={2000} />
+                }
+            </Card.Body>
+        </Card>
     }
 
-    return <ToastContainer position={position || "bottom-end"} hidden={hidden || reidentifications.length === 0} style={{ marginTop: "33px" }}>
+    function getNhsNumbers(listOfPseudos: string[], reIdRecords: ReIdRecord[]) {
+        const records = reIdRecords
+            .filter(x => listOfPseudos.indexOf(x.pseudo) !== -1)
+            .flatMap(x => `${x.isHx ? x.pseudo : 'PseudoNumberRedacted'},  ${x.hasAccess ? x.nhsnumber : 'NHSNumberRedacted'}`)
+        return [... new Set(records)].join('\n');; // shortcut to return distinct list of values
+    }
+
+    function getMultiRecordCard(listOfPseudos: string[], reIdRecords: ReIdRecord[]) {
+        if (listOfPseudos.length > 5) {
+            return <><Modal show={bulkModalShown} scrollable onHide={() => { setBulkModalShown(false) }} >
+                <Modal.Header closeButton>
+                    Re-id Records
+                </Modal.Header>
+                <Modal.Body>
+                    {listOfPseudos.map(ls => getSingleRecordCard(reIdRecords, ls))}
+                </Modal.Body>
+                <Modal.Footer>
+                    <CopyIcon iconText="Copy All" content={getNhsNumbers(listOfPseudos, reIdRecords)} resetTime={2000} />
+                </Modal.Footer>
+            </Modal>
+                {!bulkModalShown && <div>
+                    <p>You have requested to re-identify {listOfPseudos.length} identifiers which is too many to display here.</p>
+                    <Button onClick={() => { setBulkModalShown(true) }}>Show Bulk Re-id Screen</Button>
+                </div>}
+            </>
+        }
+
+        return <>
+            {listOfPseudos.map(ls => getSingleRecordCard(reIdRecords, ls))}
+        </>
+    }
+
+    return <ToastContainer position={position || "bottom-end"} hidden={hidden || reidentifications.length === 0}>
         <Toast onClose={() => hide(true)}>
             <Toast.Header>
-                <strong className="me-auto">Reidentification</strong>
-                <Button size="sm" onClick={clearList}>Clear History</Button>
+                <strong className="me-auto">Reidentifications</strong>
+                {lastPseudos.length > 1 &&
+                    <CopyIcon iconText="CopyAll" content={getNhsNumbers(lastPseudos, reidentifications)} resetTime={2000} />
+                }
             </Toast.Header>
             <Toast.Body>
-                {reidentifications.length > 0 && <>
-                    {reidentifications[0].hasAccess ? <Card bg="success" text="white">
-                        <Card.Body>
-                            Last Selected Record:&nbsp;
-                            {reidentifications[0].nhsnumber}&nbsp;
-                            {clipboardAvailable &&
-                                <FontAwesomeIcon onClick={() => copyToPasteBuffer(reidentifications[0].nhsnumber)} icon={copiedToPasteBuffer ? faCheck : faCopy} />
-                            }
-                        </Card.Body>
-                    </Card>
-                        :
-                        <Card bg="danger" text="white">
-                            <CardBody>
-                                You do not have permissions to reidentify this patient.
-                            </CardBody>
-                        </Card>
-                    }
+                {lastPseudos.length === 1 && reidentifications.length > 0 && <>
+                    {getSingleRecordCard(reidentifications, lastPseudos[0])}
+                </>}
+
+                {lastPseudos.length > 1 && <>
+                    {getMultiRecordCard(lastPseudos, reidentifications)}
                 </>}
 
                 {showHistory &&
                     <> <br />
                         <Table size="sm" bordered>
                             <tbody>
-                                {reidentifications.slice(pageNumber * itemsPerPage, (pageNumber * itemsPerPage) + itemsPerPage).map((ri) => <tr key={ri.identifer}>
+                                {reidentifications.slice(pageNumber * itemsPerPage, (pageNumber * itemsPerPage) + itemsPerPage).map((ri) => <tr key={crypto.randomUUID()}>
                                     <td>{ri.isHx ? ri.pseudo : "---"}</td>
                                     {ri.loading ? <td>
                                         <FontAwesomeIcon icon={faSpinner} pulse />
@@ -97,7 +143,6 @@ const ReportToast: FunctionComponent<ReportToastProps> = (props) => {
                                     if (pageNumber + 1 !== Math.ceil(reidentifications.length / itemsPerPage))
                                         setPageNumber(pageNumber + 1)
                                 }}>
-
                                     <FontAwesomeIcon icon={faRightLong} />
                                 </Button>
                             </Col>
