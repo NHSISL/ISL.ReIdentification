@@ -15,30 +15,30 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Notification
         public async Task ShouldSendImpersonationDeniedNotificationAsync()
         {
             // given
-            AccessRequest accessRequest = CreateRandomCsvAccessRequest();
-            string toEmail = accessRequest.CsvIdentificationRequest.RequesterEmail;
+            AccessRequest accessRequest = CreateImpersonationContextAccessRequest();
+            string toEmail = accessRequest.ImpersonationContext.RequesterEmail;
             string subject = "Request Denied";
             string body = "Your request has been denied";
             string randomResponseId = GetRandomString();
 
             Dictionary<string, dynamic> personalisation = new Dictionary<string, dynamic>
             {
-                { "id", accessRequest.CsvIdentificationRequest.Id.ToString() },
-                { "requesterEntraUserId", accessRequest.CsvIdentificationRequest.RequesterEntraUserId.ToString() },
-                { "requesterFirstName", accessRequest.CsvIdentificationRequest.RequesterFirstName },
-                { "requesterLastName", accessRequest.CsvIdentificationRequest.RequesterLastName },
-                { "requesterDisplayName", accessRequest.CsvIdentificationRequest.RequesterDisplayName },
-                { "requesterEmail", accessRequest.CsvIdentificationRequest.RequesterEmail },
-                { "requesterJobTitle", accessRequest.CsvIdentificationRequest.RequesterJobTitle },
-                { "recipientEntraUserId", accessRequest.CsvIdentificationRequest.RecipientEntraUserId.ToString() },
-                { "recipientFirstName", accessRequest.CsvIdentificationRequest.RecipientFirstName },
-                { "recipientLastName", accessRequest.CsvIdentificationRequest.RecipientLastName },
-                { "recipientDisplayName", accessRequest.CsvIdentificationRequest.RecipientDisplayName },
-                { "recipientEmail", accessRequest.CsvIdentificationRequest.RecipientEmail },
-                { "recipientJobTitle", accessRequest.CsvIdentificationRequest.RecipientJobTitle },
-                { "reason", accessRequest.CsvIdentificationRequest.Reason },
-                { "organisation", accessRequest.CsvIdentificationRequest.Organisation },
-                { "identifierColumn", accessRequest.CsvIdentificationRequest.IdentifierColumn },
+                { "id", accessRequest.ImpersonationContext.Id.ToString() },
+                { "requesterEntraUserId", accessRequest.ImpersonationContext.RequesterEntraUserId.ToString() },
+                { "requesterFirstName", accessRequest.ImpersonationContext.RequesterFirstName },
+                { "requesterLastName", accessRequest.ImpersonationContext.RequesterLastName },
+                { "requesterDisplayName", accessRequest.ImpersonationContext.RequesterDisplayName },
+                { "requesterEmail", accessRequest.ImpersonationContext.RequesterEmail },
+                { "requesterJobTitle", accessRequest.ImpersonationContext.RequesterJobTitle },
+                { "recipientEntraUserId", accessRequest.ImpersonationContext.ResponsiblePersonEntraUserId.ToString() },
+                { "recipientFirstName", accessRequest.ImpersonationContext.ResponsiblePersonFirstName },
+                { "recipientLastName", accessRequest.ImpersonationContext.ResponsiblePersonLastName },
+                { "recipientDisplayName", accessRequest.ImpersonationContext.ResponsiblePersonDisplayName },
+                { "recipientEmail", accessRequest.ImpersonationContext.ResponsiblePersonEmail },
+                { "recipientJobTitle", accessRequest.ImpersonationContext.ResponsiblePersonJobTitle },
+                { "reason", accessRequest.ImpersonationContext.Reason },
+                { "organisation", accessRequest.ImpersonationContext.Organisation },
+                { "identifierColumn", accessRequest.ImpersonationContext.IdentifierColumn },
                 { "templateId", this.notificationConfigurations.ImpersonationDeniedRequestTemplateId },
                 { "configurationBaseUrl", this.notificationConfigurations.ConfigurationBaseUrl },
                 { "portalBaseUrl", this.notificationConfigurations.PortalBaseUrl },
