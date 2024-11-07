@@ -84,7 +84,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             await this.apiBroker.DeleteAccessAuditByIdAsync(actualAccessAudit.Id);
         }
 
-        [Fact(Skip = "DH to come back to")]
+        [Fact]
         public async Task ShouldDeleteAccessAuditAsync()
         {
             // given
