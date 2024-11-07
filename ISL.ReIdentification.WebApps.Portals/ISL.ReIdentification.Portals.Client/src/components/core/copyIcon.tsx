@@ -4,11 +4,12 @@ import { FunctionComponent, useState } from "react";
 
 type CopyIconProps = {
     content: string;
-    resetTime?: number
+    resetTime?: number;
+    iconText?: string;
 }
 
 const CopyIcon : FunctionComponent<CopyIconProps> = (props) => {
-    const {content, resetTime} = props
+    const {content, resetTime, iconText} = props
     const [copied, setCopied] = useState(false);
 
     const copyToClipboard = (content: string) => {
@@ -19,7 +20,7 @@ const CopyIcon : FunctionComponent<CopyIconProps> = (props) => {
         }
     }
 
-    return <FontAwesomeIcon icon={copied ? faCheck : faCopy} onClick={() => copyToClipboard(content)} />
+    return <span style={{cursor: 'pointer' }} onClick={() => copyToClipboard(content)}>{iconText ? <>{iconText}&nbsp;</> :'' }<FontAwesomeIcon icon={copied ? faCheck : faCopy}  /></span>
 }
 
 export default CopyIcon;

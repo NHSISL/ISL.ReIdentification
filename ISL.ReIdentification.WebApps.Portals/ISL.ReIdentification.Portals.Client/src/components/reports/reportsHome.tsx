@@ -112,10 +112,10 @@ const ReportsHome: FunctionComponent = () => {
                                         <Dropdown.Header>Position Re-id</Dropdown.Header>
                                         <Dropdown.Item onClick={() => { setToastPosition("top-start") }}>Top-Left</Dropdown.Item>
                                         <Dropdown.Item onClick={() => { setToastPosition("top-end") }}>Top-Right</Dropdown.Item>
-                                        <Dropdown.Item onClick={() => { setToastPosition("bottom-start") }}>Bottom-Right</Dropdown.Item>
-                                        <Dropdown.Item onClick={() => { setToastPosition("bottom-end") }}>Bottom-Left</Dropdown.Item>
-                                        <Dropdown.Divider />
-                                        <Dropdown.Item onClick={() => { setShowDeveloperTools("end"); }}>Show Developer Tools</Dropdown.Item>
+                                        <Dropdown.Item onClick={() => { setToastPosition("bottom-end") }}>Bottom-Right</Dropdown.Item>
+                                        <Dropdown.Item onClick={() => { setToastPosition("bottom-start") }}>Bottom-Left</Dropdown.Item>
+                                       {/** <Dropdown.Divider />
+                                        <Dropdown.Item onClick={() => { setShowDeveloperTools("end"); }}>Show Developer Tools</Dropdown.Item>*/}
                                     </DropdownButton>
                                 </Navbar.Text>
                             </AuthenticatedTemplate>

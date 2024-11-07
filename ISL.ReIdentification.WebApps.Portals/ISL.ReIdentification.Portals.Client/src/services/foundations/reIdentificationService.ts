@@ -1,18 +1,12 @@
 import { useEffect, useState } from 'react';
 import ReIdentificationBroker from '../../brokers/apiBroker.reidentification';
 import { AccessRequest } from '../../models/accessRequest/accessRequest';
-import { IdentificationItem } from '../../models/ReIdentifications/IdentificationItem';
 import { ReIdRecord } from '../../types/ReIdRecord';
-import { faL } from '@fortawesome/free-solid-svg-icons';
 
 export const reIdentificationService = {
-
-
-
     useRequestReIdentification: () => {
-        const broker = new ReIdentificationBroker();
         const [loading, setIsLoading] = useState(false);
-        const [request, setRequest] = useState<AccessRequest>({});
+        const [request, setRequest] = useState<AccessRequest>();
         const [data, setData] = useState<ReIdRecord[]>([]);
 
         function isHx(hxNumber: string) {
@@ -30,13 +24,15 @@ export const reIdentificationService = {
         useEffect(() => {
 
             async function execute() {
-                if (request && request.identificationRequest && request.identificationRequest?.identificationItems) {
-                    setIsLoading(true);
+                const broker = new ReIdentificationBroker();
 
-                    console.log(request.identificationRequest.identificationItems.length);
+                if (request && request.identificationRequest && request.identificationRequest?.identificationItems) {
+                    setRequest(undefined);
+                    console.log('wow');
+                    setIsLoading(true);
                     const reIdRecords: ReIdRecord[] = request.identificationRequest?.identificationItems.map(ii => {
                         return {
-                            identifier: isHx(ii.identifier) ? convertHx(ii.identifier) : ii.identifier,
+                            identifier: `0000000000000${isHx(ii.identifier) ? convertHx(ii.identifier) : ii.identifier}`.slice(-10),
                             pseudo: ii.identifier,
                             hasAccess: ii.hasAccess,
                             nhsnumber: "",
@@ -66,19 +62,19 @@ export const reIdentificationService = {
                                     return data;
                                 }
 
-                                const foo : ReIdRecord[] =  responseItems.map(x => {
+                                const itemsToCache : ReIdRecord[] =  responseItems.map(x => {
                                     const r = reIdRecords.find(cachedRecord => cachedRecord.rowNumber === x.rowNumber);
+                                    if(!r){
+                                        return;
+                                    }
                                     return { ...r, 
                                         hasAccess: x.hasAccess,
                                         nhsnumber: x.identifier,
                                         loading: false,
                                     }
-                                })
+                                }).filter(x => x !== undefined);
 
-                                console.log(reIdRecords);
-                                console.log(foo);
-
-                                return [...data,...foo,]
+                                return [...data, ...itemsToCache]
 
                             })
                         }).finally(() => {
@@ -91,7 +87,7 @@ export const reIdentificationService = {
 
             execute();
 
-        }, [request]);
+        }, [data, request]);
 
 
         return {

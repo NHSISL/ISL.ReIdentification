@@ -22,15 +22,16 @@ type ReportLaunchPageProps = {
 const ReportsLaunchPage: FunctionComponent<ReportLaunchPageProps> = (props) => {
     const { reportConfig, addDeveloperEvent, toastPostion, activePage, toastHidden, hideToast, reidReason } = props;
     const { pseudoColumn } = useParams();
-    const [pseudosToReid, setPseudosToReid] = useState<string[]>([]);
+    const [heldPseudosToReid, setHeldPseudosToReid ] = useState<string[]>([]);
     const [lastSetOfPseudos, setLastSetOfPseudos] = useState<string[]>([]);
     const [promptForReid, setPromptForReid] = useState(false);
     const { reidentify, reidentifications, lastPseudo, clearList, isLoading } = useReidentification(reidReason);
 
     const reIdBulk = () => {
         setPromptForReid(false)
-        reidentify(pseudosToReid);
-        setPseudosToReid([]);
+        setLastSetOfPseudos(heldPseudosToReid);
+        reidentify(heldPseudosToReid);
+        setHeldPseudosToReid([]);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -95,14 +96,15 @@ const ReportsLaunchPage: FunctionComponent<ReportLaunchPageProps> = (props) => {
                     // we might have been given a set containing duplicates so just remove all but one record;
                     const uniquePseudos = formattedPseudos.filter((value, index, array) => array.indexOf(value) === index);
 
-                    setLastSetOfPseudos(uniquePseudos);
+                    //setLastSetOfPseudos(uniquePseudos);
 
                     // more than 10 so we prompt the user asking if they intended to re-id large number:
-                    if (uniquePseudos.length > 10) {
+                    if (uniquePseudos.length > 5) {
                         //cache them and ask the question.
-                        setPseudosToReid(uniquePseudos);
+                        setHeldPseudosToReid(uniquePseudos);
                         setPromptForReid(true)
                     } else {
+                        setLastSetOfPseudos(uniquePseudos);
                         await reidentify(uniquePseudos);
                     }
                 } else {
@@ -123,10 +125,10 @@ const ReportsLaunchPage: FunctionComponent<ReportLaunchPageProps> = (props) => {
             <Modal show={promptForReid}>
                 <Modal.Header>Large Numbers of reid requests Detected</Modal.Header>
                 <Modal.Body>
-                    <p>You have requested {pseudosToReid.length} records to be re-identified.</p>
+                    <p>You have requested {heldPseudosToReid.length} records to be re-identified.</p>
                     <p>This is likly to cause a breech to be reported.</p>
                     <ButtonGroup>
-                        <Button onClick={reIdBulk}>Confirm</Button><Button variant="secondary" onClick={() => { setPseudosToReid([]); setPromptForReid(false); setLastSetOfPseudos([]); }}>Cancel</Button>
+                        <Button onClick={reIdBulk}>Confirm</Button><Button variant="secondary" onClick={() => { setHeldPseudosToReid([]); setPromptForReid(false); setLastSetOfPseudos([]); }}>Cancel</Button>
                     </ButtonGroup>
                 </Modal.Body>
             </Modal>
