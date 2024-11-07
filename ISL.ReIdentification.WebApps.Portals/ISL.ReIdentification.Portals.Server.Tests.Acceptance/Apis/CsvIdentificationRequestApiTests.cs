@@ -54,9 +54,6 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
                 .OnProperty(csvIdentificationRequest => csvIdentificationRequest.Organisation)
                     .Use(GetRandomStringWithLengthOf(255))
 
-                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.IdentifierColumn)
-                    .Use("")
-
                 .OnProperty(csvIdentificationRequest => csvIdentificationRequest.CreatedBy).Use(user)
                 .OnProperty(csvIdentificationRequest => csvIdentificationRequest.UpdatedBy).Use(user);
 
