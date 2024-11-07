@@ -7,7 +7,7 @@ import { DeveloperEvents } from "../../types/DeveloperEvents";
 import { useParams } from "react-router-dom";
 import { PBIEvent, PBIIdentity, PBIValues } from "../../types/PBIEvent";
 import { useReidentification } from "../../hooks/useReidentification";
-import { Button, Modal } from "react-bootstrap";
+import { Button, ButtonGroup, Modal } from "react-bootstrap";
 
 type ReportLaunchPageProps = {
     reportConfig: IReportEmbedConfiguration
@@ -22,14 +22,16 @@ type ReportLaunchPageProps = {
 const ReportsLaunchPage: FunctionComponent<ReportLaunchPageProps> = (props) => {
     const { reportConfig, addDeveloperEvent, toastPostion, activePage, toastHidden, hideToast, reidReason } = props;
     const { pseudoColumn } = useParams();
-    const [pseudosToReid, setPseudosToReid] = useState<string[]>([]);
+    const [heldPseudosToReid, setHeldPseudosToReid ] = useState<string[]>([]);
+    const [lastSetOfPseudos, setLastSetOfPseudos] = useState<string[]>([]);
     const [promptForReid, setPromptForReid] = useState(false);
-    const { reidentify, reidentifications, lastPseudo, clearList } = useReidentification(reidReason);
+    const { reidentify, reidentifications, lastPseudo, clearList, isLoading } = useReidentification(reidReason);
 
     const reIdBulk = () => {
         setPromptForReid(false)
-        reidentify(pseudosToReid);
-        setPseudosToReid([]);
+        setLastSetOfPseudos(heldPseudosToReid);
+        reidentify(heldPseudosToReid);
+        setHeldPseudosToReid([]);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -48,11 +50,12 @@ const ReportsLaunchPage: FunctionComponent<ReportLaunchPageProps> = (props) => {
                 embedObject.setPage(pageToActivate[0].name);
             }
 
-            embedObject.on('dataSelected', (event?: CustomEvent<PBIEvent>) => {
+            embedObject.on('dataSelected', async (event?: CustomEvent<PBIEvent>) => {
                 addDeveloperEvent({ message: "dataSelected" });
                 if (event && event.detail.dataPoints[0]) {
                     // pseudo data could be held in either an identity or value field.
-                    const dataFields = [...event.detail.dataPoints[0].identity, ...event.detail.dataPoints[0].values]
+                    //const identityValues = ...event.detail.dataPoints.flatMap(x => x.identity);
+                    const dataFields = [...event.detail.dataPoints.flatMap(x => x.identity), ...event.detail.dataPoints.flatMap(x => x.values)]
                     let pseudos: Array<PBIIdentity | PBIValues> = []
 
                     // report developer can provide multiple fields containing pseudo identifiers, so check all columns.
@@ -78,7 +81,7 @@ const ReportsLaunchPage: FunctionComponent<ReportLaunchPageProps> = (props) => {
 
                     //the psuedo could be contained in one of the following properties - so normalise all as strings
                     const normalisedPseudos = pseudos.map(x => {
-                        if((x as PBIIdentity).equals){
+                        if ((x as PBIIdentity).equals) {
                             return ("" + (x as PBIIdentity).equals)
                         }
                         return (x as PBIValues).value || (x as PBIValues).formattedValue;
@@ -93,13 +96,16 @@ const ReportsLaunchPage: FunctionComponent<ReportLaunchPageProps> = (props) => {
                     // we might have been given a set containing duplicates so just remove all but one record;
                     const uniquePseudos = formattedPseudos.filter((value, index, array) => array.indexOf(value) === index);
 
+                    //setLastSetOfPseudos(uniquePseudos);
+
                     // more than 10 so we prompt the user asking if they intended to re-id large number:
-                    if (uniquePseudos.length > 10) {
+                    if (uniquePseudos.length > 5) {
                         //cache them and ask the question.
-                        setPseudosToReid(uniquePseudos);
+                        setHeldPseudosToReid(uniquePseudos);
                         setPromptForReid(true)
                     } else {
-                        reidentify(uniquePseudos);
+                        setLastSetOfPseudos(uniquePseudos);
+                        await reidentify(uniquePseudos);
                     }
                 } else {
                     addDeveloperEvent({ message: "dataSelected: no datapoints found", eventDetails: event });
@@ -119,15 +125,19 @@ const ReportsLaunchPage: FunctionComponent<ReportLaunchPageProps> = (props) => {
             <Modal show={promptForReid}>
                 <Modal.Header>Large Numbers of reid requests Detected</Modal.Header>
                 <Modal.Body>
-                    <p>You have requested {pseudosToReid.length} records to be re-identified.</p>
+                    <p>You have requested {heldPseudosToReid.length} records to be re-identified.</p>
                     <p>This is likly to cause a breech to be reported.</p>
-                    <Button onClick={reIdBulk}>Confirm</Button><Button onClick={() => { setPseudosToReid([]); setPromptForReid(false); }}>Cancel</Button>
+                    <ButtonGroup>
+                        <Button onClick={reIdBulk}>Confirm</Button><Button variant="secondary" onClick={() => { setHeldPseudosToReid([]); setPromptForReid(false); setLastSetOfPseudos([]); }}>Cancel</Button>
+                    </ButtonGroup>
                 </Modal.Body>
             </Modal>
             <ReportToast
                 clearList={clearList}
                 hidden={toastHidden} hide={hideToast}
                 lastSelectedPseudo={lastPseudo}
+                lastPseudos={lastSetOfPseudos}
+                recordLoading={isLoading}
                 position={toastPostion}
                 reidentifications={reidentifications} />
         </div>

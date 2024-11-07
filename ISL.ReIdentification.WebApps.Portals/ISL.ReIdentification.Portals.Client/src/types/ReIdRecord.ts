@@ -5,5 +5,5 @@ export class  ReIdRecord {
     hasAccess: boolean = false;   
     rowNumber: string = ""; 
     isHx: boolean = false;
-    identifer: string = crypto.randomUUID();
+    identifier: string = "";
 }

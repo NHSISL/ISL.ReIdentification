@@ -1,12 +1,10 @@
-import React, { FunctionComponent, useState } from "react";
-import { Form, Button, Card, Modal, Spinner, Alert } from "react-bootstrap";
+import React, { FunctionComponent, useEffect, useState } from "react";
+import { Form, Button, Card, Modal, Spinner } from "react-bootstrap";
 import { LookupView } from "../../models/views/components/lookups/lookupView";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faCopy } from "@fortawesome/free-solid-svg-icons";
 import { reIdentificationService } from "../../services/foundations/reIdentificationService";
 import { AccessRequest } from "../../models/accessRequest/accessRequest";
-import { IdentificationItem } from "../../models/ReIdentifications/IdentificationItem";
 import { useMsal } from "@azure/msal-react";
+import CopyIcon from "../core/copyIcon";
 
 interface Option {
     value: string;
@@ -21,11 +19,9 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
     const { lookups } = props;
     const [pseudoCode, setPseudoCode] = useState<string>("");
     const [selectedLookupId, setSelectedLookupId] = useState<string>("");
-    const [copiedToPasteBuffer, setCopiedToPasteBuffer] = useState(false);
     const clipboardAvailable = navigator.clipboard;
-    const { submit, loading } = reIdentificationService.useRequestReIdentification();
-    const [reIdResponse, setReIdResponse] = useState<IdentificationItem | undefined>();
-    const [error, setError] = useState("");
+    const { submit, loading, data } = reIdentificationService.useRequestReIdentification();
+    const [submittedPseudoCode, setSubmittedPseudoCode] = useState("");
     const account = useMsal();
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -43,21 +39,14 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
                     message: undefined,
                     isReidentified: undefined,
                 }],
-                DisplayName: acc.name || "",
-                GivenName: "TODO",
+                displayName: acc.name || "",
                 email: acc.username,
-                JobTitle: "TODO",
-                Organisation: "TODO",
-                Surname: "TODO",
+                organisation: "TODO",
                 reason: selectedLookupId
             }
         }
-        setError("");
-        submit(identificationRequest).then((d) => {
-            setReIdResponse(d.identificationRequest?.identificationItems[0]);
-        }).catch(() => {
-            setError("Something went wrong");
-        })
+        setSubmittedPseudoCode(pseudoCode);
+        submit(identificationRequest);
     };
 
     const handlePseudoCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -76,21 +65,17 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
         })),
     ];
 
+    useEffect(() => {
+        console.log(loading)
+    },[loading])
+
     const reset = () => {
         setPseudoCode("");
-        setReIdResponse(undefined);
+        setSubmittedPseudoCode("");
         setSelectedLookupId("");
-        setCopiedToPasteBuffer(false);
     }
-
-    const copyToPasteBuffer = () => {
-        if (navigator.clipboard && reIdResponse) {
-            navigator.clipboard.writeText(reIdResponse.identifier);
-            setCopiedToPasteBuffer(true);
-        }
-    }
-
-    if (!reIdResponse) {
+  
+    if (!submittedPseudoCode) {
         return (
             <>
             <Card.Subtitle className="text-start text-muted mb-3">
@@ -126,9 +111,6 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
                     </Form.Select>
                 </Form.Group>
                 <br />
-                {error && <Alert variant="danger">
-                    Something went Wrong.
-                </Alert>}
                 <Button type="submit" disabled={!pseudoCode || !selectedLookupId}>
                     {!loading ? <>Get NHS Number</> : <Spinner />}
                 </Button>
@@ -136,15 +118,21 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
             </>
         );
     }
-    if (reIdResponse) {
+
+    if(loading)  {
+        return <Spinner />
+    }
+
+    const reIdResponse = data.find(x => x.pseudo === submittedPseudoCode);
+    if (submittedPseudoCode && reIdResponse) {
         return <>
             <p className="text-start">
                 NHS Number:</p>
             <Card bg="success" text="white">
                 <Card.Body>
-                    {reIdResponse.identifier}&nbsp;
+                    {reIdResponse.nhsnumber}&nbsp;
                     {reIdResponse.hasAccess && clipboardAvailable &&
-                        <FontAwesomeIcon onClick={copyToPasteBuffer} icon={copiedToPasteBuffer ? faCheck : faCopy} />
+                        <CopyIcon content={reIdResponse.nhsnumber} />
                     }
                     {!reIdResponse.hasAccess && <Modal show={true}>
                         <Modal.Header>

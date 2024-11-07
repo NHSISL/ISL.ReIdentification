@@ -30,7 +30,7 @@ function App({ instance }: any) {
                 {
                     path: "page1/:id",
                     element: <Page1 />
-                },
+                },                
                 {
                     path: "reIdentification",
                     element: <SecuredRoute allowedRoles={securityPoints.reIdentification.view}><ReIdentificationPage /></SecuredRoute>
