@@ -13,10 +13,16 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Brokers
     {
         private const string odsDataRelativeUrl = "api/odsdata";
 
+        public async ValueTask<OdsData> PostOdsDataAsync(OdsData odsData) =>
+            await this.apiFactoryClient.PostContentAsync(odsDataRelativeUrl, odsData);
+
         public async ValueTask<List<OdsData>> GetAllOdsDatasAsync() =>
             await this.apiFactoryClient.GetContentAsync<List<OdsData>>($"{odsDataRelativeUrl}");
 
         public async ValueTask<OdsData> GetOdsDataByIdAsync(Guid odsDataId) =>
             await this.apiFactoryClient.GetContentAsync<OdsData>($"{odsDataRelativeUrl}/{odsDataId}");
+
+        public async ValueTask<OdsData> DeleteOdsDataByIdAsync(Guid odsDataId) =>
+            await this.apiFactoryClient.DeleteContentAsync<OdsData>($"{odsDataRelativeUrl}/{odsDataId}");
     }
 }

@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -22,9 +21,14 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance
 
         protected override Task<AuthenticateResult> HandleAuthenticateAsync()
         {
+            //string randomOidGuid = Guid.NewGuid().ToString();
+            string testOidGuid = "efc48de6-420f-44a8-8e41-bf1e1793da8d";
+
             var claims = new[] {
                 new Claim(ClaimTypes.Name, "TestUser"),
-                new Claim(ClaimTypes.Role, "Administrators")
+                new Claim(ClaimTypes.Role, "Administrators"),
+                new Claim(ClaimTypes.Email, "administrators@email.com"),
+                new Claim("oid", testOidGuid)
             };
 
             var identity = new ClaimsIdentity(claims, "TestScheme");
