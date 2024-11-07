@@ -46,9 +46,8 @@ const UserAccessSearch: FunctionComponent<UserAccessSearchProps> = ({ selectUser
     return (
         <>
             <FormGroup>
-                <Form.Label className="text-start">Recipient Email Address</Form.Label>
+                <Form.Label className="text-start"><strong>Recipient Email Address</strong></Form.Label>
                 <InputGroup>
-
                     <Form.Control
                         autoComplete="off"
                         type="text"
@@ -62,16 +61,18 @@ const UserAccessSearch: FunctionComponent<UserAccessSearchProps> = ({ selectUser
                         <FontAwesomeIcon icon={faTimes} />
                     </Button>
                 </InputGroup>
+
+                <Form.Text className="text-muted">
+                    Please select a Recipient, <strong>NOTE:</strong> this use must have an account in the ReIdentification Portal.
+                </Form.Text>
             </FormGroup>
 
             {selectedUserName ? (
                 <div>
-                    <p>
                         <small>Selected User: <span className="text-success">{selectedUserName}</span></small>
                         <Button variant="link" onClick={clearSelectedUser}>
                             <FontAwesomeIcon icon={faTimes} style={{color:"red"}} />
                         </Button>
-                    </p>
                 </div>
             ) : (
                 <div style={{ paddingTop: "10px" }}>

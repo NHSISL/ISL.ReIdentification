@@ -7,6 +7,12 @@ import { AccessRequest } from "../../models/accessRequest/accessRequest";
 import { useMsal } from "@azure/msal-react";
 import UserAccessSearch from "../userAccessSearch/userAccessSearch";
 import { UserAccessView } from "../../models/views/components/userAccess/userAccessView";
+import { lookupViewService } from "../../services/views/lookups/lookupViewService";
+
+interface Option {
+    value: string;
+    name: string;
+}
 
 const CsvReIdentificationDetailCardView: FunctionComponent = () => {
 
@@ -21,6 +27,9 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
     const [savedSuccessfull, setSavedSuccessfull] = useState(false);
     const [fileName, setFileName] = useState<string>("");
     const [hasHeaderRecord, setHasHeaderRecord] = useState<boolean>(false);
+
+    const { mappedLookups, isLoading } = lookupViewService.useGetAllLookups("", "Reasons");
+    const [selectedLookupId, setSelectedLookupId] = useState<string>("");
     const account = useMsal();
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -46,7 +55,7 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                 recipientEmail: selectedUser?.email || "",
                 recipientJobTitle: selectedUser?.jobTitle || "",
                 data: csvData || "",
-                //identifierColumn: selectedHeaderColumn,
+                reason: selectedLookupId,
                 organisation: selectedUser?.orgCode || "",
                 createdBy: acc.username,
                 updatedBy: acc.username,
@@ -127,7 +136,7 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                     setSuccess(`The value "${value}" in the next row at the selected column index is 10 digits long and is a valid Pseudo Identifier.`);
                 } else {
                     setSuccess("");
-                    setError(`The value "${value }" in the next row for the selected column index is not a valid Pseudo Identifier, please follow the guidance in the help section.`);
+                    setError(`The value "${value}" in the next row for the selected column index is not a valid Pseudo Identifier, please follow the guidance in the help section.`);
                 }
             }
         }
@@ -141,6 +150,18 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
             This page provides a way to upload a CSV of pseudo identifiers for reidentification.
         </Tooltip>
     );
+
+    const handleLookupChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setSelectedLookupId(e.target.value);
+    };
+
+    const lookupOptions: Array<Option> = [
+        { value: "", name: "Select Reason..." },
+        ...mappedLookups.map((lookup) => ({
+            value: lookup.value.toString() || "0",
+            name: lookup.value || "",
+        })),
+    ];
 
     return (
         <>
@@ -163,7 +184,7 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                         <UserAccessSearch selectUser={(userAccess) => { setSelectedUser(userAccess) }} />
 
                         <Form.Group className="text-start">
-                            <Form.Label>Upload CSV:</Form.Label>
+                            <Form.Label><strong>Upload CSV:</strong></Form.Label>
 
                             <Form.Check
                                 type="checkbox"
@@ -178,23 +199,49 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                                 placeholder="Upload CSV"
                                 accept=".csv"
                                 required />
+                            <Form.Text className="text-muted">
+                                Please upload your CSV (other file types will be rejected).
+                            </Form.Text>
                         </Form.Group>
-
+                        <br />
                         {headerColumns.length > 0 && (
-                            <Form.Group className="text-start">
-                                <Form.Label>Select Identifier Column:</Form.Label>
-                                <Form.Select
-                                    value={selectedHeaderColumn}
-                                    onChange={handleHeaderColumnChange}
-                                    required>
-                                    {headerColumns.map((column, index) => (
-                                        <option key={index} value={column}>
-                                            {`Col-${index} - ${column}`}
-                                        </option>
-                                    ))}
-                                </Form.Select>
-                            </Form.Group>
+                            <>
+                                <Form.Group className="text-start">
+                                    <Form.Label><strong>Select Identifier Column From Csv:</strong></Form.Label>
+                                    <Form.Select
+                                        value={selectedHeaderColumn}
+                                        onChange={handleHeaderColumnChange}
+                                        required>
+                                        {headerColumns.map((column, index) => (
+                                            <option key={index} value={column}>
+                                                {`Col-${index + 1} - ${column}`}
+                                            </option>
+                                        ))}
+                                    </Form.Select>
+                                    <Form.Text className="text-muted">
+                                        Please choose the correct column for the Pseudo Identifier.
+                                    </Form.Text>
+                                </Form.Group>
+                                <br />
+                            </>
                         )}
+
+                        <Form.Group className="text-start">
+                            <Form.Label><strong>Reidentification Reason:</strong></Form.Label>
+                            <Form.Select
+                                value={selectedLookupId}
+                                onChange={handleLookupChange}
+                                required >
+                                {lookupOptions.map((option) => (
+                                    <option key={option.value} value={option.value}>
+                                        {option.name}
+                                    </option>
+                                ))}
+                            </Form.Select>
+                            <Form.Text className="text-muted">
+                                Please supply a reason why you are requesting to Reidentify this csv of patients.
+                            </Form.Text>
+                        </Form.Group>
                         <br />
 
                         {error && <Alert variant="danger">
