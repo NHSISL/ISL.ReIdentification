@@ -4,6 +4,7 @@ using ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.SqlServer.Types;
 
@@ -12,9 +13,11 @@ using Microsoft.SqlServer.Types;
 namespace ISL.ReIdentification.Core.Migrations
 {
     [DbContext(typeof(ReIdentificationStorageBroker))]
-    partial class ReIdentificationStorageBrokerModelSnapshot : ModelSnapshot
+    [Migration("20241104125941_UpdateCsvIdentificationRequestToUseIdentifierIndex")]
+    partial class UpdateCsvIdentificationRequestToUseIdentifierIndex
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -303,15 +306,10 @@ namespace ISL.ReIdentification.Core.Migrations
                     b.Property<DateTimeOffset>("CreatedDate")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<string>("GroupName")
-                        .IsRequired()
-                        .HasMaxLength(220)
-                        .HasColumnType("nvarchar(220)");
-
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(220)
-                        .HasColumnType("nvarchar(220)");
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("SortOrder")
                         .HasColumnType("int");
@@ -329,7 +327,7 @@ namespace ISL.ReIdentification.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GroupName", "Name")
+                    b.HasIndex("Name")
                         .IsUnique();
 
                     b.ToTable("Lookups");

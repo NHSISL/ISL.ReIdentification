@@ -35,9 +35,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
                 (Rule: IsInvalid(csvIdentificationRequest.Filepath),
                 Parameter: nameof(CsvIdentificationRequest.Filepath)),
 
-                (Rule: IsInvalid(csvIdentificationRequest.IdentifierColumn),
-                Parameter: nameof(CsvIdentificationRequest.IdentifierColumn)),
-
                 (Rule: IsInvalid(csvIdentificationRequest.CreatedBy),
                 Parameter: nameof(CsvIdentificationRequest.CreatedBy)),
 
@@ -104,9 +101,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
                 (Rule: IsInvalid(csvIdentificationRequest.Filepath),
                 Parameter: nameof(CsvIdentificationRequest.Filepath)),
 
-                (Rule: IsInvalid(csvIdentificationRequest.IdentifierColumn),
-                Parameter: nameof(CsvIdentificationRequest.IdentifierColumn)),
-
                 (Rule: IsInvalid(csvIdentificationRequest.CreatedBy),
                 Parameter: nameof(CsvIdentificationRequest.CreatedBy)),
 
@@ -124,9 +118,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
 
                 (Rule: IsInvalidLength(csvIdentificationRequest.RecipientEmail, 320),
                 Parameter: nameof(CsvIdentificationRequest.RecipientEmail)),
-
-                (Rule: IsInvalidLength(csvIdentificationRequest.IdentifierColumn, 10),
-                Parameter: nameof(CsvIdentificationRequest.IdentifierColumn)),
 
                 (Rule: IsInvalidLength(csvIdentificationRequest.CreatedBy, 255),
                 Parameter: nameof(CsvIdentificationRequest.CreatedBy)),

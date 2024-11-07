@@ -93,9 +93,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use((DateTimeOffset?)default)
 
-                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.IdentifierColumn)
-                    .Use(() => GetRandomStringWithLengthOf(10))
-
                 .OnProperty(csvIdentificationRequest => csvIdentificationRequest.RequesterEmail)
                     .Use(GetRandomStringWithLengthOf(320))
 
