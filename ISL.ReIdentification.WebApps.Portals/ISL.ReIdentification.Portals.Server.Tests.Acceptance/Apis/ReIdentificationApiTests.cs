@@ -5,6 +5,7 @@
 using System;
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Brokers;
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.Accesses;
+using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.CsvIdentificationRequests;
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.ImpersonationContexts;
 using Tynamix.ObjectFiller;
 
@@ -61,6 +62,9 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             return updatedImpersonationContext;
         }
 
+        private static CsvIdentificationRequest CreateRandomCsvIdentificationRequest() =>
+            CreateCsvIdentificationRequestFiller().Create();
+
         private static Filler<ImpersonationContext> CreateRandomImpersonationContextFiller()
         {
             string user = Guid.NewGuid().ToString();
@@ -89,6 +93,31 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
                 .OnProperty(impersonationContext => impersonationContext.CreatedBy).Use(user)
                 .OnProperty(impersonationContext => impersonationContext.UpdatedDate).Use(now)
                 .OnProperty(impersonationContext => impersonationContext.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
+        private static Filler<CsvIdentificationRequest> CreateCsvIdentificationRequestFiller()
+        {
+            string user = Guid.NewGuid().ToString();
+            DateTimeOffset now = DateTimeOffset.UtcNow;
+            var filler = new Filler<CsvIdentificationRequest>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
+
+                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.RequesterEmail)
+                    .Use(GetRandomEmail())
+
+                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.RecipientEmail)
+                    .Use(GetRandomEmail())
+
+                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.Organisation)
+                    .Use(GetRandomStringWithLengthOf(255))
+
+                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.CreatedBy).Use(user)
+                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.UpdatedBy).Use(user);
 
             return filler;
         }
