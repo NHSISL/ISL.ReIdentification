@@ -11,7 +11,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Brokers
 {
     public partial class ApiBroker
     {
-        private const string odsDataRelativeUrl = "api/odsData";
+        private const string odsDataRelativeUrl = "api/odsdata";
 
         public async ValueTask<OdsData> PostOdsDataAsync(OdsData odsData) =>
             await this.apiFactoryClient.PostContentAsync(odsDataRelativeUrl, odsData);
@@ -21,6 +21,18 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Brokers
 
         public async ValueTask<OdsData> GetOdsDataByIdAsync(Guid odsDataId) =>
             await this.apiFactoryClient.GetContentAsync<OdsData>($"{odsDataRelativeUrl}/{odsDataId}");
+
+        public async ValueTask<OdsData> PutOdsDataAsync(OdsData odsData) =>
+            await this.apiFactoryClient.PutContentAsync(odsDataRelativeUrl, odsData);
+
+        public async ValueTask<List<OdsData>> GetChildrenAsync(Guid odsDataId) =>
+            await this.apiFactoryClient.GetContentAsync<List<OdsData>>($"{odsDataRelativeUrl}/GetChildren/{odsDataId}");
+
+        public async ValueTask<List<OdsData>> GetDescendantsAsync(Guid odsDataId) =>
+            await this.apiFactoryClient.GetContentAsync<List<OdsData>>($"{odsDataRelativeUrl}/GetDescendants/{odsDataId}");
+
+        public async ValueTask<List<OdsData>> GetAncestorsAsync(Guid odsDataId) =>
+            await this.apiFactoryClient.GetContentAsync<List<OdsData>>($"{odsDataRelativeUrl}/GetAncestors/{odsDataId}");
 
         public async ValueTask<OdsData> DeleteOdsDataByIdAsync(Guid odsDataId) =>
             await this.apiFactoryClient.DeleteContentAsync<OdsData>($"{odsDataRelativeUrl}/{odsDataId}");

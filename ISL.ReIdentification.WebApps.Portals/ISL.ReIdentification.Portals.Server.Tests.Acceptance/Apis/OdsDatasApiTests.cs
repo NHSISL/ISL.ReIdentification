@@ -2,23 +2,76 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
-using System.Threading.Tasks;
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Brokers;
-using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.OdsDatas;
 using Microsoft.EntityFrameworkCore;
 using Tynamix.ObjectFiller;
+using System.Linq;
+using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.OdsDatas;
 
 namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
 {
     [Collection(nameof(ApiTestCollection))]
-    public partial class OdsDatasApiTests
+    public partial class OdsDataApiTests
     {
         private readonly ApiBroker apiBroker;
 
-        public OdsDatasApiTests(ApiBroker apiBroker)
+        public OdsDataApiTests(ApiBroker apiBroker)
         {
             this.apiBroker = apiBroker;
+        }
+
+        private static OdsData UpdateOdsDataWithRandomValues(OdsData inputOdsData)
+        {
+            DateTimeOffset now = DateTimeOffset.UtcNow;
+            var updatedOdsData = CreateRandomOdsData();
+            updatedOdsData.Id = inputOdsData.Id;
+
+            return updatedOdsData;
+        }
+
+        private async ValueTask<OdsData> PostRandomOdsDataAsync()
+        {
+            OdsData randomOdsData = CreateRandomOdsData();
+
+            return await this.apiBroker.PostOdsDataAsync(randomOdsData);
+        }
+
+        private async ValueTask<List<OdsData>> PostRandomChildOdsDatasAsync(string parentHierarchyIdString)
+        {
+            HierarchyId parentHierarchyId = HierarchyId.Parse("/");
+
+            if (parentHierarchyIdString is not null)
+            {
+                parentHierarchyId = HierarchyId.Parse(parentHierarchyIdString);
+            }
+
+            List<OdsData> children = CreateOdsDataFiller(dateTimeOffset: GetRandomDateTimeOffset())
+                .Create(count: GetRandomNumber())
+                    .ToList();
+
+            HierarchyId lastChildHierarchy = null;
+
+            foreach (var child in children)
+            {
+                child.OdsHierarchy = parentHierarchyId.GetDescendant(lastChildHierarchy, null).ToString();
+                lastChildHierarchy = HierarchyId.Parse(child.OdsHierarchy);
+                await this.apiBroker.PostOdsDataAsync(child);
+            }
+
+            return children;
+        }
+
+        private async ValueTask<List<OdsData>> PostRandomOdsDatasAsync()
+        {
+            int randomNumber = GetRandomNumber();
+            var randomOdsDatas = new List<OdsData>();
+
+            for (int i = 0; i < randomNumber; i++)
+            {
+                randomOdsDatas.Add(await PostRandomOdsDataAsync());
+            }
+
+            return randomOdsDatas;
         }
 
         private int GetRandomNumber() =>
@@ -58,13 +111,6 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
                 .OnProperty(odsData => odsData.OdsHierarchy).Use(hierarchyId.ToString());
 
             return filler;
-        }
-
-        private async ValueTask<OdsData> PostRandomOdsDataAsync()
-        {
-            OdsData randomOdsData = CreateRandomOdsData();
-
-            return await this.apiBroker.PostOdsDataAsync(randomOdsData);
         }
     }
 }

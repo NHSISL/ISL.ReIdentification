@@ -7,10 +7,10 @@ using ISL.ReIdentification.Core.Models;
 
 namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.AccessAudits
 {
-
     public class AccessAudit : IKey, IAudit
     {
         public Guid Id { get; set; }
+        public Guid RequestId { get; set; }
         public string PseudoIdentifier { get; set; }
         public Guid EntraUserId { get; set; }
         public string GivenName { get; set; }

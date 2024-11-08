@@ -2,7 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.PdsDatas;
@@ -31,27 +32,76 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             await this.apiBroker.DeletePdsDataByIdAsync(actuaPdsData.Id);
         }
 
-        [Fact(Skip = "Need to refactor tests and add other crud operations")]
+        [Fact]
         public async Task ShouldGetAllPdsDataAsync()
         {
+            // given
+            List<PdsData> randomPdsDatas = await PostRandomPdsDatasAsync();
+            List<PdsData> expectedPdsDatas = randomPdsDatas;
+
             // when
-            var actualPdsDatas = await this.apiBroker.GetAllPdsDataAsync();
+            List<PdsData> actualPdsDatas = await this.apiBroker.GetAllPdsDataAsync();
 
             // then
-            actualPdsDatas.Should().NotBeNull();
+            foreach (PdsData expectedPdsData in expectedPdsDatas)
+            {
+                PdsData actualPdsData = actualPdsDatas.Single(pdsData => pdsData.Id == expectedPdsData.Id);
+                actualPdsData.Should().BeEquivalentTo(expectedPdsData);
+                await this.apiBroker.DeletePdsDataByIdAsync(actualPdsData.Id);
+            }
         }
 
-        [Fact(Skip = "Need to refactor tests and add other crud operations")]
+        [Fact]
         public async Task ShouldGetPdsDataByIdAsync()
         {
             // given
-            Guid randomPdsDataId = Guid.NewGuid();
+            PdsData randomPdsData = await PostRandomPdsDataAsync();
+            PdsData expectedPdsData = randomPdsData;
 
             // when
-            var actualPdsData = await this.apiBroker.GetOdsDataByIdAsync(randomPdsDataId);
+            PdsData actualPdsData = await this.apiBroker.GetPdsDataByIdAsync(randomPdsData.Id);
 
             // then
-            actualPdsData.Should().NotBeNull();
+            actualPdsData.Should().BeEquivalentTo(expectedPdsData);
+            await this.apiBroker.DeletePdsDataByIdAsync(actualPdsData.Id);
+        }
+
+        [Fact]
+        public async Task ShouldPutPdsDataAsync()
+        {
+            // given
+            PdsData randomPdsData = await PostRandomPdsDataAsync();
+            PdsData modifiedPdsData = UpdatePdsDataWithRandomValues(randomPdsData);
+
+            // when
+            await this.apiBroker.PutPdsDataAsync(modifiedPdsData);
+            PdsData actualPdsData = await this.apiBroker.GetPdsDataByIdAsync(randomPdsData.Id);
+
+            // then
+            actualPdsData.Should().BeEquivalentTo(modifiedPdsData);
+            await this.apiBroker.DeletePdsDataByIdAsync(actualPdsData.Id);
+        }
+
+        [Fact]
+        public async Task ShouldDeletePdsDataAsync()
+        {
+            // given
+            PdsData randomPdsData = await PostRandomPdsDataAsync();
+            PdsData inputPdsData = randomPdsData;
+            PdsData expectedPdsData = inputPdsData;
+
+            // when
+            PdsData deletedPdsData =
+                await this.apiBroker.DeletePdsDataByIdAsync(inputPdsData.Id);
+
+            ValueTask<PdsData> getPdsDatabyIdTask =
+                this.apiBroker.GetPdsDataByIdAsync(inputPdsData.Id);
+
+            // then
+            deletedPdsData.Should().BeEquivalentTo(expectedPdsData);
+
+            await Assert.ThrowsAsync<HttpResponseNotFoundException>(
+                testCode: getPdsDatabyIdTask.AsTask);
         }
 
         [Fact]

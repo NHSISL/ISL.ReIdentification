@@ -10,11 +10,18 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
     public partial class FeaturesApiTests
     {
 
-        [Fact(Skip = "Need To Check")]
+        [Fact]
         public async Task ShouldGetFeaturesAsync()
         {
             // Given
-            string expectedResult = "[\"Configuration\",\"Test\"]";
+            string expectedResult =
+                "[" +
+                "\r\n  \"Configuration\"," +
+                "\r\n  \"UserAccess\"," +
+                "\r\n  \"DelegatedUserAccess\"," +
+                "\r\n  \"Ods\"," +
+                "\r\n  \"Pds\"" +
+                "\r\n]";
 
             // When
             string actualResult = await this.apiBroker.GetFeaturesAsync();
