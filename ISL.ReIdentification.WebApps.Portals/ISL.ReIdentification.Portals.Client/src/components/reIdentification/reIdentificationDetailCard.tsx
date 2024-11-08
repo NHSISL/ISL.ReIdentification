@@ -13,7 +13,7 @@ const ReIdentificationDetailCard: FunctionComponent<ReIdentificationDetailCardPr
     } = props;
 
     return (
-        <Card style={{ width: '25rem' }}>
+        <Card style={{ width: '50rem' }}>
             <Card.Body>
                 <ReIdentificationDetailCardView
                     lookups={lookups}

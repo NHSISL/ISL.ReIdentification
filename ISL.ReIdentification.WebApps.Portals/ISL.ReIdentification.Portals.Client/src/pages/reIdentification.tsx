@@ -11,7 +11,7 @@ export const ReIdentificationPage = () => {
                     <BreadCrumbBase
                         link="/"
                         backLink="Home"
-                        currentLink="Simple Re-Identification">
+                        currentLink="Reidentify Single Patient">
                     </BreadCrumbBase>
                     <div className="mt-3">
                         <ReIdentificationDetail />

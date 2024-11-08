@@ -14,6 +14,8 @@ import { CsvReIdentificationPage } from './pages/csvReIdentification';
 import { ReIdReportHome } from './pages/reidReportHome';
 import ReportsHome from './components/reports/reportsHome';
 import { WebPart } from './pages/webPart';
+import { CsvReIdentificationDownloadPage } from './pages/csvReIdentificationDownload';
+import { CsvReIdentificationWorklistPage } from './pages/csvReIdentificationWorklist';
 import { ImpersonationProjectAddPage } from './pages/impersonationProjectAddPage';
 import { ImpersonationProjectPage } from './pages/impersonationProjectPage';
 
@@ -40,6 +42,14 @@ function App({ instance }: any) {
                 {
                     path: "report",
                     element: <ReIdReportHome />
+                },
+                {
+                    path: "csvReIdentificationWorklist",
+                    element: <CsvReIdentificationWorklistPage />
+},
+                {
+                    path: "csvReIdentification/:csvIdentificationRequestId",
+                    element: <CsvReIdentificationDownloadPage />
                 },
                 {
                     path: "projects",

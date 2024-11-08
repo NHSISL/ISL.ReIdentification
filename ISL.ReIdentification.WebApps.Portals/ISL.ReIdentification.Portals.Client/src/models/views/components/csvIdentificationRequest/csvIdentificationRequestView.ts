@@ -1,54 +1,51 @@
 export class CsvIdentificationRequestView {
-    public id: string;
-    public requesterFirstName: string;
-    public requesterLastName: string;
-    public requesterEmail: string;
-    public recipientFirstName: string;
-    public recipientLastName: string;
-    public reason: string;
-    public purpose: string;
-    public organisation: string;
-    public data: Uint8Array;
-    public sha256Hash: string;
-    public identifierColumn: string;
-    public createdBy?: string;
-    public createdDate?: Date | undefined;
-    public updatedBy?: string;
-    public updatedDate?: Date | undefined;
+    public id?: string;
+    public requesterEntraUserId?: string;
+    public requesterFirstName?: string;
+    public requesterLastName?: string;
+    public requesterDisplayName?: string;
+    public requesterEmail?: string;
+    public recipientEntraUserId?: string;
+    public recipientFirstName?: string;
+    public recipientLastName?: string;
+    public recipientDisplayName?: string;
+    public recipientEmail?: string;
+    public reason?: string;
+    public organisation?: string;
+    public hasHeaderRecord?: boolean;
+    public identifierColumnIndex?: number;
 
     constructor(
-        id: string,
-        requesterFirstName: string,
-        requesterLastName: string,
-        requesterEmail: string,
-        recipientFirstName: string,
-        recipientLastName: string,
-        reason: string,
-        purpose: string,
-        organisation: string,
-        data: Uint8Array,
-        sha256Hash: string,
-        identifierColumn: string,
-        createdBy?: string,
-        createdDate?: Date | undefined,
-        updatedBy?: string,
-        updatedDate?: Date | undefined
+        id?: string,
+        requesterEntraUserId?: string,
+        requesterFirstName?: string,
+        requesterLastName?: string,
+        requesterDisplayName?: string,
+        requesterEmail?: string,
+        recipientEntraUserId?: string,
+        recipientFirstName?: string,
+        recipientLastName?: string,
+        recipientDisplayName?: string,
+        recipientEmail?: string,
+        reason?: string,
+        organisation?: string,
+        hasHeaderRecord?: boolean,
+        identifierColumnIndex?: number,
     ) {
         this.id = id;
+        this.requesterEntraUserId = requesterEntraUserId || ""
         this.requesterFirstName = requesterFirstName || "";
         this.requesterLastName = requesterLastName || "";
+        this.requesterDisplayName = requesterDisplayName || "";
         this.requesterEmail = requesterEmail || "";
+        this.recipientEntraUserId = recipientEntraUserId || "";
         this.recipientFirstName = recipientFirstName || "";
         this.recipientLastName = recipientLastName || "";
+        this.recipientDisplayName = recipientDisplayName || "";
+        this.recipientEmail = recipientEmail || "";
         this.reason = reason || "";
-        this.purpose = purpose || "";
         this.organisation = organisation || "";
-        this.data = data || 0;
-        this.sha256Hash = sha256Hash || "";
-        this.identifierColumn = identifierColumn || "";
-        this.createdBy = createdBy !== undefined ? createdBy : '';
-        this.createdDate = createdDate ;
-        this.updatedBy = updatedBy !== undefined ? updatedBy : '';
-        this.updatedDate = updatedDate;
+        this.hasHeaderRecord = hasHeaderRecord || false;
+        this.identifierColumnIndex = identifierColumnIndex;
     }
 }

@@ -1,37 +1,31 @@
 export class CsvIdentificationRequest {
-    public id?: string;
-    public requesterFirstName?: string;
-    public requesterLastName?: string;
-    public requesterEmail?: string;
-    public recipientFirstName?: string;
-    public recipientLastName?: string;
-    public reason?: string;
-    public purpose?: string;
-    public organisation?: string;
-    public data?: string;
-    public sha256Hash?: string;
-    public identifierColumn?: string;
-    public createdBy?: string;
+    public id?: string = "";
+    public requesterEntraUserId?: string = "";
+    public requesterFirstName?: string = "";
+    public requesterLastName?: string = "";
+    public requesterDisplayName?: string = "";
+    public requesterEmail?: string = "";
+    public requesterJobTitle?: string = "";
+    public recipientEntraUserId?: string = "";
+    public recipientFirstName?: string = "";
+    public recipientLastName?: string = "";
+    public recipientDisplayName?: string = "";
+    public recipientEmail?: string = "";
+    public recipientJobTitle?: string = "";
+    public reason?: string = "";
+    public organisation?: string = "";
+    public data?: string = "";
+    public sha256Hash?: string = "";
+    public identifierColumn?: string = "";
+    public filepath?: string = "";
+    public hasHeaderRecord?: boolean = false;
+    public identifierColumnIndex?: number = 0;
+    public createdBy?: string = "";
     public createdDate?: Date | undefined;
-    public updatedBy?: string;
+    public updatedBy?: string = "";
     public updatedDate?: Date | undefined;
 
-    constructor(csvIdentificationRequest: CsvIdentificationRequest) {
-        this.id = csvIdentificationRequest.id ? csvIdentificationRequest.id : "";
-        this.requesterFirstName = csvIdentificationRequest.requesterFirstName || "";
-        this.requesterLastName = csvIdentificationRequest.requesterLastName || "";
-        this.requesterEmail = csvIdentificationRequest.requesterEmail || "";
-        this.recipientFirstName = csvIdentificationRequest.recipientFirstName || "";
-        this.recipientLastName = csvIdentificationRequest.recipientLastName || "";
-        this.reason = csvIdentificationRequest.reason || "";
-        this.purpose = csvIdentificationRequest.purpose || "";
-        this.organisation = csvIdentificationRequest.organisation || "";
-        this.data = csvIdentificationRequest.data || "0";
-        this.sha256Hash = csvIdentificationRequest.sha256Hash || "";
-        this.identifierColumn = csvIdentificationRequest.identifierColumn || ""; 
-        this.createdDate = csvIdentificationRequest.createdDate ? new Date(csvIdentificationRequest.createdDate) : undefined;
-        this.createdBy = csvIdentificationRequest.createdBy || "";
-        this.updatedDate = csvIdentificationRequest.updatedDate ? new Date(csvIdentificationRequest.updatedDate) : undefined;
-        this.updatedBy = csvIdentificationRequest.updatedBy || "";
+    constructor(data: Partial<CsvIdentificationRequest>) {
+        Object.assign(this, data);
     }
 }

@@ -1,8 +1,8 @@
 import { Container } from "react-bootstrap";
 import BreadCrumbBase from "../components/bases/layouts/BreadCrumb/BreadCrumbBase";
-import CsvReIdentificationDetail from "../components/csvReIdentification/csvReIdentificationDetail";
+import CsvIdentificationWorklistTable from "../components/csvIdentificationWorklist/csvIdentificationWorklistTable";
 
-export const CsvReIdentificationPage = () => {
+export const CsvReIdentificationWorklistPage = () => {
 
     return (
         <Container fluid className="mt-4">
@@ -10,10 +10,10 @@ export const CsvReIdentificationPage = () => {
                 <BreadCrumbBase
                     link="/"
                     backLink="Home"
-                    currentLink="Dataset Re-Identification">
+                    currentLink="CSV Worklist">
                 </BreadCrumbBase>
                 <div className="mt-3">
-                    <CsvReIdentificationDetail />
+                    <CsvIdentificationWorklistTable />
                 </div>
             </section>
         </Container>
