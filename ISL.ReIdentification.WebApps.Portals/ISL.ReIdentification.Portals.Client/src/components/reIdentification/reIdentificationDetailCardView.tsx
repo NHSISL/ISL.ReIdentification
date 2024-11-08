@@ -8,6 +8,7 @@ import CopyIcon from "../core/copyIcon";
 import { faCircleInfo } from "@fortawesome/free-solid-svg-icons/faCircleInfo";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { OverlayInjectedProps } from "react-bootstrap/esm/Overlay";
+import ReidentificationResultView from "./reidentificationResultView";
 
 interface Option {
     value: string;
@@ -22,7 +23,6 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
     const { lookups } = props;
     const [pseudoCode, setPseudoCode] = useState<string>("");
     const [selectedLookupId, setSelectedLookupId] = useState<string>("");
-    const clipboardAvailable = navigator.clipboard;
     const { submit, loading, data } = reIdentificationService.useRequestReIdentification();
     const [submittedPseudoCode, setSubmittedPseudoCode] = useState("");
     const [error, setError] = useState("");
@@ -76,10 +76,6 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
             name: lookup.value || "",
         })),
     ];
-
-    useEffect(() => {
-        console.log(loading)
-    },[loading])
 
     const reset = () => {
         setPseudoCode("");
@@ -155,40 +151,19 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
         );
     }
 
-    if(loading)  {
+    if (loading) {
         return <Spinner />
     }
 
     const reIdResponse = data.find(x => x.pseudo === submittedPseudoCode);
     if (submittedPseudoCode && reIdResponse) {
         return <>
-            <p className="text-start">
-                NHS Number:</p>
-            <Card bg="success" text="white">
-                <Card.Body>
-                    {reIdResponse.nhsnumber}&nbsp;
-                    {reIdResponse.hasAccess && clipboardAvailable &&
-                        <CopyIcon content={reIdResponse.nhsnumber} />
-                    }
-                    {!reIdResponse.hasAccess && <Modal show={true}>
-                        <Modal.Header>
-                            <h4>Reidentification not allowed.</h4>
-                        </Modal.Header>
-                        <Modal.Body>
-                            <p>You have tried to reidentify a patient's that our records indicate that you do not have access to.</p>
-                            <p>Check that the patient is registered to an GP practice that you have access to.</p>
-                            <p>To view your ODS organisations configured in the reidentification tool click <a href="about:blank">here</a> and contact your local ICB should you need further access.</p>
-                            <p>Any changes to the patient record regisistration will take 24 hours to apply to the reidentification service </p>
-                        </Modal.Body>
-                        <Modal.Footer>
-                            <Button variant="primary" onClick={reset}>Start Over</Button>
-                        </Modal.Footer>
-                    </Modal>}
-                </Card.Body>
-            </Card>
-            <br />
 
-            <Button onClick={reset} variant="primary">Start Over</Button>
+            <ReidentificationResultView reidentificationRecord={reIdResponse}>
+                <Button onClick={reset} variant="primary">Start Over</Button>
+            </ReidentificationResultView>
+
+
         </>
     }
 
