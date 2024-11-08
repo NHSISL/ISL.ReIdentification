@@ -22,13 +22,7 @@ export const impersonationContextViewService = {
         let query = `?$orderby=createdDate desc`;
 
         if (searchTerm) {
-            query = query + `&$filter=contains(Reason,'${searchTerm}') or ` +
-                `contains(RequesterFirstName,'${searchTerm}') or ` +
-                `contains(RequesterLastName,'${searchTerm}') or ` +
-                `contains(RequesterEmail,'${searchTerm}') or ` +
-                `contains(RecipientFirstName,'${searchTerm}') or ` +
-                `contains(RecipientLastName,'${searchTerm}') or ` +
-                `contains(RecipientEmail,'${searchTerm}')`;
+            query = query + `&$filter=contains(projectName,'${searchTerm}')`
         }
 
         const response = impersonationContextService.useRetrieveAllImpersonationContextPages(query);
