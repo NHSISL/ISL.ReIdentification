@@ -22,6 +22,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             // given
             List<OdsData> randomOdsDatas = await PostRandomOdsDatasAsync();
             List<PdsData> pdsDatas = new List<PdsData>();
+            Guid securityOid = TestAuthHandler.SecurityOid;
 
             foreach (OdsData odsData in randomOdsDatas)
             {
@@ -29,9 +30,10 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
                 pdsDatas.Add(pdsData);
             }
 
-            UserAccess randomUserAccess = await PostRandomUserAccessAsync(randomOdsDatas[0].OrganisationCode);
-            Guid entraUserId = randomUserAccess.EntraUserId;
-            AccessRequest randomAccessRequest = CreateIdentificationRequestAccessRequestGivenPds(entraUserId, pdsDatas);
+            UserAccess randomUserAccess =
+                await PostRandomUserAccessAsync(randomOdsDatas[0].OrganisationCode, securityOid);
+
+            AccessRequest randomAccessRequest = CreateIdentificationRequestAccessRequestGivenPds(securityOid, pdsDatas);
             AccessRequest inputAccessRequest = randomAccessRequest.DeepClone();
             AccessRequest expectedAccessRequest = inputAccessRequest.DeepClone();
 
@@ -39,8 +41,13 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             AccessRequest actualAccessRequest =
                 await this.apiBroker.PostIdentificationRequestsAsync(inputAccessRequest);
 
+            // check that no access has count of 1
+            // check that access has count of 2
+
             // then
             actualAccessRequest.Should().BeEquivalentTo(expectedAccessRequest);
+
+            //clear down by RequestId
 
             foreach (OdsData odsData in randomOdsDatas)
             {

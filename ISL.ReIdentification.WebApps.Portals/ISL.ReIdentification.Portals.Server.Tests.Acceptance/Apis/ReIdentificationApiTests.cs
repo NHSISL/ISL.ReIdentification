@@ -132,11 +132,16 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             return filler;
         }
 
-        private static UserAccess CreateRandomUserAccess(string orgCode) =>
-            CreateRandomUserAccessFiller(orgCode).Create();
+        private static UserAccess CreateRandomUserAccess(string orgCode, Guid entraUserId) =>
+            CreateRandomUserAccessFiller(orgCode, entraUserId).Create();
 
-        private static Filler<UserAccess> CreateRandomUserAccessFiller(string orgCode)
+        private static Filler<UserAccess> CreateRandomUserAccessFiller(string orgCode, Guid? entraUserId)
         {
+            if (entraUserId is null || entraUserId == Guid.Empty)
+            {
+                entraUserId = Guid.NewGuid();
+            }
+
             string user = Guid.NewGuid().ToString();
             DateTime now = DateTime.UtcNow;
             var filler = new Filler<UserAccess>();
@@ -144,6 +149,9 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
                 .OnType<DateTimeOffset?>().Use(now)
+
+                .OnProperty(userAccess => userAccess.EntraUserId)
+                    .Use(entraUserId.Value)
 
                 .OnProperty(userAccess => userAccess.GivenName)
                     .Use(() => GetRandomStringWithLengthOf(255))
@@ -163,9 +171,9 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             return filler;
         }
 
-        private async ValueTask<UserAccess> PostRandomUserAccessAsync(string orgCode)
+        private async ValueTask<UserAccess> PostRandomUserAccessAsync(string orgCode, Guid entraUserId)
         {
-            UserAccess randomUserAccess = CreateRandomUserAccess(orgCode);
+            UserAccess randomUserAccess = CreateRandomUserAccess(orgCode, entraUserId);
 
             return await this.apiBroker.PostUserAccessAsync(randomUserAccess);
         }

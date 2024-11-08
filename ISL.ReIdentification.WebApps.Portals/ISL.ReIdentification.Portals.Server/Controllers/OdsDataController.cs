@@ -243,43 +243,5 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
                 return InternalServerError(odsDataServiceException);
             }
         }
-
-        [HttpDelete("{odsDataId}")]
-        public async ValueTask<ActionResult<OdsData>> DeleteOdsDataByIdAsync(Guid odsDataId)
-        {
-            try
-            {
-                OdsData deletedOdsData =
-                    await this.odsDataService.RemoveOdsDataByIdAsync(odsDataId);
-
-                return Ok(deletedOdsData);
-            }
-            catch (OdsDataValidationException odsDataValidationException)
-                when (odsDataValidationException.InnerException is NotFoundOdsDataException)
-            {
-                return NotFound(odsDataValidationException.InnerException);
-            }
-            catch (OdsDataValidationException odsDataValidationException)
-            {
-                return BadRequest(odsDataValidationException.InnerException);
-            }
-            catch (OdsDataDependencyValidationException odsDataDependencyValidationException)
-                when (odsDataDependencyValidationException.InnerException is LockedOdsDataException)
-            {
-                return Locked(odsDataDependencyValidationException.InnerException);
-            }
-            catch (OdsDataDependencyValidationException odsDataDependencyValidationException)
-            {
-                return BadRequest(odsDataDependencyValidationException.InnerException);
-            }
-            catch (OdsDataDependencyException odsDataDependencyException)
-            {
-                return InternalServerError(odsDataDependencyException);
-            }
-            catch (OdsDataServiceException odsDataServiceException)
-            {
-                return InternalServerError(odsDataServiceException);
-            }
-        }
     }
 }

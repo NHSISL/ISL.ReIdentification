@@ -197,27 +197,5 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
 
             await this.apiBroker.DeleteOdsDataByIdAsync(randomOdsData.Id);
         }
-
-        [Fact]
-        public async Task ShouldDeleteOdsDataAsync()
-        {
-            // given
-            OdsData randomOdsData = await PostRandomOdsDataAsync();
-            OdsData inputOdsData = randomOdsData;
-            OdsData expectedOdsData = inputOdsData;
-
-            // when
-            OdsData deletedOdsData =
-                await this.apiBroker.DeleteOdsDataByIdAsync(inputOdsData.Id);
-
-            ValueTask<OdsData> getOdsDatabyIdTask =
-                this.apiBroker.GetOdsDataByIdAsync(inputOdsData.Id);
-
-            // then
-            deletedOdsData.Should().BeEquivalentTo(expectedOdsData);
-
-            await Assert.ThrowsAsync<HttpResponseNotFoundException>(
-                testCode: getOdsDatabyIdTask.AsTask);
-        }
     }
 }

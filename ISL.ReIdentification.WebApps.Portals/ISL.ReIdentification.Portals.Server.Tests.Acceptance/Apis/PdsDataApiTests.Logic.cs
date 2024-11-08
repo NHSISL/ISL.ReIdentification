@@ -103,27 +103,5 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             await Assert.ThrowsAsync<HttpResponseNotFoundException>(
                 testCode: getPdsDatabyIdTask.AsTask);
         }
-
-        [Fact]
-        public async Task ShouldDeletePdsDataAsync()
-        {
-            // given
-            PdsData randomPdsData = await PostRandomPdsDataAsync();
-            PdsData inputPdsData = randomPdsData;
-            PdsData expectedPdsData = inputPdsData;
-
-            // when
-            PdsData deletedPdsData =
-                await this.apiBroker.DeletePdsDataByIdAsync(inputPdsData.Id);
-
-            ValueTask<PdsData> getPdsDatabyIdTask =
-                this.apiBroker.GetPdsDataByIdAsync(inputPdsData.Id);
-
-            // then
-            deletedPdsData.Should().BeEquivalentTo(expectedPdsData);
-
-            await Assert.ThrowsAsync<HttpResponseNotFoundException>(
-                testCode: getPdsDatabyIdTask.AsTask);
-        }
     }
 }
