@@ -1,0 +1,59 @@
+# ASP.NET Core (.NET Framework)
+# Build and test ASP.NET Core projects targeting the full .NET Framework.
+# Add steps that publish symbols, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+
+steps:
+- task: UseDotNet@2
+  displayName: "Install .NET Core SDK"
+  inputs:
+    version: 8.x
+    performMultiLevelLookup: true
+    includePreviewVersions: true # Required for preview versions
+
+- task: DotNetCoreCLI@2
+  displayName: "Dotnet Restore"
+  inputs:
+    command: "restore"
+    feedsToUse: "select"
+    projects: "**/*.csproj"
+    includeNuGetOrg: true
+
+- task: DotNetCoreCLI@2
+  displayName: "Dotnet Publish Portal (Development)"
+  inputs:
+    command: "publish"
+    publishWebProjects: false
+    projects: "**/ISL.ReIdentification.Portals.Server.csproj"
+    arguments: "-o $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_frontend_portal --configuration Release"
+    zipAfterPublish: true
+    modifyOutputPath: false
+
+- task: DotNetCoreCLI@2
+  displayName: "Dotnet Publish Management Portal (Development)"
+  inputs:
+    command: "publish"
+    publishWebProjects: false
+    projects: "**/ISL.ReIdentification.Configurations.Server.csproj"
+    arguments: "-o $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_management_portal --configuration Release"
+    zipAfterPublish: true
+    modifyOutputPath: false
+
+- publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_frontend_portal
+  displayName: 'Publish Artifact - frontend portal'
+  artifact: drop-frontend-portal
+
+- publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_management_portal
+  displayName: 'Publish Artifact - management portal'
+  artifact: drop-management-portal
