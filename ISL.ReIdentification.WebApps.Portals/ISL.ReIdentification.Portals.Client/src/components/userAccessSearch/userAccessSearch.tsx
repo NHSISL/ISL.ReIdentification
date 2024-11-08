@@ -63,7 +63,7 @@ const UserAccessSearch: FunctionComponent<UserAccessSearchProps> = ({ selectUser
                 </InputGroup>
 
                 <Form.Text className="text-muted">
-                    Please select a Recipient, <strong>NOTE:</strong> this use must have an account in the ReIdentification Portal.
+                    Please select a Recipient, <strong>NOTE:</strong> this user must have an account in the ReIdentification Portal.
                 </Form.Text>
             </FormGroup>
 

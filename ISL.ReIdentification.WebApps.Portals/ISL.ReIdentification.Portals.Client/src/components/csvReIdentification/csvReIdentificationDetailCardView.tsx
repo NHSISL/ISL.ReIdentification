@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useState } from "react";
-import { Form, Button, Card, Spinner, Alert, OverlayTrigger, Tooltip, OverlayTriggerProps } from "react-bootstrap";
+import { Form, Button, Card, Spinner, Alert, OverlayTrigger, Tooltip, OverlayTriggerProps, Modal } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 import { reIdentificationService } from "../../services/foundations/reIdentificationService";
@@ -27,6 +27,7 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
     const [savedSuccessfull, setSavedSuccessfull] = useState(false);
     const [fileName, setFileName] = useState<string>("");
     const [hasHeaderRecord, setHasHeaderRecord] = useState<boolean>(false);
+    const [showHelpModal, setShowHelpModal] = useState<boolean>(false);
 
     const { mappedLookups, isLoading } = lookupViewService.useGetAllLookups("", "Reasons");
     const [selectedLookupId, setSelectedLookupId] = useState<string>("");
@@ -185,6 +186,9 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
 
                         <Form.Group className="text-start">
                             <Form.Label><strong>Upload CSV:</strong></Form.Label>
+                            <Button variant="link" onClick={() => setShowHelpModal(true)}>
+                                <FontAwesomeIcon icon={faCircleInfo} className="text-primary" />
+                            </Button>
 
                             <Form.Check
                                 type="checkbox"
@@ -192,13 +196,16 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                                 id="hasHeadRecord"
                                 onChange={handleCheckboxChange} />
 
-                            <Form.Control
-                                type="file"
-                                name="PseudoCsv"
-                                onChange={handleFileChange}
-                                placeholder="Upload CSV"
-                                accept=".csv"
-                                required />
+                            <div className="d-flex align-items-center">
+                                <Form.Control
+                                    type="file"
+                                    name="PseudoCsv"
+                                    onChange={handleFileChange}
+                                    placeholder="Upload CSV"
+                                    accept=".csv"
+                                    required />
+
+                            </div>
                             <Form.Text className="text-muted">
                                 Please upload your CSV (other file types will be rejected).
                             </Form.Text>
@@ -260,6 +267,36 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                     SENT - Need Some Copy here
                 </>
             )}
+
+            <Modal show={showHelpModal} onHide={() => setShowHelpModal(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title><FontAwesomeIcon icon={faCircleInfo} className="text-primary" /> CSV Help</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p>
+                        The identifier column needs to be <i>10</i> digits.
+                        You can easily get your data in this format by applying a format in EXCEL and then saving the CSV file again if its not.
+                    </p>
+                    <p>
+                        <strong>Method 1: Using a Custom Number Format</strong>
+                        <ol>
+                            <li>Select the column that contains the numbers.</li>
+                            <li>Right-click on the selected column and choose Format Cells.</li>
+                            <li>In the Format Cells dialog box, go to the Number tab and choose Custom from the list on the left.</li>
+                            <li>
+                                In the Type field, enter the following format code:This will ensure that all numbers in the column
+                                are displayed with 10 digits, padding with leading zeroes if necessary. Click OK.
+                            </li>
+                        </ol>
+                    </p>
+                    This method works well if the numbers are stored as numerical values but will display as <i>10</i> digits.
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowHelpModal(false)}>
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </>
     );
 

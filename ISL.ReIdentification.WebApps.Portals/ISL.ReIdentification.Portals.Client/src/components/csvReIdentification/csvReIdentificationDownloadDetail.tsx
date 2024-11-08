@@ -87,60 +87,66 @@ const CsvReIdentificationDownloadDetail: FunctionComponent<CsvReIdentificationDo
 
     return (
         <Container fluid>
-                <Row className="justify-content-md-center mt-3">
-                    <Card style={{ width: '50rem' }}>
-                        <Card.Body>
-                            <Card.Title className="text-start">
-                                <OverlayTrigger placement="right" overlay={renderTooltip}>
-                                    <FontAwesomeIcon icon={faCircleInfo} className="text-primary" size="lg" />
-                                </OverlayTrigger>&nbsp;Download Reidentified CSV
-                            </Card.Title>
+            <Row className="justify-content-md-center mt-3">
+                <Card style={{ width: '50rem' }}>
+                    <Card.Body>
+                        <Card.Title className="text-start">
+                            <OverlayTrigger placement="right" overlay={renderTooltip}>
+                                <FontAwesomeIcon icon={faCircleInfo} className="text-primary" size="lg" />
+                            </OverlayTrigger>&nbsp;Download Reidentified CSV
+                        </Card.Title>
 
-                            <Alert variant="info">
-                                <Row>
-                                    <Col md={6} className="mb-3">
-                                        <div><strong>Requester Display Name:</strong> <span>{data.requesterDisplayName}</span></div>
-                                        <div><strong>Requester Email:</strong> <span>{data.requesterEmail}</span></div>
-                                        <div><strong>Recipient Display Name:</strong> <span>{data.recipientDisplayName}</span></div>
-                                        <div><strong>Recipient Email:</strong> <span>{data.recipientEmail}</span></div>
-                                    </Col>
-                                    <Col md={6} className="mb-3">
-                                        <div><strong>Reason:</strong> <span>{data.reason}</span></div>
+                        <Alert variant="info">
+                            <Row>
+                                <Col md={6} className="mb-3">
+                                    <div><strong>Requester Display Name:</strong> <span>{data.requesterDisplayName}</span></div>
+                                    <div><strong>Requester Email:</strong> <span>{data.requesterEmail}</span></div>
+                                    <div><strong>Recipient Display Name:</strong> <span>{data.recipientDisplayName}</span></div>
+                                    <div><strong>Recipient Email:</strong> <span>{data.recipientEmail}</span></div>
+                                </Col>
+                                <Col md={6} className="mb-3">
+                                    <div><strong>Reason:</strong> <span>{data.reason}</span></div>
                                     <div><strong>Organisation:</strong> <span>{data.organisation}</span></div>
                                     <div><strong>Identifier Column:</strong> <span>{data.identifierColumnIndex}</span></div>
-                                        <div><strong>FileName:</strong> <span>{data.filepath}</span></div>
-                                    </Col>
+                                    <div><strong>FileName:</strong> <span>{data.filepath}</span></div>
+                                </Col>
 
-                                </Row>
-                            </Alert>
+                            </Row>
+                        </Alert>
 
-                            <p>Hello, in order to download this file, please specify the reason for using this data?</p>
-                        
-                            <Form onSubmit={handleSubmit}>
-                                <Form.Group className="text-start">
-                                    <Form.Label>Reidentification reason:</Form.Label>
-                                    <Form.Select
-                                        value={selectedLookupId}
-                                        onChange={handleLookupChange}
-                                        required >
-                                        {lookupOptions.map((option) => (
-                                            <option key={option.value} value={option.value}>
-                                                {option.name}
-                                            </option>
-                                        ))}
-                                    </Form.Select>
-                                </Form.Group>
-                                <br />
-                                {error && <Alert variant="danger">
-                                    Something went Wrong.
-                                </Alert>}
-                                <Button type="submit" disabled={!selectedLookupId || fetchLoading}>
-                                    {!fetchLoading ? <>Download</> : <Spinner />}
-                                </Button>
-                            </Form>
-                        </Card.Body>
-                    </Card>
-                </Row>
+                        <Form onSubmit={handleSubmit}>
+                            <Form.Group className="text-start">
+                                <Form.Label><strong>Reidentification reason:</strong></Form.Label>
+                                <Form.Select
+                                    value={selectedLookupId}
+                                    onChange={handleLookupChange}
+                                    required >
+                                    {lookupOptions.map((option) => (
+                                        <option key={option.value} value={option.value}>
+                                            {option.name}
+                                        </option>
+                                    ))}
+                                </Form.Select>
+                                <Form.Text className="text-muted">
+                                    Please supply a reason why you are requesting to Reidentify this csv of patients.
+                                </Form.Text>
+                            </Form.Group>
+                            <br />
+                            {error && <Alert variant="danger">
+                                Something went Wrong.
+                            </Alert>}
+                            <Button type="submit" disabled={!selectedLookupId || fetchLoading}>
+                                {!fetchLoading ? <>Download</> : <Spinner />}
+                            </Button>
+                            <Card.Subtitle className="text-start mb-3 mt-3">
+                                <small>
+                                    On <strong>Download</strong>, the file will be saved to your local machine. Please ensure you check your downloads folder.
+                                </small>
+                            </Card.Subtitle>
+                        </Form>
+                    </Card.Body>
+                </Card>
+            </Row>
         </Container>
     );
 };
