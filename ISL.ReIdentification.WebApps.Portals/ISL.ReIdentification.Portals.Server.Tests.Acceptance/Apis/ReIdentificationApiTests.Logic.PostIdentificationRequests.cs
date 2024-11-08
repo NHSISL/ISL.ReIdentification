@@ -4,9 +4,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
+using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.AccessAudits;
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.Accesses;
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.OdsDatas;
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.PdsDatas;
@@ -20,47 +22,60 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
         public async Task ShouldPostIdentificationRequestsAsync()
         {
             // given
-            List<OdsData> randomOdsDatas = await PostRandomOdsDatasAsync();
-            List<PdsData> pdsDatas = new List<PdsData>();
+            OdsData randomOdsData = await PostRandomOdsDataAsync();
+            PdsData pdsData = await PostPdsDataAsync(randomOdsData.OrganisationCode, randomOdsData.OrganisationName);
             Guid securityOid = TestAuthHandler.SecurityOid;
 
-            foreach (OdsData odsData in randomOdsDatas)
-            {
-                PdsData pdsData = await PostPdsDataAsync(odsData.OrganisationCode, odsData.OrganisationName);
-                pdsDatas.Add(pdsData);
-            }
-
             UserAccess randomUserAccess =
-                await PostRandomUserAccessAsync(randomOdsDatas[0].OrganisationCode, securityOid);
+                await PostRandomUserAccessAsync(randomOdsData.OrganisationCode, securityOid);
 
-            AccessRequest randomAccessRequest = CreateIdentificationRequestAccessRequestGivenPds(securityOid, pdsDatas);
+            AccessRequest randomAccessRequest =
+                CreateIdentificationRequestAccessRequestGivenPsuedoId(securityOid, pdsData.PseudoNhsNumber);
+
             AccessRequest inputAccessRequest = randomAccessRequest.DeepClone();
             AccessRequest expectedAccessRequest = inputAccessRequest.DeepClone();
+            int expectedHasNoAccessAuditCount = 1;
+            int expectedHasAccessAuditCount = 2;
+            int expectedHasNoAccessIdentificationItemsCount = 1;
+            int expectedHasAccessIdentificationItemsCount = 1;
 
             // when
             AccessRequest actualAccessRequest =
                 await this.apiBroker.PostIdentificationRequestsAsync(inputAccessRequest);
 
-            // check that no access has count of 1
-            // check that access has count of 2
+            int actualHasNoAccessIdentificationItemsCount =
+                actualAccessRequest.IdentificationRequest.IdentificationItems
+                    .Where(item => item.HasAccess == false).Count();
+
+            int actualHasAccessIdentificationItemsCount =
+                actualAccessRequest.IdentificationRequest.IdentificationItems
+                    .Where(item => item.HasAccess == true).Count();
+
+            List<AccessAudit> accessAudits = await this.apiBroker.GetAllAccessAuditsAsync();
+
+            int actualHasNoAccessAuditsCount = accessAudits.Where(accessAudit => accessAudit.HasAccess == false)
+                .Count();
+
+            int actualHasAccessAuditsCount = accessAudits.Where(accessAudit => accessAudit.HasAccess == true)
+                .Count();
 
             // then
-            actualAccessRequest.Should().BeEquivalentTo(expectedAccessRequest);
+            actualHasNoAccessIdentificationItemsCount.Should().Be(expectedHasNoAccessIdentificationItemsCount);
+            actualHasAccessIdentificationItemsCount.Should().Be(expectedHasAccessIdentificationItemsCount);
+            actualHasNoAccessAuditsCount.Should().Be(expectedHasNoAccessAuditCount);
+            actualHasAccessAuditsCount.Should().Be(expectedHasAccessAuditCount);
 
-            //clear down by RequestId
+            List<AccessAudit> requestRelatedAccesAudits =
+                accessAudits.Where(accessAudit => accessAudit.RequestId == randomAccessRequest.IdentificationRequest.Id)
+                    .ToList();
 
-            foreach (OdsData odsData in randomOdsDatas)
+            foreach (AccessAudit accessAudit in requestRelatedAccesAudits)
             {
-                await this.apiBroker.DeleteOdsDataByIdAsync(odsData.Id);
-
+                await this.apiBroker.DeleteAccessAuditByIdAsync(accessAudit.Id);
             }
 
-            foreach (PdsData pdsData in pdsDatas)
-            {
-                await this.apiBroker.DeletePdsDataByIdAsync(pdsData.Id);
-
-            }
-
+            await this.apiBroker.DeleteOdsDataByIdAsync(randomOdsData.Id);
+            await this.apiBroker.DeletePdsDataByIdAsync(pdsData.Id);
             await this.apiBroker.DeleteUserAccessByIdAsync(randomUserAccess.Id);
         }
     }

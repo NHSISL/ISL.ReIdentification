@@ -65,19 +65,6 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             return await this.apiBroker.PostOdsDataAsync(randomOdsData);
         }
 
-        private async ValueTask<List<OdsData>> PostRandomOdsDatasAsync()
-        {
-            int randomNumber = GetRandomNumber();
-            var randomOdsDatas = new List<OdsData>();
-
-            for (int i = 0; i < randomNumber; i++)
-            {
-                randomOdsDatas.Add(await PostRandomOdsDataAsync());
-            }
-
-            return randomOdsDatas;
-        }
-
         private static OdsData CreateRandomOdsData() =>
             CreateOdsDataFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
 
@@ -178,12 +165,12 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             return await this.apiBroker.PostUserAccessAsync(randomUserAccess);
         }
 
-        private static AccessRequest CreateIdentificationRequestAccessRequestGivenPds(
-            Guid entraUserId, List<PdsData> pdsDatas)
+        private static AccessRequest CreateIdentificationRequestAccessRequestGivenPsuedoId(
+            Guid entraUserId, string pseudoId)
         {
             return new AccessRequest
             {
-                IdentificationRequest = CreateRandomIdentificationRequest(entraUserId, pdsDatas)
+                IdentificationRequest = CreateRandomIdentificationRequest(entraUserId, pseudoId)
             };
         }
 
@@ -193,36 +180,39 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
                 ImpersonationContext = CreateRandomImpersonationContext()
             };
 
-        private static IdentificationRequest CreateRandomIdentificationRequest(Guid entraUserId, List<PdsData> pdsDatas) =>
-            CreateIdentificationRequestFiller(entraUserId, pdsDatas).Create();
+        private static IdentificationRequest CreateRandomIdentificationRequest(Guid entraUserId, string pseudoId) =>
+            CreateIdentificationRequestFiller(entraUserId, pseudoId).Create();
 
         private static Filler<IdentificationRequest> CreateIdentificationRequestFiller(
-            Guid entraUserId, List<PdsData> pdsDatas)
+            Guid entraUserId, string pseudoId)
         {
             var filler = new Filler<IdentificationRequest>();
 
             filler.Setup()
                 .OnProperty(request => request.EntraUserId).Use(entraUserId)
-                .OnProperty(request => request.IdentificationItems).Use(CreateRandomIdentificationItems(pdsDatas));
+                .OnProperty(request => request.IdentificationItems).Use(CreateRandomIdentificationItems(pseudoId));
 
             return filler;
         }
 
-        private static List<IdentificationItem> CreateRandomIdentificationItems(List<PdsData> pdsDatas)
+        private static List<IdentificationItem> CreateRandomIdentificationItems(string pseudoId)
         {
             List<IdentificationItem> identificationItems = new List<IdentificationItem>();
-
-            foreach (PdsData pdsData in pdsDatas)
-            {
-                IdentificationItem identificationItem = CreateIdentificationItemFiller(pdsData.PseudoNhsNumber).Create();
-                identificationItems.Add(identificationItem);
-            }
+            IdentificationItem hasAccessIdentificationItem = CreateIdentificationItemFiller(pseudoId).Create();
+            identificationItems.Add(hasAccessIdentificationItem);
+            IdentificationItem noAccessIdentificationItem = CreateIdentificationItemFiller(String.Empty).Create();
+            identificationItems.Add(noAccessIdentificationItem);
 
             return identificationItems;
         }
 
         private static Filler<IdentificationItem> CreateIdentificationItemFiller(string psuedoNhsNumber)
         {
+            if (psuedoNhsNumber == string.Empty)
+            {
+                psuedoNhsNumber = GetRandomStringWithLengthOf(10);
+            }
+
             var filler = new Filler<IdentificationItem>();
 
             filler.Setup()
