@@ -11,7 +11,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Brokers
 {
     public partial class ApiBroker
     {
-        private const string odsDataRelativeUrl = "api/odsdata";
+        private const string odsDataRelativeUrl = "api/odsData";
 
         public async ValueTask<OdsData> PostOdsDataAsync(OdsData odsData) =>
             await this.apiFactoryClient.PostContentAsync(odsDataRelativeUrl, odsData);
