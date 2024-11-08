@@ -21,7 +21,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             Guid randomGuid = Guid.NewGuid();
-            int itemCount = 2; // GetRandomNumber();
+            int itemCount = GetRandomNumber();
             bool hasAccess = false;
             var noAccessMessage = "User do not have access to the organisation(s) " +
                 "associated with patient.  Re-identification blocked.";
@@ -107,7 +107,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             Guid randomGuid = Guid.NewGuid();
-            int itemCount = 1; // GetRandomNumber();
+            int itemCount = GetRandomNumber();
             string randomString = GetRandomStringWithLength(10);
             string reIdentifiedIdentifier = randomString;
             bool hasAccess = true;
