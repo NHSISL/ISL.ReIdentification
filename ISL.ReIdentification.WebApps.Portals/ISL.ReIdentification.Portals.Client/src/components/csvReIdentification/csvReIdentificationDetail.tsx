@@ -1,7 +1,6 @@
 import { FunctionComponent } from "react";
 import { Container, Row, Alert } from "react-bootstrap";
 import CsvReIdentificationDetailCard from "./csvReIdentificationDetailCard";
-import { lookupViewService } from "../../services/views/lookups/lookupViewService";
 
 const CsvReIdentificationDetail: FunctionComponent = () => {
     

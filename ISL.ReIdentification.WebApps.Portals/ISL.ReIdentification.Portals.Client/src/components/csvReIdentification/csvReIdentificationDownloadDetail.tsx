@@ -1,9 +1,12 @@
-import { FunctionComponent, useState } from "react";
-import { Alert, Button, Col, Container, Form, Row, Spinner } from "react-bootstrap";
+import { FunctionComponent, useState, useEffect } from "react";
+import { Alert, Button, Card, Col, Container, Form, OverlayTrigger, Row, Spinner, Tooltip } from "react-bootstrap";
 import { csvIdentificationRequestService } from "../../services/foundations/csvIdentificationRequestService";
 import { reIdentificationService } from "../../services/foundations/reIdentificationService";
 import { LookupView } from "../../models/views/components/lookups/lookupView";
 import { lookupViewService } from "../../services/views/lookups/lookupViewService";
+import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { OverlayInjectedProps } from "react-bootstrap/esm/Overlay";
 
 interface CsvReIdentificationDownloadDetailProps {
     csvIdentificationRequestId: string | undefined;
@@ -16,7 +19,7 @@ interface Option {
 
 const CsvReIdentificationDownloadDetail: FunctionComponent<CsvReIdentificationDownloadDetailProps> = ({ csvIdentificationRequestId }) => {
 
-    const { mappedLookups, loading } = lookupViewService.useGetAllLookups("");
+    const { mappedLookups, loading } = lookupViewService.useGetAllLookups("", "Reasons");
     const [selectedLookupId, setSelectedLookupId] = useState<string>("");
 
     const {
@@ -28,7 +31,20 @@ const CsvReIdentificationDownloadDetail: FunctionComponent<CsvReIdentificationDo
             csvIdentificationRequestId!);
 
     const { fetch, loading: fetchLoading, data: fetchData, error: fetchError }
-        = reIdentificationService.useGetCsvIdentificationRequestById(csvIdentificationRequestId!);
+        = reIdentificationService.useGetCsvIdentificationRequestById(csvIdentificationRequestId!, selectedLookupId);
+
+    useEffect(() => {
+        if (fetchData) {
+            const blob = new Blob([fetchData], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'reidentification.csv';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        }
+    }, [fetchData]);
 
     if (isLoading) {
         return <p><Spinner /></p>;
@@ -57,76 +73,74 @@ const CsvReIdentificationDownloadDetail: FunctionComponent<CsvReIdentificationDo
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
-            await fetch(data.id);
-            if (fetchData) {
-                const blob = new Blob([fetchData], { type: 'text/csv' });
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'reidentification.csv';
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-            }
+            await fetch();
         } catch (error) {
             console.error("Error downloading the file", error);
         }
     }
 
+    const renderTooltip = (props: OverlayInjectedProps) => (
+        <Tooltip id="info-tooltip" {...props}>
+            This page provides a way to download the reidentified CSV.
+        </Tooltip>
+    );
+
     return (
         <Container fluid>
-            <Row className="justify-content-md-center">
-                <h2>Data Set ReIdentification</h2>
+                <Row className="justify-content-md-center mt-3">
+                    <Card style={{ width: '50rem' }}>
+                        <Card.Body>
+                            <Card.Title className="text-start">
+                                <OverlayTrigger placement="right" overlay={renderTooltip}>
+                                    <FontAwesomeIcon icon={faCircleInfo} className="text-primary" size="lg" />
+                                </OverlayTrigger>&nbsp;Download Reidentified CSV
+                            </Card.Title>
 
-                <Alert variant="info">
-                    <Row>
-                        <Col md={3} className="mb-3">
-                            <div><strong>Requester Display Name:</strong> <span>{data.requesterDisplayName}</span></div>
-                            <div><strong>Requester Email:</strong> <span>{data.requesterEmail}</span></div>
-                            <div><strong>Recipient Display Name:</strong> <span>{data.recipientDisplayName}</span></div>
-                            <div><strong>Recipient Email:</strong> <span>{data.recipientEmail}</span></div>
-                        </Col>
-                        <Col md={3} className="mb-3">
-                            <div><strong>Reason:</strong> <span>{data.reason}</span></div>
-                            <div><strong>Organisation:</strong> <span>{data.organisation}</span></div>
-                            <div><strong>Identifier Column:</strong> <span>{data.identifierColumn}</span></div>
-                            <div><strong>FileName:</strong> <span>{data.filepath}</span></div>
-                        </Col>
+                            <Alert variant="info">
+                                <Row>
+                                    <Col md={6} className="mb-3">
+                                        <div><strong>Requester Display Name:</strong> <span>{data.requesterDisplayName}</span></div>
+                                        <div><strong>Requester Email:</strong> <span>{data.requesterEmail}</span></div>
+                                        <div><strong>Recipient Display Name:</strong> <span>{data.recipientDisplayName}</span></div>
+                                        <div><strong>Recipient Email:</strong> <span>{data.recipientEmail}</span></div>
+                                    </Col>
+                                    <Col md={6} className="mb-3">
+                                        <div><strong>Reason:</strong> <span>{data.reason}</span></div>
+                                    <div><strong>Organisation:</strong> <span>{data.organisation}</span></div>
+                                    <div><strong>Identifier Column:</strong> <span>{data.identifierColumnIndex}</span></div>
+                                        <div><strong>FileName:</strong> <span>{data.filepath}</span></div>
+                                    </Col>
+
+                                </Row>
+                            </Alert>
+
+                            <p>Hello, in order to download this file, please specify the reason for using this data?</p>
                         
-                    </Row>
-                </Alert>
-
-                <Row>
-                    <p>Hello, in order to download this file, please specify the reason for using this data?</p>
-
-                    <Form onSubmit={handleSubmit}>
-                        <Form.Group className="text-start">
-                            <Form.Label>Reidentification reason:</Form.Label>
-                            <Form.Select
-                                value={selectedLookupId}
-                                onChange={handleLookupChange}
-                                required >
-                                {lookupOptions.map((option) => (
-                                    <option key={option.value} value={option.value}>
-                                        {option.name}
-                                    </option>
-                                ))}
-                            </Form.Select>
-                        </Form.Group>
-                        <br />
-                        {error && <Alert variant="danger">
-                            Something went Wrong.
-                        </Alert>}
-                        <Button type="submit" disabled={!selectedLookupId || fetchLoading}>
-                            {!fetchLoading ? <>Download</> : <Spinner />}
-                        </Button>
-                    </Form>
-
-                    TODO: Save Lookup Reason Before displaying the download link
-                    TODO:  Implement Download link
-
+                            <Form onSubmit={handleSubmit}>
+                                <Form.Group className="text-start">
+                                    <Form.Label>Reidentification reason:</Form.Label>
+                                    <Form.Select
+                                        value={selectedLookupId}
+                                        onChange={handleLookupChange}
+                                        required >
+                                        {lookupOptions.map((option) => (
+                                            <option key={option.value} value={option.value}>
+                                                {option.name}
+                                            </option>
+                                        ))}
+                                    </Form.Select>
+                                </Form.Group>
+                                <br />
+                                {error && <Alert variant="danger">
+                                    Something went Wrong.
+                                </Alert>}
+                                <Button type="submit" disabled={!selectedLookupId || fetchLoading}>
+                                    {!fetchLoading ? <>Download</> : <Spinner />}
+                                </Button>
+                            </Form>
+                        </Card.Body>
+                    </Card>
                 </Row>
-            </Row>
         </Container>
     );
 };

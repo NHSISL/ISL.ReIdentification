@@ -106,28 +106,30 @@ export const reIdentificationService = {
         };
     },
 
-    useGetCsvIdentificationRequestById: (id: string) => {
+    useGetCsvIdentificationRequestById: (id: string, reason: string) => {
         const broker = new ReIdentificationBroker();
         const [loading, setIsLoading] = useState(false);
         const [data, setData] = useState<AccessRequest | null>(null);
         const [error, setError] = useState<Error | null>(null);
 
+        const fetch = () => {
+            setIsLoading(true);
+            return broker.GetCsvIdentificationRequestByIdAsync(id, reason)
+                .then(result => {
+                    setData(result);
+                    setError(null);
+                })
+                .catch(err => {
+                    setError(err);
+                    setData(null);
+                })
+                .finally(() => {
+                    setIsLoading(false);
+                });
+        };
+
         return {
-            fetch: () => {
-                setIsLoading(true);
-                return broker.GetCsvIdentificationRequestByIdAsync(id)
-                    .then(result => {
-                        setData(result);
-                        setError(null);
-                    })
-                    .catch(err => {
-                        setError(err);
-                        setData(null);
-                    })
-                    .finally(() => {
-                        setIsLoading(false);
-                    });
-            },
+            fetch,
             loading,
             data,
             error
