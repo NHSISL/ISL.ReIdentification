@@ -9,6 +9,7 @@ using Force.DeepCloner;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
 using Moq;
+using Valid8R;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identifications
 {
@@ -21,9 +22,15 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             Guid randomGuid = Guid.NewGuid();
             int itemCount = GetRandomNumber();
+            bool hasAccess = false;
+            var noAccessMessage = "User do not have access to the organisation(s) " +
+                "associated with patient.  Re-identification blocked.";
+
+            var accessMessage = "User have access to the organisation(s) " +
+                "associated with patient.  Item will be submitted for re-identification.";
 
             IdentificationRequest randomIdentificationRequest =
-               CreateRandomIdentificationRequest(hasAccess: false, itemCount: itemCount);
+               CreateRandomIdentificationRequest(hasAccess, itemCount: itemCount);
 
             IdentificationRequest inputIdentificationRequest = randomIdentificationRequest.DeepClone();
             IdentificationRequest outputIdentificationRequest = inputIdentificationRequest.DeepClone();
@@ -31,8 +38,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             outputIdentificationRequest.IdentificationItems.ForEach(item =>
             {
                 item.Identifier = "0000000000";
-                item.Message = "Failed to Re-Identify. User do not have access to the organisation(s) " + 
-                    "associated with patient.";
+                item.Message = item.HasAccess ? accessMessage : noAccessMessage;
             });
 
             IdentificationRequest expectedIdentificationRequest = outputIdentificationRequest.DeepClone();
@@ -66,6 +72,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                 AccessAudit inputAccessAudit = new AccessAudit
                 {
                     Id = randomGuid,
+                    RequestId = randomIdentificationRequest.Id,
                     PseudoIdentifier = item.Identifier,
                     EntraUserId = randomIdentificationRequest.EntraUserId,
                     GivenName = randomIdentificationRequest.GivenName,
@@ -73,8 +80,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                     Email = randomIdentificationRequest.Email,
                     Reason = randomIdentificationRequest.Reason,
                     Organisation = randomIdentificationRequest.Organisation,
-                    HasAccess = (bool)item.HasAccess,
-                    Message = item.Message,
+                    HasAccess = hasAccess,
+                    Message = item.HasAccess ? accessMessage : noAccessMessage,
                     CreatedBy = "System",
                     CreatedDate = randomDateTimeOffset,
                     UpdatedBy = "System",
@@ -82,8 +89,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                 };
 
                 this.accessAuditServiceMock.Verify(service =>
-                    service.AddAccessAuditAsync(It.Is(SameAccessAuditAs(inputAccessAudit))),
-                        Times.Once);
+                    service.AddAccessAuditAsync(
+                        It.Is(Valid8.SameObjectAs<AccessAudit>(inputAccessAudit, testOutputHelper, ""))),
+                            Times.Once);
             }
 
             this.accessAuditServiceMock.VerifyNoOtherCalls();
@@ -102,9 +110,16 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             int itemCount = GetRandomNumber();
             string randomString = GetRandomStringWithLength(10);
             string reIdentifiedIdentifier = randomString;
+            bool hasAccess = true;
+
+            var noAccessMessage = "User do not have access to the organisation(s) " +
+                "associated with patient.  Re-identification blocked.";
+
+            var accessMessage = "User have access to the organisation(s) " +
+                "associated with patient.  Item will be submitted for re-identification.";
 
             IdentificationRequest randomIdentificationRequest =
-                CreateRandomIdentificationRequest(hasAccess: true, itemCount: itemCount);
+                CreateRandomIdentificationRequest(hasAccess, itemCount: itemCount);
 
             IdentificationRequest inputIdentificationRequest = randomIdentificationRequest.DeepClone();
             IdentificationRequest outputIdentificationRequest = inputIdentificationRequest.DeepClone();
@@ -163,17 +178,18 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
 
             this.identifierBrokerMock.Verify(broker =>
                 broker.GetIdentifierAsync(),
-                    Times.Exactly(itemCount));
+                    Times.Exactly(itemCount * 2));
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(itemCount));
+                    Times.Exactly(itemCount * 2));
 
             foreach (IdentificationItem item in randomIdentificationRequest.IdentificationItems)
             {
                 AccessAudit inputAccessAudit = new AccessAudit
                 {
                     Id = randomGuid,
+                    RequestId = randomIdentificationRequest.Id,
                     PseudoIdentifier = item.Identifier,
                     EntraUserId = randomIdentificationRequest.EntraUserId,
                     GivenName = randomIdentificationRequest.GivenName,
@@ -181,8 +197,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                     Email = randomIdentificationRequest.Email,
                     Reason = randomIdentificationRequest.Reason,
                     Organisation = randomIdentificationRequest.Organisation,
-                    HasAccess = (bool)item.HasAccess,
-                    Message = item.Message,
+                    HasAccess = item.HasAccess,
+                    Message = item.HasAccess ? accessMessage : noAccessMessage,
                     CreatedBy = "System",
                     CreatedDate = randomDateTimeOffset,
                     UpdatedBy = "System",
@@ -190,14 +206,42 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                 };
 
                 this.accessAuditServiceMock.Verify(service =>
-                    service.AddAccessAuditAsync(It.Is(SameAccessAuditAs(inputAccessAudit))),
-                        Times.Once);
+                    service.AddAccessAuditAsync(
+                        It.Is(Valid8.SameObjectAs<AccessAudit>(inputAccessAudit, testOutputHelper, ""))),
+                            Times.Once);
             }
 
             this.reIdentificationServiceMock.Verify(service =>
                 service.ProcessReIdentificationRequest(It.Is(
                     SameIdentificationRequestAs(inputHasAccessIdentificationRequest))),
                         Times.Once);
+
+            foreach (IdentificationItem item in randomIdentificationRequest.IdentificationItems)
+            {
+                AccessAudit successAccessAudit = new AccessAudit
+                {
+                    Id = randomGuid,
+                    RequestId = randomIdentificationRequest.Id,
+                    PseudoIdentifier = $"{item.Identifier}",
+                    EntraUserId = randomIdentificationRequest.EntraUserId,
+                    GivenName = randomIdentificationRequest.GivenName,
+                    Surname = randomIdentificationRequest.Surname,
+                    Email = randomIdentificationRequest.Email,
+                    Reason = randomIdentificationRequest.Reason,
+                    Organisation = randomIdentificationRequest.Organisation,
+                    HasAccess = item.HasAccess,
+                    Message = $"Re-identification outcome: {item.Message}",
+                    CreatedBy = "System",
+                    CreatedDate = randomDateTimeOffset,
+                    UpdatedBy = "System",
+                    UpdatedDate = randomDateTimeOffset
+                };
+
+                this.accessAuditServiceMock.Verify(service =>
+                    service.AddAccessAuditAsync(
+                        It.Is(Valid8.SameObjectAs<AccessAudit>(successAccessAudit, testOutputHelper, ""))),
+                            Times.Once);
+            }
 
             this.accessAuditServiceMock.VerifyNoOtherCalls();
             this.reIdentificationServiceMock.VerifyNoOtherCalls();
