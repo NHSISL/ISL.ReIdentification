@@ -23,9 +23,9 @@ const ImpersonationContextProjectRow: FunctionComponent<ImpersonationContextProj
                 : <FontAwesomeIcon icon={faTimes} className="text-danger" />}
             </td>
             <td>
-                <Link to={`/impersonationContextDetail/${impersonationContext.id}`}>
+                <Link to={`/project/${impersonationContext.id}`}>
                     <Button onClick={() => { }}>
-                        Details
+                        Manage
                     </Button>
                 </Link>
             </td>

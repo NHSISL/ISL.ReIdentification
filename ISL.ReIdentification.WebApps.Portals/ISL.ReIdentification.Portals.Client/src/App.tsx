@@ -18,6 +18,7 @@ import { CsvReIdentificationDownloadPage } from './pages/csvReIdentificationDown
 import { CsvReIdentificationWorklistPage } from './pages/csvReIdentificationWorklist';
 import { ImpersonationProjectAddPage } from './pages/impersonationProjectAddPage';
 import { ImpersonationProjectPage } from './pages/impersonationProjectPage';
+import { ImpersonationManagePage } from './pages/impersonationManagePage';
 
 function App({ instance }: any) {
 
@@ -52,12 +53,16 @@ function App({ instance }: any) {
                     element: <CsvReIdentificationDownloadPage />
                 },
                 {
-                    path: "projects",
+                    path: "project",
                     element: <ImpersonationProjectPage />
                 },
                 {
                     path: "addProject",
                     element: <ImpersonationProjectAddPage />
+                },
+                {
+                    path: "project/:impersonationIdentificationRequestId",
+                    element: <ImpersonationManagePage />
                 },
                 {
                     path: "approveProject",

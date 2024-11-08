@@ -106,6 +106,20 @@ export const reIdentificationService = {
         };
     },
 
+    useRequestReIdentificationImpersonation: () => {
+        const broker = new ReIdentificationBroker();
+        const [loading, setIsLoading] = useState(false);
+        return {
+            submit: (csvIdentificationRequest: AccessRequest) => {
+                setIsLoading(true);
+                return broker.PostReIdentificationImpersonationAsync(csvIdentificationRequest).finally(() => {
+                    setIsLoading(false);
+                })
+            },
+            loading
+        };
+    },
+
     useGetCsvIdentificationRequestById: (id: string, reason: string) => {
         const broker = new ReIdentificationBroker();
         const [loading, setIsLoading] = useState(false);

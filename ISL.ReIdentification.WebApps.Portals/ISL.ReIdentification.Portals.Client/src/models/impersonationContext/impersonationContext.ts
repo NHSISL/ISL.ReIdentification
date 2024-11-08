@@ -13,12 +13,12 @@ export class ImpersonationContext {
     public responsiblePersonEmail: string = "";
     public responsiblePersonJobTitle: string = "";
     public reason: string = "";
-    public purpose: string = "";
+    public purpose?: string = "";
     public organisation: string = "";
     public projectName: string = "";
-    public inboxToken: string = "";
-    public outboxToken: string = "";
-    public errorToken: string = "";
+    public inboxToken?: string = "";
+    public outboxToken?: string = "";
+    public errorToken?: string = "";
     public isApproved: boolean = false;
     public identifierColumn: string = "";
     public createdBy?: string;

@@ -16,9 +16,9 @@ export class ImpersonationContextView {
     public purpose: string;
     public organisation: string;
     public projectName: string;
-    public inboxToken: string;
-    public outboxToken: string;
-    public errorToken: string;
+    public inboxToken?: string;
+    public outboxToken?: string;
+    public errorToken?: string;
     public isApproved: boolean;
     public identifierColumn: string;
     public createdBy?: string;
@@ -45,8 +45,8 @@ export class ImpersonationContextView {
         organisation: string,
         projectName: string,
         inboxToken: string,
-        outboxToken: string,
-        errorToken: string,
+        outboxToken?: string,
+        errorToken?: string,
         isApproved: boolean,
         identifierColumn: string,
         createdBy?: string,

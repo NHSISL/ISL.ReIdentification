@@ -5,6 +5,7 @@ class SimpleReIdentificationBroker {
     relativeReIdentificationUrl = '/api/reIdentification/';
     relativeReIdentificationCsvUrl = '/api/reIdentification/submitcsv';
     relativeCsvReIdentificationUrl = '/api/reIdentification/csvreidentification';
+    relativeImpersonationReIdentificationUrl = '/api/reIdentification/impersonation';
 
     private apiBroker: ApiBroker = new ApiBroker();
 
@@ -15,6 +16,11 @@ class SimpleReIdentificationBroker {
 
     async PostReIdentificationCsvAsync(accessRequestView: AccessRequest) {
         return await this.apiBroker.PostAsync(this.relativeReIdentificationCsvUrl, accessRequestView)
+            .then(result => result.data as AccessRequest);
+    }
+
+    async PostReIdentificationImpersonationAsync(accessRequestView: AccessRequest) {
+        return await this.apiBroker.PostAsync(this.relativeImpersonationReIdentificationUrl, accessRequestView)
             .then(result => result.data as AccessRequest);
     }
 

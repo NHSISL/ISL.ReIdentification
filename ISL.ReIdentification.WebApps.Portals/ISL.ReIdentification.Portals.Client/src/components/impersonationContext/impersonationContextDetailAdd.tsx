@@ -1,8 +1,13 @@
+import React, { FunctionComponent, useState } from "react";
 import { useMsal } from "@azure/msal-react";
 import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { FunctionComponent, useState } from "react";
-import { Alert, Button, Card, Container, Form, Modal, OverlayTrigger, OverlayTriggerProps, Row, Spinner, Tooltip } from "react-bootstrap";
+import { Alert, Button, Card, Container, Form, Modal, Row, Spinner } from "react-bootstrap";
+import { reIdentificationService } from "../../services/foundations/reIdentificationService";
+import { UserAccessView } from "../../models/views/components/userAccess/userAccessView";
+import { lookupViewService } from "../../services/views/lookups/lookupViewService";
+import UserAccessSearch from "../userAccessSearch/userAccessSearch";
+import { AccessRequest } from "../../models/accessRequest/accessRequest";
 
 interface Option {
     value: string;
@@ -11,17 +16,16 @@ interface Option {
 
 const ImpersonationContextDetailAdd: FunctionComponent = () => {
     const [headerColumns, setHeaderColumns] = useState<string[]>([]);
-    const [csvData, setCsvData] = useState<string | null>(null);
     const [selectedHeaderColumn, setSelectedHeaderColumn] = useState<string>("");
-    const [selectedHeaderColumnIndex, setSelectedHeaderColumnIndex] = useState<number>(0);
     const [selectedUser, setSelectedUser] = useState<UserAccessView | undefined>();
-    const { submit, loading } = reIdentificationService.useRequestReIdentificationCsv();
+    const { submit, loading } = reIdentificationService.useRequestReIdentificationImpersonation();
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
     const [savedSuccessfull, setSavedSuccessfull] = useState(false);
     const [fileName, setFileName] = useState<string>("");
     const [hasHeaderRecord, setHasHeaderRecord] = useState<boolean>(false);
     const [showHelpModal, setShowHelpModal] = useState<boolean>(false);
+    const [projectName, setProjectName] = useState<string>("");
 
     const { mappedLookups, isLoading } = lookupViewService.useGetAllLookups("", "Reasons");
     const [selectedLookupId, setSelectedLookupId] = useState<string>("");
@@ -29,18 +33,47 @@ const ImpersonationContextDetailAdd: FunctionComponent = () => {
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        //const acc = account.accounts[0];
-        //const [firstName, lastName] = acc.name ? acc.name.split(" ") : ["", ""];
+        const acc = account.accounts[0];
+        const [firstName, lastName] = acc.name ? acc.name.split(" ") : ["", ""];
 
-        //}
-        //setError("");
-        //submit(csvIdentificationRequest).then((d) => {
-        //    console.log("Sent", d);
-        //    setSavedSuccessfull(true)
-        //}).catch(() => {
-        //    setSavedSuccessfull(false)
-        //    setError("Something went wrong when saving, please contact an administrator");
-        //})
+        const impersonationProjectRequest: AccessRequest = {
+            csvIdentificationRequest: undefined,
+            identificationRequest: undefined,
+            impersonationContext: {
+                id: crypto.randomUUID(),
+                requesterEntraUserId: acc.idTokenClaims?.oid || "",
+                requesterFirstName: firstName,
+                requesterLastName: lastName,
+                requesterDisplayName: acc.name || "",
+                requesterEmail: acc.username,
+                requesterJobTitle: " ",
+                responsiblePersonEntraUserId: selectedUser?.entraUserId || "",
+                responsiblePersonFirstName: selectedUser?.givenName || "",
+                responsiblePersonLastName: selectedUser?.surname || "",
+                responsiblePersonDisplayName: selectedUser?.displayName || "",
+                responsiblePersonEmail: selectedUser?.email || "",
+                responsiblePersonJobTitle: selectedUser?.jobTitle || "",
+                projectName: projectName || "",
+                identifierColumn: selectedHeaderColumn || "",
+                isApproved: false,
+                reason: selectedLookupId,
+                organisation: selectedUser?.orgCode || "",
+                createdBy: acc.username,
+                updatedBy: acc.username,
+                createdDate: new Date(),
+                updatedDate: new Date(),
+                purpose: ""
+            }
+        }
+
+        setError("");
+        submit(impersonationProjectRequest).then((d) => {
+            console.log("Sent", d);
+            setSavedSuccessfull(true)
+        }).catch(() => {
+            setSavedSuccessfull(false)
+            setError("Something went wrong when saving, please contact an administrator");
+        })
     };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -71,9 +104,6 @@ const ImpersonationContextDetailAdd: FunctionComponent = () => {
                     }
 
                     setHeaderColumns(headers);
-                    const uint8Array = new TextEncoder().encode(text);
-                    const base64String = btoa(String.fromCharCode(...uint8Array));
-                    setCsvData(base64String);
                 };
                 reader.readAsText(file);
             } else {
@@ -87,36 +117,7 @@ const ImpersonationContextDetailAdd: FunctionComponent = () => {
     const handleHeaderColumnChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedColumn = e.target.value;
         setSelectedHeaderColumn(selectedColumn);
-        const index = headerColumns.indexOf(selectedColumn);
-        setSelectedHeaderColumnIndex(index);
-
-        if (csvData) {
-            const decodedData = atob(csvData);
-            const rows = decodedData.split("\n");
-
-            if (rows.length > 1) {
-                const nextRow = rows[1].split(",");
-                const value = nextRow[index];
-
-                if (/^\d{10}$/.test(value)) {
-                    setError("");
-                    setSuccess(`The value "${value}" in the next row at the selected column index is 10 digits long and is a valid Pseudo Identifier.`);
-                } else {
-                    setSuccess("");
-                    setError(`The value "${value}" in the next row for the selected column index is not a valid Pseudo Identifier, please follow the guidance in the help section.`);
-                }
-            }
-        }
     };
-    const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setHasHeaderRecord(e.target.checked);
-    };
-
-    const renderTooltip = (props: OverlayTriggerProps) => (
-        <Tooltip id="info-tooltip" {...props}>
-            This page provides a way to upload a CSV of pseudo identifiers for reidentification.
-        </Tooltip>
-    );
 
     const handleLookupChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setSelectedLookupId(e.target.value);
@@ -130,7 +131,6 @@ const ImpersonationContextDetailAdd: FunctionComponent = () => {
         })),
     ];
 
-
     return (
         <Container className="">
             <Row className="justify-content-md-center">
@@ -140,32 +140,33 @@ const ImpersonationContextDetailAdd: FunctionComponent = () => {
                             {!savedSuccessfull ? (
                                 <>
                                     <Card.Title className="text-start">
-                                        <OverlayTrigger placement="right" overlay={renderTooltip}>
-                                            <FontAwesomeIcon icon={faCircleInfo} className="text-primary" size="lg" />
-                                        </OverlayTrigger>&nbsp;Dataset Upload
+                                        Add Project
                                     </Card.Title>
 
                                     <Card.Subtitle className="text-start text-muted mb-3">
                                         <small>
-                                            Please upload your csv below,
-                                            provide a reason why you are identifying this patient
-                                            and select the column that the identifier is in.
+                                            Please provide the necessary details to add a new project.
                                         </small>
                                     </Card.Subtitle>
                                     <Form onSubmit={handleSubmit}>
+                                        <Form.Group className="text-start">
+                                            <Form.Label><strong>Project Name:</strong></Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                value={projectName}
+                                                onChange={(e) => setProjectName(e.target.value)}
+                                                placeholder="Enter Project Name"
+                                                required
+                                            />
+                                        </Form.Group>
+                                        <br />
                                         <UserAccessSearch selectUser={(userAccess) => { setSelectedUser(userAccess) }} />
 
                                         <Form.Group className="text-start">
-                                            <Form.Label><strong>Upload CSV:</strong></Form.Label>
+                                            <Form.Label><strong>Upload Sample CSV:</strong></Form.Label>
                                             <Button variant="link" onClick={() => setShowHelpModal(true)}>
                                                 <FontAwesomeIcon icon={faCircleInfo} className="text-primary" />
                                             </Button>
-
-                                            <Form.Check
-                                                type="checkbox"
-                                                label="Has Header Record"
-                                                id="hasHeadRecord"
-                                                onChange={handleCheckboxChange} />
 
                                             <div className="d-flex align-items-center">
                                                 <Form.Control
@@ -174,11 +175,12 @@ const ImpersonationContextDetailAdd: FunctionComponent = () => {
                                                     onChange={handleFileChange}
                                                     placeholder="Upload CSV"
                                                     accept=".csv"
-                                                    required />
-
+                                                    required
+                                                />
                                             </div>
                                             <Form.Text className="text-muted">
-                                                Please upload your CSV (other file types will be rejected).
+                                                Please upload your CSV to choose your identfier column (other file types will be rejected). <br />
+                                                <strong>Note: the CSV will NOT be uploaded</strong>
                                             </Form.Text>
                                         </Form.Group>
                                         <br />
@@ -217,7 +219,7 @@ const ImpersonationContextDetailAdd: FunctionComponent = () => {
                                                 ))}
                                             </Form.Select>
                                             <Form.Text className="text-muted">
-                                                Please supply a reason why you are requesting to Reidentify this csv of patients.
+                                                Please supply a reason why you are requesting.
                                             </Form.Text>
                                         </Form.Group>
                                         <br />
@@ -228,8 +230,8 @@ const ImpersonationContextDetailAdd: FunctionComponent = () => {
                                         {success && <Alert variant="success">
                                             {success}
                                         </Alert>}
-                                        <Button type="submit" disabled={!selectedHeaderColumn || !selectedUser || !selectedHeaderColumn || !hasHeaderRecord || error}>
-                                            {!loading ? <>Send File</> : <Spinner />}
+                                        <Button type="submit" disabled={!selectedHeaderColumn || !selectedUser || !selectedHeaderColumn || !projectName || error}>
+                                            {!loading ? <>Create New Project</> : <Spinner />}
                                         </Button>
                                     </Form>
                                 </>
@@ -269,15 +271,8 @@ const ImpersonationContextDetailAdd: FunctionComponent = () => {
                                 </Modal.Footer>
                             </Modal>
                         </>
-                        );
-
-                        return <>{error ? error : "Something went wrong."}</>;
-
-
-
                     </Card.Body>
                 </Card>
-
             </Row>
         </Container>
     );

@@ -25,9 +25,8 @@ namespace ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts
         public string Purpose { get; set; } = string.Empty;
         public string Organisation { get; set; } = string.Empty;
         public string ProjectName { get; set; } = string.Empty;
-        public string InboxToken { get; set; } = string.Empty;
-        public string OutboxToken { get; set; } = string.Empty;
-        public string ErrorToken { get; set; } = string.Empty;
+        public string ClientId { get; set; } = string.Empty;
+        public string ClientSecret { get; set; } = string.Empty;
         public bool IsApproved { get; set; }
         public string IdentifierColumn { get; set; } = string.Empty;
         public string CreatedBy { get; set; } = string.Empty;
