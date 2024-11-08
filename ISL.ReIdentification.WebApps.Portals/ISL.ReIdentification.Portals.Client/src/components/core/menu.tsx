@@ -1,4 +1,4 @@
-import { faHome } from '@fortawesome/free-solid-svg-icons';
+import { faHome, faProjectDiagram } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState } from 'react';
 import { ListGroup } from 'react-bootstrap';
@@ -44,6 +44,13 @@ const MenuComponent: React.FC = () => {
                 onClick={() => handleItemClick('/csvReIdentification')}>
                 <FontAwesomeIcon icon={faHome} className="me-2 fa-icon" />
                 <SecuredLink to="/csvReIdentification">Product 3 - CSV Upload</SecuredLink>
+            </ListGroup.Item>
+
+            <ListGroup.Item
+                className={`bg-dark text-white ${activePath === '/projects' ? 'active' : ''}`}
+                onClick={() => handleItemClick('/projects')}>
+                <FontAwesomeIcon icon={faProjectDiagram} className="me-2 fa-icon" />
+                <SecuredLink to="/projects">Projects</SecuredLink>
             </ListGroup.Item>
 
         </ListGroup>

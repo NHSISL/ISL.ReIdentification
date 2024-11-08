@@ -14,6 +14,8 @@ import { CsvReIdentificationPage } from './pages/csvReIdentification';
 import { ReIdReportHome } from './pages/reidReportHome';
 import ReportsHome from './components/reports/reportsHome';
 import { WebPart } from './pages/webPart';
+import { ImpersonationProjectAddPage } from './pages/impersonationProjectAddPage';
+import { ImpersonationProjectPage } from './pages/impersonationProjectPage';
 
 function App({ instance }: any) {
 
@@ -38,6 +40,14 @@ function App({ instance }: any) {
                 {
                     path: "report",
                     element: <ReIdReportHome />
+                },
+                {
+                    path: "projects",
+                    element: <ImpersonationProjectPage />
+                },
+                {
+                    path: "addProject",
+                    element: <ImpersonationProjectAddPage />
                 },
                 {
                     index: true,
