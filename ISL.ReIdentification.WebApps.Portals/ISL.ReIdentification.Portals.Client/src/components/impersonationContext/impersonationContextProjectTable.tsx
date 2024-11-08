@@ -54,7 +54,7 @@ const ImpersonationContextProjectTable: FunctionComponent<ImpersonationContextPr
     return (
         <div className="projectTableView">
             <Container className=" mt-4">
-                <SearchBase id="search" label="Search lookups" value={searchTerm} placeholder="Search User Access"
+                <SearchBase id="search" label="Search lookups" value={searchTerm} placeholder="Search Projects"
                     onChange={(e) => { handleSearchChange(e.currentTarget.value) }} />
                 <br />
                 <Button variant="primary" className="mb-3" onClick={handleAddProjectClick}>
@@ -67,7 +67,7 @@ const ImpersonationContextProjectTable: FunctionComponent<ImpersonationContextPr
                         <thead>
                             <tr>
                                 <th>Project</th>
-                                <th>Approval</th>
+                                <th>Approval Status</th>
                                 <th>Action(s)</th>
                             </tr>
                         </thead>

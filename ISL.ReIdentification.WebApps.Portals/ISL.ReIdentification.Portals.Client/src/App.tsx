@@ -50,6 +50,10 @@ function App({ instance }: any) {
                     element: <ImpersonationProjectAddPage />
                 },
                 {
+                    path: "approveProject",
+                    element: <ImpersonationProjectAddPage />
+                },
+                {
                     index: true,
                     element: <Navigate to="/home" />
                 }
