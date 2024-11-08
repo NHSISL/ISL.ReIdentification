@@ -38,7 +38,10 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications
             builder.Property(csvIdentificationRequest => csvIdentificationRequest.Sha256Hash)
                 .IsRequired();
 
-            builder.Property(csvIdentificationRequest => csvIdentificationRequest.IdentifierColumn)
+            builder.Property(csvIdentificationRequest => csvIdentificationRequest.IdentifierColumnIndex)
+                .IsRequired();
+
+            builder.Property(csvIdentificationRequest => csvIdentificationRequest.HasHeaderRecord)
                 .IsRequired();
 
             builder

@@ -68,6 +68,9 @@ namespace ISL.ReIdentification.Core.Migrations
                     b.Property<string>("Reason")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("RequestId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Surname")
                         .HasColumnType("nvarchar(max)");
 
@@ -115,9 +118,11 @@ namespace ISL.ReIdentification.Core.Migrations
                     b.Property<string>("Filepath")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("IdentifierColumn")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("HasHeaderRecord")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("IdentifierColumnIndex")
+                        .HasColumnType("int");
 
                     b.Property<string>("Organisation")
                         .IsRequired()

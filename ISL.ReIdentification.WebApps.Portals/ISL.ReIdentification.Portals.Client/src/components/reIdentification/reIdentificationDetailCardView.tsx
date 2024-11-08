@@ -1,12 +1,10 @@
 import React, { FunctionComponent, useState } from "react";
-import { Form, Button, Card, Modal, Spinner, Alert } from "react-bootstrap";
+import { Form, Button, Card, Spinner } from "react-bootstrap";
 import { LookupView } from "../../models/views/components/lookups/lookupView";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faCopy } from "@fortawesome/free-solid-svg-icons";
 import { reIdentificationService } from "../../services/foundations/reIdentificationService";
 import { AccessRequest } from "../../models/accessRequest/accessRequest";
-import { IdentificationItem } from "../../models/ReIdentifications/IdentificationItem";
 import { useMsal } from "@azure/msal-react";
+import ReidentificationResultView from "./reidentificationResultView";
 
 interface Option {
     value: string;
@@ -21,11 +19,8 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
     const { lookups } = props;
     const [pseudoCode, setPseudoCode] = useState<string>("");
     const [selectedLookupId, setSelectedLookupId] = useState<string>("");
-    const [copiedToPasteBuffer, setCopiedToPasteBuffer] = useState(false);
-    const clipboardAvailable = navigator.clipboard;
-    const { submit, loading } = reIdentificationService.useRequestReIdentification();
-    const [reIdResponse, setReIdResponse] = useState<IdentificationItem | undefined>();
-    const [error, setError] = useState("");
+    const { submit, loading, data } = reIdentificationService.useRequestReIdentification();
+    const [submittedPseudoCode, setSubmittedPseudoCode] = useState("");
     const account = useMsal();
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -43,21 +38,14 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
                     message: undefined,
                     isReidentified: undefined,
                 }],
-                DisplayName: acc.name || "",
-                GivenName: "TODO",
+                displayName: acc.name || "",
                 email: acc.username,
-                JobTitle: "TODO",
-                Organisation: "TODO",
-                Surname: "TODO",
+                organisation: "TODO",
                 reason: selectedLookupId
             }
         }
-        setError("");
-        submit(identificationRequest).then((d) => {
-            setReIdResponse(d.identificationRequest?.identificationItems[0]);
-        }).catch(() => {
-            setError("Something went wrong");
-        })
+        setSubmittedPseudoCode(pseudoCode);
+        submit(identificationRequest);
     };
 
     const handlePseudoCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -78,93 +66,67 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
 
     const reset = () => {
         setPseudoCode("");
-        setReIdResponse(undefined);
+        setSubmittedPseudoCode("");
         setSelectedLookupId("");
-        setCopiedToPasteBuffer(false);
     }
 
-    const copyToPasteBuffer = () => {
-        if (navigator.clipboard && reIdResponse) {
-            navigator.clipboard.writeText(reIdResponse.identifier);
-            setCopiedToPasteBuffer(true);
-        }
-    }
-
-    if (!reIdResponse) {
+    if (!submittedPseudoCode) {
         return (
             <>
-            <Card.Subtitle className="text-start text-muted mb-3">
+                <Card.Subtitle className="text-start text-muted mb-3">
                     <small>
                         Please paste the pseudo identifer in the box below and
                         provide a reason why you are identifying this patient.
                     </small>
                 </Card.Subtitle>
-            <Form onSubmit={handleSubmit}>
-                <Form.Group className="text-start">
-                    <Form.Label>Pseudo NHS Number:</Form.Label>
-                    <Form.Control
-                        type="text"
-                        name="PseudoCode"
-                        value={pseudoCode}
-                        maxLength={10}
-                        onChange={handlePseudoCodeChange}
-                        placeholder="Pseudo Number"
-                        required />
-                </Form.Group>
-                <br />
-                <Form.Group className="text-start">
-                    <Form.Label>Reidentification reason:</Form.Label>
-                    <Form.Select
-                        value={selectedLookupId}
-                        onChange={handleLookupChange}
-                        required >
-                        {lookupOptions.map((option) => (
-                            <option key={option.value} value={option.value}>
-                                {option.name}
-                            </option>
-                        ))}
-                    </Form.Select>
-                </Form.Group>
-                <br />
-                {error && <Alert variant="danger">
-                    Something went Wrong.
-                </Alert>}
-                <Button type="submit" disabled={!pseudoCode || !selectedLookupId}>
-                    {!loading ? <>Get NHS Number</> : <Spinner />}
-                </Button>
+                <Form onSubmit={handleSubmit}>
+                    <Form.Group className="text-start">
+                        <Form.Label>Pseudo NHS Number:</Form.Label>
+                        <Form.Control
+                            type="text"
+                            name="PseudoCode"
+                            value={pseudoCode}
+                            maxLength={10}
+                            onChange={handlePseudoCodeChange}
+                            placeholder="Pseudo Number"
+                            required />
+                    </Form.Group>
+                    <br />
+                    <Form.Group className="text-start">
+                        <Form.Label>Reidentification reason:</Form.Label>
+                        <Form.Select
+                            value={selectedLookupId}
+                            onChange={handleLookupChange}
+                            required >
+                            {lookupOptions.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                    {option.name}
+                                </option>
+                            ))}
+                        </Form.Select>
+                    </Form.Group>
+                    <br />
+                    <Button type="submit" disabled={!pseudoCode || !selectedLookupId}>
+                        {!loading ? <>Get NHS Number</> : <Spinner />}
+                    </Button>
                 </Form>
             </>
         );
     }
-    if (reIdResponse) {
-        return <>
-            <p className="text-start">
-                NHS Number:</p>
-            <Card bg="success" text="white">
-                <Card.Body>
-                    {reIdResponse.identifier}&nbsp;
-                    {reIdResponse.hasAccess && clipboardAvailable &&
-                        <FontAwesomeIcon onClick={copyToPasteBuffer} icon={copiedToPasteBuffer ? faCheck : faCopy} />
-                    }
-                    {!reIdResponse.hasAccess && <Modal show={true}>
-                        <Modal.Header>
-                            <h4>Reidentification not allowed.</h4>
-                        </Modal.Header>
-                        <Modal.Body>
-                            <p>You have tried to reidentify a patient's that our records indicate that you do not have access to.</p>
-                            <p>Check that the patient is registered to an GP practice that you have access to.</p>
-                            <p>To view your ODS organisations configured in the reidentification tool click <a href="about:blank">here</a> and contact your local ICB should you need further access.</p>
-                            <p>Any changes to the patient record regisistration will take 24 hours to apply to the reidentification service </p>
-                        </Modal.Body>
-                        <Modal.Footer>
-                            <Button variant="primary" onClick={reset}>Start Over</Button>
-                        </Modal.Footer>
-                    </Modal>}
-                </Card.Body>
-            </Card>
-            <br />
 
-            <Button onClick={reset} variant="primary">Start Over</Button>
+    if (loading) {
+        return <Spinner />
+    }
+
+    const reIdResponse = data.find(x => x.pseudo === submittedPseudoCode);
+    if (submittedPseudoCode && reIdResponse) {
+        return <>
+
+            <ReidentificationResultView reidentificationRecord={reIdResponse}>
+                <Button onClick={reset} variant="primary">Start Over</Button>
+            </ReidentificationResultView>
+
+
         </>
     }
 

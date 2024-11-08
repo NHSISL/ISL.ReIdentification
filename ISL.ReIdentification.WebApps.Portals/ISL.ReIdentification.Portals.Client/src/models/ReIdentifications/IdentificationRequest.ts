@@ -3,11 +3,11 @@ import { IdentificationItem } from "./IdentificationItem";
 export class IdentificationRequest {
     public id: string = crypto.randomUUID();
     public identificationItems: IdentificationItem[] = [];
-    public DisplayName: string = "";
-    public Surname?: string = "";
-    public GivenName?: string = "";
+    public displayName: string = "";
+    public surname?: string = "";
+    public givenName?: string = "";
     public email: string = "";
-    public JobTitle?: string = "";
-    public Organisation?: string = "";
+    public jobTitle?: string = "";
+    public organisation?: string = "";
     public reason: string = "";
 }

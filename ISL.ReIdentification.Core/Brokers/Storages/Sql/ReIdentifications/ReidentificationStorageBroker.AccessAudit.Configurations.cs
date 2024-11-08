@@ -11,6 +11,10 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications
     {
         private void AddAccessAuditConfigurations(EntityTypeBuilder<AccessAudit> builder)
         {
+
+            builder.Property(accessAudit => accessAudit.RequestId)
+                .IsRequired();
+
             builder.Property(accessAudit => accessAudit.PseudoIdentifier)
                 .HasMaxLength(10)
                 .IsRequired();

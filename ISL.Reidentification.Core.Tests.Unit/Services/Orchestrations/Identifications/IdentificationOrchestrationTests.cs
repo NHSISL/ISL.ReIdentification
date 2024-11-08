@@ -23,6 +23,7 @@ using KellermanSoftware.CompareNetObjects;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
+using Xunit.Abstractions;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identifications
 {
@@ -36,8 +37,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;
         private readonly IIdentificationOrchestrationService identificationOrchestrationService;
         private readonly ICompareLogic compareLogic;
+        private readonly ITestOutputHelper testOutputHelper;
 
-        public IdentificationOrchestrationTests()
+        public IdentificationOrchestrationTests(ITestOutputHelper testOutputHelper)
         {
             this.reIdentificationServiceMock = new Mock<IReIdentificationService>();
             this.accessAuditServiceMock = new Mock<IAccessAuditService>();
@@ -46,6 +48,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.identifierBrokerMock = new Mock<IIdentifierBroker>();
             this.compareLogic = new CompareLogic();
+            this.testOutputHelper = testOutputHelper;
 
             this.identificationOrchestrationService = new IdentificationOrchestrationService(
                 this.reIdentificationServiceMock.Object,

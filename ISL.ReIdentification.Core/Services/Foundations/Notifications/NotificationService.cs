@@ -52,7 +52,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
                 { "recipientJobTitle", accessRequest.CsvIdentificationRequest.RecipientJobTitle },
                 { "reason", accessRequest.CsvIdentificationRequest.Reason },
                 { "organisation", accessRequest.CsvIdentificationRequest.Organisation },
-                { "identifierColumn", accessRequest.CsvIdentificationRequest.IdentifierColumn },
+                { "identifierColumnIndex", accessRequest.CsvIdentificationRequest.IdentifierColumnIndex },
+                { "hasHeaderRecord" , accessRequest.CsvIdentificationRequest.HasHeaderRecord },
                 { "templateId", this.notificationConfigurations.CsvPendingApprovalRequestTemplateId },
                 { "configurationBaseUrl", this.notificationConfigurations.ConfigurationBaseUrl },
                 { "portalBaseUrl", this.notificationConfigurations.PortalBaseUrl },
@@ -88,7 +89,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
                 { "recipientJobTitle", accessRequest.CsvIdentificationRequest.RecipientJobTitle },
                 { "reason", accessRequest.CsvIdentificationRequest.Reason },
                 { "organisation", accessRequest.CsvIdentificationRequest.Organisation },
-                { "identifierColumn", accessRequest.CsvIdentificationRequest.IdentifierColumn },
+                { "identifierColumnIndex", accessRequest.CsvIdentificationRequest.IdentifierColumnIndex },
+                { "hasHeaderRecord" , accessRequest.CsvIdentificationRequest.HasHeaderRecord },
                 { "templateId", this.notificationConfigurations.CsvApprovedRequestTemplateId },
                 { "configurationBaseUrl", this.notificationConfigurations.ConfigurationBaseUrl },
                 { "portalBaseUrl", this.notificationConfigurations.PortalBaseUrl },
@@ -123,7 +125,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
                 { "recipientJobTitle", accessRequest.CsvIdentificationRequest.RecipientJobTitle },
                 { "reason", accessRequest.CsvIdentificationRequest.Reason },
                 { "organisation", accessRequest.CsvIdentificationRequest.Organisation },
-                { "identifierColumn", accessRequest.CsvIdentificationRequest.IdentifierColumn },
+                { "identifierColumnIndex" , accessRequest.CsvIdentificationRequest.IdentifierColumnIndex },
+                { "hasHeaderRecord" , accessRequest.CsvIdentificationRequest.HasHeaderRecord },
                 { "templateId", this.notificationConfigurations.CsvPendingApprovalRequestTemplateId },
                 { "configurationBaseUrl", this.notificationConfigurations.ConfigurationBaseUrl },
                 { "portalBaseUrl", this.notificationConfigurations.PortalBaseUrl },
@@ -137,29 +140,29 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
         TryCatch(async () =>
         {
             ValidateOnSendImpersonationPendingApprovalNotificationAsync(accessRequest, this.notificationConfigurations);
-            string toEmail = accessRequest.CsvIdentificationRequest.RecipientEmail;
+            string toEmail = accessRequest.ImpersonationContext.ResponsiblePersonEmail;
             string subject = "Pending Approval";
             string body = "Your request is pending approval";
 
             Dictionary<string, dynamic> personalisation = new Dictionary<string, dynamic>
             {
-                { "id", accessRequest.CsvIdentificationRequest.Id.ToString() },
-                { "requesterEntraUserId", accessRequest.CsvIdentificationRequest.RequesterEntraUserId.ToString() },
-                { "requesterFirstName", accessRequest.CsvIdentificationRequest.RequesterFirstName },
-                { "requesterLastName", accessRequest.CsvIdentificationRequest.RequesterLastName },
-                { "requesterDisplayName", accessRequest.CsvIdentificationRequest.RequesterDisplayName },
-                { "requesterEmail", accessRequest.CsvIdentificationRequest.RequesterEmail },
-                { "requesterJobTitle", accessRequest.CsvIdentificationRequest.RequesterJobTitle },
-                { "recipientEntraUserId", accessRequest.CsvIdentificationRequest.RecipientEntraUserId.ToString() },
-                { "recipientFirstName", accessRequest.CsvIdentificationRequest.RecipientFirstName },
-                { "recipientLastName", accessRequest.CsvIdentificationRequest.RecipientLastName },
-                { "recipientDisplayName", accessRequest.CsvIdentificationRequest.RecipientDisplayName },
-                { "recipientEmail", accessRequest.CsvIdentificationRequest.RecipientEmail },
-                { "recipientJobTitle", accessRequest.CsvIdentificationRequest.RecipientJobTitle },
-                { "reason", accessRequest.CsvIdentificationRequest.Reason },
-                { "organisation", accessRequest.CsvIdentificationRequest.Organisation },
-                { "identifierColumn", accessRequest.CsvIdentificationRequest.IdentifierColumn },
-                { "templateId", this.notificationConfigurations.CsvPendingApprovalRequestTemplateId },
+                { "id", accessRequest.ImpersonationContext.Id.ToString() },
+                { "requesterEntraUserId", accessRequest.ImpersonationContext.RequesterEntraUserId.ToString() },
+                { "requesterFirstName", accessRequest.ImpersonationContext.RequesterFirstName },
+                { "requesterLastName", accessRequest.ImpersonationContext.RequesterLastName },
+                { "requesterDisplayName", accessRequest.ImpersonationContext.RequesterDisplayName },
+                { "requesterEmail", accessRequest.ImpersonationContext.RequesterEmail },
+                { "requesterJobTitle", accessRequest.ImpersonationContext.RequesterJobTitle },
+                { "recipientEntraUserId", accessRequest.ImpersonationContext.ResponsiblePersonEntraUserId.ToString() },
+                { "recipientFirstName", accessRequest.ImpersonationContext.ResponsiblePersonFirstName },
+                { "recipientLastName", accessRequest.ImpersonationContext.ResponsiblePersonLastName },
+                { "recipientDisplayName", accessRequest.ImpersonationContext.ResponsiblePersonDisplayName },
+                { "recipientEmail", accessRequest.ImpersonationContext.ResponsiblePersonEmail },
+                { "recipientJobTitle", accessRequest.ImpersonationContext.ResponsiblePersonJobTitle },
+                { "reason", accessRequest.ImpersonationContext.Reason },
+                { "organisation", accessRequest.ImpersonationContext.Organisation },
+                { "identifierColumn", accessRequest.ImpersonationContext.IdentifierColumn },
+                { "templateId", this.notificationConfigurations.ImpersonationPendingApprovalRequestTemplateId },
                 { "configurationBaseUrl", this.notificationConfigurations.ConfigurationBaseUrl },
                 { "portalBaseUrl", this.notificationConfigurations.PortalBaseUrl },
             };
@@ -172,29 +175,29 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
         TryCatch(async () =>
         {
             ValidateOnSendImpersonationApprovedNotificationAsync(accessRequest, this.notificationConfigurations);
-            string toEmail = accessRequest.CsvIdentificationRequest.RequesterEmail;
+            string toEmail = accessRequest.ImpersonationContext.RequesterEmail;
             string subject = "Request Approved";
             string body = "Your request has been approved";
 
             Dictionary<string, dynamic> personalisation = new Dictionary<string, dynamic>
             {
-                { "id", accessRequest.CsvIdentificationRequest.Id.ToString() },
-                { "requesterEntraUserId", accessRequest.CsvIdentificationRequest.RequesterEntraUserId.ToString() },
-                { "requesterFirstName", accessRequest.CsvIdentificationRequest.RequesterFirstName },
-                { "requesterLastName", accessRequest.CsvIdentificationRequest.RequesterLastName },
-                { "requesterDisplayName", accessRequest.CsvIdentificationRequest.RequesterDisplayName },
-                { "requesterEmail", accessRequest.CsvIdentificationRequest.RequesterEmail },
-                { "requesterJobTitle", accessRequest.CsvIdentificationRequest.RequesterJobTitle },
-                { "recipientEntraUserId", accessRequest.CsvIdentificationRequest.RecipientEntraUserId.ToString() },
-                { "recipientFirstName", accessRequest.CsvIdentificationRequest.RecipientFirstName },
-                { "recipientLastName", accessRequest.CsvIdentificationRequest.RecipientLastName },
-                { "recipientDisplayName", accessRequest.CsvIdentificationRequest.RecipientDisplayName },
-                { "recipientEmail", accessRequest.CsvIdentificationRequest.RecipientEmail },
-                { "recipientJobTitle", accessRequest.CsvIdentificationRequest.RecipientJobTitle },
-                { "reason", accessRequest.CsvIdentificationRequest.Reason },
-                { "organisation", accessRequest.CsvIdentificationRequest.Organisation },
-                { "identifierColumn", accessRequest.CsvIdentificationRequest.IdentifierColumn },
-                { "templateId", this.notificationConfigurations.CsvPendingApprovalRequestTemplateId },
+                { "id", accessRequest.ImpersonationContext.Id.ToString() },
+                { "requesterEntraUserId", accessRequest.ImpersonationContext.RequesterEntraUserId.ToString() },
+                { "requesterFirstName", accessRequest.ImpersonationContext.RequesterFirstName },
+                { "requesterLastName", accessRequest.ImpersonationContext.RequesterLastName },
+                { "requesterDisplayName", accessRequest.ImpersonationContext.RequesterDisplayName },
+                { "requesterEmail", accessRequest.ImpersonationContext.RequesterEmail },
+                { "requesterJobTitle", accessRequest.ImpersonationContext.RequesterJobTitle },
+                { "recipientEntraUserId", accessRequest.ImpersonationContext.ResponsiblePersonEntraUserId.ToString() },
+                { "recipientFirstName", accessRequest.ImpersonationContext.ResponsiblePersonFirstName },
+                { "recipientLastName", accessRequest.ImpersonationContext.ResponsiblePersonLastName },
+                { "recipientDisplayName", accessRequest.ImpersonationContext.ResponsiblePersonDisplayName },
+                { "recipientEmail", accessRequest.ImpersonationContext.ResponsiblePersonEmail },
+                { "recipientJobTitle", accessRequest.ImpersonationContext.ResponsiblePersonJobTitle },
+                { "reason", accessRequest.ImpersonationContext.Reason },
+                { "organisation", accessRequest.ImpersonationContext.Organisation },
+                { "identifierColumn", accessRequest.ImpersonationContext.IdentifierColumn },
+                { "templateId", this.notificationConfigurations.ImpersonationApprovedRequestTemplateId },
                 { "configurationBaseUrl", this.notificationConfigurations.ConfigurationBaseUrl },
                 { "portalBaseUrl", this.notificationConfigurations.PortalBaseUrl },
             };
@@ -207,28 +210,28 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
         TryCatch(async () =>
         {
             ValidateOnSendImpersonationDeniedNotificationAsync(accessRequest, this.notificationConfigurations);
-            string toEmail = accessRequest.CsvIdentificationRequest.RequesterEmail;
+            string toEmail = accessRequest.ImpersonationContext.RequesterEmail;
             string subject = "Request Denied";
             string body = "Your request has been denied";
 
             Dictionary<string, dynamic> personalisation = new Dictionary<string, dynamic>
             {
-                { "id", accessRequest.CsvIdentificationRequest.Id.ToString() },
-                { "requesterEntraUserId", accessRequest.CsvIdentificationRequest.RequesterEntraUserId.ToString() },
-                { "requesterFirstName", accessRequest.CsvIdentificationRequest.RequesterFirstName },
-                { "requesterLastName", accessRequest.CsvIdentificationRequest.RequesterLastName },
-                { "requesterDisplayName", accessRequest.CsvIdentificationRequest.RequesterDisplayName },
-                { "requesterEmail", accessRequest.CsvIdentificationRequest.RequesterEmail },
-                { "requesterJobTitle", accessRequest.CsvIdentificationRequest.RequesterJobTitle },
-                { "recipientEntraUserId", accessRequest.CsvIdentificationRequest.RecipientEntraUserId.ToString() },
-                { "recipientFirstName", accessRequest.CsvIdentificationRequest.RecipientFirstName },
-                { "recipientLastName", accessRequest.CsvIdentificationRequest.RecipientLastName },
-                { "recipientDisplayName", accessRequest.CsvIdentificationRequest.RecipientDisplayName },
-                { "recipientEmail", accessRequest.CsvIdentificationRequest.RecipientEmail },
-                { "recipientJobTitle", accessRequest.CsvIdentificationRequest.RecipientJobTitle },
-                { "reason", accessRequest.CsvIdentificationRequest.Reason },
-                { "organisation", accessRequest.CsvIdentificationRequest.Organisation },
-                { "identifierColumn", accessRequest.CsvIdentificationRequest.IdentifierColumn },
+                { "id", accessRequest.ImpersonationContext.Id.ToString() },
+                { "requesterEntraUserId", accessRequest.ImpersonationContext.RequesterEntraUserId.ToString() },
+                { "requesterFirstName", accessRequest.ImpersonationContext.RequesterFirstName },
+                { "requesterLastName", accessRequest.ImpersonationContext.RequesterLastName },
+                { "requesterDisplayName", accessRequest.ImpersonationContext.RequesterDisplayName },
+                { "requesterEmail", accessRequest.ImpersonationContext.RequesterEmail },
+                { "requesterJobTitle", accessRequest.ImpersonationContext.RequesterJobTitle },
+                { "recipientEntraUserId", accessRequest.ImpersonationContext.ResponsiblePersonEntraUserId.ToString() },
+                { "recipientFirstName", accessRequest.ImpersonationContext.ResponsiblePersonFirstName },
+                { "recipientLastName", accessRequest.ImpersonationContext.ResponsiblePersonLastName },
+                { "recipientDisplayName", accessRequest.ImpersonationContext.ResponsiblePersonDisplayName },
+                { "recipientEmail", accessRequest.ImpersonationContext.ResponsiblePersonEmail },
+                { "recipientJobTitle", accessRequest.ImpersonationContext.ResponsiblePersonJobTitle },
+                { "reason", accessRequest.ImpersonationContext.Reason },
+                { "organisation", accessRequest.ImpersonationContext.Organisation },
+                { "identifierColumn", accessRequest.ImpersonationContext.IdentifierColumn },
                 { "templateId", this.notificationConfigurations.ImpersonationDeniedRequestTemplateId },
                 { "configurationBaseUrl", this.notificationConfigurations.ConfigurationBaseUrl },
                 { "portalBaseUrl", this.notificationConfigurations.PortalBaseUrl },

@@ -26,7 +26,8 @@ namespace ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests
         public string Filepath { get; set; } = string.Empty;
         public byte[] Data { get; set; } = Array.Empty<byte>();
         public string Sha256Hash { get; set; } = string.Empty;
-        public string IdentifierColumn { get; set; } = string.Empty;
+        public int IdentifierColumnIndex { get; set; }
+        public bool HasHeaderRecord { get; set; } = false;
         public string CreatedBy { get; set; } = string.Empty;
         public DateTimeOffset CreatedDate { get; set; }
         public string UpdatedBy { get; set; } = string.Empty;

@@ -3,7 +3,6 @@ import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
 import './App.css';
 import Root from './components/root';
 import ErrorPage from './errors/error';
-import { Page1 } from './pages/page1';
 import { MsalProvider } from '@azure/msal-react';
 import { SecuredRoute } from './components/securitys/securedRoutes';
 import securityPoints from './securityMatrix';
@@ -14,6 +13,7 @@ import { ReIdentificationPage } from './pages/reIdentification';
 import { CsvReIdentificationPage } from './pages/csvReIdentification';
 import { ReIdReportHome } from './pages/reidReportHome';
 import ReportsHome from './components/reports/reportsHome';
+import { WebPart } from './pages/webPart';
 
 function App({ instance }: any) {
 
@@ -26,10 +26,6 @@ function App({ instance }: any) {
                 {
                     path: "home",
                     element: <Home />
-                },
-                {
-                    path: "page1/:id",
-                    element: <Page1 />
                 },
                 {
                     path: "reIdentification",
@@ -53,6 +49,10 @@ function App({ instance }: any) {
             path: "report/:reportGroupId/:reportId/:pseudoColumn/:reportPage?",
             element: <ReportsHome />
         },
+        {
+            path: "webpart/:pseudoId",
+            element: <WebPart />
+        },  
     ]);
 
     return (

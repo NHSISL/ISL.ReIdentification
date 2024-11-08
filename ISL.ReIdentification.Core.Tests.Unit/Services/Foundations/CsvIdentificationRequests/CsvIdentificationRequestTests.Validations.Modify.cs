@@ -65,8 +65,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
             var invalidCsvIdentificationRequest = new CsvIdentificationRequest
             {
                 RequesterEmail = invalidText,
-                RecipientEmail = invalidText,
-                IdentifierColumn = invalidText
+                RecipientEmail = invalidText
             };
 
             var invalidCsvIdentificationRequestException = new InvalidCsvIdentificationRequestException(
@@ -94,10 +93,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             invalidCsvIdentificationRequestException.AddData(
                 key: nameof(CsvIdentificationRequest.Filepath),
-                values: "Text is invalid");
-
-            invalidCsvIdentificationRequestException.AddData(
-                key: nameof(CsvIdentificationRequest.IdentifierColumn),
                 values: "Text is invalid");
 
             invalidCsvIdentificationRequestException.AddData(
@@ -169,7 +164,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
             var username = GetRandomStringWithLengthOf(256);
             invalidCsvIdentificationRequest.RequesterEmail = GetRandomStringWithLengthOf(321);
             invalidCsvIdentificationRequest.RecipientEmail = GetRandomStringWithLengthOf(321);
-            invalidCsvIdentificationRequest.IdentifierColumn = GetRandomStringWithLengthOf(11);
             invalidCsvIdentificationRequest.CreatedBy = username;
             invalidCsvIdentificationRequest.UpdatedBy = username;
 
@@ -186,11 +180,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
                 key: nameof(CsvIdentificationRequest.RecipientEmail),
                 values: $"Text exceed max length of " +
                     $"{invalidCsvIdentificationRequest.RecipientEmail.Length - 1} characters");
-
-            invalidCsvIdentificationRequestException.AddData(
-                key: nameof(CsvIdentificationRequest.IdentifierColumn),
-                values: $"Text exceed max length of " +
-                    $"{invalidCsvIdentificationRequest.IdentifierColumn.Length - 1} characters");
 
             invalidCsvIdentificationRequestException.AddData(
                 key: nameof(CsvIdentificationRequest.CreatedBy),
