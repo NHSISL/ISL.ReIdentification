@@ -11,7 +11,7 @@ export const ImpersonationProjectPage = () => {
                     <BreadCrumbBase
                         link="/"
                         backLink="Home"
-                        currentLink="Impersonation Projects">
+                        currentLink="Projects">
                     </BreadCrumbBase>
                     <div className="mt-3">
                         <ImpersonationContextProjectTable />
