@@ -31,6 +31,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 this.securityBrokerMock.Object,
                 this.loggingBrokerMock.Object,
                 this.dateTimeBrokerMock.Object,
+                this.identifierBrokerMock.Object,
                 this.projectStorageConfiguration)
             { CallBase = true };
 
@@ -96,6 +97,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 this.securityBrokerMock.Object,
                 this.loggingBrokerMock.Object,
                 this.dateTimeBrokerMock.Object,
+                this.identifierBrokerMock.Object,
                 this.projectStorageConfiguration)
             { CallBase = true };
 
@@ -160,6 +162,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 this.securityBrokerMock.Object,
                 this.loggingBrokerMock.Object,
                 this.dateTimeBrokerMock.Object,
+                this.identifierBrokerMock.Object,
                 this.projectStorageConfiguration)
             { CallBase = true };
 
