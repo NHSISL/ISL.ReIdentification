@@ -17,6 +17,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
 
             Validate(
                 (Rule: await IsInvalidAsync(accessAudit.Id), Parameter: nameof(AccessAudit.Id)),
+                (Rule: await IsInvalidAsync(accessAudit.RequestId), Parameter: nameof(AccessAudit.RequestId)),
                 (Rule: await IsInvalidAsync(accessAudit.EntraUserId), Parameter: nameof(AccessAudit.EntraUserId)),
 
                 (Rule: await IsInvalidAsync(accessAudit.PseudoIdentifier),
@@ -62,6 +63,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
 
             Validate(
                 (Rule: await IsInvalidAsync(accessAudit.Id), Parameter: nameof(AccessAudit.Id)),
+                (Rule: await IsInvalidAsync(accessAudit.RequestId), Parameter: nameof(AccessAudit.RequestId)),
                 (Rule: await IsInvalidAsync(accessAudit.EntraUserId), Parameter: nameof(AccessAudit.EntraUserId)),
                 (Rule: await IsInvalidAsync(accessAudit.Email), Parameter: nameof(AccessAudit.Email)),
 

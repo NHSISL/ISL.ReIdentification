@@ -3,7 +3,7 @@
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
+  color-scheme: light;
   color: rgba(255, 255, 255, 0.87);
   background-color: #242424;
 
@@ -71,4 +71,3 @@ button:focus-visible {
     --bs-list-group-active-bg: #45B8AC !important;
     --bs-list-group-active-border-color: #45B8AC !important;
 }
-        }

@@ -19,7 +19,7 @@ class OdsDataBroker {
     }
 
     async GetOdsChildrenByIdAsync(id: string) {
-        const url = `${this.relativeOdsDataUrl}/GetChildren?id=${id}`;
+        const url = `${this.relativeOdsDataUrl}/GetChildren/${id}`;
         
         if(!id) {
             return [];
