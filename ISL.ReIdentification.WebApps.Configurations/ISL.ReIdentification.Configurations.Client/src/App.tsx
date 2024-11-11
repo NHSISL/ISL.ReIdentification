@@ -46,68 +46,48 @@ function App({ instance }: any) {
                 },
                 {
                     path: "configuration/home",
-                    element: <ConfigurationHome />
+                    element: <SecuredRoute allowedRoles={securityPoints.configuration.view}><ConfigurationHome /></SecuredRoute> 
                 },
                 {
                     path: "configuration/lookups",
-                    element: <Lookups />
+                    element: <SecuredRoute allowedRoles={securityPoints.configuration.view}><Lookups /></SecuredRoute>
                 },
                 {
                     path: "userAccess",
-                    element: <UserAccess />
+                    element: <SecuredRoute allowedRoles={securityPoints.userAccess.view}><UserAccess /></SecuredRoute>
                 },
                 {
                     path: "userAccess/newUser",
-                    element: <UserAccessNew />
+                    element: <SecuredRoute allowedRoles={securityPoints.userAccess.add}><UserAccessNew /></SecuredRoute>
                 },
                 {
                     path: "userAccess/:entraUserId",
-                    element: <UserAccessEdit/>
+                    element: <SecuredRoute allowedRoles={securityPoints.userAccess.add}><UserAccessEdit/></SecuredRoute>
                 },
-                {
-                    path: "impersonationContext",
-                    element: <ImpersonationContext />
-                },
-                {
-                    path: "impersonationContextDetail/:ImpersonationContextId",
-                    element: <ImpersonationContextDetailPage />
-                },
-                {
-                    path: "csvIdentificationRequest",
-                    element: <CsvIdentificationRequestPage />
-                },
-                {
-                    path: "csvIdentificationRequestDetail/:CsvIdentificationRequestId",
-                    element: <CsvIdentificationRequestDetailPage />
-                },
-                {
-                    path: "odsData",
-                    element: <OdsData />
-                },
-                {
-                    path: "pdsData",
-                    element: <PdsData />
-                },
-                {
-                    path: "page1/:id",
-                    element: <Page1 />
-                },
-                {
-                    path: "page2",
-                    element: <SecuredRoute allowedRoles={securityPoints.page2.view}><Page2 /></SecuredRoute>
-                },
-                {
-                    path: "page3",
-                    element: <Page3 />
-                },
-                {
-                    path: "page4",
-                    element: <Page4 />
-                },
-                {
-                    path: "page5",
-                    element: <Page5 />
-                },
+                //{
+                //    path: "impersonationContext",
+                //    element: <ImpersonationContext />
+                //},
+                //{
+                //    path: "impersonationContextDetail/:ImpersonationContextId",
+                //    element: <ImpersonationContextDetailPage />
+                //},
+                //{
+                //    path: "csvIdentificationRequest",
+                //    element: <CsvIdentificationRequestPage />
+                //},
+                //{
+                //    path: "csvIdentificationRequestDetail/:CsvIdentificationRequestId",
+                //    element: <CsvIdentificationRequestDetailPage />
+                //},
+                //{
+                //    path: "odsData",
+                //    element: <OdsData />
+                //},
+                //{
+                //    path: "pdsData",
+                //    element: <PdsData />
+                //},
                 {
                     index: true,
                     element: <Navigate to="/home" />

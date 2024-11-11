@@ -1,41 +1,41 @@
 const securityPoints = {
-    page2: {
-        add:  [],
-        delete: [],
-        edit: [],
-        view: ["ISL.LDS.AdminSpa.Page2", "ISL.LDS.AdminSpa.Administrators"]
-    },
     configuration: {
-        add: [],
-        edit: [],
-        delete: [],
-        view: [],
+        add: ['ISL.Reidentification.Configuration.Administrators', 'ISL.Reidentification.Configuration.Users'],
+        edit: ['ISL.Reidentification.Configuration.Administrators', 'ISL.Reidentification.Configuration.Users'],
+        delete: ['ISL.Reidentification.Configuration.Administrators', 'ISL.Reidentification.Configuration.Users'],
+        view: ['ISL.Reidentification.Configuration.Administrators', 'ISL.Reidentification.Configuration.Users'],
     },
     lookups: {
-        add: [],
-        edit: [],
-        delete: [],
-        view: [],
+        add: ['ISL.Reidentification.Configuration.Administrators', 'ISL.Reidentification.Configuration.Users'],
+        edit: ['ISL.Reidentification.Configuration.Administrators', 'ISL.Reidentification.Configuration.Users'],
+        delete: ['ISL.Reidentification.Configuration.Administrators', 'ISL.Reidentification.Configuration.Users'],
+        view: ['ISL.Reidentification.Configuration.Administrators', 'ISL.Reidentification.Configuration.Users'],
     },
     userAccess: {
+        add: ['ISL.Reidentification.Configuration.Administrators', 'ISL.Reidentification.Configuration.Users'],
+        edit: ['ISL.Reidentification.Configuration.Administrators', 'ISL.Reidentification.Configuration.Users'],
+        delete: ['ISL.Reidentification.Configuration.Administrators', 'ISL.Reidentification.Configuration.Users'],
+        view: ['ISL.Reidentification.Configuration.Administrators', 'ISL.Reidentification.Configuration.Users'],
+    },
+    singleReId: {
         add: [],
         edit: [],
         delete: [],
         view: [],
     },
-    delegatedUserAccess: {
+    csvReId: {
         add: [],
         edit: [],
         delete: [],
         view: [],
     },
-    odsData: {
+    csvWorklist: {
         add: [],
         edit: [],
         delete: [],
         view: [],
     },
-    pdsData: {
+    reports: {
         add: [],
         edit: [],
         delete: [],
