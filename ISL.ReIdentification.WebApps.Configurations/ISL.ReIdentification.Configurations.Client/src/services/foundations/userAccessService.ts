@@ -16,7 +16,7 @@ export const userAccessService = {
                 userAccess.createdDate = userAccess.updatedDate = date;
                 userAccess.createdBy = userAccess.updatedBy = msal.accounts[0].username;
 
-                return broker.PostUserAccessAsync(userAccess);
+                return broker.PostUserAccessBulkAsync(userAccess);
             },
             onSuccess: (variables: UserAccess) => {
                 queryClient.invalidateQueries({ queryKey: ["UserAccessGetAll"]});
@@ -94,6 +94,7 @@ export const userAccessService = {
 
             onSuccess: (data: { id: string }) => {
                 queryClient.invalidateQueries({ queryKey: ["UserAccessGetAll"] });
+                queryClient.invalidateQueries({ queryKey: ["DistinctUsers"]});
                 queryClient.invalidateQueries({ queryKey: ["UserAccessGetById", { id: data.id }] });
             }
         });
