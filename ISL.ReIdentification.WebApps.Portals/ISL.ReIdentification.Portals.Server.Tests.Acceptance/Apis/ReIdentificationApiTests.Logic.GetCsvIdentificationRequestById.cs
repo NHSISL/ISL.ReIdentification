@@ -20,6 +20,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
         {
             // given
             string pseudoIdentifier = "0000000001";
+            Guid securityOid = TestAuthHandler.SecurityOid;
             CsvIdentificationRequest randomCsvIdentificationRequest = CreateRandomCsvIdentificationRequest();
             CsvIdentificationRequest inputCsvIdentificationRequest = randomCsvIdentificationRequest;
             inputCsvIdentificationRequest.HasHeaderRecord = false;
@@ -35,17 +36,17 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
                 await this.apiBroker.PostCsvIdentificationRequestAsync(inputCsvIdentificationRequest);
 
             /// Same Guid as the Oid set in TestAuthHandler
-            string testOidGuid = "efc48de6-420f-44a8-8e41-bf1e1793da8d";
-            Guid entraUserId = Guid.Parse(testOidGuid);
+            //string testOidGuid = "efc48de6-420f-44a8-8e41-bf1e1793da8d";
+            //Guid entraUserId = Guid.Parse(testOidGuid);
 
             /// Create a  User Access with same EntraUserId with some organisation OrgCode. 
-            UserAccess createdUserAccess = await PostRandomUserAccess(entraUserId);
+            UserAccess createdUserAccess = await PostRandomUserAccess(securityOid);
 
             ///Create odsData with the OrganisationCode
             OdsData createdOdsData = await PostRandomOdsData(createdUserAccess.OrgCode);
 
             /// pds contains orgCode and pseudoIdentifier
-            PdsData createdPdsData = await PostRandomPdsDataAsync(pseudoIdentifier, createdUserAccess.OrgCode);
+            PdsData createdPdsData = await PostRandomPdsDataGivenPseudoAsync(pseudoIdentifier, createdUserAccess.OrgCode);
 
             // when
             ActionResult actualResult =

@@ -14,10 +14,6 @@ using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.PdsDatas;
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.ReIdentifications;
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.UserAccesses;
 using Microsoft.EntityFrameworkCore;
-using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.OdsDatas;
-using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.PdsDatas;
-using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.UserAccesses;
-using Microsoft.EntityFrameworkCore;
 using Tynamix.ObjectFiller;
 
 namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
@@ -384,17 +380,17 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
 
             return filler;
         }
-        private async ValueTask<PdsData> PostRandomPdsDataAsync(string pseudoNhsNumber, string orgCode)
+        private async ValueTask<PdsData> PostRandomPdsDataGivenPseudoAsync(string pseudoNhsNumber, string orgCode)
         {
             PdsData randomPdsData = CreateRandomPdsData(pseudoNhsNumber, orgCode);
 
             return await this.apiBroker.PostPdsDataAsync(randomPdsData);
         }
 
-        private static PdsData CreateRandomPdsData(string pseudoNhsNumber, string orgCode) =>
-            CreatePdsDataFiller(pseudoNhsNumber, orgCode).Create();
+        private static PdsData CreateRandomPdsDataGivenPseudo(string pseudoNhsNumber, string orgCode) =>
+            CreatePdsDataGivenPseudoFiller(pseudoNhsNumber, orgCode).Create();
 
-        private static Filler<PdsData> CreatePdsDataFiller(string pseudoNhsNumber, string orgCode)
+        private static Filler<PdsData> CreatePdsDataGivenPseudoFiller(string pseudoNhsNumber, string orgCode)
         {
             string user = Guid.NewGuid().ToString();
             DateTime now = DateTime.UtcNow;

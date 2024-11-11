@@ -184,42 +184,5 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
                 return InternalServerError(pdsDataServiceException);
             }
         }
-
-        [HttpDelete("{pdsDataId}")]
-        public async ValueTask<ActionResult<PdsData>> DeletePdsDataByIdAsync(Guid pdsDataId)
-        {
-            try
-            {
-                PdsData pdsData = await this.pdsDataService.RemovePdsDataByIdAsync(pdsDataId);
-
-                return Ok(pdsData);
-            }
-            catch (PdsDataValidationException pdsDataValidationException)
-                when (pdsDataValidationException.InnerException is NotFoundPdsDataException)
-            {
-                return NotFound(pdsDataValidationException.InnerException);
-            }
-            catch (PdsDataValidationException pdsDataValidationException)
-            {
-                return BadRequest(pdsDataValidationException.InnerException);
-            }
-            catch (PdsDataDependencyValidationException pdsDataDependencyValidationException)
-                when (pdsDataDependencyValidationException.InnerException is LockedPdsDataException)
-            {
-                return Locked(pdsDataDependencyValidationException.InnerException);
-            }
-            catch (PdsDataDependencyValidationException pdsDataDependencyValidationException)
-            {
-                return BadRequest(pdsDataDependencyValidationException.InnerException);
-            }
-            catch (PdsDataDependencyException pdsDataDependencyException)
-            {
-                return InternalServerError(pdsDataDependencyException);
-            }
-            catch (PdsDataServiceException pdsDataServiceException)
-            {
-                return InternalServerError(pdsDataServiceException);
-            }
-        }
     }
 }
