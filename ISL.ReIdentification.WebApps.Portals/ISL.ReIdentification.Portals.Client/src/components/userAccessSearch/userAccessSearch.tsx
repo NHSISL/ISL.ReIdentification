@@ -8,9 +8,10 @@ import { UserAccessView } from "../../models/views/components/userAccess/userAcc
 
 type UserAccessSearchProps = {
     selectUser: (value: UserAccessView) => void;
+    labelText: string;
 };
 
-const UserAccessSearch: FunctionComponent<UserAccessSearchProps> = ({ selectUser }) => {
+const UserAccessSearch: FunctionComponent<UserAccessSearchProps> = ({ selectUser, labelText }) => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [debouncedTerm, setDebouncedTerm] = useState<string>("");
     const [selectedUserName, setSelectedUserName] = useState<string | null>(null);
@@ -46,7 +47,7 @@ const UserAccessSearch: FunctionComponent<UserAccessSearchProps> = ({ selectUser
     return (
         <>
             <FormGroup>
-                <Form.Label className="text-start"><strong>Recipient Email Address</strong></Form.Label>
+                <Form.Label className="text-start"><strong>{labelText}</strong></Form.Label>
                 <InputGroup>
                     <Form.Control
                         autoComplete="off"
@@ -69,10 +70,10 @@ const UserAccessSearch: FunctionComponent<UserAccessSearchProps> = ({ selectUser
 
             {selectedUserName ? (
                 <div>
-                        <small>Selected User: <span className="text-success">{selectedUserName}</span></small>
-                        <Button variant="link" onClick={clearSelectedUser}>
-                            <FontAwesomeIcon icon={faTimes} style={{color:"red"}} />
-                        </Button>
+                    <small>Selected User: <span className="text-success">{selectedUserName}</span></small>
+                    <Button variant="link" onClick={clearSelectedUser}>
+                        <FontAwesomeIcon icon={faTimes} style={{ color: "red" }} />
+                    </Button>
                 </div>
             ) : (
                 <div style={{ paddingTop: "10px" }}>

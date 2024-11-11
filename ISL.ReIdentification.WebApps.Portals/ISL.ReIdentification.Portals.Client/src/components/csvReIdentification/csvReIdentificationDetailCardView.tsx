@@ -182,8 +182,7 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                         </small>
                     </Card.Subtitle>
                     <Form onSubmit={handleSubmit}>
-                        <UserAccessSearch selectUser={(userAccess) => { setSelectedUser(userAccess) }} />
-
+                        <UserAccessSearch selectUser={(userAccess) => { setSelectedUser(userAccess) }} labelText="Recipient Email Address" />
                         <Form.Group className="text-start">
                             <Form.Label><strong>Upload CSV:</strong></Form.Label>
                             <Button variant="link" onClick={() => setShowHelpModal(true)}>
