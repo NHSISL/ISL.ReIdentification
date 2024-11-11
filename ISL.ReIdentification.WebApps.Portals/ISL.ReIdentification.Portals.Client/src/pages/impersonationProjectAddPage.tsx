@@ -9,7 +9,7 @@ export const ImpersonationProjectAddPage = () => {
             <Container fluid className="mt-4">
                 <section>
                     <BreadCrumbBase
-                        link="/projects"
+                        link="/project"
                         backLink="Projects"
                         currentLink="Add Project">
                     </BreadCrumbBase>
