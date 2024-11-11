@@ -84,6 +84,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 this.securityBrokerMock.Object,
                 this.loggingBrokerMock.Object,
                 this.dateTimeBrokerMock.Object,
+                this.identifierBrokerMock.Object,
                 projectStorageConfiguration)
             { CallBase = true };
 
@@ -170,6 +171,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -227,6 +229,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 this.securityBrokerMock.Object,
                 this.loggingBrokerMock.Object,
                 this.dateTimeBrokerMock.Object,
+                this.identifierBrokerMock.Object,
                 projectStorageConfiguration)
             { CallBase = true };
 
@@ -286,6 +289,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

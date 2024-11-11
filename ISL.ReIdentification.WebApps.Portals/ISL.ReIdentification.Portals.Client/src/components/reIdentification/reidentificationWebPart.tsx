@@ -13,7 +13,7 @@ type ReidentificationWebPartProps = {
 const ReidentificationWebPart: FunctionComponent<ReidentificationWebPartProps> = ({ pseudo }) => {
 
     const { submit, loading, data } = reIdentificationService.useRequestReIdentification();
-    const { mappedLookups, isLoading } = lookupViewService.useGetAllLookups("");
+    const { mappedLookups, isLoading } = lookupViewService.useGetAllLookups("", "Reasons");
     const [rememberChecked, setRememberChecked] = useState(false);
     const [reidReason, setReidReason] = useState("");
     const [reasonForgot, setReasoneForgot] = useState(false);
