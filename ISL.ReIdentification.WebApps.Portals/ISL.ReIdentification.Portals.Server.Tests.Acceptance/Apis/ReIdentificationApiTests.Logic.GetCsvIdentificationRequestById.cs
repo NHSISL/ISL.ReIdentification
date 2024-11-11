@@ -21,17 +21,18 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             // given
             string pseudoIdentifier = "0000000001";
             CsvIdentificationRequest randomCsvIdentificationRequest = CreateRandomCsvIdentificationRequest();
-            randomCsvIdentificationRequest.HasHeaderRecord = false;
-            randomCsvIdentificationRequest.IdentifierColumnIndex = 0;
+            CsvIdentificationRequest inputCsvIdentificationRequest = randomCsvIdentificationRequest;
+            inputCsvIdentificationRequest.HasHeaderRecord = false;
+            inputCsvIdentificationRequest.IdentifierColumnIndex = 0;
 
             /// Add equivalent byte array as single line csv with pseudo identifier
-            randomCsvIdentificationRequest.Data = Encoding.UTF8.GetBytes(pseudoIdentifier);
+            inputCsvIdentificationRequest.Data = Encoding.UTF8.GetBytes(pseudoIdentifier);
 
             string randomString = GetRandomStringWithLengthOf(GetRandomNumber());
             string inputReason = randomString;
 
             CsvIdentificationRequest exisingCsvIdentificationRequest =
-                await this.apiBroker.PostCsvIdentificationRequestAsync(randomCsvIdentificationRequest);
+                await this.apiBroker.PostCsvIdentificationRequestAsync(inputCsvIdentificationRequest);
 
             /// Same Guid as the Oid set in TestAuthHandler
             string testOidGuid = "efc48de6-420f-44a8-8e41-bf1e1793da8d";
