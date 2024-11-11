@@ -36,7 +36,6 @@ export const OdsTreeElement: FunctionComponent<OdsTreeElementProps> = ({ node, a
     },[node, selectedRecords])
 
     useEffect(() => {
-        console.log(selectedRecords);
         selectedRecords.forEach(selectedRecord => {
             if(selectedRecord.odsHierarchy != node.odsHierarchy){
                 if(selectedRecord.odsHierarchy.startsWith(node.odsHierarchy)){
