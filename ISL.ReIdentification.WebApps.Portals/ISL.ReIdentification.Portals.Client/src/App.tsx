@@ -29,7 +29,7 @@ function App({ instance }: any) {
                 },
                 {
                     path: "reIdentification",
-                    element: <SecuredRoute allowedRoles={securityPoints.reIdentification.view}><ReIdentificationPage /></SecuredRoute>
+                    element: <ReIdentificationPage />
                 },
                 {
                     path: "csvReIdentification",
