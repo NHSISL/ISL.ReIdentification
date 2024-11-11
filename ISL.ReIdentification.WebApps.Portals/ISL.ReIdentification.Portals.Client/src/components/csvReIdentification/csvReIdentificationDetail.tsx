@@ -17,7 +17,7 @@ const CsvReIdentificationDetail: FunctionComponent = () => {
                     <Alert variant="secondary" style={{ width: '50rem' }}>
                         <p>
                             <strong>Note:</strong> You will only be able to reidentify patients that are present within
-                            <strong> your</strong> organisation, '0000' will be returned if access is not found for a patient.
+                            <strong> your</strong> organisation, '0000000000' will be returned if access is not found for a patient.
                         </p>
                         <p><strong>Note:</strong>All Reidentification requests are subject to breach monitoring and reporting.</p>
                         <p>Details of breach thresholds can be found <a href="about:blank" target="blank" >here</a></p>

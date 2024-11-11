@@ -8,6 +8,7 @@ import { faListAlt } from '@fortawesome/free-solid-svg-icons/faListAlt';
 import { faTable } from '@fortawesome/free-solid-svg-icons/faTable';
 import { FeatureSwitch } from '../accessControls/featureSwitch';
 import { FeatureDefinitions } from '../../featureDefinitions';
+import { faLineChart } from '@fortawesome/free-solid-svg-icons/faLineChart';
 
 
 const MenuComponent: React.FC = () => {
@@ -33,7 +34,7 @@ const MenuComponent: React.FC = () => {
                 <ListGroup.Item
                     className={`bg-dark text-white ${activePath === '/reports' ? 'active' : ''}`}
                     onClick={() => handleItemClick('/report')}>
-                    <FontAwesomeIcon icon={faHome} className="me-2 fa-icon" />
+                    <FontAwesomeIcon icon={faLineChart} className="me-2 fa-icon" />
                     <SecuredLink to="/report">Report Reidentification</SecuredLink>
                 </ListGroup.Item>
             </FeatureSwitch>
