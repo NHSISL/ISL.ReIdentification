@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
-using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Services.Orchestrations.Identifications;
 using Moq;
@@ -42,9 +41,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             List<dynamic> reIdentifiedItems = mappedCsvObjects.DeepClone();
             byte[] csvIdentificationRequestDataByteArray = Encoding.UTF8.GetBytes(CsvDataString());
             AccessRequest outputAccessRequest = randomAccessRequest.DeepClone();
-            outputAccessRequest.CsvIdentificationRequest = new CsvIdentificationRequest();
             outputAccessRequest.CsvIdentificationRequest.Data = csvIdentificationRequestDataByteArray;
-            outputAccessRequest.CsvIdentificationRequest.HasHeaderRecord = hasHeaderRecord;
 
             List<CsvIdentificationItem> csvIdentificationItems =
                 CreateRandomCsvIdentificationItems(identificationItemCount).ToList();

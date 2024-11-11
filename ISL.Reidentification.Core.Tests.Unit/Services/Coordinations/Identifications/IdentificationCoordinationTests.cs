@@ -75,6 +75,21 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 projectStorageConfiguration);
         }
 
+        private IdentificationRequest HydrateAccessRequestIdentificationRequest(AccessRequest accessRequest)
+        {
+            IdentificationRequest identificationRequest = new IdentificationRequest();
+            identificationRequest.EntraUserId = accessRequest.CsvIdentificationRequest.RecipientEntraUserId;
+            identificationRequest.Email = accessRequest.CsvIdentificationRequest.RecipientEmail;
+            identificationRequest.JobTitle = accessRequest.CsvIdentificationRequest.RecipientJobTitle;
+            identificationRequest.DisplayName = accessRequest.CsvIdentificationRequest.RecipientDisplayName;
+            identificationRequest.GivenName = accessRequest.CsvIdentificationRequest.RecipientFirstName;
+            identificationRequest.Surname = accessRequest.CsvIdentificationRequest.RecipientLastName;
+            identificationRequest.Reason = accessRequest.CsvIdentificationRequest.Reason;
+            identificationRequest.Organisation = accessRequest.CsvIdentificationRequest.Organisation;
+
+            return identificationRequest;
+        }
+
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
 
