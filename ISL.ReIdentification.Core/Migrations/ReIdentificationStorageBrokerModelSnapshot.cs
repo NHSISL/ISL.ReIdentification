@@ -68,6 +68,9 @@ namespace ISL.ReIdentification.Core.Migrations
                     b.Property<string>("Reason")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("RequestId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Surname")
                         .HasColumnType("nvarchar(max)");
 

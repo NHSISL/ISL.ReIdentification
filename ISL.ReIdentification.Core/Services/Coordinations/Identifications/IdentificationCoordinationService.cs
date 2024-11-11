@@ -14,7 +14,6 @@ using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Securities;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
-using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
@@ -239,6 +238,14 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
 
             accessRequest.IdentificationRequest = new IdentificationRequest();
             accessRequest.IdentificationRequest.IdentificationItems = identificationItems;
+            accessRequest.IdentificationRequest.EntraUserId = accessRequest.CsvIdentificationRequest.RecipientEntraUserId;
+            accessRequest.IdentificationRequest.Email = accessRequest.CsvIdentificationRequest.RecipientEmail;
+            accessRequest.IdentificationRequest.JobTitle = accessRequest.CsvIdentificationRequest.RecipientJobTitle;
+            accessRequest.IdentificationRequest.DisplayName = accessRequest.CsvIdentificationRequest.RecipientDisplayName;
+            accessRequest.IdentificationRequest.GivenName = accessRequest.CsvIdentificationRequest.RecipientFirstName;
+            accessRequest.IdentificationRequest.Surname = accessRequest.CsvIdentificationRequest.RecipientLastName;
+            accessRequest.IdentificationRequest.Reason = accessRequest.CsvIdentificationRequest.Reason;
+            accessRequest.IdentificationRequest.Organisation = accessRequest.CsvIdentificationRequest.Organisation;
 
             return accessRequest;
         }
@@ -269,8 +276,6 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
 
             byte[] csvIdentificationRequestDataByteArray = Encoding.UTF8.GetBytes(csvIdentificationRequestData);
 
-            accessRequest.CsvIdentificationRequest = new CsvIdentificationRequest();
-            accessRequest.CsvIdentificationRequest.HasHeaderRecord = hasHeaderRecord;
             accessRequest.CsvIdentificationRequest.Data = csvIdentificationRequestDataByteArray;
 
             return accessRequest;

@@ -48,14 +48,24 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
         {
             ValidateIdentificationRequestIsNotNull(identificationRequest);
 
+            var noAccessItems = identificationRequest.IdentificationItems
+                .FindAll(x => x.HasAccess == false).ToList();
+
             foreach (IdentificationItem item in identificationRequest.IdentificationItems)
             {
                 var now = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
                 var accessAuditId = await this.identifierBroker.GetIdentifierAsync();
 
+                var noAccessMessage = "User do not have access to the organisation(s) " +
+                    "associated with patient.  Re-identification blocked.";
+
+                var accessMessage = "User have access to the organisation(s) " +
+                    "associated with patient.  Item will be submitted for re-identification.";
+
                 AccessAudit accessAudit = new AccessAudit
                 {
                     Id = accessAuditId,
+                    RequestId = identificationRequest.Id,
                     PseudoIdentifier = item.Identifier,
                     EntraUserId = identificationRequest.EntraUserId,
                     GivenName = identificationRequest.GivenName,
@@ -64,7 +74,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                     Reason = identificationRequest.Reason,
                     Organisation = identificationRequest.Organisation,
                     HasAccess = item.HasAccess,
-                    Message = item.Message,
+                    Message = item.HasAccess ? accessMessage : noAccessMessage,
                     CreatedBy = "System",
                     CreatedDate = now,
                     UpdatedBy = "System",
@@ -76,8 +86,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                 if (item.HasAccess is false)
                 {
                     item.Identifier = "0000000000";
-                    item.Message = "Failed to Re-Identify. User do not have access to the organisation(s) " + 
-                        "associated with patient.";
+                    item.Message = noAccessMessage;
                 }
             }
 
@@ -113,6 +122,29 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                 var record = identificationRequest.IdentificationItems
                     .First(request => request.RowNumber == item.RowNumber);
 
+                var now = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                var accessAuditId = await this.identifierBroker.GetIdentifierAsync();
+
+                AccessAudit accessAudit = new AccessAudit
+                {
+                    Id = accessAuditId,
+                    RequestId = identificationRequest.Id,
+                    PseudoIdentifier = record.Identifier,
+                    EntraUserId = identificationRequest.EntraUserId,
+                    GivenName = identificationRequest.GivenName,
+                    Surname = identificationRequest.Surname,
+                    Email = identificationRequest.Email,
+                    Reason = identificationRequest.Reason,
+                    Organisation = identificationRequest.Organisation,
+                    HasAccess = item.HasAccess,
+                    Message = $"Re-identification outcome: {item.Message}",
+                    CreatedBy = "System",
+                    CreatedDate = now,
+                    UpdatedBy = "System",
+                    UpdatedDate = now
+                };
+
+                await this.accessAuditService.AddAccessAuditAsync(accessAudit);
                 record.Identifier = item.Identifier;
                 record.Message = item.Message;
                 record.IsReidentified = true;

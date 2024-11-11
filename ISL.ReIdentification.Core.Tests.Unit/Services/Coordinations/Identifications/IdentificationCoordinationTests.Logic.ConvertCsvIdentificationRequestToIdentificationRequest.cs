@@ -25,7 +25,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             Guid entraUserId = Guid.NewGuid();
             AccessRequest randomAccessRequest = CreateRandomAccessRequest();
             randomAccessRequest.CsvIdentificationRequest.RecipientEntraUserId = entraUserId;
-            randomAccessRequest.IdentificationRequest = null;
             randomAccessRequest.ImpersonationContext = null;
             AccessRequest inputAccessRequest = randomAccessRequest.DeepClone();
             string csvDataString = Encoding.UTF8.GetString(inputAccessRequest.CsvIdentificationRequest.Data);
@@ -48,7 +47,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             }
 
             AccessRequest outputAccessRequest = randomAccessRequest.DeepClone();
-            outputAccessRequest.IdentificationRequest = new IdentificationRequest();
+
+            IdentificationRequest hydratedIdentificationRequest =
+                HydrateAccessRequestIdentificationRequest(outputAccessRequest);
+
+            outputAccessRequest.IdentificationRequest = hydratedIdentificationRequest;
             outputAccessRequest.IdentificationRequest.IdentificationItems = convertedIdentificationItems;
 
             Dictionary<string, int> fieldMappings = new Dictionary<string, int>
