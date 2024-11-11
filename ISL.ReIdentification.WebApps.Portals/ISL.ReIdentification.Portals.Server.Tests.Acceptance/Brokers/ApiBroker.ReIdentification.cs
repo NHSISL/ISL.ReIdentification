@@ -11,6 +11,9 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Brokers
     {
         private const string reIdentificationRelativeUrl = "api/reidentification";
 
+        public async ValueTask<AccessRequest> PostIdentificationRequestsAsync(AccessRequest accessRequest) =>
+            await this.apiFactoryClient.PostContentAsync($"{reIdentificationRelativeUrl}", accessRequest);
+
         public async ValueTask<AccessRequest> PostImpersonationContextRequestAsync(AccessRequest accessRequest) =>
             await this.apiFactoryClient.PostContentAsync($"{reIdentificationRelativeUrl}/impersonation", accessRequest);
     }
