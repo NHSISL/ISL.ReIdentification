@@ -382,7 +382,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
         }
         private async ValueTask<PdsData> PostRandomPdsDataGivenPseudoAsync(string pseudoNhsNumber, string orgCode)
         {
-            PdsData randomPdsData = CreateRandomPdsData(pseudoNhsNumber, orgCode);
+            PdsData randomPdsData = CreateRandomPdsDataGivenPseudo(pseudoNhsNumber, orgCode);
 
             return await this.apiBroker.PostPdsDataAsync(randomPdsData);
         }
