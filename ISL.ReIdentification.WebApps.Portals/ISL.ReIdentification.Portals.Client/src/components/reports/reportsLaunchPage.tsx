@@ -126,7 +126,7 @@ const ReportsLaunchPage: FunctionComponent<ReportLaunchPageProps> = (props) => {
                 <Modal.Header>Large Numbers of reid requests Detected</Modal.Header>
                 <Modal.Body>
                     <p>You have requested {heldPseudosToReid.length} records to be re-identified.</p>
-                    <p>This is likly to cause a breech to be reported.</p>
+                    <p>This is likly to cause a breach to be reported.</p>
                     <ButtonGroup>
                         <Button onClick={reIdBulk}>Confirm</Button><Button variant="secondary" onClick={() => { setHeldPseudosToReid([]); setPromptForReid(false); setLastSetOfPseudos([]); }}>Cancel</Button>
                     </ButtonGroup>
