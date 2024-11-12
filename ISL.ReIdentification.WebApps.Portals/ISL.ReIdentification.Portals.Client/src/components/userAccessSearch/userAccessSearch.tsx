@@ -36,7 +36,7 @@ const UserAccessSearch: FunctionComponent<UserAccessSearchProps> = ({ selectUser
 
     const handleUserSelect = (userAccess: UserAccessView) => {
         selectUser(userAccess);
-        setSelectedUserName(userAccess.email);
+        setSelectedUserName(userAccess.userEmail);
         setSearchTerm("");
     }
 
@@ -82,7 +82,7 @@ const UserAccessSearch: FunctionComponent<UserAccessSearchProps> = ({ selectUser
                             {data && data.map((userAccess: UserAccessView) => (
                                 <tr onClick={() => handleUserSelect(userAccess)} key={userAccess.id}>
                                     <td><small>{userAccess.displayName}</small></td>
-                                    <td><small>{userAccess.email}</small></td>
+                                    <td><small>{userAccess.userEmail}</small></td>
                                     <td><small>{userAccess.jobTitle}</small></td>
                                     <td>
                                         <Button

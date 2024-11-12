@@ -28,9 +28,11 @@ export const csvIdentificationRequestViewService = {
         const [pages, setPages] = useState<Array<{ data: CsvIdentificationRequestView[] }>>([]);
 
         useEffect(() => {
-            if (response.data && response.data.pages) {
+            if (response.data && Array.isArray(response.data.pages)) {
                 const csvIdentificationRequests: Array<CsvIdentificationRequestView> = [];
-                response.data.pages.forEach((x: { data: CsvIdentificationRequestView[] }) => {
+                const validPages = (response.data.pages as Array<{ data: CsvIdentificationRequestView[] }>).filter(page => page.data);
+
+                validPages.forEach((x) => {
                     x.data.forEach((csvIdentificationRequest: CsvIdentificationRequestView) => {
                         csvIdentificationRequests.push(new CsvIdentificationRequestView(
                             csvIdentificationRequest.id,
@@ -54,7 +56,7 @@ export const csvIdentificationRequestViewService = {
                 });
 
                 setMappedCsvIdentificationRequests(csvIdentificationRequests);
-                setPages(response.data.pages);
+                setPages(validPages);
             }
         }, [response.data]);
 

@@ -14,7 +14,7 @@ export class ImpersonationContextView {
     public responsiblePersonJobTitle: string;
     public reason: string;
     public purpose: string;
-    public organisation: string;
+    public organisation: string[];
     public projectName: string;
     public inboxToken?: string;
     public outboxToken?: string;
@@ -42,13 +42,13 @@ export class ImpersonationContextView {
         responsiblePersonJobTitle: string,
         reason: string,
         purpose: string,
-        organisation: string,
+        organisation: string[],
         projectName: string,
         inboxToken: string,
-        outboxToken?: string,
-        errorToken?: string,
         isApproved: boolean,
         identifierColumn: string,
+        outboxToken?: string,
+        errorToken?: string,
         createdBy?: string,
         createdDate?: Date | undefined,
         updatedBy?: string,
@@ -69,7 +69,7 @@ export class ImpersonationContextView {
         this.responsiblePersonJobTitle = responsiblePersonJobTitle || "";
         this.reason = reason || "";
         this.purpose = purpose || "";
-        this.organisation = organisation || "";
+        this.organisation = organisation || [""];
         this.projectName = projectName || "";
         this.inboxToken = inboxToken || "";
         this.outboxToken = outboxToken || "";

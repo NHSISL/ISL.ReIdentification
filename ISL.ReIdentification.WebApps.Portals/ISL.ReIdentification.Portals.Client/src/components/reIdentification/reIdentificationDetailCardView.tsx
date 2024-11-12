@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useState } from "react";
-import { Form, Button, Card, Spinner, Alert, Tooltip, OverlayTrigger } from "react-bootstrap";
+import { Form, Button, Card, Spinner, Tooltip, OverlayTrigger } from "react-bootstrap";
 import { LookupView } from "../../models/views/components/lookups/lookupView";
 import { reIdentificationService } from "../../services/foundations/reIdentificationService";
 import { AccessRequest } from "../../models/accessRequest/accessRequest";
@@ -130,10 +130,6 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
                     </Form.Group>
                     <br />
 
-
-                    {error && <Alert variant="danger">
-                        Something went Wrong.
-                    </Alert>}
                     <Button type="submit" disabled={!pseudoCode || !selectedLookupId}>
                         {!loading ? <>Get NHS Number</> : <Spinner />}
                     </Button>

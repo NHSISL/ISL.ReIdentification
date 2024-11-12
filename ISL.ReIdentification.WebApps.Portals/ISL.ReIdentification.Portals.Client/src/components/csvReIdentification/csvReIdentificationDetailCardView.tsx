@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useState } from "react";
-import { Form, Button, Card, Spinner, Alert, OverlayTrigger, Tooltip, OverlayTriggerProps, Modal } from "react-bootstrap";
+import { Form, Button, Card, Spinner, Alert, OverlayTrigger, Tooltip, Modal } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 import { reIdentificationService } from "../../services/foundations/reIdentificationService";
@@ -8,6 +8,7 @@ import { useMsal } from "@azure/msal-react";
 import UserAccessSearch from "../userAccessSearch/userAccessSearch";
 import { UserAccessView } from "../../models/views/components/userAccess/userAccessView";
 import { lookupViewService } from "../../services/views/lookups/lookupViewService";
+import { OverlayInjectedProps } from "react-bootstrap/esm/Overlay";
 
 interface Option {
     value: string;
@@ -49,15 +50,15 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                 requesterDisplayName: acc.name,
                 requesterEmail: acc.username,
                 requesterJobTitle: " ",
-                recipientEntraUserId: selectedUser?.entraUserId || "",
+                recipientEntraUserId: selectedUser?.entraGuid || "",
                 recipientFirstName: selectedUser?.givenName || "",
                 recipientLastName: selectedUser?.surname || "",
                 recipientDisplayName: selectedUser?.displayName || "",
-                recipientEmail: selectedUser?.email || "",
+                recipientEmail: selectedUser?.userEmail || "",
                 recipientJobTitle: selectedUser?.jobTitle || "",
                 data: csvData || "",
                 reason: selectedLookupId,
-                organisation: selectedUser?.orgCode || "",
+                organisation: selectedUser?.orgCodes || [],
                 createdBy: acc.username,
                 updatedBy: acc.username,
                 createdDate: new Date(),
@@ -146,7 +147,7 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
         setHasHeaderRecord(e.target.checked);
     };
 
-    const renderTooltip = (props: OverlayTriggerProps) => (
+    const renderTooltip = (props: OverlayInjectedProps): React.ReactElement => (
         <Tooltip id="info-tooltip" {...props}>
             This page provides a way to upload a CSV of pseudo identifiers for reidentification.
         </Tooltip>
@@ -257,7 +258,7 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                         {success && <Alert variant="success">
                             {success}
                         </Alert>}
-                        <Button type="submit" disabled={!selectedHeaderColumn || !selectedUser || !selectedHeaderColumn || !hasHeaderRecord || error}>
+                        <Button type="submit" disabled={!selectedHeaderColumn || !selectedUser || !selectedHeaderColumn || !!error}>
                             {!loading ? <>Send File</> : <Spinner />}
                         </Button>
                     </Form>

@@ -14,7 +14,7 @@ export class ImpersonationContext {
     public responsiblePersonJobTitle: string = "";
     public reason: string = "";
     public purpose?: string = "";
-    public organisation: string = "";
+    public organisation: string[] = [];
     public projectName: string = "";
     public inboxToken?: string = "";
     public outboxToken?: string = "";

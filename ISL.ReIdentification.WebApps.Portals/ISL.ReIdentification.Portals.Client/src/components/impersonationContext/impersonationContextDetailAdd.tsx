@@ -46,17 +46,17 @@ const ImpersonationContextDetailAdd: FunctionComponent = () => {
                 requesterDisplayName: acc.name || "",
                 requesterEmail: acc.username,
                 requesterJobTitle: " ",
-                responsiblePersonEntraUserId: selectedUser?.entraUserId || "",
+                responsiblePersonEntraUserId: selectedUser?.entraGuid || "",
                 responsiblePersonFirstName: selectedUser?.givenName || "",
                 responsiblePersonLastName: selectedUser?.surname || "",
                 responsiblePersonDisplayName: selectedUser?.displayName || "",
-                responsiblePersonEmail: selectedUser?.email || "",
+                responsiblePersonEmail: selectedUser?.userEmail || "",
                 responsiblePersonJobTitle: selectedUser?.jobTitle || "",
                 projectName: projectName || "",
                 identifierColumn: selectedHeaderColumn || "",
                 isApproved: false,
                 reason: selectedLookupId,
-                organisation: selectedUser?.orgCode || "",
+                organisation: selectedUser?.orgCodes || [],
                 createdBy: acc.username,
                 updatedBy: acc.username,
                 createdDate: new Date(),
@@ -230,7 +230,7 @@ const ImpersonationContextDetailAdd: FunctionComponent = () => {
                                             {success && <Alert variant="success">
                                                 {success}
                                             </Alert>}
-                                            <Button type="submit" disabled={!selectedHeaderColumn || !selectedUser || !selectedHeaderColumn || !projectName || error}>
+                                            <Button type="submit" disabled={!selectedHeaderColumn || !selectedUser || !selectedHeaderColumn || !projectName || !!error}>
                                                 {!loading ? <>Create New Project</> : <Spinner />}
                                             </Button>
                                         </>

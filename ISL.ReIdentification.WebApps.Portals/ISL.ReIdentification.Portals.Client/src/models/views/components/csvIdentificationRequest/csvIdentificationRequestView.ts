@@ -11,7 +11,7 @@ export class CsvIdentificationRequestView {
     public recipientDisplayName?: string;
     public recipientEmail?: string;
     public reason?: string;
-    public organisation?: string;
+    public organisation?: string[];
     public hasHeaderRecord?: boolean;
     public identifierColumnIndex?: number;
     public createdDate?: Date;
@@ -29,7 +29,7 @@ export class CsvIdentificationRequestView {
         recipientDisplayName?: string,
         recipientEmail?: string,
         reason?: string,
-        organisation?: string,
+        organisation?: string[],
         hasHeaderRecord?: boolean,
         identifierColumnIndex?: number,
         createdDate?: Date,
@@ -46,7 +46,7 @@ export class CsvIdentificationRequestView {
         this.recipientDisplayName = recipientDisplayName || "";
         this.recipientEmail = recipientEmail || "";
         this.reason = reason || "";
-        this.organisation = organisation || "";
+        this.organisation = organisation || [""];
         this.hasHeaderRecord = hasHeaderRecord || false;
         this.identifierColumnIndex = identifierColumnIndex;
         this.createdDate = createdDate;
