@@ -8,6 +8,7 @@ import { OdsData } from "../../models/odsData/odsData"
 import { userAccessService } from "../../services/foundations/userAccessService"
 import { UserAccess } from "../../models/userAccess/userAccess"
 import { useNavigate } from "react-router-dom"
+import { toastError } from "../../brokers/toastBroker.error"
 
 export const UserAccessNew = () => {
 
@@ -25,13 +26,16 @@ export const UserAccessNew = () => {
                 entraUserId: selectedUser.id,
                 email: selectedUser.mail,
                 activeFrom: new Date(),
-                orgCode: selectedOdsRecords[0].organisationCode,
+                orgCodes: selectedOdsRecords.map(x => x.organisationCode)
             }
             try {
                 await mutateAsync(ua);
                 navigate("/userAccess");
             } catch(error) {
-                console.log(error);
+                if(error instanceof Error) {
+                    toastError(error.message);
+                    console.log(error);
+                }
             }
             
         } 
