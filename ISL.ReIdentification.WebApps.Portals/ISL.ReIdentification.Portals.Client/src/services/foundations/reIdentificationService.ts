@@ -124,13 +124,15 @@ export const reIdentificationService = {
         const broker = new ReIdentificationBroker();
         const [loading, setIsLoading] = useState(false);
         const [data, setData] = useState<AccessRequest | null>(null);
+        const [filename, setFilename] = useState<string>('reidentification.csv');
         const [error, setError] = useState<Error | null>(null);
 
         const fetch = () => {
             setIsLoading(true);
             return broker.GetCsvIdentificationRequestByIdAsync(id, reason)
                 .then(result => {
-                    setData(result);
+                    setData(result.data);
+                    setFilename(result.filename);
                     setError(null);
                 })
                 .catch(err => {
@@ -146,6 +148,7 @@ export const reIdentificationService = {
             fetch,
             loading,
             data,
+            filename,
             error
         };
     }

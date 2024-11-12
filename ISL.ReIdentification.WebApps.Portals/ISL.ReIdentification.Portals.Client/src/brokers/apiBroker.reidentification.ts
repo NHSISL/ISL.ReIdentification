@@ -24,12 +24,22 @@ class SimpleReIdentificationBroker {
             .then(result => result.data as AccessRequest);
     }
 
-    async GetCsvIdentificationRequestByIdAsync(id: string, reason: string): Promise<AccessRequest> {
+    async GetCsvIdentificationRequestByIdAsync(id: string, reason: string): Promise<{ data: AccessRequest, filename: string }> {
         const url = `${this.relativeCsvReIdentificationUrl}/${id}/${reason}`;
 
         try {
             const result = await this.apiBroker.GetAsync(url);
-            return result.data as AccessRequest;
+            const contentDisposition = result.headers['content-disposition'];
+            let filename = 'reidentification.csv';
+
+            if (contentDisposition) {
+                const matches = contentDisposition.match(/filename\*?=['"]?UTF-8''([^;]+)['"]?/);
+                if (matches && matches[1]) {
+                    filename = decodeURIComponent(matches[1]);
+                }
+            }
+
+            return { data: result.data as AccessRequest, filename };
         } catch (error) {
             console.error("Error fetching CSV Identification Request by ID:", error);
             throw error;

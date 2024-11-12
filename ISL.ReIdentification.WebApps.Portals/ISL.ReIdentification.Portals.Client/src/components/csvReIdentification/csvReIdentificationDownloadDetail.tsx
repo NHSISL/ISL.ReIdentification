@@ -23,27 +23,27 @@ const CsvReIdentificationDownloadDetail: FunctionComponent<CsvReIdentificationDo
 
     const {
         data,
-        error,
-        isLoading
+        error
     } = csvIdentificationRequestService
         .useSelectCsvIdentificationByCsvIdentificationRequestIdRequest(
             csvIdentificationRequestId!);
 
-    const { fetch, loading: fetchLoading, data: fetchData, error: fetchError }
+    const { fetch, loading: fetchLoading, data: fetchData, filename, error: fetchError }
         = reIdentificationService.useGetCsvIdentificationRequestById(csvIdentificationRequestId!, selectedLookupId);
 
     useEffect(() => {
         if (fetchData) {
-            const blob = new Blob([fetchData], { type: 'text/csv' });
+            const csvContent = typeof fetchData === 'string' ? fetchData : JSON.stringify(fetchData);
+            const blob = new Blob([csvContent], { type: 'text/csv' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'reidentification.csv';
+            a.download = filename; // Use the filename from the hook
             document.body.appendChild(a);
             a.click();
             a.remove();
         }
-    }, [fetchData]);
+    }, [fetchData, filename]);
 
     if (isLoading) {
         return <p><Spinner /></p>;
