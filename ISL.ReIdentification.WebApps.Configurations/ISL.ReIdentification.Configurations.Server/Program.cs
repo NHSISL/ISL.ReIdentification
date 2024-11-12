@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.IO;
 using System.Text.Json;
 using ISL.Providers.Notifications.Abstractions;
 using ISL.Providers.Notifications.GovukNotify.Models;
@@ -68,6 +69,15 @@ namespace ISL.ReIdentification.Configurations.Server
 
         public static void ConfigureServices(WebApplicationBuilder builder, IConfiguration configuration)
         {
+            // Load settings from launchSettings.json (for testing)
+            var projectDir = Directory.GetCurrentDirectory();
+            var launchSettingsPath = Path.Combine(projectDir, "Properties", "launchSettings.json");
+
+            if (File.Exists(launchSettingsPath))
+            {
+                builder.Configuration.AddJsonFile(launchSettingsPath);
+            }
+
             // Add services to the container.
             var azureAdOptions = builder.Configuration.GetSection("AzureAd");
 
@@ -121,12 +131,9 @@ namespace ISL.ReIdentification.Configurations.Server
             }
 
             app.UseHttpsRedirection();
-
             app.UseAuthentication();
             app.UseAuthorization();
-
             app.MapControllers().WithOpenApi();
-
             app.MapFallbackToFile("/index.html");
         }
 

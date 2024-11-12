@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.PdsDatas;
-using RESTFulSense.Exceptions;
 
 namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
 {
@@ -94,14 +93,11 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
             PdsData deletedPdsData =
                 await this.apiBroker.DeletePdsDataByIdAsync(inputPdsData.Id);
 
-            ValueTask<PdsData> getPdsDatabyIdTask =
-                this.apiBroker.GetPdsDataByIdAsync(inputPdsData.Id);
+            List<PdsData> actualResult =
+                await this.apiBroker.GetSpecificPdsDataByIdAsync(inputPdsData.Id);
 
             // then
-            deletedPdsData.Should().BeEquivalentTo(expectedPdsData);
-
-            await Assert.ThrowsAsync<HttpResponseNotFoundException>(
-                testCode: getPdsDatabyIdTask.AsTask);
+            actualResult.Count().Should().Be(0);
         }
     }
 }

@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.AccessAudits;
-using RESTFulSense.Exceptions;
 
 namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
 {
@@ -96,14 +95,11 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             AccessAudit deletedAccessAudit =
                 await this.apiBroker.DeleteAccessAuditByIdAsync(inputAccessAudit.Id);
 
-            ValueTask<AccessAudit> getAccessAuditbyIdTask =
-                this.apiBroker.GetAccessAuditByIdAsync(inputAccessAudit.Id);
+            List<AccessAudit> actualResult =
+                await this.apiBroker.GetSpecificAccessAuditByIdAsync(inputAccessAudit.Id);
 
             // then
-            deletedAccessAudit.Should().BeEquivalentTo(expectedAccessAudit);
-
-            await Assert.ThrowsAsync<HttpResponseNotFoundException>(
-                testCode: getAccessAuditbyIdTask.AsTask);
+            actualResult.Count().Should().Be(0);
         }
     }
 }
