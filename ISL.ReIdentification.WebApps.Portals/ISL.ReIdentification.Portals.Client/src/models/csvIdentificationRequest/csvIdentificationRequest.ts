@@ -13,7 +13,7 @@ export class CsvIdentificationRequest {
     public recipientEmail?: string = "";
     public recipientJobTitle?: string = "";
     public reason?: string = "";
-    public organisation?: string[] = [];
+    public organisation?: string = "";
     public data?: string = "";
     public sha256Hash?: string = "";
     public identifierColumn?: string = "";

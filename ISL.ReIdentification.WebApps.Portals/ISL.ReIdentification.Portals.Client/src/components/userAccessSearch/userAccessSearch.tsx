@@ -36,7 +36,7 @@ const UserAccessSearch: FunctionComponent<UserAccessSearchProps> = ({ selectUser
 
     const handleUserSelect = (userAccess: UserAccessView) => {
         selectUser(userAccess);
-        setSelectedUserName(userAccess.userEmail);
+        setSelectedUserName(userAccess.email);
         setSearchTerm("");
     }
 

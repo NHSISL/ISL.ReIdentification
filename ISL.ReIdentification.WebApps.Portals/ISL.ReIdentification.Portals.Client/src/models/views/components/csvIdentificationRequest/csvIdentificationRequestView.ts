@@ -11,7 +11,7 @@ export class CsvIdentificationRequestView {
     public recipientDisplayName?: string;
     public recipientEmail?: string;
     public reason?: string;
-    public organisation?: string[];
+    public organisation?: string;
     public hasHeaderRecord?: boolean;
     public identifierColumnIndex?: number;
     public createdDate?: Date;

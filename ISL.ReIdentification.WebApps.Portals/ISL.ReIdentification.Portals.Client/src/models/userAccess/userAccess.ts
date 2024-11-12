@@ -1,11 +1,11 @@
 export class UserAccess {
     public id: string = "";
     public displayName: string = "";
-    public entraGuid: string = "";
+    public entraUserId: string = "";
     public entraUpn: string = "";
     public givenName: string = "";
     public surname: string = "";
-    public userEmail: string = "";
+    public email: string = "";
     public userPrincipalName: string = "";
     public orgCodes: string[] = [];
     public jobTitle: string = "";

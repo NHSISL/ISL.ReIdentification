@@ -1,8 +1,8 @@
 export class UserAccessView {
     public id: string;
-    public userEmail: string;
+    public email: string;
     public displayName: string;
-    public entraGuid: string;
+    public entraUserId: string;
     public entraUpn: string;
     public givenName: string ;
     public surname: string;
@@ -18,9 +18,9 @@ export class UserAccessView {
 
     constructor(
         id: string,
-        userEmail: string,
+        email: string,
         displayName: string,
-        entraGuid: string,
+        entraUserId: string,
         entraUpn: string,
         givenName: string,
         surname: string,
@@ -35,10 +35,10 @@ export class UserAccessView {
         updatedDate?: Date,
     ) {
         this.id = id;
-        this.userEmail = userEmail || "";
+        this.email = email || "";
         this.orgCodes = orgCodes || [];
         this.displayName = displayName;
-        this.entraGuid = entraGuid;
+        this.entraUserId = entraUserId;
         this.entraUpn = entraUpn;
         this.givenName = givenName;
         this.surname = surname;
