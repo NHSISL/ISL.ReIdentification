@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Brokers;
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.OdsDatas;
 using Microsoft.EntityFrameworkCore;
@@ -35,8 +36,10 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
         private async ValueTask<OdsData> PostRandomOdsDataAsync()
         {
             OdsData randomOdsData = CreateRandomOdsData();
+            OdsData createdOdsData = await this.apiBroker.PostOdsDataAsync(randomOdsData);
+            createdOdsData.Should().BeEquivalentTo(randomOdsData);
 
-            return await this.apiBroker.PostOdsDataAsync(randomOdsData);
+            return createdOdsData;
         }
 
         private async ValueTask<List<OdsData>> PostRandomChildOdsDatasAsync(string parentHierarchyIdString)
@@ -53,12 +56,15 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
                     .ToList();
 
             HierarchyId lastChildHierarchy = null;
+            List<OdsData> childItems = new List<OdsData>();
 
             foreach (var child in children)
             {
                 child.OdsHierarchy = parentHierarchyId.GetDescendant(lastChildHierarchy, null).ToString();
                 lastChildHierarchy = HierarchyId.Parse(child.OdsHierarchy);
-                await this.apiBroker.PostOdsDataAsync(child);
+                OdsData item = await this.apiBroker.PostOdsDataAsync(child);
+                item.Should().BeEquivalentTo(child);
+                childItems.Add(item);
             }
 
             return children;

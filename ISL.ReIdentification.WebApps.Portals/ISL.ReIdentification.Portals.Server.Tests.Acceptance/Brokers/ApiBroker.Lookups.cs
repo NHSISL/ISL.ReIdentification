@@ -11,21 +11,25 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Brokers
 {
     public partial class ApiBroker
     {
-        private const string LookupsRelativeUrl = "api/lookups";
+        private const string lookupsRelativeUrl = "api/lookups";
 
         public async ValueTask<Lookup> PostLookupAsync(Lookup lookup) =>
-            await this.apiFactoryClient.PostContentAsync(LookupsRelativeUrl, lookup);
+            await this.apiFactoryClient.PostContentAsync(lookupsRelativeUrl, lookup);
 
         public async ValueTask<Lookup> GetLookupByIdAsync(Guid lookupId) =>
-            await this.apiFactoryClient.GetContentAsync<Lookup>($"{LookupsRelativeUrl}/{lookupId}");
+            await this.apiFactoryClient.GetContentAsync<Lookup>($"{lookupsRelativeUrl}/{lookupId}");
+
+        public async ValueTask<List<Lookup>> GetSpecificLookupByIdAsync(Guid lookupId) =>
+            await this.apiFactoryClient.GetContentAsync<List<Lookup>>(
+                $"{lookupsRelativeUrl}?$filter=Id eq {lookupId}");
 
         public async ValueTask<List<Lookup>> GetAllLookupsAsync() =>
-          await this.apiFactoryClient.GetContentAsync<List<Lookup>>($"{LookupsRelativeUrl}/");
+          await this.apiFactoryClient.GetContentAsync<List<Lookup>>($"{lookupsRelativeUrl}/");
 
         public async ValueTask<Lookup> PutLookupAsync(Lookup lookup) =>
-            await this.apiFactoryClient.PutContentAsync(LookupsRelativeUrl, lookup);
+            await this.apiFactoryClient.PutContentAsync(lookupsRelativeUrl, lookup);
 
         public async ValueTask<Lookup> DeleteLookupByIdAsync(Guid lookupId) =>
-            await this.apiFactoryClient.DeleteContentAsync<Lookup>($"{LookupsRelativeUrl}/{lookupId}");
+            await this.apiFactoryClient.DeleteContentAsync<Lookup>($"{lookupsRelativeUrl}/{lookupId}");
     }
 }

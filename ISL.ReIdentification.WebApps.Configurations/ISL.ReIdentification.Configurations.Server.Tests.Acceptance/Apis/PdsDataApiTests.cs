@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using FluentAssertions;
 using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Brokers;
 using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.PdsDatas;
 using Tynamix.ObjectFiller;
@@ -34,10 +35,10 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
 
         private static PdsData CreateRandomPdsData() =>
             CreatePdsDataFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
-      
+
         private static PdsData CreateRandomPdsData(DateTimeOffset dateTimeOffset) =>
             CreatePdsDataFiller(dateTimeOffset).Create();
-      
+
         private static Filler<PdsData> CreatePdsDataFiller(DateTimeOffset dateTimeOffset)
         {
             string user = Guid.NewGuid().ToString();
@@ -55,8 +56,10 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
         private async ValueTask<PdsData> PostRandomPdsDataAsync()
         {
             PdsData randomPdsData = CreateRandomPdsData();
+            PdsData createdPdsData = await this.apiBroker.PostPdsDataAsync(randomPdsData);
+            createdPdsData.Should().BeEquivalentTo(randomPdsData);
 
-            return await this.apiBroker.PostPdsDataAsync(randomPdsData);
+            return createdPdsData;
         }
 
         private async ValueTask<List<PdsData>> PostRandomPdsDatasAsync()
