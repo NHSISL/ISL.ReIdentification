@@ -20,9 +20,9 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Brokers
         public async ValueTask<List<PdsData>> GetAllPdsDataAsync() =>
             await this.apiFactoryClient.GetContentAsync<List<PdsData>>($"{pdsDataRelativeUrl}/");
 
-        public async ValueTask<List<PdsData>> GetSpecificPdsDataByIdAsync(Guid lookupId) =>
+        public async ValueTask<List<PdsData>> GetSpecificPdsDataByIdAsync(Guid pdsDataId) =>
             await this.apiFactoryClient.GetContentAsync<List<PdsData>>(
-                $"{pdsDataRelativeUrl}?$filter=Id eq {lookupId}");
+                $"{pdsDataRelativeUrl}?$filter=Id eq {pdsDataId}");
 
         public async ValueTask<PdsData> GetPdsDataByIdAsync(Guid pdsDataId) =>
             await this.apiFactoryClient.GetContentAsync<PdsData>($"{pdsDataRelativeUrl}/{pdsDataId}");

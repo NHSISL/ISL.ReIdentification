@@ -19,9 +19,9 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Brokers
         public async ValueTask<Lookup> GetLookupByIdAsync(Guid lookupId) =>
             await this.apiFactoryClient.GetContentAsync<Lookup>($"{lookupsRelativeUrl}/{lookupId}");
 
-        public async ValueTask<List<Lookup>> GetSpecificLookupByIdAsync(Guid accessAuditId) =>
+        public async ValueTask<List<Lookup>> GetSpecificLookupByIdAsync(Guid lookupId) =>
             await this.apiFactoryClient.GetContentAsync<List<Lookup>>(
-                $"{lookupsRelativeUrl}?$filter=Id eq {accessAuditId}");
+                $"{lookupsRelativeUrl}?$filter=Id eq {lookupId}");
 
         public async ValueTask<List<Lookup>> GetAllLookupsAsync() =>
           await this.apiFactoryClient.GetContentAsync<List<Lookup>>($"{lookupsRelativeUrl}/");
