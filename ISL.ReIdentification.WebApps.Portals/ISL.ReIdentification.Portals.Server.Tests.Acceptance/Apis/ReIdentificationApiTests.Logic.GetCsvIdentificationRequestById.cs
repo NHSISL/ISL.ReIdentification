@@ -5,6 +5,7 @@
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using FluentAssertions;
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.CsvIdentificationRequests;
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.OdsDatas;
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.PdsDatas;
@@ -14,17 +15,38 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
 {
     public partial class ReIdentificationApiTests
     {
-        [Fact]
-        public async Task ShouldGetCsvIdentificationRequestByIdAsync()
+        [Theory]
+        //[InlineData(false)]
+        [InlineData(true)]
+        public async Task ShouldGetCsvIdentificationRequestByIdAsync(bool hasHeader)
         {
             // given
             string pseudoIdentifier = "0000000001";
+            string nhsNumber = "1111111111";
+            string randomHeaderValue = GetRandomStringWithLengthOf(10);
+            string randomValue = GetRandomStringWithLengthOf(10);
+            StringBuilder csvInputData = new StringBuilder();
+            StringBuilder csvExpectedData = new StringBuilder();
+
+            if (hasHeader)
+            {
+                csvInputData.AppendLine(
+                    $"{randomHeaderValue}0,{randomHeaderValue}1,{randomHeaderValue}2");
+
+                csvExpectedData.AppendLine(
+                    $"{randomHeaderValue}0,{randomHeaderValue}1,{randomHeaderValue}2");
+            }
+
+            csvInputData.AppendLine($"{randomValue},{randomValue},{pseudoIdentifier}");
+            csvExpectedData.AppendLine($"{randomValue},{randomValue},{nhsNumber}");
+            int identifierIndexPosition = 2;
             Guid securityOid = TestAuthHandler.SecurityOid;
             CsvIdentificationRequest randomCsvIdentificationRequest = CreateRandomCsvIdentificationRequest();
             CsvIdentificationRequest inputCsvIdentificationRequest = randomCsvIdentificationRequest;
-            inputCsvIdentificationRequest.HasHeaderRecord = false;
-            inputCsvIdentificationRequest.IdentifierColumnIndex = 0;
-            inputCsvIdentificationRequest.Data = Encoding.UTF8.GetBytes(pseudoIdentifier);
+            inputCsvIdentificationRequest.HasHeaderRecord = hasHeader;
+            inputCsvIdentificationRequest.IdentifierColumnIndex = identifierIndexPosition;
+            inputCsvIdentificationRequest.Data = Encoding.UTF8.GetBytes(csvInputData.ToString());
+            string expectedResult = csvExpectedData.ToString();
             string randomString = GetRandomStringWithLengthOf(GetRandomNumber());
             string inputReason = randomString;
 
@@ -38,12 +60,13 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
                 await PostRandomPdsDataGivenPseudoAsync(pseudoIdentifier, createdUserAccess.OrgCode);
 
             // when
-            var actualResult =
+            byte[] actualData =
                 await this.apiBroker.GetCsvIdentificationRequestByIdAsync(
                     exisingCsvIdentificationRequest.Id, inputReason);
 
             // then
-            /// Add some assertion e.g. the resulting identified NHS number = "1111111111"
+            string actualResult = Encoding.UTF8.GetString(actualData);
+            actualResult.Should().BeEquivalentTo(expectedResult);
             await this.apiBroker.DeleteCsvIdentificationRequestByIdAsync(exisingCsvIdentificationRequest.Id);
             await this.apiBroker.DeleteUserAccessByIdAsync(createdUserAccess.Id);
             await this.apiBroker.DeleteOdsDataByIdAsync(createdOdsData.Id);
