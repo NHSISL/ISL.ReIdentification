@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCirclePlus } from '@fortawesome/free-solid-svg-icons'
 import { Button } from "react-bootstrap";
 import { SecuredComponent } from "../../securitys/securedComponents";
+import securityPoints from "../../../securityMatrix";
 
 interface LookupRowNewProps {
     onAdd: (value: boolean) => void;
@@ -21,9 +22,11 @@ const LookupRowNew: FunctionComponent<LookupRowNewProps> = (props) => {
                 <td></td>
                 <td></td>
                 <td>
-                    <Button id="lookupAdd" onClick={() => onAdd(true)} variant="success">
-                        <FontAwesomeIcon icon={faCirclePlus} size="lg" />&nbsp; New
-                    </Button>
+                    <SecuredComponent allowedRoles={securityPoints.configuration.add}>
+                        <Button id="lookupAdd" onClick={() => onAdd(true)} variant="success">
+                            <FontAwesomeIcon icon={faCirclePlus} size="lg" />&nbsp; New
+                        </Button>
+                    </SecuredComponent>
                 </td>
             </tr>
         </SecuredComponent>

@@ -1,10 +1,9 @@
 const securityPoints = {
-    reIdentification: {
-        add:  [],
-        delete: [],
-        edit: [],
-        view: []
-        //view: ["ISL.LDS.AdminSpa.reIdentification", "ISL.LDS.AdminSpa.Administrators"]
+    impersonation: {
+        add: ['ISL.Reidentification.Portal.DataEngineers'],
+        edit: ['ISL.Reidentification.Portal.DataEngineers'],
+        delete: ['ISL.Reidentification.Portal.DataEngineers'],
+        view: ['ISL.Reidentification.Portal.DataEngineers'],
     }
 }
 
