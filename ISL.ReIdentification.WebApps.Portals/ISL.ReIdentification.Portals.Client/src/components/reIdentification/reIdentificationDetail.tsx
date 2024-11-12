@@ -17,12 +17,10 @@ const ReIdentificationDetail: FunctionComponent = () => {
             {mappedLookups &&
                 <>
                     <Container>
-                        <Row className="justify-content-md-center">
-                            <Col>
+                        <Row className="justify-content-md-center m-0 p-0">
                             <ReIdentificationDetailCard
                                 lookups={mappedLookups}
                             />
-                            </Col>
                         </Row>
                     </Container>
                     <br />

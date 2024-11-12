@@ -5,10 +5,8 @@ import CsvReIdentificationDetailCardView from "./csvReIdentificationDetailCardVi
 const CsvReIdentificationDetailCard: FunctionComponent = () => {
 
     return (
-        <Card style={{ width: '50rem' }}>
-            <Card.Body>
-                <CsvReIdentificationDetailCardView/>
-            </Card.Body>
+        <Card style={{ width: '50rem' }} className="m-0 p-0">
+            <CsvReIdentificationDetailCardView />
         </Card>
     );
 };

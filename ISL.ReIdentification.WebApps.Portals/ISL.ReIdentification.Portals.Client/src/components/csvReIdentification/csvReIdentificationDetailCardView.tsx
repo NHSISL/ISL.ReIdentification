@@ -58,7 +58,7 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                 recipientJobTitle: selectedUser?.jobTitle || "",
                 data: csvData || "",
                 reason: selectedLookupId,
-                organisation:"TODO: where is this coming from",
+                organisation: "TODO: where is this coming from",
                 createdBy: acc.username,
                 updatedBy: acc.username,
                 createdDate: new Date(),
@@ -169,99 +169,107 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
         <>
             {!savedSuccessfull ? (
                 <>
-                    <Card.Title className="text-start">
-                        <OverlayTrigger placement="right" overlay={renderTooltip}>
-                            <FontAwesomeIcon icon={faCircleInfo} className="text-primary" size="lg" />
-                        </OverlayTrigger>&nbsp;Dataset Upload
-                    </Card.Title>
 
-                    <Card.Subtitle className="text-start text-muted mb-3">
-                        <small>
-                            Please upload your csv below,
-                            provide a reason why you are identifying this patient
-                            and select the column that the identifier is in.
-                        </small>
-                    </Card.Subtitle>
-                    <Form onSubmit={handleSubmit}>
-                        <UserAccessSearch selectUser={(userAccess) => { setSelectedUser(userAccess) }} labelText="Recipient Email Address" />
-                        <Form.Group className="text-start">
-                            <Form.Label><strong>Upload CSV:</strong></Form.Label>
-                            <Button variant="link" onClick={() => setShowHelpModal(true)}>
-                                <FontAwesomeIcon icon={faCircleInfo} className="text-primary" />
-                            </Button>
+                    
 
-                            <Form.Check
-                                type="checkbox"
-                                label="Has Header Record"
-                                id="hasHeadRecord"
-                                onChange={handleCheckboxChange} />
+                        <Card.Header>
+                            <Card.Title className="text-start">
+                                <OverlayTrigger placement="right" overlay={renderTooltip}>
+                                    <FontAwesomeIcon icon={faCircleInfo} className="text-primary" size="lg" />
+                                </OverlayTrigger>&nbsp;Dataset Upload
+                            </Card.Title>
+                        </Card.Header>
 
-                            <div className="d-flex align-items-center">
-                                <Form.Control
-                                    type="file"
-                                    name="PseudoCsv"
-                                    onChange={handleFileChange}
-                                    placeholder="Upload CSV"
-                                    accept=".csv"
-                                    required />
+                       <Card.Body>
 
-                            </div>
-                            <Form.Text className="text-muted">
-                                Please upload your CSV (other file types will be rejected).
-                            </Form.Text>
-                        </Form.Group>
-                        <br />
-                        {headerColumns.length > 0 && (
-                            <>
+                        <Card.Subtitle className="text-start text-muted mb-3">
+                            <small>
+                                Please upload your csv below,
+                                provide a reason why you are identifying this patient
+                                and select the column that the identifier is in.
+                            </small>
+                        </Card.Subtitle>
+                        <Form onSubmit={handleSubmit}>
+                            <UserAccessSearch selectUser={(userAccess) => { setSelectedUser(userAccess) }} labelText="Recipient Email Address" />
+                            <Form.Group className="text-start">
+                                <Form.Label><strong>Upload CSV:</strong></Form.Label>
+                                <Button variant="link" onClick={() => setShowHelpModal(true)}>
+                                    <FontAwesomeIcon icon={faCircleInfo} className="text-primary" />
+                                </Button>
+
+                                <Form.Check
+                                    type="checkbox"
+                                    label="Has Header Record"
+                                    id="hasHeadRecord"
+                                    onChange={handleCheckboxChange} />
+
+                                <div className="d-flex align-items-center">
+                                    <Form.Control
+                                        type="file"
+                                        name="PseudoCsv"
+                                        onChange={handleFileChange}
+                                        placeholder="Upload CSV"
+                                        accept=".csv"
+                                        required />
+
+                                </div>
+                                <Form.Text className="text-muted">
+                                    Please upload your CSV (other file types will be rejected).
+                                </Form.Text>
+                            </Form.Group>
+                            <br />
+                            {headerColumns.length > 0 && (
+                                <>
+                                    <Form.Group className="text-start">
+                                        <Form.Label><strong>Select Identifier Column From Csv:</strong></Form.Label>
+                                        <Form.Select
+                                            value={selectedHeaderColumn}
+                                            onChange={handleHeaderColumnChange}
+                                            required>
+                                            {headerColumns.map((column, index) => (
+                                                <option key={index} value={column}>
+                                                    {`Col-${index + 1} - ${column}`}
+                                                </option>
+                                            ))}
+                                        </Form.Select>
+                                        <Form.Text className="text-muted">
+                                            Please choose the correct column for the Pseudo Identifier.
+                                        </Form.Text>
+                                    </Form.Group>
+                                    <br />
+                                </>
+                            )}
+                            {isLoading ? <Spinner /> : <>
                                 <Form.Group className="text-start">
-                                    <Form.Label><strong>Select Identifier Column From Csv:</strong></Form.Label>
+                                    <Form.Label><strong>Reidentification Reason:</strong></Form.Label>
                                     <Form.Select
-                                        value={selectedHeaderColumn}
-                                        onChange={handleHeaderColumnChange}
-                                        required>
-                                        {headerColumns.map((column, index) => (
-                                            <option key={index} value={column}>
-                                                {`Col-${index + 1} - ${column}`}
+                                        value={selectedLookupId}
+                                        onChange={handleLookupChange}
+                                        required >
+                                        {lookupOptions.map((option) => (
+                                            <option key={option.value} value={option.value}>
+                                                {option.name}
                                             </option>
                                         ))}
                                     </Form.Select>
                                     <Form.Text className="text-muted">
-                                        Please choose the correct column for the Pseudo Identifier.
+                                        Please supply a reason why you are requesting to Reidentify this csv of patients.
                                     </Form.Text>
                                 </Form.Group>
-                                <br />
-                            </>
-                        )}
-                        {isLoading ? <Spinner /> : <>
-                            <Form.Group className="text-start">
-                                <Form.Label><strong>Reidentification Reason:</strong></Form.Label>
-                                <Form.Select
-                                    value={selectedLookupId}
-                                    onChange={handleLookupChange}
-                                    required >
-                                    {lookupOptions.map((option) => (
-                                        <option key={option.value} value={option.value}>
-                                            {option.name}
-                                        </option>
-                                    ))}
-                                </Form.Select>
-                                <Form.Text className="text-muted">
-                                    Please supply a reason why you are requesting to Reidentify this csv of patients.
-                                </Form.Text>
-                            </Form.Group>
-                        </>}
-                        <br />
+                            </>}
+                            <br />
 
-                        {error && <Alert variant="danger">
-                            {error}
-                        </Alert>}
-                        {success && <Alert variant="success">
-                            {success}
-                        </Alert>}
-                        <Button type="submit" disabled={!selectedHeaderColumn || !selectedUser || !selectedHeaderColumn || !!error}>
-                            {!loading ? <>Send File</> : <Spinner />}
-                        </Button>
-                    </Form>
+                            {error && <Alert variant="danger">
+                                {error}
+                            </Alert>}
+                            {success && <Alert variant="success">
+                                {success}
+                            </Alert>}
+                            <Button type="submit" disabled={!selectedHeaderColumn || !selectedUser || !selectedHeaderColumn || !!error}>
+                                {!loading ? <>Send File</> : <Spinner />}
+                            </Button>
+                        </Form>
+                    </Card.Body>
                 </>
             ) : (
                 <>
