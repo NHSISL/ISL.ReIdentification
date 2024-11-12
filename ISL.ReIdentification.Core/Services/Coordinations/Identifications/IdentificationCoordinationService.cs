@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Force.DeepCloner;
 using ISL.ReIdentification.Core.Brokers.CsvHelpers;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
+using ISL.ReIdentification.Core.Brokers.Identifiers;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Securities;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
@@ -33,6 +34,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
         private readonly ISecurityBroker securityBroker;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
+        private readonly IIdentifierBroker identifierBroker;
         private readonly ProjectStorageConfiguration projectStorageConfiguration;
 
         public IdentificationCoordinationService(
@@ -43,7 +45,8 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             ISecurityBroker securityBroker,
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker,
-            ProjectStorageConfiguration projectStorageConfiguration)
+            IIdentifierBroker identifierBroker,
+        ProjectStorageConfiguration projectStorageConfiguration)
         {
             this.accessOrchestrationService = accessOrchestrationService;
             this.persistanceOrchestrationService = persistanceOrchestrationService;
@@ -52,6 +55,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             this.securityBroker = securityBroker;
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
+            this.identifierBroker = identifierBroker;
             this.projectStorageConfiguration = projectStorageConfiguration;
         }
 
@@ -208,6 +212,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             AccessRequest accessRequest)
         {
             string data = Encoding.UTF8.GetString(accessRequest.CsvIdentificationRequest.Data);
+            Guid identificationRequestId = await this.identifierBroker.GetIdentifierAsync();
 
             Dictionary<string, int> fieldMappings = new Dictionary<string, int>
                 {
@@ -237,6 +242,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             }
 
             accessRequest.IdentificationRequest = new IdentificationRequest();
+            accessRequest.IdentificationRequest.Id = identificationRequestId;
             accessRequest.IdentificationRequest.IdentificationItems = identificationItems;
             accessRequest.IdentificationRequest.EntraUserId = accessRequest.CsvIdentificationRequest.RecipientEntraUserId;
             accessRequest.IdentificationRequest.Email = accessRequest.CsvIdentificationRequest.RecipientEmail;
