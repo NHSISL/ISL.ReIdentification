@@ -13,7 +13,7 @@ const CsvIdentificationWorklistRow: FunctionComponent<CsvIdentificationWorklistR
 
     return (
         <CsvIdentificationRequestRowView
-            key={csvIdentificationRequest.id.toString()}
+            key={csvIdentificationRequest.id!.toString()}
             csvIdentificationRequest={csvIdentificationRequest}
         />
     );

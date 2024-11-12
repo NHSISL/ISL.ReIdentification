@@ -2,7 +2,6 @@ import { FunctionComponent, useState, useEffect } from "react";
 import { Alert, Button, Card, Col, Container, Form, OverlayTrigger, Row, Spinner, Tooltip } from "react-bootstrap";
 import { csvIdentificationRequestService } from "../../services/foundations/csvIdentificationRequestService";
 import { reIdentificationService } from "../../services/foundations/reIdentificationService";
-import { LookupView } from "../../models/views/components/lookups/lookupView";
 import { lookupViewService } from "../../services/views/lookups/lookupViewService";
 import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -19,7 +18,7 @@ interface Option {
 
 const CsvReIdentificationDownloadDetail: FunctionComponent<CsvReIdentificationDownloadDetailProps> = ({ csvIdentificationRequestId }) => {
 
-    const { mappedLookups, loading } = lookupViewService.useGetAllLookups("", "Reasons");
+    const { mappedLookups, isLoading } = lookupViewService.useGetAllLookups("", "Reasons");
     const [selectedLookupId, setSelectedLookupId] = useState<string>("");
 
     const {
@@ -132,8 +131,8 @@ const CsvReIdentificationDownloadDetail: FunctionComponent<CsvReIdentificationDo
                                 </Form.Text>
                             </Form.Group>
                             <br />
-                            {error && <Alert variant="danger">
-                                Something went Wrong.
+                            {fetchError && <Alert variant="danger">
+                                Error: {fetchError.message}
                             </Alert>}
                             <Button type="submit" disabled={!selectedLookupId || fetchLoading}>
                                 {!fetchLoading ? <>Download</> : <Spinner />}

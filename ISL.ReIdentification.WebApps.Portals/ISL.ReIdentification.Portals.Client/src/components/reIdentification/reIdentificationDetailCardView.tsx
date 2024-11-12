@@ -1,10 +1,9 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
-import { Form, Button, Card, Modal, Spinner, Alert, Tooltip, OverlayTrigger } from "react-bootstrap";
+import React, { FunctionComponent, useState } from "react";
+import { Form, Button, Card, Spinner, Alert, Tooltip, OverlayTrigger } from "react-bootstrap";
 import { LookupView } from "../../models/views/components/lookups/lookupView";
 import { reIdentificationService } from "../../services/foundations/reIdentificationService";
 import { AccessRequest } from "../../models/accessRequest/accessRequest";
 import { useMsal } from "@azure/msal-react";
-import CopyIcon from "../core/copyIcon";
 import { faCircleInfo } from "@fortawesome/free-solid-svg-icons/faCircleInfo";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { OverlayInjectedProps } from "react-bootstrap/esm/Overlay";
@@ -25,7 +24,6 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
     const [selectedLookupId, setSelectedLookupId] = useState<string>("");
     const { submit, loading, data } = reIdentificationService.useRequestReIdentification();
     const [submittedPseudoCode, setSubmittedPseudoCode] = useState("");
-    const [error, setError] = useState("");
     const account = useMsal();
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -52,13 +50,6 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
 
         setSubmittedPseudoCode(pseudoCode);
         submit(identificationRequest);
-        //setError("");
-        //submit(identificationRequest).then((d) => {
-        //    submit(d.identificationRequest?.identificationItems[0]);
-        //}).catch((error) => {
-        //    console.error("Submit failed with error:", error);
-        //    setError("Something went wrong.");
-        //});
     };
 
     const handlePseudoCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {

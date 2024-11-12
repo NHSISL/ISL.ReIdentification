@@ -22,8 +22,7 @@ const ImpersonationContextDetailAdd: FunctionComponent = () => {
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
     const [savedSuccessfull, setSavedSuccessfull] = useState(false);
-    const [fileName, setFileName] = useState<string>("");
-    const [hasHeaderRecord, setHasHeaderRecord] = useState<boolean>(false);
+    //const [fileName, setFileName] = useState<string>("");
     const [showHelpModal, setShowHelpModal] = useState<boolean>(false);
     const [projectName, setProjectName] = useState<string>("");
 
@@ -67,8 +66,8 @@ const ImpersonationContextDetailAdd: FunctionComponent = () => {
         }
 
         setError("");
-        submit(impersonationProjectRequest).then((d) => {
-            console.log("Sent", d);
+        submit(impersonationProjectRequest).then((message) => {
+            setSuccess("Sent succesfully " + message);
             setSavedSuccessfull(true)
         }).catch(() => {
             setSavedSuccessfull(false)
@@ -149,90 +148,93 @@ const ImpersonationContextDetailAdd: FunctionComponent = () => {
                                         </small>
                                     </Card.Subtitle>
                                     <Form onSubmit={handleSubmit}>
-                                        <Form.Group className="text-start">
-                                            <Form.Label><strong>Project Name:</strong></Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                value={projectName}
-                                                onChange={(e) => setProjectName(e.target.value)}
-                                                placeholder="Enter Project Name"
-                                                required
-                                            />
-                                        </Form.Group>
-                                        <br />
-                                        <UserAccessSearch selectUser={(userAccess) => { setSelectedUser(userAccess) }} labelText="Responsible Person Email Address" />
-
-                                        <Form.Group className="text-start">
-                                            <Form.Label><strong>Upload Sample CSV:</strong></Form.Label>
-                                            <Button variant="link" onClick={() => setShowHelpModal(true)}>
-                                                <FontAwesomeIcon icon={faCircleInfo} className="text-primary" />
-                                            </Button>
-
-                                            <div className="d-flex align-items-center">
+                                        {isLoading ? <Spinner /> : <>
+                                            <Form.Group className="text-start">
+                                                <Form.Label><strong>Project Name:</strong></Form.Label>
                                                 <Form.Control
-                                                    type="file"
-                                                    name="PseudoCsv"
-                                                    onChange={handleFileChange}
-                                                    placeholder="Upload CSV"
-                                                    accept=".csv"
+                                                    type="text"
+                                                    value={projectName}
+                                                    onChange={(e) => setProjectName(e.target.value)}
+                                                    placeholder="Enter Project Name"
                                                     required
                                                 />
-                                            </div>
-                                            <Form.Text className="text-muted">
-                                                Please upload your CSV to choose your identfier column (other file types will be rejected). <br />
-                                                <strong>Note: the CSV will NOT be uploaded</strong>
-                                            </Form.Text>
-                                        </Form.Group>
-                                        <br />
-                                        {headerColumns.length > 0 && (
-                                            <>
-                                                <Form.Group className="text-start">
-                                                    <Form.Label><strong>Select Identifier Column From Csv:</strong></Form.Label>
-                                                    <Form.Select
-                                                        value={selectedHeaderColumn}
-                                                        onChange={handleHeaderColumnChange}
-                                                        required>
-                                                        {headerColumns.map((column, index) => (
-                                                            <option key={index} value={column}>
-                                                                {`Col-${index + 1} - ${column}`}
-                                                            </option>
-                                                        ))}
-                                                    </Form.Select>
-                                                    <Form.Text className="text-muted">
-                                                        Please choose the correct column for the Pseudo Identifier.
-                                                    </Form.Text>
-                                                </Form.Group>
-                                                <br />
-                                            </>
-                                        )}
+                                            </Form.Group>
+                                            <br />
+                                            <UserAccessSearch selectUser={(userAccess) => { setSelectedUser(userAccess) }} labelText="Responsible Person Email Address" />
 
-                                        <Form.Group className="text-start">
-                                            <Form.Label><strong>Reidentification Reason:</strong></Form.Label>
-                                            <Form.Select
-                                                value={selectedLookupId}
-                                                onChange={handleLookupChange}
-                                                required >
-                                                {lookupOptions.map((option) => (
-                                                    <option key={option.value} value={option.value}>
-                                                        {option.name}
-                                                    </option>
-                                                ))}
-                                            </Form.Select>
-                                            <Form.Text className="text-muted">
-                                                Please supply a reason why you are requesting.
-                                            </Form.Text>
-                                        </Form.Group>
-                                        <br />
+                                            <Form.Group className="text-start">
+                                                <Form.Label><strong>Upload Sample CSV:</strong></Form.Label>
+                                                <Button variant="link" onClick={() => setShowHelpModal(true)}>
+                                                    <FontAwesomeIcon icon={faCircleInfo} className="text-primary" />
+                                                </Button>
 
-                                        {error && <Alert variant="danger">
-                                            {error}
-                                        </Alert>}
-                                        {success && <Alert variant="success">
-                                            {success}
-                                        </Alert>}
-                                        <Button type="submit" disabled={!selectedHeaderColumn || !selectedUser || !selectedHeaderColumn || !projectName || error}>
-                                            {!loading ? <>Create New Project</> : <Spinner />}
-                                        </Button>
+                                                <div className="d-flex align-items-center">
+                                                    <Form.Control
+                                                        type="file"
+                                                        name="PseudoCsv"
+                                                        onChange={handleFileChange}
+                                                        placeholder="Upload CSV"
+                                                        accept=".csv"
+                                                        required
+                                                    />
+                                                </div>
+                                                <Form.Text className="text-muted">
+                                                    Please upload your CSV to choose your identfier column (other file types will be rejected). <br />
+                                                    <strong>Note: the CSV will NOT be uploaded</strong>
+                                                </Form.Text>
+                                            </Form.Group>
+                                            <br />
+                                            {headerColumns.length > 0 && (
+                                                <>
+                                                    <Form.Group className="text-start">
+                                                        <Form.Label><strong>Select Identifier Column From Csv:</strong></Form.Label>
+                                                        <Form.Select
+                                                            value={selectedHeaderColumn}
+                                                            onChange={handleHeaderColumnChange}
+                                                            required>
+                                                            {headerColumns.map((column, index) => (
+                                                                <option key={index} value={column}>
+                                                                    {`Col-${index + 1} - ${column}`}
+                                                                </option>
+                                                            ))}
+                                                        </Form.Select>
+                                                        <Form.Text className="text-muted">
+                                                            Please choose the correct column for the Pseudo Identifier.
+                                                        </Form.Text>
+                                                    </Form.Group>
+                                                    <br />
+                                                </>
+                                            )}
+
+                                            <Form.Group className="text-start">
+                                                <Form.Label><strong>Reidentification Reason:</strong></Form.Label>
+                                                <Form.Select
+                                                    value={selectedLookupId}
+                                                    onChange={handleLookupChange}
+                                                    required >
+                                                    {lookupOptions.map((option) => (
+                                                        <option key={option.value} value={option.value}>
+                                                            {option.name}
+                                                        </option>
+                                                    ))}
+                                                </Form.Select>
+                                                <Form.Text className="text-muted">
+                                                    Please supply a reason why you are requesting.
+                                                </Form.Text>
+                                            </Form.Group>
+                                            <br />
+
+                                            {error && <Alert variant="danger">
+                                                {error}
+                                            </Alert>}
+                                            {success && <Alert variant="success">
+                                                {success}
+                                            </Alert>}
+                                            <Button type="submit" disabled={!selectedHeaderColumn || !selectedUser || !selectedHeaderColumn || !projectName || error}>
+                                                {!loading ? <>Create New Project</> : <Spinner />}
+                                            </Button>
+                                        </>
+                                        }
                                     </Form>
                                 </>
                             ) : (

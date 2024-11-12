@@ -4,8 +4,6 @@ import React, { useState } from 'react';
 import { ListGroup } from 'react-bootstrap';
 import { useLocation } from 'react-router-dom';
 import { SecuredLink } from '../securitys/securedLinks';
-import { faUserFriends } from '@fortawesome/free-solid-svg-icons/faUserFriends';
-import { faIdBadge } from '@fortawesome/free-solid-svg-icons/faIdBadge';
 import { FeatureDefinitions } from '../../featureDefinitions';
 import { FeatureSwitch } from '../accessControls/featureSwitch';
 

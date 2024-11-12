@@ -80,7 +80,7 @@ const CsvIdentificationWorklistTable: FunctionComponent<CsvIdentificationWorklis
                                         {csvIdentificationRequestRetrieved?.map(
                                             (csvIdentificationRequestView: CsvIdentificationRequestView) => (
                                                 <CsvIdentificationRequestRow
-                                                    key={csvIdentificationRequestView.id.toString()}
+                                                    key={csvIdentificationRequestView.id!.toString()}
                                                     csvIdentificationRequest={csvIdentificationRequestView}
 
                                                 />

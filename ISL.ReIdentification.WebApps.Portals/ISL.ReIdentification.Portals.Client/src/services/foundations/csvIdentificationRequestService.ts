@@ -2,8 +2,6 @@ import { useMsal } from "@azure/msal-react";
 import CsvIdentificationRequestBroker from "../../brokers/apiBroker.csvIdentificationRequest";
 import { CsvIdentificationRequest } from "../../models/csvIdentificationRequest/csvIdentificationRequest";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CsvIdentificationRequestView } from "../../models/views/components/csvIdentificationRequest/csvIdentificationRequestView";
-
 
 export const csvIdentificationRequestService = {
     useCreateCsvIdentificationRequest: () => {

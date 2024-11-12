@@ -231,23 +231,24 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                                 <br />
                             </>
                         )}
-
-                        <Form.Group className="text-start">
-                            <Form.Label><strong>Reidentification Reason:</strong></Form.Label>
-                            <Form.Select
-                                value={selectedLookupId}
-                                onChange={handleLookupChange}
-                                required >
-                                {lookupOptions.map((option) => (
-                                    <option key={option.value} value={option.value}>
-                                        {option.name}
-                                    </option>
-                                ))}
-                            </Form.Select>
-                            <Form.Text className="text-muted">
-                                Please supply a reason why you are requesting to Reidentify this csv of patients.
-                            </Form.Text>
-                        </Form.Group>
+                        {isLoading ? <Spinner /> : <>
+                            <Form.Group className="text-start">
+                                <Form.Label><strong>Reidentification Reason:</strong></Form.Label>
+                                <Form.Select
+                                    value={selectedLookupId}
+                                    onChange={handleLookupChange}
+                                    required >
+                                    {lookupOptions.map((option) => (
+                                        <option key={option.value} value={option.value}>
+                                            {option.name}
+                                        </option>
+                                    ))}
+                                </Form.Select>
+                                <Form.Text className="text-muted">
+                                    Please supply a reason why you are requesting to Reidentify this csv of patients.
+                                </Form.Text>
+                            </Form.Group>
+                        </>}
                         <br />
 
                         {error && <Alert variant="danger">
