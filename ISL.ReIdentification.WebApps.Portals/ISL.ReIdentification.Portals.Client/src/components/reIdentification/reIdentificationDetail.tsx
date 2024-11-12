@@ -1,10 +1,12 @@
-import { FunctionComponent } from "react";
+import { FunctionComponent, useState } from "react";
 import ReIdentificationDetailCard from "./reIdentificationDetailCard";
 import { lookupViewService } from "../../services/views/lookups/lookupViewService";
-import { Alert, Container, Row, Spinner } from "react-bootstrap";
+import { Button, Container, Row, Spinner } from "react-bootstrap";
+import { BreachModal } from "../breachDetails/BreachModal";
 
 const ReIdentificationDetail: FunctionComponent = () => {
     const { mappedLookups, isLoading } = lookupViewService.useGetAllLookups("", "Reasons");
+    const [showBreachModal, setShowBreachModal] = useState(false);
 
     if (isLoading) {
         return <Spinner />
@@ -12,6 +14,12 @@ const ReIdentificationDetail: FunctionComponent = () => {
 
     return (
         <>
+            <div>
+                <p>This page provides a simple reidentification for a single patient pseudo identifer</p>
+                <p><strong>Note:</strong> you will only be able to reidentify patients that are present within your organisation.</p>
+                <p><strong>Note:</strong> all reidentification requests are subject to breach monitoring and reporting</p>
+                <p>Details of breach thresholds can be found <Button size="sm" variant="secondary" onClick={()=> setShowBreachModal(true)}>here</Button>.</p>
+            </div>
             {mappedLookups &&
                 <>
                     <Container>
@@ -33,6 +41,7 @@ const ReIdentificationDetail: FunctionComponent = () => {
                     </Container>
                 </>
             }
+            <BreachModal show={showBreachModal} hide={() => setShowBreachModal(false)} />
         </>
     );
 };
