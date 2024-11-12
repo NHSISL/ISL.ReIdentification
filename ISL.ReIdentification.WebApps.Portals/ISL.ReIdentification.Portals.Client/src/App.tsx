@@ -4,8 +4,6 @@ import './App.css';
 import Root from './components/root';
 import ErrorPage from './errors/error';
 import { MsalProvider } from '@azure/msal-react';
-import { SecuredRoute } from './components/securitys/securedRoutes';
-import securityPoints from './securityMatrix';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClientGlobalOptions } from './brokers/apiBroker.globals';
 import { Home } from './pages/home';
@@ -34,7 +32,7 @@ function App({ instance }: any) {
                 },
                 {
                     path: "reIdentification",
-                    element: <SecuredRoute allowedRoles={securityPoints.reIdentification.view}><ReIdentificationPage /></SecuredRoute>
+                    element: <ReIdentificationPage />
                 },
                 {
                     path: "csvReIdentification",
