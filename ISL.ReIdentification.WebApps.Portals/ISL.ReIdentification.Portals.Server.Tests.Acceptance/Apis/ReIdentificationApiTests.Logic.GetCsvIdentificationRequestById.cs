@@ -5,6 +5,7 @@
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using FluentAssertions;
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.CsvIdentificationRequests;
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.OdsDatas;
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.PdsDatas;
@@ -19,6 +20,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
         {
             // given
             string pseudoIdentifier = "0000000001";
+            string expectedNhsNumber = "1111111111";
             Guid securityOid = TestAuthHandler.SecurityOid;
             CsvIdentificationRequest randomCsvIdentificationRequest = CreateRandomCsvIdentificationRequest();
             CsvIdentificationRequest inputCsvIdentificationRequest = randomCsvIdentificationRequest;
@@ -38,12 +40,14 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
                 await PostRandomPdsDataGivenPseudoAsync(pseudoIdentifier, createdUserAccess.OrgCode);
 
             // when
-            var actualResult =
+            byte[] fileContent =
                 await this.apiBroker.GetCsvIdentificationRequestByIdAsync(
                     exisingCsvIdentificationRequest.Id, inputReason);
 
+            string actualNhsNumber = Encoding.UTF8.GetString(fileContent);
+
             // then
-            /// Add some assertion e.g. the resulting identified NHS number = "1111111111"
+            actualNhsNumber.Should().Be(expectedNhsNumber);
             await this.apiBroker.DeleteCsvIdentificationRequestByIdAsync(exisingCsvIdentificationRequest.Id);
             await this.apiBroker.DeleteUserAccessByIdAsync(createdUserAccess.Id);
             await this.apiBroker.DeleteOdsDataByIdAsync(createdOdsData.Id);
