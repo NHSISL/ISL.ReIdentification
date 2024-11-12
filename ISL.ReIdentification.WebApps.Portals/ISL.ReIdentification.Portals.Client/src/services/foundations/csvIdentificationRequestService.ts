@@ -3,7 +3,6 @@ import CsvIdentificationRequestBroker from "../../brokers/apiBroker.csvIdentific
 import { CsvIdentificationRequest } from "../../models/csvIdentificationRequest/csvIdentificationRequest";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-
 export const csvIdentificationRequestService = {
     useCreateCsvIdentificationRequest: () => {
         const broker = new CsvIdentificationRequestBroker();
@@ -73,18 +72,13 @@ export const csvIdentificationRequestService = {
         });
     },
 
-   /* useRemoveCsvIdentificationRequest: () => {
+    useSelectCsvIdentificationByCsvIdentificationRequestIdRequest: (csvIdentificationRequestId: string) => {
         const broker = new CsvIdentificationRequestBroker();
-        const queryClient = useQueryClient();
 
-        return useMutation({
-            mutationFn: (id: string) => {
-                return broker.DeleteCsvIdentificationRequestByIdAsync(id);
-            },
-            onSuccess: (data: { id: string }) => {
-                queryClient.invalidateQueries({ queryKey: ["CsvIdentificationRequestGetAll"] });
-                queryClient.invalidateQueries({ queryKey: ["CsvIdentificationRequestGetById", { id: data.id }] });
-            }
+        return useQuery<CsvIdentificationRequest>({
+            queryKey: ["GetCsvIdentificationRequestById", { csvIdentificationRequestId: csvIdentificationRequestId }],
+            queryFn: () => broker.GetCsvIdentificationRequestByIdAsync(csvIdentificationRequestId),
+            staleTime: Infinity
         });
-    },*/
+    },
 }
