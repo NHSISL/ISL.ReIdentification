@@ -1,7 +1,7 @@
 import { FunctionComponent, useState } from "react";
 import ReIdentificationDetailCard from "./reIdentificationDetailCard";
 import { lookupViewService } from "../../services/views/lookups/lookupViewService";
-import { Alert, Col, Container, Row, Spinner } from "react-bootstrap";
+import { Alert, Container, Row, Spinner } from "react-bootstrap";
 import { BreachModal } from "../breachDetails/BreachModal";
 
 const ReIdentificationDetail: FunctionComponent = () => {
@@ -17,12 +17,10 @@ const ReIdentificationDetail: FunctionComponent = () => {
             {mappedLookups &&
                 <>
                     <Container>
-                        <Row className="justify-content-md-center">
-                            <Col>
+                        <Row className="justify-content-md-center m-0 p-0">
                             <ReIdentificationDetailCard
                                 lookups={mappedLookups}
                             />
-                            </Col>
                         </Row>
                     </Container>
                     <br />
