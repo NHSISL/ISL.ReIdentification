@@ -13,7 +13,7 @@ export const lookupViewService = {
         let query = `?$orderby=createdDate desc&$filter=groupName eq '${groupName}'`;
 
         if (searchTerm) {
-            query = query + `&$filter=contains(name,'${searchTerm}')`;
+            query = query + `&$filter=contains(value,'${searchTerm}')`;
         }
 
         const response = lookupService.useRetrieveAllLookups(query);
