@@ -102,8 +102,16 @@ jobs:
       run: dotnet tool install --global dotnet-ef
     - name: Deploy Database
       run: dotnet ef database update --project ISL.ReIdentification.Core/ISL.ReIdentification.Core.csproj --startup-project ISL.ReIdentification.Core/ISL.ReIdentification.Core.csproj
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+    - name: Run Tests - ISL.ReIdentification.Core.Tests.Unit
+      run: dotnet test --no-build --verbosity normal ISL.ReIdentification.Core.Tests.Unit/ISL.ReIdentification.Core.Tests.Unit.csproj
+    - name: Run Tests - ISL.ReIdentification.Configurations.Server.Tests.Unit
+      run: dotnet test --no-build --verbosity normal ISL.ReIdentification.WebApps.Configurations/ISL.ReIdentification.Configurations.Server.Tests.Unit/ISL.ReIdentification.Configurations.Server.Tests.Unit.csproj
+    - name: Run Tests - ISL.ReIdentification.Configurations.Server.Tests.Acceptance
+      run: dotnet test --no-build --verbosity normal ISL.ReIdentification.WebApps.Configurations/ISL.ReIdentification.Configurations.Server.Tests.Acceptance/ISL.ReIdentification.Configurations.Server.Tests.Acceptance.csproj
+    - name: Run Tests - ISL.ReIdentification.Portals.Server.Tests.Unit
+      run: dotnet test --no-build --verbosity normal ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Server.Tests.Unit/ISL.ReIdentification.Portals.Server.Tests.Unit.csproj
+    - name: Run Tests - ISL.ReIdentification.Portals.Server.Tests.Acceptance
+      run: dotnet test --no-build --verbosity normal ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Server.Tests.Acceptance/ISL.ReIdentification.Portals.Server.Tests.Acceptance.csproj
     env:
       NOTIFICATIONCONFIGURATIONS__APIKEY: ${{ secrets.NOTIFICATIONCONFIGURATIONS__APIKEY }}
   add_tag:

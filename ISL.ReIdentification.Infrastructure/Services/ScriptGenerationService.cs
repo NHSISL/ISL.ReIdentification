@@ -96,8 +96,33 @@ namespace ISL.ReIdentification.Infrastructure.Services
 
                                 new TestTask
                                 {
-                                    Name = "Test"
-                                }
+                                    Name = "Run Tests - ISL.ReIdentification.Core.Tests.Unit",
+                                    Run = "dotnet test --no-build --verbosity normal ISL.ReIdentification.Core.Tests.Unit/ISL.ReIdentification.Core.Tests.Unit.csproj"
+                                },
+
+                                new TestTask
+                                {
+                                    Name = "Run Tests - ISL.ReIdentification.Configurations.Server.Tests.Unit",
+                                    Run = "dotnet test --no-build --verbosity normal ISL.ReIdentification.WebApps.Configurations/ISL.ReIdentification.Configurations.Server.Tests.Unit/ISL.ReIdentification.Configurations.Server.Tests.Unit.csproj"
+                                },
+
+                                new TestTask
+                                {
+                                    Name = "Run Tests - ISL.ReIdentification.Configurations.Server.Tests.Acceptance",
+                                    Run = "dotnet test --no-build --verbosity normal ISL.ReIdentification.WebApps.Configurations/ISL.ReIdentification.Configurations.Server.Tests.Acceptance/ISL.ReIdentification.Configurations.Server.Tests.Acceptance.csproj"
+                                },
+
+                                new TestTask
+                                {
+                                    Name = "Run Tests - ISL.ReIdentification.Portals.Server.Tests.Unit",
+                                    Run = "dotnet test --no-build --verbosity normal ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Server.Tests.Unit/ISL.ReIdentification.Portals.Server.Tests.Unit.csproj"
+                                },
+
+                                new TestTask
+                                {
+                                    Name = "Run Tests - ISL.ReIdentification.Portals.Server.Tests.Acceptance",
+                                    Run = "dotnet test --no-build --verbosity normal ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Server.Tests.Acceptance/ISL.ReIdentification.Portals.Server.Tests.Acceptance.csproj"
+                                },
                             }
                         }
                     },
