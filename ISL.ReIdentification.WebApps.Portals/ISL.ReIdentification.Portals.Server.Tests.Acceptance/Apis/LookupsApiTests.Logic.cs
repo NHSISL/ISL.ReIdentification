@@ -32,7 +32,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             await this.apiBroker.DeleteLookupByIdAsync(actualLookup.Id);
         }
 
-        [Fact(Skip = "Temp excluded")]
+        [Fact]
         public async Task ShouldGetAllLookupsAsync()
         {
             // given

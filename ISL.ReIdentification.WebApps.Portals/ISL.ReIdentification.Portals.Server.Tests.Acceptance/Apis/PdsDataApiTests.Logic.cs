@@ -32,7 +32,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             await this.apiBroker.DeletePdsDataByIdAsync(actuaPdsData.Id);
         }
 
-        [Fact(Skip = "Temp excluded")]
+        [Fact]
         public async Task ShouldGetAllPdsDataAsync()
         {
             // given

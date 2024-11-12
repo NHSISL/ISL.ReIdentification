@@ -33,7 +33,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             await this.apiBroker.DeleteOdsDataByIdAsync(actualOdsData.Id);
         }
 
-        [Fact(Skip = "Temp excluded")]
+        [Fact]
         public async Task ShouldGetAllOdsDatasAsync()
         {
             // given
