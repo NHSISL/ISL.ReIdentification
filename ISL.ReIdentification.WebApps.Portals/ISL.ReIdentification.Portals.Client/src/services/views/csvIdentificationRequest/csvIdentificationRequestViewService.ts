@@ -25,38 +25,12 @@ export const csvIdentificationRequestViewService = {
 
         const response = csvIdentificationRequestService.useRetrieveAllCsvIdentificationRequestPages(query);
         const [mappedCsvIdentificationRequests, setMappedCsvIdentificationRequests] = useState<Array<CsvIdentificationRequestView>>();
-        const [pages, setPages] = useState<Array<{ data: CsvIdentificationRequestView[] }>>([]);
+        const [pages] = useState<Array<{ data: CsvIdentificationRequestView[] }>>([]);
 
         useEffect(() => {
             if (response.data && Array.isArray(response.data.pages)) {
-                const csvIdentificationRequests: Array<CsvIdentificationRequestView> = [];
-                const validPages = (response.data.pages as Array<{ data: CsvIdentificationRequestView[] }>).filter(page => page.data);
-
-                validPages.forEach((x) => {
-                    x.data.forEach((csvIdentificationRequest: CsvIdentificationRequestView) => {
-                        csvIdentificationRequests.push(new CsvIdentificationRequestView(
-                            csvIdentificationRequest.id,
-                            csvIdentificationRequest.requesterEntraUserId,
-                            csvIdentificationRequest.requesterFirstName,
-                            csvIdentificationRequest.requesterLastName,
-                            csvIdentificationRequest.requesterDisplayName,
-                            csvIdentificationRequest.requesterEmail,
-                            csvIdentificationRequest.recipientEntraUserId,
-                            csvIdentificationRequest.recipientFirstName,
-                            csvIdentificationRequest.recipientLastName,
-                            csvIdentificationRequest.recipientDisplayName,
-                            csvIdentificationRequest.recipientEmail,
-                            csvIdentificationRequest.reason,
-                            csvIdentificationRequest.organisation,
-                            csvIdentificationRequest.hasHeaderRecord,
-                            csvIdentificationRequest.identifierColumnIndex,
-                            csvIdentificationRequest.createdDate,
-                        ));
-                    });
-                });
-
-                setMappedCsvIdentificationRequests(csvIdentificationRequests);
-                setPages(validPages);
+                const validPages = (response.data.pages as Array<{ data: CsvIdentificationRequestView[] }>).filter(page => page.data).flatMap(x => x.data as CsvIdentificationRequestView[]);
+                setMappedCsvIdentificationRequests(validPages);
             }
         }, [response.data]);
 
@@ -71,5 +45,4 @@ export const csvIdentificationRequestViewService = {
             refetch: response.refetch
         };
     }
-
 };

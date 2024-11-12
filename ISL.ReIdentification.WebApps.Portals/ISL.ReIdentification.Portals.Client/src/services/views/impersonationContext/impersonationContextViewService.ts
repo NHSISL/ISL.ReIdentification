@@ -31,40 +31,7 @@ export const impersonationContextViewService = {
 
         useEffect(() => {
             if (response.data && response.data.pages) {
-                const impersonationContexts: Array<ImpersonationContextView> = [];
-                response.data.pages.forEach((x: { data: ImpersonationContextView[] }) => {
-                    x.data.forEach((impersonationContext: ImpersonationContextView) => {
-                        impersonationContexts.push(new ImpersonationContextView(
-                            impersonationContext.id,
-                            impersonationContext.requesterEntraUserId,
-                            impersonationContext.requesterFirstName,
-                            impersonationContext.requesterLastName,
-                            impersonationContext.requesterDisplayName,
-                            impersonationContext.requesterEmail,
-                            impersonationContext.requesterJobTitle,
-                            impersonationContext.responsiblePersonEntraUserId,
-                            impersonationContext.responsiblePersonFirstName,
-                            impersonationContext.responsiblePersonLastName,
-                            impersonationContext.responsiblePersonDisplayName,
-                            impersonationContext.responsiblePersonEmail,
-                            impersonationContext.responsiblePersonJobTitle,
-                            impersonationContext.reason,
-                            impersonationContext.purpose,
-                            impersonationContext.organisation,
-                            impersonationContext.projectName,
-                            impersonationContext.inboxToken,
-                            impersonationContext.outboxToken,
-                            impersonationContext.errorToken,
-                            impersonationContext.isApproved,
-                            impersonationContext.identifierColumn,
-                            impersonationContext.createdBy,
-                            impersonationContext.createdDate,
-                            impersonationContext.updatedBy,
-                            impersonationContext.updatedDate,
-                        ));
-                    });
-                });
-
+                const impersonationContexts = response.data.pages.flatMap(x => x.data as ImpersonationContextView[]);
                 setMappedImpersonationContexts(impersonationContexts);
                 setPages(response.data.pages);
             }
@@ -89,37 +56,8 @@ export const impersonationContextViewService = {
 
         useEffect(() => {
             if (response.data && response.data.pages && response.data.pages[0].data[0]) {
-                const impersonationContext = response.data.pages[0].data[0];
-                const impersonationContextView = new ImpersonationContextView(
-                    impersonationContext.id,
-                    impersonationContext.requesterEntraUserId,
-                    impersonationContext.requesterFirstName,
-                    impersonationContext.requesterLastName,
-                    impersonationContext.requesterDisplayName,
-                    impersonationContext.requesterEmail,
-                    impersonationContext.requesterJobTitle,
-                    impersonationContext.responsiblePersonEntraUserId,
-                    impersonationContext.responsiblePersonFirstName,
-                    impersonationContext.responsiblePersonLastName,
-                    impersonationContext.responsiblePersonDisplayName,
-                    impersonationContext.responsiblePersonEmail,
-                    impersonationContext.responsiblePersonJobTitle,
-                    impersonationContext.reason,
-                    impersonationContext.purpose,
-                    impersonationContext.organisation,
-                    impersonationContext.projectName,
-                    impersonationContext.inboxToken,
-                    impersonationContext.outboxToken,
-                    impersonationContext.errorToken,
-                    impersonationContext.isApproved,
-                    impersonationContext.identifierColumn,
-                    impersonationContext.createdBy,
-                    impersonationContext.createdDate,
-                    impersonationContext.updatedBy,
-                    impersonationContext.updatedDate,
-                );
-
-                setMappedImpersonationContext(impersonationContextView);
+                const impersonationContext = response.data.pages[0].data[0] as ImpersonationContextView;
+                setMappedImpersonationContext(impersonationContext);
             }
         }, [response.data]);
 

@@ -15,40 +15,4 @@ export class CsvIdentificationRequestView {
     public hasHeaderRecord?: boolean;
     public identifierColumnIndex?: number;
     public createdDate?: Date;
-
-    constructor(
-        id?: string,
-        requesterEntraUserId?: string,
-        requesterFirstName?: string,
-        requesterLastName?: string,
-        requesterDisplayName?: string,
-        requesterEmail?: string,
-        recipientEntraUserId?: string,
-        recipientFirstName?: string,
-        recipientLastName?: string,
-        recipientDisplayName?: string,
-        recipientEmail?: string,
-        reason?: string,
-        organisation?: string[],
-        hasHeaderRecord?: boolean,
-        identifierColumnIndex?: number,
-        createdDate?: Date,
-    ) {
-        this.id = id;
-        this.requesterEntraUserId = requesterEntraUserId || ""
-        this.requesterFirstName = requesterFirstName || "";
-        this.requesterLastName = requesterLastName || "";
-        this.requesterDisplayName = requesterDisplayName || "";
-        this.requesterEmail = requesterEmail || "";
-        this.recipientEntraUserId = recipientEntraUserId || "";
-        this.recipientFirstName = recipientFirstName || "";
-        this.recipientLastName = recipientLastName || "";
-        this.recipientDisplayName = recipientDisplayName || "";
-        this.recipientEmail = recipientEmail || "";
-        this.reason = reason || "";
-        this.organisation = organisation || [""];
-        this.hasHeaderRecord = hasHeaderRecord || false;
-        this.identifierColumnIndex = identifierColumnIndex;
-        this.createdDate = createdDate;
-    }
 }

@@ -11,7 +11,7 @@ class CsvIdentificationRequestBroker {
     private processOdataResult = (result: AxiosResponse) => {
         const data = result.data.value.map((csvIdentificationRequest: CsvIdentificationRequest) => new CsvIdentificationRequest(csvIdentificationRequest));
 
-        const nextPage = result.data['@odata.nextLink'];
+        const nextPage = result.data['@odata.nextLink'] as string;
         return { data, nextPage }
     }
 
