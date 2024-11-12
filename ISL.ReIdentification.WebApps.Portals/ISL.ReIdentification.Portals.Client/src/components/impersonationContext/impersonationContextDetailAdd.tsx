@@ -89,7 +89,7 @@ const ImpersonationContextDetailAdd: FunctionComponent = () => {
             }
 
             if (file.name.endsWith(".csv")) {
-                setFileName(file.name);
+                //setFileName(file.name);
                 const reader = new FileReader();
                 reader.onload = (event) => {
                     let text = event.target?.result as string;
