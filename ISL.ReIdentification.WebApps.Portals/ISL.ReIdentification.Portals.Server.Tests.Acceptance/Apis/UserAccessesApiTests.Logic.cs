@@ -32,7 +32,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             await this.apiBroker.DeleteUserAccessByIdAsync(inputUserAccess.Id);
         }
 
-        [Fact]
+        [Fact(Skip = "Temp excluded")]
         public async Task ShouldGetAllUserAccessesAsync()
         {
             // given

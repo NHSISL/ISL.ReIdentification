@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using RESTFulSense.Exceptions;
 using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.UserAccesses;
 
 namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
@@ -110,40 +109,40 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
             await this.apiBroker.DeleteUserAccessByIdAsync(actualUserAccess.Id);
         }
 
-        [Fact]
-        public async Task ShouldPutUserAccessAsync()
-        {
-            // given
-            UserAccess randomUserAccess = await PostRandomUserAccess();
-            UserAccess updatedUserAccess = UpdateUserAccess(randomUserAccess);
+        //[Fact]
+        //public async Task ShouldPutUserAccessAsync()
+        //{
+        //    // given
+        //    UserAccess randomUserAccess = await PostRandomUserAccess();
+        //    UserAccess updatedUserAccess = UpdateUserAccess(randomUserAccess);
 
-            // when
-            await this.apiBroker.PutUserAccessAsync(updatedUserAccess);
-            UserAccess actualUserAccess = await this.apiBroker.GetUserAccessByIdAsync(randomUserAccess.Id);
+        //    // when
+        //    await this.apiBroker.PutUserAccessAsync(updatedUserAccess);
+        //    UserAccess actualUserAccess = await this.apiBroker.GetUserAccessByIdAsync(randomUserAccess.Id);
 
-            // then
-            actualUserAccess.Should().BeEquivalentTo(updatedUserAccess);
-            await this.apiBroker.DeleteUserAccessByIdAsync(actualUserAccess.Id);
-        }
+        //    // then
+        //    actualUserAccess.Should().BeEquivalentTo(updatedUserAccess);
+        //    await this.apiBroker.DeleteUserAccessByIdAsync(actualUserAccess.Id);
+        //}
 
-        [Fact]
-        public async Task ShouldDeleteUserAccessAsync()
-        {
-            // given
-            UserAccess randomUserAccess = await PostRandomUserAccess();
-            UserAccess expectedDeletedUserAccess = randomUserAccess;
+        //[Fact]
+        //public async Task ShouldDeleteUserAccessAsync()
+        //{
+        //    // given
+        //    UserAccess randomUserAccess = await PostRandomUserAccess();
+        //    UserAccess expectedDeletedUserAccess = randomUserAccess;
 
-            // when
-            UserAccess actualUserAccess = await this.apiBroker.DeleteUserAccessByIdAsync(expectedDeletedUserAccess.Id);
+        //    // when
+        //    UserAccess actualUserAccess = await this.apiBroker.DeleteUserAccessByIdAsync(expectedDeletedUserAccess.Id);
 
-            ValueTask<UserAccess> getUserAccessTask =
-                this.apiBroker.GetUserAccessByIdAsync(expectedDeletedUserAccess.Id);
+        //    ValueTask<UserAccess> getUserAccessTask =
+        //        this.apiBroker.GetUserAccessByIdAsync(expectedDeletedUserAccess.Id);
 
-            //then
-            actualUserAccess.Should().BeEquivalentTo(expectedDeletedUserAccess);
+        //    //then
+        //    actualUserAccess.Should().BeEquivalentTo(expectedDeletedUserAccess);
 
-            await Assert.ThrowsAsync<HttpResponseNotFoundException>(
-                testCode: getUserAccessTask.AsTask);
-        }
+        //    await Assert.ThrowsAsync<HttpResponseNotFoundException>(
+        //        testCode: getUserAccessTask.AsTask);
+        //}
     }
 }

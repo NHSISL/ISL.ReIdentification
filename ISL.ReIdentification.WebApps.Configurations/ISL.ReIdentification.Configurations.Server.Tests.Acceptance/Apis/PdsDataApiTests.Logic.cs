@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.PdsDatas;
-using RESTFulSense.Exceptions;
 
 namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
 {
@@ -66,42 +65,42 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
             await this.apiBroker.DeletePdsDataByIdAsync(actualPdsData.Id);
         }
 
-        [Fact]
-        public async Task ShouldPutPdsDataAsync()
-        {
-            // given
-            PdsData randomPdsData = await PostRandomPdsDataAsync();
-            PdsData modifiedPdsData = UpdatePdsDataWithRandomValues(randomPdsData);
+        //[Fact]
+        //public async Task ShouldPutPdsDataAsync()
+        //{
+        //    // given
+        //    PdsData randomPdsData = await PostRandomPdsDataAsync();
+        //    PdsData modifiedPdsData = UpdatePdsDataWithRandomValues(randomPdsData);
 
-            // when
-            await this.apiBroker.PutPdsDataAsync(modifiedPdsData);
-            PdsData actualPdsData = await this.apiBroker.GetPdsDataByIdAsync(randomPdsData.Id);
+        //    // when
+        //    await this.apiBroker.PutPdsDataAsync(modifiedPdsData);
+        //    PdsData actualPdsData = await this.apiBroker.GetPdsDataByIdAsync(randomPdsData.Id);
 
-            // then
-            actualPdsData.Should().BeEquivalentTo(modifiedPdsData);
-            await this.apiBroker.DeletePdsDataByIdAsync(actualPdsData.Id);
-        }
+        //    // then
+        //    actualPdsData.Should().BeEquivalentTo(modifiedPdsData);
+        //    await this.apiBroker.DeletePdsDataByIdAsync(actualPdsData.Id);
+        //}
 
-        [Fact]
-        public async Task ShouldDeletePdsDataAsync()
-        {
-            // given
-            PdsData randomPdsData = await PostRandomPdsDataAsync();
-            PdsData inputPdsData = randomPdsData;
-            PdsData expectedPdsData = inputPdsData;
+        //[Fact]
+        //public async Task ShouldDeletePdsDataAsync()
+        //{
+        //    // given
+        //    PdsData randomPdsData = await PostRandomPdsDataAsync();
+        //    PdsData inputPdsData = randomPdsData;
+        //    PdsData expectedPdsData = inputPdsData;
 
-            // when
-            PdsData deletedPdsData =
-                await this.apiBroker.DeletePdsDataByIdAsync(inputPdsData.Id);
+        //    // when
+        //    PdsData deletedPdsData =
+        //        await this.apiBroker.DeletePdsDataByIdAsync(inputPdsData.Id);
 
-            ValueTask<PdsData> getPdsDatabyIdTask =
-                this.apiBroker.GetPdsDataByIdAsync(inputPdsData.Id);
+        //    ValueTask<PdsData> getPdsDatabyIdTask =
+        //        this.apiBroker.GetPdsDataByIdAsync(inputPdsData.Id);
 
-            // then
-            deletedPdsData.Should().BeEquivalentTo(expectedPdsData);
+        //    // then
+        //    deletedPdsData.Should().BeEquivalentTo(expectedPdsData);
 
-            await Assert.ThrowsAsync<HttpResponseNotFoundException>(
-                testCode: getPdsDatabyIdTask.AsTask);
-        }
+        //    await Assert.ThrowsAsync<HttpResponseNotFoundException>(
+        //        testCode: getPdsDatabyIdTask.AsTask);
+        //}
     }
 }

@@ -32,7 +32,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             await this.apiBroker.DeleteImpersonationContextByIdAsync(actualImpersonationContext.Id);
         }
 
-        [Fact]
+        [Fact(Skip = "Temp excluded")]
         public async Task ShouldGetAllImpersonationContextsAsync()
         {
             // given

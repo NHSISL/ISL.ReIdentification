@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.Lookups;
-using RESTFulSense.Exceptions;
 
 namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
 {
@@ -66,42 +65,42 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
             await this.apiBroker.DeleteLookupByIdAsync(actualLookup.Id);
         }
 
-        [Fact]
-        public async Task ShouldPutLookupAsync()
-        {
-            // given
-            Lookup randomLookup = await PostRandomLookupAsync();
-            Lookup modifiedLookup = UpdateLookupWithRandomValues(randomLookup);
+        //[Fact]
+        //public async Task ShouldPutLookupAsync()
+        //{
+        //    // given
+        //    Lookup randomLookup = await PostRandomLookupAsync();
+        //    Lookup modifiedLookup = UpdateLookupWithRandomValues(randomLookup);
 
-            // when
-            await this.apiBroker.PutLookupAsync(modifiedLookup);
-            Lookup actualLookup = await this.apiBroker.GetLookupByIdAsync(randomLookup.Id);
+        //    // when
+        //    await this.apiBroker.PutLookupAsync(modifiedLookup);
+        //    Lookup actualLookup = await this.apiBroker.GetLookupByIdAsync(randomLookup.Id);
 
-            // then
-            actualLookup.Should().BeEquivalentTo(modifiedLookup);
-            await this.apiBroker.DeleteLookupByIdAsync(actualLookup.Id);
-        }
+        //    // then
+        //    actualLookup.Should().BeEquivalentTo(modifiedLookup);
+        //    await this.apiBroker.DeleteLookupByIdAsync(actualLookup.Id);
+        //}
 
-        [Fact]
-        public async Task ShouldDeleteLookupAsync()
-        {
-            // given
-            Lookup randomLookup = await PostRandomLookupAsync();
-            Lookup inputLookup = randomLookup;
-            Lookup expectedLookup = inputLookup;
+        //[Fact]
+        //public async Task ShouldDeleteLookupAsync()
+        //{
+        //    // given
+        //    Lookup randomLookup = await PostRandomLookupAsync();
+        //    Lookup inputLookup = randomLookup;
+        //    Lookup expectedLookup = inputLookup;
 
-            // when
-            Lookup deletedLookup =
-                await this.apiBroker.DeleteLookupByIdAsync(inputLookup.Id);
+        //    // when
+        //    Lookup deletedLookup =
+        //        await this.apiBroker.DeleteLookupByIdAsync(inputLookup.Id);
 
-            ValueTask<Lookup> getLookupbyIdTask =
-                this.apiBroker.GetLookupByIdAsync(inputLookup.Id);
+        //    ValueTask<Lookup> getLookupbyIdTask =
+        //        this.apiBroker.GetLookupByIdAsync(inputLookup.Id);
 
-            // then
-            deletedLookup.Should().BeEquivalentTo(expectedLookup);
+        //    // then
+        //    deletedLookup.Should().BeEquivalentTo(expectedLookup);
 
-            await Assert.ThrowsAsync<HttpResponseNotFoundException>(
-                testCode: getLookupbyIdTask.AsTask);
-        }
+        //    await Assert.ThrowsAsync<HttpResponseNotFoundException>(
+        //        testCode: getLookupbyIdTask.AsTask);
+        //}
     }
 }

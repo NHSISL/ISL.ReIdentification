@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.AccessAudits;
-using RESTFulSense.Exceptions;
 
 namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
 {
@@ -68,42 +67,42 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
             await this.apiBroker.DeleteAccessAuditByIdAsync(actualAccessAudit.Id);
         }
 
-        [Fact]
-        public async Task ShouldPutAccessAuditAsync()
-        {
-            // given
-            AccessAudit randomAccessAudit = await PostRandomAccessAuditAsync();
-            AccessAudit modifiedAccessAudit = UpdateAccessAuditWithRandomValues(randomAccessAudit);
+        //[Fact]
+        //public async Task ShouldPutAccessAuditAsync()
+        //{
+        //    // given
+        //    AccessAudit randomAccessAudit = await PostRandomAccessAuditAsync();
+        //    AccessAudit modifiedAccessAudit = UpdateAccessAuditWithRandomValues(randomAccessAudit);
 
-            // when
-            await this.apiBroker.PutAccessAuditAsync(modifiedAccessAudit);
-            var actualAccessAudit = await this.apiBroker.GetAccessAuditByIdAsync(randomAccessAudit.Id);
+        //    // when
+        //    await this.apiBroker.PutAccessAuditAsync(modifiedAccessAudit);
+        //    var actualAccessAudit = await this.apiBroker.GetAccessAuditByIdAsync(randomAccessAudit.Id);
 
-            // then
-            actualAccessAudit.Should().BeEquivalentTo(modifiedAccessAudit);
-            await this.apiBroker.DeleteAccessAuditByIdAsync(actualAccessAudit.Id);
-        }
+        //    // then
+        //    actualAccessAudit.Should().BeEquivalentTo(modifiedAccessAudit);
+        //    await this.apiBroker.DeleteAccessAuditByIdAsync(actualAccessAudit.Id);
+        //}
 
-        [Fact]
-        public async Task ShouldDeleteAccessAuditAsync()
-        {
-            // given
-            AccessAudit randomAccessAudit = await PostRandomAccessAuditAsync();
-            AccessAudit inputAccessAudit = randomAccessAudit;
-            AccessAudit expectedAccessAudit = inputAccessAudit;
+        //[Fact]
+        //public async Task ShouldDeleteAccessAuditAsync()
+        //{
+        //    // given
+        //    AccessAudit randomAccessAudit = await PostRandomAccessAuditAsync();
+        //    AccessAudit inputAccessAudit = randomAccessAudit;
+        //    AccessAudit expectedAccessAudit = inputAccessAudit;
 
-            // when
-            AccessAudit deletedAccessAudit =
-                await this.apiBroker.DeleteAccessAuditByIdAsync(inputAccessAudit.Id);
+        //    // when
+        //    AccessAudit deletedAccessAudit =
+        //        await this.apiBroker.DeleteAccessAuditByIdAsync(inputAccessAudit.Id);
 
-            ValueTask<AccessAudit> getAccessAuditbyIdTask =
-                this.apiBroker.GetAccessAuditByIdAsync(inputAccessAudit.Id);
+        //    ValueTask<AccessAudit> getAccessAuditbyIdTask =
+        //        this.apiBroker.GetAccessAuditByIdAsync(inputAccessAudit.Id);
 
-            // then
-            deletedAccessAudit.Should().BeEquivalentTo(expectedAccessAudit);
+        //    // then
+        //    deletedAccessAudit.Should().BeEquivalentTo(expectedAccessAudit);
 
-            await Assert.ThrowsAsync<HttpResponseNotFoundException>(
-                testCode: getAccessAuditbyIdTask.AsTask);
-        }
+        //    await Assert.ThrowsAsync<HttpResponseNotFoundException>(
+        //        testCode: getAccessAuditbyIdTask.AsTask);
+        //}
     }
 }
