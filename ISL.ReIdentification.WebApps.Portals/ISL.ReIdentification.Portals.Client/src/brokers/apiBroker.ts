@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { InteractionRequiredAuthError, PublicClientApplication } from "@azure/msal-browser";
-// @ts-expect-error auth config from js file
 import { loginRequest, msalConfig } from '../authConfig';
 
 class ApiBroker {
