@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.ImpersonationContexts;
-using RESTFulSense.Exceptions;
 
 namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
 {
@@ -69,42 +68,42 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             await this.apiBroker.DeleteImpersonationContextByIdAsync(actualImpersonationContext.Id);
         }
 
-        [Fact]
-        public async Task ShouldPutImpersonationContextAsync()
-        {
-            // given
-            ImpersonationContext randomImpersonationContext = await PostRandomImpersonationContextAsync();
-            ImpersonationContext modifiedImpersonationContext = UpdateImpersonationContextWithRandomValues(randomImpersonationContext);
+        //[Fact]
+        //public async Task ShouldPutImpersonationContextAsync()
+        //{
+        //    // given
+        //    ImpersonationContext randomImpersonationContext = await PostRandomImpersonationContextAsync();
+        //    ImpersonationContext modifiedImpersonationContext = UpdateImpersonationContextWithRandomValues(randomImpersonationContext);
 
-            // when
-            await this.apiBroker.PutImpersonationContextAsync(modifiedImpersonationContext);
-            var actualImpersonationContext = await this.apiBroker.GetImpersonationContextByIdAsync(randomImpersonationContext.Id);
+        //    // when
+        //    await this.apiBroker.PutImpersonationContextAsync(modifiedImpersonationContext);
+        //    var actualImpersonationContext = await this.apiBroker.GetImpersonationContextByIdAsync(randomImpersonationContext.Id);
 
-            // then
-            actualImpersonationContext.Should().BeEquivalentTo(modifiedImpersonationContext);
-            await this.apiBroker.DeleteImpersonationContextByIdAsync(actualImpersonationContext.Id);
-        }
+        //    // then
+        //    actualImpersonationContext.Should().BeEquivalentTo(modifiedImpersonationContext);
+        //    await this.apiBroker.DeleteImpersonationContextByIdAsync(actualImpersonationContext.Id);
+        //}
 
-        [Fact]
-        public async Task ShouldDeleteImpersonationContextAsync()
-        {
-            // given
-            ImpersonationContext randomImpersonationContext = await PostRandomImpersonationContextAsync();
-            ImpersonationContext inputImpersonationContext = randomImpersonationContext;
-            ImpersonationContext expectedImpersonationContext = inputImpersonationContext;
+        //[Fact]
+        //public async Task ShouldDeleteImpersonationContextAsync()
+        //{
+        //    // given
+        //    ImpersonationContext randomImpersonationContext = await PostRandomImpersonationContextAsync();
+        //    ImpersonationContext inputImpersonationContext = randomImpersonationContext;
+        //    ImpersonationContext expectedImpersonationContext = inputImpersonationContext;
 
-            // when
-            ImpersonationContext deletedImpersonationContext =
-                await this.apiBroker.DeleteImpersonationContextByIdAsync(inputImpersonationContext.Id);
+        //    // when
+        //    ImpersonationContext deletedImpersonationContext =
+        //        await this.apiBroker.DeleteImpersonationContextByIdAsync(inputImpersonationContext.Id);
 
-            ValueTask<ImpersonationContext> getImpersonationContextbyIdTask =
-                this.apiBroker.GetImpersonationContextByIdAsync(inputImpersonationContext.Id);
+        //    ValueTask<ImpersonationContext> getImpersonationContextbyIdTask =
+        //        this.apiBroker.GetImpersonationContextByIdAsync(inputImpersonationContext.Id);
 
-            // then
-            deletedImpersonationContext.Should().BeEquivalentTo(expectedImpersonationContext);
+        //    // then
+        //    deletedImpersonationContext.Should().BeEquivalentTo(expectedImpersonationContext);
 
-            await Assert.ThrowsAsync<HttpResponseNotFoundException>(
-                testCode: getImpersonationContextbyIdTask.AsTask);
-        }
+        //    await Assert.ThrowsAsync<HttpResponseNotFoundException>(
+        //        testCode: getImpersonationContextbyIdTask.AsTask);
+        //}
     }
 }

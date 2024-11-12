@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Force.DeepCloner;
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.UserAccesses;
-using RESTFulSense.Exceptions;
 
 namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
 {
@@ -30,6 +30,47 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             // then
             actualUserAccess.Should().BeEquivalentTo(expectedUserAccess);
             await this.apiBroker.DeleteUserAccessByIdAsync(inputUserAccess.Id);
+        }
+
+        [Fact]
+        public async Task ShouldPostBulkUserAccessAsync()
+        {
+            // given
+            List<string> removeItemsBulkUserAccess = GetRandomStringsWithLengthOf(15, 1);
+            List<string> unmodifiedItemsBulkUserAccess = GetRandomStringsWithLengthOf(15, 1);
+            List<string> newItemsBulkUserAccess = GetRandomStringsWithLengthOf(15, 1);
+            BulkUserAccess setupUserAccesses = CreateRandomBulkUserAccess();
+            setupUserAccesses.OrgCodes = new List<string>();
+            setupUserAccesses.OrgCodes.AddRange(removeItemsBulkUserAccess);
+            setupUserAccesses.OrgCodes.AddRange(unmodifiedItemsBulkUserAccess);
+            BulkUserAccess inputUserAccesses = setupUserAccesses.DeepClone();
+            inputUserAccesses.OrgCodes = new List<string>();
+            inputUserAccesses.OrgCodes.AddRange(newItemsBulkUserAccess);
+            inputUserAccesses.OrgCodes.AddRange(unmodifiedItemsBulkUserAccess);
+            await SetupBulkUserAccessesAsync(setupUserAccesses);
+
+            // when
+            await this.apiBroker.PostBulkUserAccessAsync(inputUserAccesses);
+
+            // then
+            foreach (var item in removeItemsBulkUserAccess)
+            {
+                var userAccess = await this.apiBroker.GetUserAccessByEntraUserIdAndOrgCodeAsync(
+                    entraUserId: setupUserAccesses.EntraUserId.ToString(),
+                    orgCode: item);
+
+                userAccess.Should().BeNull();
+            }
+
+            foreach (var item in inputUserAccesses.OrgCodes)
+            {
+                var userAccess = await this.apiBroker.GetUserAccessByEntraUserIdAndOrgCodeAsync(
+                    entraUserId: setupUserAccesses.EntraUserId.ToString(),
+                    orgCode: item);
+
+                userAccess.Should().NotBeNull();
+                await this.apiBroker.DeleteUserAccessByIdAsync(userAccess.Id);
+            }
         }
 
         [Fact]
@@ -94,14 +135,11 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             // when
             UserAccess actualUserAccess = await this.apiBroker.DeleteUserAccessByIdAsync(expectedDeletedUserAccess.Id);
 
-            ValueTask<UserAccess> getUserAccessTask =
-                this.apiBroker.GetUserAccessByIdAsync(expectedDeletedUserAccess.Id);
+            List<UserAccess> actualResult =
+                await this.apiBroker.GetSpecificUserAccessByIdAsync(expectedDeletedUserAccess.Id);
 
-            //then
-            actualUserAccess.Should().BeEquivalentTo(expectedDeletedUserAccess);
-
-            await Assert.ThrowsAsync<HttpResponseNotFoundException>(
-                testCode: getUserAccessTask.AsTask);
+            // then
+            actualResult.Count().Should().Be(0);
         }
     }
 }

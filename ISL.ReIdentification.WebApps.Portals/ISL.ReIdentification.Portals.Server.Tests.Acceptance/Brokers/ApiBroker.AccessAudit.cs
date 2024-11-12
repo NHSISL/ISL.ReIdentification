@@ -11,23 +11,27 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Brokers
 {
     public partial class ApiBroker
     {
-        private const string AccessAuditsRelativeUrl = "api/accessAudits";
+        private const string accessAuditsRelativeUrl = "api/accessAudits";
 
         public async ValueTask<AccessAudit> PostAccessAuditAsync(AccessAudit accessAudit) =>
-            await this.apiFactoryClient.PostContentAsync(AccessAuditsRelativeUrl, accessAudit);
+            await this.apiFactoryClient.PostContentAsync(accessAuditsRelativeUrl, accessAudit);
 
         public async ValueTask<List<AccessAudit>> GetAllAccessAuditsAsync() =>
-            await this.apiFactoryClient.GetContentAsync<List<AccessAudit>>($"{AccessAuditsRelativeUrl}/");
+            await this.apiFactoryClient.GetContentAsync<List<AccessAudit>>($"{accessAuditsRelativeUrl}/");
+
+        public async ValueTask<List<AccessAudit>> GetSpecificAccessAuditByIdAsync(Guid lookupId) =>
+            await this.apiFactoryClient.GetContentAsync<List<AccessAudit>>(
+                $"{accessAuditsRelativeUrl}?$filter=Id eq {lookupId}");
 
         public async ValueTask<AccessAudit> GetAccessAuditByIdAsync(Guid accessAuditId) =>
             await this.apiFactoryClient
-                .GetContentAsync<AccessAudit>($"{AccessAuditsRelativeUrl}/{accessAuditId}");
+                .GetContentAsync<AccessAudit>($"{accessAuditsRelativeUrl}/{accessAuditId}");
 
         public async ValueTask<AccessAudit> DeleteAccessAuditByIdAsync(Guid accessAuditId) =>
             await this.apiFactoryClient
-                .DeleteContentAsync<AccessAudit>($"{AccessAuditsRelativeUrl}/{accessAuditId}");
+                .DeleteContentAsync<AccessAudit>($"{accessAuditsRelativeUrl}/{accessAuditId}");
 
         public async ValueTask<AccessAudit> PutAccessAuditAsync(AccessAudit accessAudit) =>
-            await this.apiFactoryClient.PutContentAsync(AccessAuditsRelativeUrl, accessAudit);
+            await this.apiFactoryClient.PutContentAsync(accessAuditsRelativeUrl, accessAudit);
     }
 }

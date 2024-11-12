@@ -21,6 +21,10 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Brokers
             await this.apiFactoryClient.GetContentAsync<List<CsvIdentificationRequest>>(
                 $"{csvIdentificationRequestRelativeUrl}/");
 
+        public async ValueTask<List<CsvIdentificationRequest>> GetSpecificCsvIdentificationRequestByIdAsync(Guid lookupId) =>
+            await this.apiFactoryClient.GetContentAsync<List<CsvIdentificationRequest>>(
+                $"{csvIdentificationRequestRelativeUrl}?$filter=Id eq {lookupId}");
+
         public async ValueTask<CsvIdentificationRequest> GetCsvIdentificationRequestByIdAsync(
             Guid csvIdentificationRequestId) =>
             await this.apiFactoryClient.GetContentAsync<CsvIdentificationRequest>(

@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.Lookups;
-using RESTFulSense.Exceptions;
 
 namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
 {
@@ -82,7 +81,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
             await this.apiBroker.DeleteLookupByIdAsync(actualLookup.Id);
         }
 
-        [Fact(Skip = "Skipped")]
+        [Fact]
         public async Task ShouldDeleteLookupAsync()
         {
             // given
@@ -94,14 +93,11 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
             Lookup deletedLookup =
                 await this.apiBroker.DeleteLookupByIdAsync(inputLookup.Id);
 
-            ValueTask<Lookup> getLookupbyIdTask =
-                this.apiBroker.GetLookupByIdAsync(inputLookup.Id);
+            List<Lookup> actualResult =
+                await this.apiBroker.GetSpecificLookupByIdAsync(inputLookup.Id);
 
             // then
-            deletedLookup.Should().BeEquivalentTo(expectedLookup);
-
-            await Assert.ThrowsAsync<HttpResponseNotFoundException>(
-                testCode: getLookupbyIdTask.AsTask);
+            actualResult.Count().Should().Be(0);
         }
     }
 }

@@ -21,6 +21,10 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Brokers
             await this.apiFactoryClient.GetContentAsync<List<ImpersonationContext>>(
                 $"{ImpersonationContextsRelativeUrl}/");
 
+        public async ValueTask<List<ImpersonationContext>> GetSpecificImpersonationContextByIdAsync(Guid lookupId) =>
+            await this.apiFactoryClient.GetContentAsync<List<ImpersonationContext>>(
+                $"{lookupsRelativeUrl}?$filter=Id eq {lookupId}");
+
         public async ValueTask<ImpersonationContext> GetImpersonationContextByIdAsync(Guid impersonationContextId) =>
             await this.apiFactoryClient
                 .GetContentAsync<ImpersonationContext>($"{ImpersonationContextsRelativeUrl}/{impersonationContextId}");
