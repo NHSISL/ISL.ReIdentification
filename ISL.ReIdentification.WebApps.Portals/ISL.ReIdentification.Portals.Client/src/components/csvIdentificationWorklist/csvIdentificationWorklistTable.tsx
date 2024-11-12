@@ -43,7 +43,6 @@ const CsvIdentificationWorklistTable: FunctionComponent<CsvIdentificationWorklis
 
     const hasNoMorePages = () => {
         return true;
-        //return !isLoading && data?.pages.at(-1)?.nextPage === undefined;
     };
 
     return (
