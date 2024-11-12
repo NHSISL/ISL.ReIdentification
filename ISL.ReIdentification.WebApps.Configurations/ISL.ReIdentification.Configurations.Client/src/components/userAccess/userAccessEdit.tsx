@@ -1,5 +1,5 @@
 import { Button, Card, CardBody, CardFooter, CardHeader, Container } from "react-bootstrap"
-import { Link, useParams } from "react-router-dom"
+import { Link, useNavigate, useParams } from "react-router-dom"
 import BreadCrumbBase from "../bases/layouts/BreadCrumb/BreadCrumbBase"
 import OdsTree from "../odsData/odsTree";
 import { useEffect, useState } from "react";
@@ -7,6 +7,8 @@ import { OdsData } from "../../models/odsData/odsData";
 import { userAccessViewService } from "../../services/views/userAccess/userAccessViewService";
 import { UserAccess } from "../../models/userAccess/userAccess";
 import { odsDataService } from "../../services/foundations/odsDataAccessService";
+import { userAccessService } from "../../services/foundations/userAccessService";
+import { toastError } from "../../brokers/toastBroker.error";
 
 export const UserAccessEdit = () => {
     const { entraUserId } = useParams();
@@ -15,6 +17,9 @@ export const UserAccessEdit = () => {
     const [selectedUser, setSelectedUser] = useState<UserAccess>();
     const [odsSearchString, setOdsSearchString] = useState("");
     const { data: rootRecord } = odsDataService.useRetrieveAllOdsData(odsSearchString);
+    const { mutateAsync : createUserAccess  } = userAccessService.useCreateUserAccess();
+    const { mutateAsync : deleteUserAccess } = userAccessService.useRemoveUserAccess();
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (data && data?.length) {
@@ -26,12 +31,40 @@ export const UserAccessEdit = () => {
 
     useEffect(() => {
         if (rootRecord) {
-            console.log(rootRecord);
             setSelectedOdsRecords(rootRecord)
         }
     }, [rootRecord])
 
-    const saveRecord = () => { }
+    const saveRecord = async () => {
+        if (selectedUser) {
+            const ua = {
+                ...new UserAccess(),
+                ...selectedUser,
+                entraUserId: selectedUser.entraUserId,
+                email: selectedUser.email,
+                activeFrom: new Date(),
+                orgCodes: selectedOdsRecords.map(x => x.organisationCode)
+            }
+            try {
+                await createUserAccess(ua);
+                navigate("/userAccess");
+            } catch (error) {
+                if(error instanceof Error) {
+                    toastError(error.message);
+                }
+            }
+        }
+    }
+
+    const deleteUser = async () => {
+        if(data) {
+            await data.forEach(async (ua) => {
+                await deleteUserAccess(ua.id);
+            });
+
+            navigate("/userAccess");
+        }
+    }
 
     return (<Container fluid className="mt-4">
         <section>
@@ -66,8 +99,13 @@ export const UserAccessEdit = () => {
                     </CardBody>
 
                     <CardFooter>
-                        <Button onClick={saveRecord}>Save</Button>
-                        <Link to="/userAccess" style={{paddingLeft:'10px'}}>
+                        {selectedOdsRecords.length === 0 ? 
+                            <Button onClick={deleteUser}>Remove User</Button>
+                            :
+                            <Button onClick={saveRecord}>Save</Button>
+                        }
+                        
+                        <Link to="/userAccess" style={{ paddingLeft: '10px' }}>
                             <Button variant="secondary">Cancel</Button>
                         </Link>
                     </CardFooter>

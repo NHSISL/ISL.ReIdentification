@@ -25,6 +25,11 @@ class UserAccessBroker {
             .then(result => result.data as UserAccess);
     }
 
+    async PostUserAccessBulkAsync(userAccess: UserAccess) {
+        return await this.apiBroker.PostAsync(this.relativeUserAccessUrl + '/bulk', userAccess)
+            .then(result => result.data as UserAccess);
+    }
+
     async GetAllUserAccessAsync(queryString: string) {
         const url = this.relativeUserAccessUrl + queryString;
 
