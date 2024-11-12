@@ -20,7 +20,12 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
                 "UserAccess",
                 "DelegatedUserAccess",
                 "Ods",
-                "Pds"
+                "Pds",
+                "ReportReidentify",
+                "SinglePatientReidentify",
+                "CsvReidentify",
+                "Projects",
+                "CsvWorklist"
             };
 
             // When
