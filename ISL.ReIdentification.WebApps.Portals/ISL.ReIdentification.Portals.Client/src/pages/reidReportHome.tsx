@@ -37,11 +37,11 @@ export const ReIdReportHome = () => {
                                 <li>Generate unique link to reidentification portal for report.</li>
                             </ol>
                             <h2>Reidentification Popup</h2>
-                            <p>The reidentification service provices a url that can be direct linked to from PowerBI or Tablau this will provide a single record re-identification, this can either be launched in a new tab or hosted within a webview or iframe within the BI tool:</p>
+                            <p>The reidentification service provices a url that can be direct linked to from PowerBI or Tableau this will provide a single record re-identification, this can either be launched in a new tab or hosted within a webview or iframe within the BI tool:</p>
                             <ol>
                                 <li>Understand how to construct the re-identification URL</li>
                                 <li>PowerBI generate a weblink</li>
-                                <li>Tablau generate a weblink</li>
+                                <li>Tableau generate a weblink</li>
                             </ol>
 
                             <ReportHelper/>
