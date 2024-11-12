@@ -226,6 +226,7 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                                             value={selectedHeaderColumn}
                                             onChange={handleHeaderColumnChange}
                                             required>
+                                            <option value="" disabled>Please select a column...</option>
                                             {headerColumns.map((column, index) => (
                                                 <option key={index} value={column}>
                                                     {`Col-${index + 1} - ${column}`}
