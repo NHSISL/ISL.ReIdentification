@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useState } from "react";
-import { Form, Button, Card, Spinner, Alert, Tooltip, OverlayTrigger } from "react-bootstrap";
+import { Form, Button, Card, Spinner, Tooltip, OverlayTrigger } from "react-bootstrap";
 import { LookupView } from "../../models/views/components/lookups/lookupView";
 import { reIdentificationService } from "../../services/foundations/reIdentificationService";
 import { AccessRequest } from "../../models/accessRequest/accessRequest";
@@ -83,78 +83,79 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
     if (!submittedPseudoCode) {
         return (
             <>
-                <Card.Title className="text-start">
-                    <OverlayTrigger placement="right" overlay={renderTooltip}>
-                        <FontAwesomeIcon icon={faCircleInfo} className="text-primary" size="lg" />
-                    </OverlayTrigger>&nbsp;Reidentify Single Patient
-                </Card.Title>
-
-                <Card.Subtitle className="text-start text-muted mb-3">
-                    <small>
-                        Please paste the pseudo identifer in the box below and
-                        provide a reason why you are identifying this patient.
-                    </small>
-                </Card.Subtitle>
-                <Form onSubmit={handleSubmit}>
-                    <Form.Group className="text-start">
-                        <Form.Label>Pseudo NHS Number:</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="PseudoCode"
-                            value={pseudoCode}
-                            maxLength={10}
-                            minLength={10}
-                            inputMode="numeric"
-                            pattern="\d*"
-                            onChange={handlePseudoCodeChange}
-                            placeholder="Pseudo Number"
-                            required />
-                    </Form.Group>
-                    <Form.Text className="text-muted">
-                        <small>Pseudo Numbers need to be 10 characters long and only contain numbers.</small>
-                    </Form.Text>
-                    <br />
-                    <br />
-                    <Form.Group className="text-start">
-                        <Form.Label>Reidentification Reason:</Form.Label>
-                        <Form.Select
-                            value={selectedLookupId}
-                            onChange={handleLookupChange}
-                            required >
-                            {lookupOptions.map((option) => (
-                                <option key={option.value} value={option.value}>
-                                    {option.name}
-                                </option>
-                            ))}
-                        </Form.Select>
-                    </Form.Group>
-                    <br />
-
-
-                    {error && <Alert variant="danger">
-                        Something went Wrong.
-                    </Alert>}
-                    <Button type="submit" disabled={!pseudoCode || !selectedLookupId}>
-                        {!loading ? <>Get NHS Number</> : <Spinner />}
-                    </Button>
-                </Form>
+                <Card.Header>
+                    <Card.Title className="text-start">
+                        <OverlayTrigger placement="right" overlay={renderTooltip}>
+                            <FontAwesomeIcon icon={faCircleInfo} className="text-primary" size="lg" />
+                        </OverlayTrigger>&nbsp;Reidentify Single Patient
+                    </Card.Title>
+                </Card.Header>
+                <Card.Body>
+                    <Card.Subtitle className="text-start text-muted mb-3">
+                        <small>
+                            Please paste the pseudo identifer in the box below and
+                            provide a reason why you are identifying this patient.
+                        </small>
+                    </Card.Subtitle>
+                    <Form onSubmit={handleSubmit}>
+                        <Form.Group className="text-start">
+                            <Form.Label>Pseudo NHS Number:</Form.Label>
+                            <Form.Control
+                                type="text"
+                                name="PseudoCode"
+                                value={pseudoCode}
+                                maxLength={10}
+                                minLength={10}
+                                inputMode="numeric"
+                                pattern="\d*"
+                                onChange={handlePseudoCodeChange}
+                                placeholder="Pseudo Number"
+                                required />
+                        </Form.Group>
+                        <Form.Text className="text-muted">
+                            <small>Pseudo Numbers need to be 10 characters long and only contain numbers.</small>
+                        </Form.Text>
+                        <br />
+                        <br />
+                        <Form.Group className="text-start">
+                            <Form.Label>Reidentification Reason:</Form.Label>
+                            <Form.Select
+                                value={selectedLookupId}
+                                onChange={handleLookupChange}
+                                required >
+                                {lookupOptions.map((option) => (
+                                    <option key={option.value} value={option.value}>
+                                        {option.name}
+                                    </option>
+                                ))}
+                            </Form.Select>
+                        </Form.Group>
+                        <br />
+                        <Button type="submit" disabled={!pseudoCode || !selectedLookupId}>
+                            {!loading ? <>Get NHS Number</> : <Spinner />}
+                        </Button>
+                    </Form>
+                </Card.Body>
             </>
         );
     }
 
     if (loading) {
-        return <Spinner />
+        return <><Card.Header>
+            Reidentifying...
+        </Card.Header>
+            <Card.Body>
+                <Spinner />
+            </Card.Body>
+        </>
     }
 
     const reIdResponse = data.find(x => x.pseudo === submittedPseudoCode);
     if (submittedPseudoCode && reIdResponse) {
         return <>
-
             <ReidentificationResultView reidentificationRecord={reIdResponse}>
                 <Button onClick={reset} variant="primary">Start Over</Button>
             </ReidentificationResultView>
-
-
         </>
     }
 

@@ -14,11 +14,9 @@ const ReIdentificationDetailCard: FunctionComponent<ReIdentificationDetailCardPr
 
     return (
         <Card style={{ width: '50rem' }}>
-            <Card.Body>
-                <ReIdentificationDetailCardView
-                    lookups={lookups}
-                />
-            </Card.Body>
+            <ReIdentificationDetailCardView
+                lookups={lookups}
+            />
         </Card>
     );
 };

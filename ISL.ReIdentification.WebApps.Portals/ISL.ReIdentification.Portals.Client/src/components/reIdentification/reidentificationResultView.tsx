@@ -26,7 +26,7 @@ const ReidentificationResultView: FunctionComponent<ReidentificationResultViewPr
         </>
     }
 
-    return <Card >
+    return <>
         <Card.Header><h4>Reidentification not allowed.</h4></Card.Header>
         <Card.Body>
             <Alert variant="danger">
@@ -40,7 +40,7 @@ const ReidentificationResultView: FunctionComponent<ReidentificationResultViewPr
             {children}
             </CardFooter>
         }
-    </Card>
+    </>
 
 }
 
