@@ -1,4 +1,4 @@
-import debounce from "lodash/debounce";
+import { debounce } from "lodash";
 import { FunctionComponent, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { SpinnerBase } from "../bases/spinner/SpinnerBase";
