@@ -8,7 +8,7 @@ export class UserAccessView {
     public surname: string;
     public userPrincipalName: string;
     public jobTitle: string;
-    public orgCodes: string[];
+    public orgCode: string;
     public activeFrom?: Date;
     public activeTo?: Date;
     public createdBy?: string;
@@ -26,7 +26,7 @@ export class UserAccessView {
         surname: string,
         userPrincipalName: string,
         jobTitle: string,
-        orgCodes: string[],
+        orgCode: string,
         activeFrom?: Date,
         activeTo?: Date,
         createdBy?: string,
@@ -36,7 +36,7 @@ export class UserAccessView {
     ) {
         this.id = id;
         this.email = email || "";
-        this.orgCodes = orgCodes || [];
+        this.orgCode = orgCode || "";
         this.displayName = displayName;
         this.entraUserId = entraUserId;
         this.entraUpn = entraUpn;
