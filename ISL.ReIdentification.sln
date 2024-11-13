@@ -40,6 +40,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ISL.ReIdentification.Portal
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ISL.ReIdentification.Portals.Server.Tests.Unit", "ISL.ReIdentification.WebApps.Portals\ISL.ReIdentification.Portals.Server.Tests.Unit\ISL.ReIdentification.Portals.Server.Tests.Unit.csproj", "{53367A89-05FC-426C-92DA-5C8818701FC8}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification", "ISL.ReIdentification.WebApps.Portals\ISL.ReIdentification.Portals.Server.Tests.Integration\ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification.csproj", "{16B7608C-B470-477C-8B5D-C4E83CA18764}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -102,6 +104,10 @@ Global
 		{53367A89-05FC-426C-92DA-5C8818701FC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{53367A89-05FC-426C-92DA-5C8818701FC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{53367A89-05FC-426C-92DA-5C8818701FC8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16B7608C-B470-477C-8B5D-C4E83CA18764}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16B7608C-B470-477C-8B5D-C4E83CA18764}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16B7608C-B470-477C-8B5D-C4E83CA18764}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16B7608C-B470-477C-8B5D-C4E83CA18764}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -122,6 +128,7 @@ Global
 		{4EF4E2E9-9C3C-4619-B721-D0C7764C652B} = {7F24359F-95DB-429E-8CF5-18141726032C}
 		{40215CE1-B242-4AFF-9B21-546B20E36375} = {7F24359F-95DB-429E-8CF5-18141726032C}
 		{53367A89-05FC-426C-92DA-5C8818701FC8} = {7F24359F-95DB-429E-8CF5-18141726032C}
+		{16B7608C-B470-477C-8B5D-C4E83CA18764} = {7F24359F-95DB-429E-8CF5-18141726032C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0D717146-FA34-4806-92FA-B345A87F5D78}
