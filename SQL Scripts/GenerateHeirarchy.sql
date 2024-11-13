@@ -1,53 +1,28 @@
-﻿
-if(Object_ID('dbo.Temp_Dictionary_dbo_OrganisationDescendent') is not null)
-	drop table dbo.Temp_Dictionary_dbo_OrganisationDescendent
-GO
-CREATE TABLE [dbo].[Temp_Dictionary_dbo_OrganisationDescendent](
-	Id int IDENTITY(1,1) NOT NULL,
-	[ParentPath] [varchar](500) NULL,
-	[ParentId] int NULL,
-	RowNumber int NULL,
-	OdsHierarchy hierarchyid NULL,
-	[SK_OrganisationID_Root] [int]  NULL,
-	[OrganisationCode_Root] [varchar](15)  NULL,
-	[OrganisationPrimaryRole_Root] [varchar](5) NULL,
-	[SK_OrganisationID_Parent] [int]  NULL,
-	[OrganisationCode_Parent] [varchar](15)  NULL,
-	[OrganisationPrimaryRole_Parent] [varchar](5) NULL,
-	[SK_OrganisationID_Child] [int]  NULL,
-	[OrganisationCode_Child] [varchar](15)  NULL,
-	[OrganisationPrimaryRole_Child] [varchar](5) NULL,
-	[RelationshipType] [varchar](5)  NULL,
-	[RelationshipStartDate] [date]  NULL,
-	[RelationshipEndDate] [date]  NULL,
-	[Path] [varchar](500)  NULL,
-	[Depth] [tinyint]  NULL,
-	[PathStartDate] [date]  NULL,
-	[PathEndDate] [date]  NULL,
-	[DateAdded] [date]  NULL,
-	[DateUpdated] [date]  NULL,
-	[ODSOrgName] [varchar](25) NULL,
-) ON [PRIMARY]
-GO
+﻿--select Object_ID('dbo.Temp_Dictionary_dbo_OrganisationDescendent')
+--exec [dbo].[GenerateHeirarchy]
 
-Insert into Temp_Dictionary_dbo_OrganisationDescendent (OrganisationCode_Child, OdsHierarchy) values ('ROOT',hierarchyid::GetRoot())
 
-INSERT [dbo].[Temp_Dictionary_dbo_OrganisationDescendent] ([SK_OrganisationID_Root], [OrganisationCode_Root], [OrganisationPrimaryRole_Root], [SK_OrganisationID_Parent], [OrganisationCode_Parent], [OrganisationPrimaryRole_Parent], [SK_OrganisationID_Child], [OrganisationCode_Child], [OrganisationPrimaryRole_Child], [RelationshipType], [RelationshipStartDate], [RelationshipEndDate], [Path], [Depth], [PathStartDate], [PathEndDate], [DateAdded], [DateUpdated], [ODSOrgName]) VALUES (440024, N'NHS', N'RO261', 440024, N'NHS', N'RO261', 440024, N'NHS', N'RO261', N'SELF', CAST(N'1900-01-01' AS Date), CAST(N'9999-12-31' AS Date), N'[NHS]', 0, CAST(N'1900-01-01' AS Date), CAST(N'9999-12-31' AS Date), CAST(N'2024-07-13' AS Date), CAST(N'2024-07-13' AS Date),'NHS')
-INSERT [dbo].[Temp_Dictionary_dbo_OrganisationDescendent] ([SK_OrganisationID_Root], [OrganisationCode_Root], [OrganisationPrimaryRole_Root], [SK_OrganisationID_Parent], [OrganisationCode_Parent], [OrganisationPrimaryRole_Parent], [SK_OrganisationID_Child], [OrganisationCode_Child], [OrganisationPrimaryRole_Child], [RelationshipType], [RelationshipStartDate], [RelationshipEndDate], [Path], [Depth], [PathStartDate], [PathEndDate], [DateAdded], [DateUpdated], [ODSOrgName]) VALUES (440024, N'TESTICB1', N'RO261', 440024, N'TESTICB1', N'RO261', 440024, N'TESTICB1', N'RO261', N'RE4', CAST(N'1900-01-01' AS Date), CAST(N'9999-12-31' AS Date), N'[NHS]-<-{RE4}-<-[TESTICB1]', 0, CAST(N'1900-01-01' AS Date), CAST(N'9999-12-31' AS Date), CAST(N'2024-07-13' AS Date), CAST(N'2024-07-13' AS Date), 'Integrated Care Board 1')
-INSERT [dbo].[Temp_Dictionary_dbo_OrganisationDescendent] ([SK_OrganisationID_Root], [OrganisationCode_Root], [OrganisationPrimaryRole_Root], [SK_OrganisationID_Parent], [OrganisationCode_Parent], [OrganisationPrimaryRole_Parent], [SK_OrganisationID_Child], [OrganisationCode_Child], [OrganisationPrimaryRole_Child], [RelationshipType], [RelationshipStartDate], [RelationshipEndDate], [Path], [Depth], [PathStartDate], [PathEndDate], [DateAdded], [DateUpdated], [ODSOrgName]) VALUES (440024, N'TESTICB2', N'RO261', 440024, N'TESTICB2', N'RO261', 440024, N'TESTICB2', N'RO261', N'RE4', CAST(N'1900-01-01' AS Date), CAST(N'9999-12-31' AS Date), N'[NHS]-<-{RE4}-<-[TESTICB2]', 0, CAST(N'1900-01-01' AS Date), CAST(N'9999-12-31' AS Date), CAST(N'2024-07-13' AS Date), CAST(N'2024-07-13' AS Date), 'Integrated Care Board 2')
-INSERT [dbo].[Temp_Dictionary_dbo_OrganisationDescendent] ([SK_OrganisationID_Root], [OrganisationCode_Root], [OrganisationPrimaryRole_Root], [SK_OrganisationID_Parent], [OrganisationCode_Parent], [OrganisationPrimaryRole_Parent], [SK_OrganisationID_Child], [OrganisationCode_Child], [OrganisationPrimaryRole_Child], [RelationshipType], [RelationshipStartDate], [RelationshipEndDate], [Path], [Depth], [PathStartDate], [PathEndDate], [DateAdded], [DateUpdated], [ODSOrgName]) VALUES (440024, N'PCN11', N'RO261', 440024, N'PCN11', N'RO261', 440024, N'PCN11', N'RO261', N'RE4', CAST(N'1900-01-01' AS Date), CAST(N'9999-12-31' AS Date), N'[NHS]-<-{RE4}-<-[TESTICB1]-<-{RE4}-<-[PCN11]', 0, CAST(N'1900-01-01' AS Date), CAST(N'9999-12-31' AS Date), CAST(N'2024-07-13' AS Date), CAST(N'2024-07-13' AS Date), 'Primary Care Board 11')
-INSERT [dbo].[Temp_Dictionary_dbo_OrganisationDescendent] ([SK_OrganisationID_Root], [OrganisationCode_Root], [OrganisationPrimaryRole_Root], [SK_OrganisationID_Parent], [OrganisationCode_Parent], [OrganisationPrimaryRole_Parent], [SK_OrganisationID_Child], [OrganisationCode_Child], [OrganisationPrimaryRole_Child], [RelationshipType], [RelationshipStartDate], [RelationshipEndDate], [Path], [Depth], [PathStartDate], [PathEndDate], [DateAdded], [DateUpdated], [ODSOrgName]) VALUES (440024, N'PCN12', N'RO261', 440024, N'PCN12', N'RO261', 440024, N'PCN12', N'RO261', N'RE4', CAST(N'1900-01-01' AS Date), CAST(N'9999-12-31' AS Date), N'[NHS]-<-{RE4}-<-[TESTICB1]-<-{RE4}-<-[PCN12]', 0, CAST(N'1900-01-01' AS Date), CAST(N'9999-12-31' AS Date), CAST(N'2024-07-13' AS Date), CAST(N'2024-07-13' AS Date), 'Primary Care Board 12')
-INSERT [dbo].[Temp_Dictionary_dbo_OrganisationDescendent] ([SK_OrganisationID_Root], [OrganisationCode_Root], [OrganisationPrimaryRole_Root], [SK_OrganisationID_Parent], [OrganisationCode_Parent], [OrganisationPrimaryRole_Parent], [SK_OrganisationID_Child], [OrganisationCode_Child], [OrganisationPrimaryRole_Child], [RelationshipType], [RelationshipStartDate], [RelationshipEndDate], [Path], [Depth], [PathStartDate], [PathEndDate], [DateAdded], [DateUpdated], [ODSOrgName]) VALUES (440024, N'PCN21', N'RO261', 440024, N'PCN21', N'RO261', 440024, N'PCN21', N'RO261', N'RE4', CAST(N'1900-01-01' AS Date), CAST(N'9999-12-31' AS Date), N'[NHS]-<-{RE4}-<-[TESTICB2]-<-{RE4}-<-[PCN21]', 0, CAST(N'1900-01-01' AS Date), CAST(N'9999-12-31' AS Date), CAST(N'2024-07-13' AS Date), CAST(N'2024-07-13' AS Date), 'Primary Care Board 21')
-INSERT [dbo].[Temp_Dictionary_dbo_OrganisationDescendent] ([SK_OrganisationID_Root], [OrganisationCode_Root], [OrganisationPrimaryRole_Root], [SK_OrganisationID_Parent], [OrganisationCode_Parent], [OrganisationPrimaryRole_Parent], [SK_OrganisationID_Child], [OrganisationCode_Child], [OrganisationPrimaryRole_Child], [RelationshipType], [RelationshipStartDate], [RelationshipEndDate], [Path], [Depth], [PathStartDate], [PathEndDate], [DateAdded], [DateUpdated], [ODSOrgName]) VALUES (440024, N'PCN22', N'RO261', 440024, N'PCN22', N'RO261', 440024, N'PCN22', N'RO261', N'RE4', CAST(N'1900-01-01' AS Date), CAST(N'9999-12-31' AS Date), N'[NHS]-<-{RE4}-<-[TESTICB2]-<-{RE4}-<-[PCN22]', 0, CAST(N'1900-01-01' AS Date), CAST(N'9999-12-31' AS Date), CAST(N'2024-07-13' AS Date), CAST(N'2024-07-13' AS Date), 'Primary Care Board 22')
-INSERT [dbo].[Temp_Dictionary_dbo_OrganisationDescendent] ([SK_OrganisationID_Root], [OrganisationCode_Root], [OrganisationPrimaryRole_Root], [SK_OrganisationID_Parent], [OrganisationCode_Parent], [OrganisationPrimaryRole_Parent], [SK_OrganisationID_Child], [OrganisationCode_Child], [OrganisationPrimaryRole_Child], [RelationshipType], [RelationshipStartDate], [RelationshipEndDate], [Path], [Depth], [PathStartDate], [PathEndDate], [DateAdded], [DateUpdated], [ODSOrgName]) VALUES (440024, N'GP111', N'RO261', 440024, N'GP111', N'RO261', 440024, N'GP111', N'RO261', N'RE4', CAST(N'1900-01-01' AS Date), CAST(N'9999-12-31' AS Date), N'[NHS]-<-{RE4}-<-[TESTICB1]-<-{RE4}-<-[PCN11]-<-{RE4}-<-[GP111]', 0, CAST(N'1900-01-01' AS Date), CAST(N'9999-12-31' AS Date), CAST(N'2024-07-13' AS Date), CAST(N'2024-07-13' AS Date), 'General Practice 111')
-INSERT [dbo].[Temp_Dictionary_dbo_OrganisationDescendent] ([SK_OrganisationID_Root], [OrganisationCode_Root], [OrganisationPrimaryRole_Root], [SK_OrganisationID_Parent], [OrganisationCode_Parent], [OrganisationPrimaryRole_Parent], [SK_OrganisationID_Child], [OrganisationCode_Child], [OrganisationPrimaryRole_Child], [RelationshipType], [RelationshipStartDate], [RelationshipEndDate], [Path], [Depth], [PathStartDate], [PathEndDate], [DateAdded], [DateUpdated], [ODSOrgName]) VALUES (440024, N'GP112', N'RO261', 440024, N'GP112', N'RO261', 440024, N'GP112', N'RO261', N'RE4', CAST(N'1900-01-01' AS Date), CAST(N'9999-12-31' AS Date), N'[NHS]-<-{RE4}-<-[TESTICB1]-<-{RE4}-<-[PCN11]-<-{RE4}-<-[GP112]', 0, CAST(N'1900-01-01' AS Date), CAST(N'9999-12-31' AS Date), CAST(N'2024-07-13' AS Date), CAST(N'2024-07-13' AS Date), 'General Practice 112')
-INSERT [dbo].[Temp_Dictionary_dbo_OrganisationDescendent] ([SK_OrganisationID_Root], [OrganisationCode_Root], [OrganisationPrimaryRole_Root], [SK_OrganisationID_Parent], [OrganisationCode_Parent], [OrganisationPrimaryRole_Parent], [SK_OrganisationID_Child], [OrganisationCode_Child], [OrganisationPrimaryRole_Child], [RelationshipType], [RelationshipStartDate], [RelationshipEndDate], [Path], [Depth], [PathStartDate], [PathEndDate], [DateAdded], [DateUpdated], [ODSOrgName]) VALUES (440024, N'GP121', N'RO261', 440024, N'GP121', N'RO261', 440024, N'GP121', N'RO261', N'RE4', CAST(N'1900-01-01' AS Date), CAST(N'9999-12-31' AS Date), N'[NHS]-<-{RE4}-<-[TESTICB1]-<-{RE4}-<-[PCN12]-<-{RE4}-<-[GP121]', 0, CAST(N'1900-01-01' AS Date), CAST(N'9999-12-31' AS Date), CAST(N'2024-07-13' AS Date), CAST(N'2024-07-13' AS Date), 'General Practice 121')
-INSERT [dbo].[Temp_Dictionary_dbo_OrganisationDescendent] ([SK_OrganisationID_Root], [OrganisationCode_Root], [OrganisationPrimaryRole_Root], [SK_OrganisationID_Parent], [OrganisationCode_Parent], [OrganisationPrimaryRole_Parent], [SK_OrganisationID_Child], [OrganisationCode_Child], [OrganisationPrimaryRole_Child], [RelationshipType], [RelationshipStartDate], [RelationshipEndDate], [Path], [Depth], [PathStartDate], [PathEndDate], [DateAdded], [DateUpdated], [ODSOrgName]) VALUES (440024, N'GP122', N'RO261', 440024, N'GP122', N'RO261', 440024, N'GP122', N'RO261', N'RE4', CAST(N'1900-01-01' AS Date), CAST(N'9999-12-31' AS Date), N'[NHS]-<-{RE4}-<-[TESTICB1]-<-{RE4}-<-[PCN12]-<-{RE4}-<-[GP122]', 0, CAST(N'1900-01-01' AS Date), CAST(N'9999-12-31' AS Date), CAST(N'2024-07-13' AS Date), CAST(N'2024-07-13' AS Date), 'General Practice 122')
-INSERT [dbo].[Temp_Dictionary_dbo_OrganisationDescendent] ([SK_OrganisationID_Root], [OrganisationCode_Root], [OrganisationPrimaryRole_Root], [SK_OrganisationID_Parent], [OrganisationCode_Parent], [OrganisationPrimaryRole_Parent], [SK_OrganisationID_Child], [OrganisationCode_Child], [OrganisationPrimaryRole_Child], [RelationshipType], [RelationshipStartDate], [RelationshipEndDate], [Path], [Depth], [PathStartDate], [PathEndDate], [DateAdded], [DateUpdated], [ODSOrgName]) VALUES (440024, N'GP211', N'RO261', 440024, N'GP211', N'RO261', 440024, N'GP211', N'RO261', N'RE4', CAST(N'1900-01-01' AS Date), CAST(N'9999-12-31' AS Date), N'[NHS]-<-{RE4}-<-[TESTICB2]-<-{RE4}-<-[PCN21]-<-{RE4}-<-[GP211]', 0, CAST(N'1900-01-01' AS Date), CAST(N'9999-12-31' AS Date), CAST(N'2024-07-13' AS Date), CAST(N'2024-07-13' AS Date), 'General Practice 211')
-INSERT [dbo].[Temp_Dictionary_dbo_OrganisationDescendent] ([SK_OrganisationID_Root], [OrganisationCode_Root], [OrganisationPrimaryRole_Root], [SK_OrganisationID_Parent], [OrganisationCode_Parent], [OrganisationPrimaryRole_Parent], [SK_OrganisationID_Child], [OrganisationCode_Child], [OrganisationPrimaryRole_Child], [RelationshipType], [RelationshipStartDate], [RelationshipEndDate], [Path], [Depth], [PathStartDate], [PathEndDate], [DateAdded], [DateUpdated], [ODSOrgName]) VALUES (440024, N'GP212', N'RO261', 440024, N'GP212', N'RO261', 440024, N'GP212', N'RO261', N'RE4', CAST(N'1900-01-01' AS Date), CAST(N'9999-12-31' AS Date), N'[NHS]-<-{RE4}-<-[TESTICB2]-<-{RE4}-<-[PCN21]-<-{RE4}-<-[GP212]', 0, CAST(N'1900-01-01' AS Date), CAST(N'9999-12-31' AS Date), CAST(N'2024-07-13' AS Date), CAST(N'2024-07-13' AS Date), 'General Practice 212')
-INSERT [dbo].[Temp_Dictionary_dbo_OrganisationDescendent] ([SK_OrganisationID_Root], [OrganisationCode_Root], [OrganisationPrimaryRole_Root], [SK_OrganisationID_Parent], [OrganisationCode_Parent], [OrganisationPrimaryRole_Parent], [SK_OrganisationID_Child], [OrganisationCode_Child], [OrganisationPrimaryRole_Child], [RelationshipType], [RelationshipStartDate], [RelationshipEndDate], [Path], [Depth], [PathStartDate], [PathEndDate], [DateAdded], [DateUpdated], [ODSOrgName]) VALUES (440024, N'GP221', N'RO261', 440024, N'GP221', N'RO261', 440024, N'GP221', N'RO261', N'RE4', CAST(N'1900-01-01' AS Date), CAST(N'9999-12-31' AS Date), N'[NHS]-<-{RE4}-<-[TESTICB2]-<-{RE4}-<-[PCN22]-<-{RE4}-<-[GP221]', 0, CAST(N'1900-01-01' AS Date), CAST(N'9999-12-31' AS Date), CAST(N'2024-07-13' AS Date), CAST(N'2024-07-13' AS Date), 'General Practice 221')
-INSERT [dbo].[Temp_Dictionary_dbo_OrganisationDescendent] ([SK_OrganisationID_Root], [OrganisationCode_Root], [OrganisationPrimaryRole_Root], [SK_OrganisationID_Parent], [OrganisationCode_Parent], [OrganisationPrimaryRole_Parent], [SK_OrganisationID_Child], [OrganisationCode_Child], [OrganisationPrimaryRole_Child], [RelationshipType], [RelationshipStartDate], [RelationshipEndDate], [Path], [Depth], [PathStartDate], [PathEndDate], [DateAdded], [DateUpdated], [ODSOrgName]) VALUES (440024, N'GP222', N'RO261', 440024, N'GP222', N'RO261', 440024, N'GP222', N'RO261', N'RE4', CAST(N'1900-01-01' AS Date), CAST(N'9999-12-31' AS Date), N'[NHS]-<-{RE4}-<-[TESTICB2]-<-{RE4}-<-[PCN22]-<-{RE4}-<-[GP222]', 0, CAST(N'1900-01-01' AS Date), CAST(N'9999-12-31' AS Date), CAST(N'2024-07-13' AS Date), CAST(N'2024-07-13' AS Date), 'General Practice 222')
+if(Object_ID('[dbo].[GenerateHeirarchy]') is not null)
+	drop PROCEDURE [dbo].[GenerateHeirarchy]
 GO
+CREATE PROCEDURE [dbo].[GenerateHeirarchy] AS
+BEGIN
+
+if(Object_ID('dbo.Temp_Dictionary_dbo_OrganisationDescendent') is null)
+BEGIN
+	THROW 50000, 'Temp Table does not exist.', 1;
+END
+
+if((select count(*) from Temp_Dictionary_dbo_OrganisationDescendent) = 0)
+BEGIN
+	RAISERROR(N'Temp Table is empty.', 16, 1);
+	return;
+END
+
+BEGIN TRANSACTION
+TRUNCATE TABLE OdsDatas
+update Temp_Dictionary_dbo_OrganisationDescendent set IsActive=1 where PathStartDate<=GETDATE() and PathEndDate>=GETDATE() and RelationshipStartDate<=GETDATE() and RelationshipEndDate>=GETDATE()
+
 -- Attach any 'SELF' relationships to the root node
 UPDATE Temp_Dictionary_dbo_OrganisationDescendent 
 SET ParentId = 1, ParentPath = 'ROOT'
@@ -75,14 +50,8 @@ FROM Temp_Dictionary_dbo_OrganisationDescendent od
 JOIN (
 	SELECT id, ROW_NUMBER() OVER (PARTITION BY ParentId ORDER BY ParentId) AS rn 
 	FROM Temp_Dictionary_dbo_OrganisationDescendent) od1
-		ON od.id = od1.id
+		ON od.id = od1.id;
 
-
-GO 
--- Insert the root node
--- Insert into Temp_Dictionary_dbo_OrganisationDescendent (OrganisationCode_Child, OdsHierarchy) values ('ROOT',hierarchyid::GetRoot())
-
-GO
 
 WITH paths(path, Id)   
 AS (  
@@ -107,9 +76,8 @@ SET OdsHierarchy = p.path
 FROM Temp_Dictionary_dbo_OrganisationDescendent od
 JOIN paths p ON od.id = p.id
 
-GO
 Insert Into OdsDatas (Id,OdsHierarchy, OrganisationCode, OrganisationName)
-select NEWID(),OdsHierarchy, OrganisationCode_Child, ODSOrgName from Temp_Dictionary_dbo_OrganisationDescendent
+select NEWID(),OdsHierarchy, OrganisationCode_Child, ODSOrgName from Temp_Dictionary_dbo_OrganisationDescendent where IsActive=1
 
 
 UPDATE OdsDatas set HasChildren=1 where id in(
@@ -119,4 +87,6 @@ from OdsDatas o1
 Left join OdsDatas o2 on o1.OdsHierarchy.GetDescendant(null,null) = o2.OdsHierarchy
 where o2.id is not null)
 
+COMMIT TRANSACTION
 
+END
