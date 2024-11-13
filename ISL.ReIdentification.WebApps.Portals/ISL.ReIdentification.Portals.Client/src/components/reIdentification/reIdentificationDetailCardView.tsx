@@ -8,6 +8,7 @@ import { faCircleInfo } from "@fortawesome/free-solid-svg-icons/faCircleInfo";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { OverlayInjectedProps } from "react-bootstrap/esm/Overlay";
 import ReidentificationResultView from "./reidentificationResultView";
+import { userAccessViewService } from "../../services/views/userAccess/userAccessViewService";
 
 interface Option {
     value: string;
@@ -26,6 +27,9 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
     const [submittedPseudoCode, setSubmittedPseudoCode] = useState("");
     const account = useMsal();
 
+    const { data: userAccessData } = userAccessViewService.useGetAccessForUser(account.accounts[0].idTokenClaims!.oid!);
+    const orgCodes = userAccessData?.map(item => item.orgCode);
+
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const acc = account.accounts[0];
@@ -43,7 +47,7 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
                 }],
                 displayName: acc.name || "",
                 email: acc.username,
-                organisation: "TODO",
+                organisation: orgCodes?.toString() || "",
                 reason: selectedLookupId
             }
         }
