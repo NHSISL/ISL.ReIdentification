@@ -4,8 +4,6 @@ import './App.css';
 import Root from './components/root';
 import ErrorPage from './errors/error';
 import { MsalProvider } from '@azure/msal-react';
-import { SecuredRoute } from './components/securitys/securedRoutes';
-import securityPoints from './securityMatrix';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClientGlobalOptions } from './brokers/apiBroker.globals';
 import { Home } from './pages/home';
@@ -14,6 +12,11 @@ import { CsvReIdentificationPage } from './pages/csvReIdentification';
 import { ReIdReportHome } from './pages/reidReportHome';
 import ReportsHome from './components/reports/reportsHome';
 import { WebPart } from './pages/webPart';
+import { CsvReIdentificationDownloadPage } from './pages/csvReIdentificationDownload';
+import { CsvReIdentificationWorklistPage } from './pages/csvReIdentificationWorklist';
+import { ImpersonationProjectAddPage } from './pages/impersonationProjectAddPage';
+import { ImpersonationProjectPage } from './pages/impersonationProjectPage';
+import { ImpersonationManagePage } from './pages/impersonationManagePage';
 
 function App({ instance }: any) {
 
@@ -29,7 +32,7 @@ function App({ instance }: any) {
                 },
                 {
                     path: "reIdentification",
-                    element: <SecuredRoute allowedRoles={securityPoints.reIdentification.view}><ReIdentificationPage /></SecuredRoute>
+                    element: <ReIdentificationPage />
                 },
                 {
                     path: "csvReIdentification",
@@ -38,6 +41,30 @@ function App({ instance }: any) {
                 {
                     path: "report",
                     element: <ReIdReportHome />
+                },
+                {
+                    path: "csvReIdentificationWorklist",
+                    element: <CsvReIdentificationWorklistPage />
+},
+                {
+                    path: "csvReIdentification/:csvIdentificationRequestId",
+                    element: <CsvReIdentificationDownloadPage />
+                },
+                {
+                    path: "project",
+                    element: <ImpersonationProjectPage />
+                },
+                {
+                    path: "addProject",
+                    element: <ImpersonationProjectAddPage />
+                },
+                {
+                    path: "project/:impersonationIdentificationRequestId",
+                    element: <ImpersonationManagePage />
+                },
+                {
+                    path: "approveProject",
+                    element: <ImpersonationProjectAddPage />
                 },
                 {
                     index: true,

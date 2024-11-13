@@ -1,46 +1,23 @@
 const securityPoints = {
-    page2: {
-        add:  [],
-        delete: [],
-        edit: [],
-        view: ["ISL.LDS.AdminSpa.Page2", "ISL.LDS.AdminSpa.Administrators"]
-    },
     configuration: {
-        add: [],
-        edit: [],
-        delete: [],
-        view: [],
+        add: ['ISL.Reidentification.Configuration.Administrators', 'ISL.Reidentification.Configuration.Users'],
+        edit: ['ISL.Reidentification.Configuration.Administrators', 'ISL.Reidentification.Configuration.Users'],
+        delete: ['ISL.Reidentification.Configuration.Administrators', 'ISL.Reidentification.Configuration.Users'],
+        view: ['ISL.Reidentification.Configuration.Administrators', 'ISL.Reidentification.Configuration.Users'],
     },
     lookups: {
-        add: [],
-        edit: [],
-        delete: [],
-        view: [],
+        add: ['ISL.Reidentification.Configuration.Administrators'],
+        edit: ['ISL.Reidentification.Configuration.Administrators'],
+        delete: ['ISL.Reidentification.Configuration.Administrators'],
+        view: ['ISL.Reidentification.Configuration.Administrators', 'ISL.Reidentification.Configuration.Users'],
     },
     userAccess: {
-        add: [],
-        edit: [],
-        delete: [],
-        view: [],
+        add: ['ISL.Reidentification.Configuration.Administrators', 'ISL.Reidentification.Configuration.Users'],
+        edit: ['ISL.Reidentification.Configuration.Administrators', 'ISL.Reidentification.Configuration.Users'],
+        delete: ['ISL.Reidentification.Configuration.Administrators', 'ISL.Reidentification.Configuration.Users'],
+        view: ['ISL.Reidentification.Configuration.Administrators', 'ISL.Reidentification.Configuration.Users'],
     },
-    delegatedUserAccess: {
-        add: [],
-        edit: [],
-        delete: [],
-        view: [],
-    },
-    odsData: {
-        add: [],
-        edit: [],
-        delete: [],
-        view: [],
-    },
-    pdsData: {
-        add: [],
-        edit: [],
-        delete: [],
-        view: [],
-    }
+
 }
 
 export default securityPoints

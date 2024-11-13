@@ -11,23 +11,27 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Brokers
 {
     public partial class ApiBroker
     {
-        private const string PdsDataRelativeUrl = "api/pdsData";
+        private const string pdsDataRelativeUrl = "api/pdsData";
 
         public async ValueTask<PdsData> PostPdsDataAsync(
             PdsData pdsData) =>
-                await this.apiFactoryClient.PostContentAsync(PdsDataRelativeUrl, pdsData);
+                await this.apiFactoryClient.PostContentAsync(pdsDataRelativeUrl, pdsData);
 
         public async ValueTask<List<PdsData>> GetAllPdsDataAsync() =>
-            await this.apiFactoryClient.GetContentAsync<List<PdsData>>($"{PdsDataRelativeUrl}/");
+            await this.apiFactoryClient.GetContentAsync<List<PdsData>>($"{pdsDataRelativeUrl}/");
+
+        public async ValueTask<List<PdsData>> GetSpecificPdsDataByIdAsync(Guid pdsDataId) =>
+            await this.apiFactoryClient.GetContentAsync<List<PdsData>>(
+                $"{pdsDataRelativeUrl}?$filter=Id eq {pdsDataId}");
 
         public async ValueTask<PdsData> GetPdsDataByIdAsync(Guid pdsDataId) =>
-            await this.apiFactoryClient.GetContentAsync<PdsData>($"{PdsDataRelativeUrl}/{pdsDataId}");
+            await this.apiFactoryClient.GetContentAsync<PdsData>($"{pdsDataRelativeUrl}/{pdsDataId}");
 
         public async ValueTask<PdsData> PutPdsDataAsync(PdsData pdsData) =>
-            await this.apiFactoryClient.PutContentAsync(PdsDataRelativeUrl, pdsData);
+            await this.apiFactoryClient.PutContentAsync(pdsDataRelativeUrl, pdsData);
 
         public async ValueTask<PdsData> DeletePdsDataByIdAsync(Guid pdsDataId) =>
             await this.apiFactoryClient.DeleteContentAsync<PdsData>(
-                $"{PdsDataRelativeUrl}/{pdsDataId}");
+                $"{pdsDataRelativeUrl}/{pdsDataId}");
     }
 }

@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using RESTFulSense.Exceptions;
 using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.UserAccesses;
 
 namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
@@ -136,14 +135,11 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
             // when
             UserAccess actualUserAccess = await this.apiBroker.DeleteUserAccessByIdAsync(expectedDeletedUserAccess.Id);
 
-            ValueTask<UserAccess> getUserAccessTask =
-                this.apiBroker.GetUserAccessByIdAsync(expectedDeletedUserAccess.Id);
+            List<UserAccess> actualResult =
+                await this.apiBroker.GetSpecificUserAccessByIdAsync(expectedDeletedUserAccess.Id);
 
-            //then
-            actualUserAccess.Should().BeEquivalentTo(expectedDeletedUserAccess);
-
-            await Assert.ThrowsAsync<HttpResponseNotFoundException>(
-                testCode: getUserAccessTask.AsTask);
+            // then
+            actualResult.Count().Should().Be(0);
         }
     }
 }

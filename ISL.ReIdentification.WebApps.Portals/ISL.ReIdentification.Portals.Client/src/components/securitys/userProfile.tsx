@@ -1,7 +1,7 @@
 import { useMsal } from "@azure/msal-react";
 import { ReactElement, useState } from "react"
 import { Button, Card, ListGroup, Modal, NavDropdown } from "react-bootstrap";
-
+import MyOdsAssigned from "../ods/myOdsAssigned";
 
 export const UserProfile = (): ReactElement => {
     const { accounts } = useMsal();
@@ -34,12 +34,19 @@ export const UserProfile = (): ReactElement => {
                                 {accounts[0]?.idTokenClaims?.roles?.map((r, i) => (
                                     <ListGroup.Item key={i}>
                                         <div className="d-flex justify-content-between align-items-center">
-                                            <div className="fw-bold">Role</div>
+                                            <div className="fw-bold">Roles</div>
                                             <div>{r}</div>
                                         </div>
                                     </ListGroup.Item>
                                 ))}
+                                <ListGroup.Item>
+                                    <div className="d-flex justify-content-between align-items-center">
+                                        <div className="fw-bold">Organisations </div>
+                                        <div><MyOdsAssigned /></div>
+                                    </div>
+                                </ListGroup.Item>
                             </ListGroup>
+                           
                         </Card.Body>
                     </Card>
                 </Modal.Body>

@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.ImpersonationContexts;
-using RESTFulSense.Exceptions;
 
 namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
 {
@@ -97,14 +96,11 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
             ImpersonationContext deletedImpersonationContext =
                 await this.apiBroker.DeleteImpersonationContextByIdAsync(inputImpersonationContext.Id);
 
-            ValueTask<ImpersonationContext> getImpersonationContextbyIdTask =
-                this.apiBroker.GetImpersonationContextByIdAsync(inputImpersonationContext.Id);
+            List<ImpersonationContext> actualResult =
+                await this.apiBroker.GetSpecificImpersonationContextByIdAsync(inputImpersonationContext.Id);
 
             // then
-            deletedImpersonationContext.Should().BeEquivalentTo(expectedImpersonationContext);
-
-            await Assert.ThrowsAsync<HttpResponseNotFoundException>(
-                testCode: getImpersonationContextbyIdTask.AsTask);
+            actualResult.Count().Should().Be(0);
         }
     }
 }

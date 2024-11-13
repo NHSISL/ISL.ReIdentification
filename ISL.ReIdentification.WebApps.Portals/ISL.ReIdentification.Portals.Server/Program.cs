@@ -127,7 +127,6 @@ namespace ISL.ReIdentification.Portals.Server
             }
 
             app.UseHttpsRedirection();
-
             app.UseAuthentication();
             app.UseAuthorization();
 

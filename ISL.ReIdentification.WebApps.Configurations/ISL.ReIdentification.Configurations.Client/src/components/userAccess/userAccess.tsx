@@ -1,7 +1,9 @@
-import { Button, Container } from "react-bootstrap"
+import { Alert, Button, Container } from "react-bootstrap"
 import BreadCrumbBase from "../bases/layouts/BreadCrumb/BreadCrumbBase"
 import UserAccessTable from "./userAccessTable"
 import { Link } from "react-router-dom"
+import securityPoints from "../../securityMatrix"
+import { SecuredComponent } from "../securitys/securedComponents"
 
 export const UserAccess = () => {
     return (
@@ -14,12 +16,15 @@ export const UserAccess = () => {
                 </BreadCrumbBase>
                 <div className="mt-3">
                     <h1>User Access</h1>
-                    <p>Role Needs to be in Security Matrix and Azure AD against user.</p>
+                    <p>Use this screen to assign reidentification users to ODS organisations, this will allow an end user to reidentify patients that are registered to the ODS code and patients registered to all children ODS organisations.</p>
+                    <Alert variant="danger">Any modification to data on this screen is audited.</Alert>
                     <UserAccessTable />
                 </div>
-                <Link to="/userAccess/newUser">
-                    <Button>Add New User</Button>
-                </Link> 
+                <SecuredComponent allowedRoles={securityPoints.userAccess.add}>
+                    <Link to="/userAccess/newUser">
+                        <Button>Add New User</Button>
+                    </Link>
+                </SecuredComponent>
             </section>
         </Container>
     )

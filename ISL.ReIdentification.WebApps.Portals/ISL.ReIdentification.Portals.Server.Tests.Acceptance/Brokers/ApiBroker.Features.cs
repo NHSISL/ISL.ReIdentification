@@ -10,7 +10,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Brokers
     {
         private const string featuresRelativeUrl = "api/Features";
 
-        public async ValueTask<string> GetFeaturesAsync() =>
-            await this.apiFactoryClient.GetContentStringAsync(featuresRelativeUrl);
+        public async ValueTask<string[]> GetFeaturesAsync() =>
+            await this.apiFactoryClient.GetContentAsync<string[]>(featuresRelativeUrl);
     }
 }

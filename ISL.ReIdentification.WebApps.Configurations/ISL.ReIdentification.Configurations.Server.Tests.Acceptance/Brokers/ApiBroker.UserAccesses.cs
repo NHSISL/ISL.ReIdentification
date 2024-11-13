@@ -24,6 +24,10 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Brokers
         public async ValueTask<List<UserAccess>> GetAllUserAccessesAsync() =>
             await this.apiFactoryClient.GetContentAsync<List<UserAccess>>($"{userAccessesRelativeUrl}/");
 
+        public async ValueTask<List<UserAccess>> GetSpecificUserAccessByIdAsync(Guid userAccessId) =>
+            await this.apiFactoryClient.GetContentAsync<List<UserAccess>>(
+                $"{userAccessesRelativeUrl}?$filter=Id eq {userAccessId}");
+
         public async ValueTask<UserAccess> GetUserAccessByEntraUserIdAndOrgCodeAsync(string entraUserId, string orgCode)
         {
             var results = await this.apiFactoryClient
