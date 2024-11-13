@@ -1,7 +1,6 @@
 import { useIsAuthenticated, useMsal } from '@azure/msal-react';
 import { ReactElement } from 'react';
 import { Alert, Button, Container } from 'react-bootstrap';
-// @ts-expect-error auth config from js file
 import { loginRequest } from '../../authConfig';
 
 type SecuredRouteParameters = {

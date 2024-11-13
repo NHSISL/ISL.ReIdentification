@@ -1,9 +1,8 @@
 import React from 'react';
 import { AuthenticatedTemplate, UnauthenticatedTemplate, useMsal } from "@azure/msal-react";
 import { Button, NavDropdown } from "react-bootstrap";
-// @ts-expect-error auth config from js file
-import { loginRequest } from '../../authConfig';
 import { UserProfile } from '../securitys/userProfile';
+import { loginRequest } from '../../authConfig';
 
 const Login: React.FC = () => {
     const { instance } = useMsal();
