@@ -16,7 +16,14 @@ class UserAccessBroker {
         return await this.apiBroker.GetAsync(url)
             .then(result => {
                 if (result.data && result.data.value) {
-                    return result.data.value as UserAccess[];
+                    const userAccesses = result.data.value as UserAccess[];
+                    const distinctUserAccessesMap = new Map<string, UserAccess>();
+
+                    userAccesses.forEach(userAccess => {
+                        distinctUserAccessesMap.set(userAccess.entraUserId, userAccess);
+                    });
+
+                    return Array.from(distinctUserAccessesMap.values());
                 }
             })
     }
@@ -29,6 +36,7 @@ class UserAccessBroker {
         return await this.apiBroker.GetAsync(url)
             .then(result => {
                 if (result.data && result.data.value) {
+                   
                     return result.data.value as UserAccess[];
                 }
             });

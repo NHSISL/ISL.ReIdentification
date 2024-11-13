@@ -5,4 +5,5 @@ export const userAccessViewService = {
         const query = `?$filter=entraUserId eq ${entraId}`;
         return userAccessService.useGetAllUserAccess(query);
     }
+
 }

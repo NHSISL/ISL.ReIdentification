@@ -3,8 +3,8 @@ import { FunctionComponent, useMemo, useState } from "react";
 import { Button, Form, FormGroup, InputGroup, Spinner, Table } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
-import { userAccessService } from "../../services/foundations/userAccessService";
 import { UserAccessView } from "../../models/views/components/userAccess/userAccessView";
+import { userAccessService } from "../../services/foundations/userAccessService";
 
 type UserAccessSearchProps = {
     selectUser: (value: UserAccessView) => void;
