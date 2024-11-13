@@ -20,7 +20,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification
 
             var configurationBuilder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile("local.appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables();
 
             configuration = configurationBuilder.Build();
