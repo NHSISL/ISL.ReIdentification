@@ -64,6 +64,8 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
                 await this.apiBroker.GetCsvIdentificationRequestByIdAsync(
                     exisingCsvIdentificationRequest.Id, inputReason);
 
+            string actualNhsNumber = Encoding.UTF8.GetString(fileContent);
+
             // then
             string actualResult = Encoding.UTF8.GetString(actualData);
             actualResult.Should().BeEquivalentTo(expectedResult);
