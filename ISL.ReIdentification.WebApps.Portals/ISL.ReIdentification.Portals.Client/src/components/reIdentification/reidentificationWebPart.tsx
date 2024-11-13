@@ -16,7 +16,6 @@ const ReidentificationWebPart: FunctionComponent<ReidentificationWebPartProps> =
     const { mappedLookups, isLoading } = lookupViewService.useGetAllLookups("", "Reasons");
     const [rememberChecked, setRememberChecked] = useState(false);
     const [reidReason, setReidReason] = useState("");
-    const [reasonForgot, setReasoneForgot] = useState(false);
     const account = useMsal();
 
     const handleLookupChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -25,12 +24,12 @@ const ReidentificationWebPart: FunctionComponent<ReidentificationWebPartProps> =
 
     const rememberReason = () => {
         localStorage[`reason:${account.accounts[0].username}`] = reidReason;
-        setReasoneForgot(false)
+        setRememberChecked(true);
     }
 
     const forgetReason = () => {
         localStorage.removeItem(`reason:${account.accounts[0].username}`);
-        setReasoneForgot(true)
+        setRememberChecked(false);
     }
 
     const reid = (reason: string) => {
@@ -101,15 +100,15 @@ const ReidentificationWebPart: FunctionComponent<ReidentificationWebPartProps> =
         if (record) {
             return <ReidentificationResultView reidentificationRecord={record}>
                 <>
-                    <p>Reidentification Reason: {reidReason}</p>
-                    {rememberChecked ? <>
-                            { reasonForgot ? 
-                                <p>Reidentification Reason Forgotten, you will be asked to select a new reason on the next reidentification request.</p> 
-                                : 
-                                <Button onClick={forgetReason} size="sm">Change Reason</Button>}
-                        </>
-                        :
-                        <Button onClick={rememberReason} size="sm">Remember Reason</Button>
+                    <p>You have selected '{reidReason}' as the reason for reidentification. </p>
+                    {rememberChecked && <>
+                        <p><a href="#" onClick={forgetReason}>Click here to forget this reason and be prompted for a reason the next time you request a reidentification.</a></p>
+                    </>
+                    }
+
+                    {!rememberChecked && <>
+                        <p><a href="#" onClick={rememberReason}>Click here to use this reason for future reidentification requests.</a></p>
+                    </>
                     }
                 </>
             </ReidentificationResultView>
