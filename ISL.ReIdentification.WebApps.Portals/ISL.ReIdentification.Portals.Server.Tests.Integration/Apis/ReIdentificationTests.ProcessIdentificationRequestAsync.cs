@@ -18,7 +18,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification
 {
     public partial class ReIdentificationTests
     {
-        [Fact]
+        [ReleaseCandidateFact]
         public async Task ShouldPostIdentificationRequestsAsync()
         {
             // given
