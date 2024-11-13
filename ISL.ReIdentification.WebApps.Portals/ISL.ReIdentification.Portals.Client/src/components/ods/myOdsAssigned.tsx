@@ -19,11 +19,12 @@ const MyOdsAssigned: FunctionComponent<myOdsAssignedProps> = () => {
             {isLoading || showSpinner ? (
                 <div>Loading...</div>
             ) : (
-                data && data.map((userAccess: UserAccessView) => (
-                    <>
-                       {userAccess.orgCode}
-                    </>
-                ))
+                    data && data.map((userAccess: UserAccessView, index: number) => (
+                        <>
+                            {userAccess.orgCode}
+                            {index < data.length - 1 && ","}
+                        </>
+                    ))
             )}
         </>
     );
