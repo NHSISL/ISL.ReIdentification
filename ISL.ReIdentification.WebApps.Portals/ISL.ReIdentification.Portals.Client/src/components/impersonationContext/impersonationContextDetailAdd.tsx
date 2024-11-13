@@ -56,7 +56,7 @@ const ImpersonationContextDetailAdd: FunctionComponent = () => {
                 identifierColumn: selectedHeaderColumn || "",
                 isApproved: false,
                 reason: selectedLookupId,
-                organisation: selectedUser?.orgCodes || [],
+                organisation: selectedUser?.orgCode || "",
                 createdBy: acc.username,
                 updatedBy: acc.username,
                 createdDate: new Date(),

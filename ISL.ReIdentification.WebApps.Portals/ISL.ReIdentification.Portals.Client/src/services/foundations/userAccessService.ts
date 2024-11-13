@@ -10,5 +10,15 @@ export const userAccessService = {
             queryFn: async () => await broker.FilterUserAccessAsync(searchTerm),
             staleTime: Infinity
         });
+    },
+
+    useGetAllUserAccess: (user: string) => {
+        const broker = new UserAccessBroker();
+
+        return useQuery({
+            queryKey: ["UserAccessGetAll", { query: user }],
+            queryFn: async () => await broker.GetAllUserAccessAsync(user),
+            staleTime: Infinity
+        });
     }
 }

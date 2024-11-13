@@ -7,7 +7,7 @@ export class UserAccess {
     public surname: string = "";
     public email: string = "";
     public userPrincipalName: string = "";
-    public orgCodes: string[] = [];
+    public orgCode: string = "";
     public jobTitle: string = "";
     public activeFrom?: Date | undefined;
     public activeTo?: Date | undefined;
