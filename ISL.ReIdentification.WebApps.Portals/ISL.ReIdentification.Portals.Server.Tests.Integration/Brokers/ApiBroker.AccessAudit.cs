@@ -19,15 +19,8 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification
         public async ValueTask<List<AccessAudit>> GetAllAccessAuditsAsync() =>
             await this.apiFactoryClient.GetContentAsync<List<AccessAudit>>($"{AccessAuditsRelativeUrl}/");
 
-        public async ValueTask<AccessAudit> GetAccessAuditByIdAsync(Guid accessAuditId) =>
-            await this.apiFactoryClient
-                .GetContentAsync<AccessAudit>($"{AccessAuditsRelativeUrl}/{accessAuditId}");
-
         public async ValueTask<AccessAudit> DeleteAccessAuditByIdAsync(Guid accessAuditId) =>
             await this.apiFactoryClient
                 .DeleteContentAsync<AccessAudit>($"{AccessAuditsRelativeUrl}/{accessAuditId}");
-
-        public async ValueTask<AccessAudit> PutAccessAuditAsync(AccessAudit accessAudit) =>
-            await this.apiFactoryClient.PutContentAsync(AccessAuditsRelativeUrl, accessAudit);
     }
 }

@@ -5,7 +5,6 @@
 
 
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification.Models.PdsDatas;
 
@@ -18,15 +17,6 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification
         public async ValueTask<PdsData> PostPdsDataAsync(
             PdsData pdsData) =>
                 await this.apiFactoryClient.PostContentAsync(PdsDataRelativeUrl, pdsData);
-
-        public async ValueTask<List<PdsData>> GetAllPdsDataAsync() =>
-            await this.apiFactoryClient.GetContentAsync<List<PdsData>>($"{PdsDataRelativeUrl}/");
-
-        public async ValueTask<PdsData> GetPdsDataByIdAsync(Guid pdsDataId) =>
-            await this.apiFactoryClient.GetContentAsync<PdsData>($"{PdsDataRelativeUrl}/{pdsDataId}");
-
-        public async ValueTask<PdsData> PutPdsDataAsync(PdsData pdsData) =>
-            await this.apiFactoryClient.PutContentAsync(PdsDataRelativeUrl, pdsData);
 
         public async ValueTask<PdsData> DeletePdsDataByIdAsync(Guid pdsDataId) =>
             await this.apiFactoryClient.DeleteContentAsync<PdsData>(
