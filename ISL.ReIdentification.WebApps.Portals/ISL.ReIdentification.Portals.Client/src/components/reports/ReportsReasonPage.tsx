@@ -17,7 +17,7 @@ const ReportsReasonPage: FunctionComponent<ReportReasonPageProps> = (props: Repo
     return <><Container>
         <Card>
             <Card.Header>
-                ISL Reidentification Portal
+                <Card.Link href="/" style={{ color: "black", textDecoration: "none" }}>ISL Reidentification Portal</Card.Link>
             </Card.Header>
             <Card.Body>
                 <div>
