@@ -1,9 +1,11 @@
-import { FunctionComponent } from "react";
+import { FunctionComponent, useState } from "react";
 import { Container, Row, Alert } from "react-bootstrap";
 import CsvReIdentificationDetailCard from "./csvReIdentificationDetailCard";
+import { BreachModal } from "../breachDetails/BreachModal";
 
 const CsvReIdentificationDetail: FunctionComponent = () => {
-    
+    const [showBreachModal, setShowBreachModal] = useState(false);
+
     return (
         <>
             <Container className="">
@@ -15,15 +17,15 @@ const CsvReIdentificationDetail: FunctionComponent = () => {
             <Container className="">
                 <Row className="justify-content-md-center">
                     <Alert variant="secondary" style={{ width: '50rem' }}>
-                        <p>
-                            <strong>Note:</strong> You will only be able to reidentify patients that are present within
-                            <strong> your</strong> organisation, '0000000000' will be returned if access is not found for a patient.
-                        </p>
-                        <p><strong>Note:</strong>All Reidentification requests are subject to breach monitoring and reporting.</p>
-                        <p>Details of breach thresholds can be found <a href="about:blank" target="blank" >here</a></p>
+                        <p>This page provides a simple re-identification for multi-patient pseudo identifying.</p>
+                        <p><strong>Note:</strong> you will only be able to reidentify patients that are present within your organisation.</p>
+                        <p><strong>Note:</strong> all re-identification requests are subject to breach monitoring and reporting</p>
+                        <p>Details of breach thresholds can be found <a href='#' onClick={() => setShowBreachModal(true)}>here</a>.</p>
                     </Alert>
                 </Row>
             </Container>
+
+            <BreachModal show={showBreachModal} hide={() => setShowBreachModal(false)} />
         </>
     );
 };

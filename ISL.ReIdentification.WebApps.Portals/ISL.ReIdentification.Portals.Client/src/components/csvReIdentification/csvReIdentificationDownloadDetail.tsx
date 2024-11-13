@@ -125,7 +125,7 @@ const CsvReIdentificationDownloadDetail: FunctionComponent<CsvReIdentificationDo
 
                         <Form onSubmit={handleSubmit}>
                             <Form.Group className="text-start">
-                                <Form.Label><strong>Reidentification reason:</strong></Form.Label>
+                                <Form.Label><strong>Re-identification reason:</strong></Form.Label>
                                 <Form.Select
                                     value={selectedLookupId}
                                     onChange={handleLookupChange}

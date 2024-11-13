@@ -101,10 +101,10 @@ const ReidentificationWebPart: FunctionComponent<ReidentificationWebPartProps> =
         if (record) {
             return <ReidentificationResultView reidentificationRecord={record}>
                 <>
-                    <p>Reidentification Reason: {reidReason}</p>
+                    <p>Re-identification Reason: {reidReason}</p>
                     {rememberChecked ? <>
                             { reasonForgot ? 
-                                <p>Reidentification Reason Forgotten, you will be asked to select a new reason on the next reidentification request.</p> 
+                                <p>Re-identification Reason Forgotten, you will be asked to select a new reason on the next re-identification request.</p> 
                                 : 
                                 <Button onClick={forgetReason} size="sm">Change Reason</Button>}
                         </>

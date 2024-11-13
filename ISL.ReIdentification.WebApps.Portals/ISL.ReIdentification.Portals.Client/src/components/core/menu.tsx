@@ -35,7 +35,7 @@ const MenuComponent: React.FC = () => {
                     className={`bg-dark text-white ${activePath === '/reports' ? 'active' : ''}`}
                     onClick={() => handleItemClick('/report')}>
                     <FontAwesomeIcon icon={faLineChart} className="me-2 fa-icon" />
-                    <SecuredLink to="/report">Report Reidentification</SecuredLink>
+                    <SecuredLink to="/report">Report Re-identification</SecuredLink>
                 </ListGroup.Item>
             </FeatureSwitch>
 
@@ -44,7 +44,7 @@ const MenuComponent: React.FC = () => {
                     className={`bg-dark text-white ${activePath === '/reIdentification' ? 'active' : ''}`}
                     onClick={() => handleItemClick('/reIdentification')}>
                     <FontAwesomeIcon icon={faPerson} className="me-2 fa-icon" />
-                    <SecuredLink to="/reIdentification">Reidentify Single Patient</SecuredLink>
+                    <SecuredLink to="/reIdentification">Re-identify Single Patient</SecuredLink>
                 </ListGroup.Item>
             </FeatureSwitch>
 

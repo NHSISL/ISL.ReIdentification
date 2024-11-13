@@ -93,8 +93,8 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
                 <Card.Body>
                     <Card.Subtitle className="text-start text-muted mb-3">
                         <small>
-                            Please paste the pseudo identifer in the box below and
-                            provide a reason why you are identifying this patient.
+                            Please enter the pseudo identifier in the box below and select the
+                            reason for identifying the patient from the dropdown menu.
                         </small>
                     </Card.Subtitle>
                     <Form onSubmit={handleSubmit}>
@@ -118,7 +118,7 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
                         <br />
                         <br />
                         <Form.Group className="text-start">
-                            <Form.Label>Reidentification Reason:</Form.Label>
+                            <Form.Label>Re-identification Reason:</Form.Label>
                             <Form.Select
                                 value={selectedLookupId}
                                 onChange={handleLookupChange}

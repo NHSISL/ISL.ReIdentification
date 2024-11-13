@@ -3,23 +3,22 @@ import { Container, Row, Col } from "react-bootstrap";
 export const Home = () => {
     return (
         <Container fluid className="mt-4">
-            <Row className="mb-4">
+            <Row className="mb-4 p-2">
                 <Col>
-                    <h2>Welcome to Re-Identification</h2>
+                    <h1 className="display-4">Welcome to Re-Identification</h1>
+                    <br />
                     <p>
-                        This service will provide capabilities to end users by integrating closely with Power BI
-                        and tools for analysts and data engineering teams to allow bulk re-identification of
-                        patient records.
+                        Introducing the new re-identification platform from Intelligent Solutions for London (ISL),
+                        built to support Integrated Care Boards (ICBs). This service enables bulk re-identification of
+                        patient records, integrating with BI tools for analysts and data teams.
                     </p>
                     <p>
-                        The service will be responsible for checking the legitimate relationship between the
-                        user and the patient. This will be achieved by providing a permission-based model
-                        that validates the patient demographic record from the Personal Demographic
-                        Service (PDS) held by ISL and the Organisation that the user is assigned to.
-                        Further details of this permission model can be found in section XXX.
-                        Reidentification permissions are checked for each patient in each request.
-                        Any request for non-permissioned patients will return a record with redacted
-                        information.
+                        The platform uses a permission-based model to verify user-patient relationships, cross-checking
+                        with patient data from the Personal Demographic Service (PDS). It ensures privacy by redacting
+                        patient details when access is not authorised, maintaining compliance and security.
+                    </p>
+                    <p>
+                        Further details on the permission model and access controls can be found here
                     </p>
                 </Col>
             </Row>
