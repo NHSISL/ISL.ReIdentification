@@ -15,15 +15,15 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="Brokers\Storages\Sql\ReIdentifications\Scripts\CreateGenerateHeirarchyProcedure.sql" />
+	  <None Remove="Brokers\Storages\Sql\ReIdentifications\Scripts\CreateLoadPdsDataProcedure.sql" />
 	  <None Remove="Brokers\Storages\Sql\ReIdentifications\Scripts\CreatePdsTempTable.sql" />
-	  <None Remove="Brokers\Storages\Sql\ReIdentifications\Scripts\GenerateHeirarchy.sql" />
-	  <None Remove="Brokers\Storages\Sql\ReIdentifications\Scripts\LoadPdsData.sql" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <EmbeddedResource Include="Brokers\Storages\Sql\ReIdentifications\Scripts\CreatePdsTempTable.sql" />
-	  <EmbeddedResource Include="Brokers\Storages\Sql\ReIdentifications\Scripts\GenerateHeirarchy.sql" />
-	  <EmbeddedResource Include="Brokers\Storages\Sql\ReIdentifications\Scripts\LoadPdsData.sql" />
+	  <EmbeddedResource Include="Brokers\Storages\Sql\ReIdentifications\Scripts\CreateGenerateHeirarchyProcedure.sql" />
+	  <EmbeddedResource Include="Brokers\Storages\Sql\ReIdentifications\Scripts\CreateLoadPdsDataProcedure.sql" />
 	</ItemGroup>
 
 	<ItemGroup>
