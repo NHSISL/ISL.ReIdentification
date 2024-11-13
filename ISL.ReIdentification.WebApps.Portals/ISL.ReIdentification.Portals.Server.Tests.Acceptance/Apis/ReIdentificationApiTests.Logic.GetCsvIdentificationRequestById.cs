@@ -16,7 +16,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
     public partial class ReIdentificationApiTests
     {
         [Theory]
-        //[InlineData(false)]
+        [InlineData(false)]
         [InlineData(true)]
         public async Task ShouldGetCsvIdentificationRequestByIdAsync(bool hasHeader)
         {
