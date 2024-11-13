@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using FluentAssertions;
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Brokers;
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.Lookups;
 using Tynamix.ObjectFiller;
@@ -19,19 +20,11 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
         public LookupsApiTests(ApiBroker apiBroker) =>
             this.apiBroker = apiBroker;
 
-        private static int GetRandomNumber() =>
+        private int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
         private static DateTimeOffset GetRandomDateTime() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
-
-        private static string GetRandomString()
-        {
-            int length = GetRandomNumber();
-            string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
-
-            return result.Length > length ? result.Substring(0, length) : result;
-        }
 
         private static string GetRandomStringWithLengthOf(int length)
         {
@@ -55,8 +48,10 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
         private async ValueTask<Lookup> PostRandomLookupAsync()
         {
             Lookup randomLookup = CreateRandomLookup();
+            Lookup createdLookup = await this.apiBroker.PostLookupAsync(randomLookup);
+            createdLookup.Should().BeEquivalentTo(randomLookup);
 
-            return await this.apiBroker.PostLookupAsync(randomLookup);
+            return createdLookup;
         }
 
         private async ValueTask<List<Lookup>> PostRandomLookupsAsync()

@@ -1,11 +1,13 @@
-import { faHome, faCog, faUser, faAddressBook, faUserDoctor } from '@fortawesome/free-solid-svg-icons';
+import { faHome, faCog, faUser, faUserDoctor, faAddressBook, faIdBadge, faUserFriends } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState } from 'react';
 import { ListGroup } from 'react-bootstrap';
 import { useLocation } from 'react-router-dom';
 import { SecuredLink } from '../securitys/securedLinks';
-import { faUserFriends } from '@fortawesome/free-solid-svg-icons/faUserFriends';
-import { faIdBadge } from '@fortawesome/free-solid-svg-icons/faIdBadge';
+import securityPoints from '../../securityMatrix';
+import { SecuredComponent } from '../securitys/securedComponents';
+import { FeatureDefinitions } from '../../featureDefinitions';
+import { FeatureSwitch } from '../accessControls/featureSwitch';
 
 const MenuComponent: React.FC = () => {
     const location = useLocation();
@@ -25,12 +27,16 @@ const MenuComponent: React.FC = () => {
                 <SecuredLink to="/home">Home</SecuredLink>
             </ListGroup.Item>
 
-            <ListGroup.Item
-                className={`bg-dark text-white ${activePath === '/userAccess' ? 'active' : ''}`}
-                onClick={() => handleItemClick('/userAccess')}>
-                <FontAwesomeIcon icon={faUser} className="me-2 fa-icon" />
-                <SecuredLink to="/userAccess">User Access</SecuredLink>
-            </ListGroup.Item>
+            <FeatureSwitch feature={FeatureDefinitions.UserAccess}>
+                <SecuredComponent allowedRoles={securityPoints.userAccess.view}>
+                    <ListGroup.Item
+                        className={`bg-dark text-white ${activePath === '/userAccess' ? 'active' : ''}`}
+                        onClick={() => handleItemClick('/userAccess')}>
+                        <FontAwesomeIcon icon={faUser} className="me-2 fa-icon" />
+                        <SecuredLink to="/userAccess">User Access</SecuredLink>
+                    </ListGroup.Item>
+                </SecuredComponent>
+            </FeatureSwitch>
 
             <ListGroup.Item
                 className={`bg-dark text-white ${activePath === '/impersonationContext' ? 'active' : ''}`}
@@ -60,12 +66,17 @@ const MenuComponent: React.FC = () => {
                 <SecuredLink to="/odsData">Ods Data View</SecuredLink>
             </ListGroup.Item>
 
-            <ListGroup.Item
-                className={`bg-dark text-white ${activePath === '/configuration/home' ? 'active' : ''}`}
-                onClick={() => handleItemClick('/configuration/home')}>
-                <FontAwesomeIcon icon={faCog} className="me-2 fa-icon" />
-                <SecuredLink to="/configuration/home">Configuration</SecuredLink>
-            </ListGroup.Item>
+            <FeatureSwitch feature={FeatureDefinitions.Configuration}>
+                <SecuredComponent allowedRoles={securityPoints.configuration.view}>
+                    <ListGroup.Item
+                        className={`bg-dark text-white ${activePath === '/configuration/home' ? 'active' : ''}`}
+                        onClick={() => handleItemClick('/configuration/home')}>
+                        <FontAwesomeIcon icon={faCog} className="me-2 fa-icon" />
+                        <SecuredLink to="/configuration/home">Configuration</SecuredLink>
+                    </ListGroup.Item>
+                </SecuredComponent>
+
+            </FeatureSwitch>
 
 
 

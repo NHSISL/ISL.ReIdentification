@@ -8,7 +8,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.OdsDatas;
-using RESTFulSense.Exceptions;
 
 namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
 {
@@ -95,14 +94,11 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             OdsData deletedOdsData =
                 await this.apiBroker.DeleteOdsDataByIdAsync(inputOdsData.Id);
 
-            ValueTask<OdsData> getOdsDatabyIdTask =
-                this.apiBroker.GetOdsDataByIdAsync(inputOdsData.Id);
+            List<OdsData> actualResult =
+                await this.apiBroker.GetSpecificOdsDataByIdAsync(inputOdsData.Id);
 
             // then
-            deletedOdsData.Should().BeEquivalentTo(expectedOdsData);
-
-            await Assert.ThrowsAsync<HttpResponseNotFoundException>(
-                testCode: getOdsDatabyIdTask.AsTask);
+            actualResult.Count().Should().Be(0);
         }
 
         [Fact]

@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using FluentAssertions;
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Brokers;
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.AccessAudits;
 using Tynamix.ObjectFiller;
@@ -50,8 +51,10 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
         private async ValueTask<AccessAudit> PostRandomAccessAuditAsync()
         {
             AccessAudit randomAccessAudit = CreateRandomAccessAudit();
+            AccessAudit createdAccessAudit = await this.apiBroker.PostAccessAuditAsync(randomAccessAudit);
+            createdAccessAudit.Should().BeEquivalentTo(randomAccessAudit);
 
-            return await this.apiBroker.PostAccessAuditAsync(randomAccessAudit);
+            return createdAccessAudit;
         }
 
         private async ValueTask<List<AccessAudit>> PostRandomAccessAuditsAsync()

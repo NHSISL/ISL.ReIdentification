@@ -90,5 +90,66 @@ export const reIdentificationService = {
             loading,
             data
         };
+    },
+
+    useRequestReIdentificationCsv: () => {
+        const broker = new ReIdentificationBroker();
+        const [loading, setIsLoading] = useState(false);
+        return {
+            submit: (csvIdentificationRequest: AccessRequest) => {
+                setIsLoading(true);
+                return broker.PostReIdentificationCsvAsync(csvIdentificationRequest).finally(() => {
+                    setIsLoading(false);
+                })
+            },
+            loading
+        };
+    },
+
+    useRequestReIdentificationImpersonation: () => {
+        const broker = new ReIdentificationBroker();
+        const [loading, setIsLoading] = useState(false);
+        return {
+            submit: (csvIdentificationRequest: AccessRequest) => {
+                setIsLoading(true);
+                return broker.PostReIdentificationImpersonationAsync(csvIdentificationRequest).finally(() => {
+                    setIsLoading(false);
+                })
+            },
+            loading
+        };
+    },
+
+    useGetCsvIdentificationRequestById: (id: string, reason: string) => {
+        const broker = new ReIdentificationBroker();
+        const [loading, setIsLoading] = useState(false);
+        const [data, setData] = useState<AccessRequest | null>(null);
+        const [filename, setFilename] = useState<string>('reidentification.csv');
+        const [error, setError] = useState<Error | null>(null);
+
+        const fetch = () => {
+            setIsLoading(true);
+            return broker.GetCsvIdentificationRequestByIdAsync(id, reason)
+                .then(result => {
+                    setData(result.data);
+                    setFilename(result.filename);
+                    setError(null);
+                })
+                .catch(err => {
+                    setError(err);
+                    setData(null);
+                })
+                .finally(() => {
+                    setIsLoading(false);
+                });
+        };
+
+        return {
+            fetch,
+            loading,
+            data,
+            filename,
+            error
+        };
     }
 }

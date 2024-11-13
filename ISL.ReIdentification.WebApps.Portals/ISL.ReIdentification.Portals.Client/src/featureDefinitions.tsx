@@ -3,5 +3,11 @@ export enum FeatureDefinitions {
     UserAccess,
     DelegatedUserAccess,
     Ods,
-    PdS
+    Pds,
+    ReportReidentify,
+    SinglePatientReidentify,
+    CsvReidentify,
+    Projects,
+    CsvWorklist,
+    Unknown
 }

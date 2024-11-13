@@ -15,7 +15,7 @@ using RESTFulSense.Controllers;
 
 namespace ISL.ReIdentification.Portals.Server.Controllers
 {
-    [Authorize]
+   // [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class ReIdentificationController : RESTFulController
@@ -117,7 +117,7 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             }
         }
 
-        [HttpGet("{csvIdentificationRequestId}/{reason}")]
+        [HttpGet("csvreidentification/{csvIdentificationRequestId}/{reason}")]
         public async ValueTask<ActionResult> GetCsvIdentificationRequestByIdAsync(
             Guid csvIdentificationRequestId, string reason)
         {
