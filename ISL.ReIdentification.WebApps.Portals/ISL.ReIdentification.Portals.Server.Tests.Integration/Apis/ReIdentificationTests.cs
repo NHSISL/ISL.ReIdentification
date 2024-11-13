@@ -8,14 +8,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification.Brokers;
 using ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification.Models.Accesses;
-using ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification.Models.ImpersonationContexts;
 using ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification.Models.OdsDatas;
 using ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification.Models.PdsDatas;
 using ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification.Models.ReIdentifications;
 using ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification.Models.UserAccesses;
 using Microsoft.EntityFrameworkCore;
 using Tynamix.ObjectFiller;
-using Xunit;
 
 namespace ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification.Apis
 {
@@ -26,9 +24,6 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification
 
         public ReIdentificationTests(ApiBroker apiBroker) =>
             this.apiBroker = apiBroker;
-
-        private static int GetRandomNumber() =>
-            new IntRange(min: 2, max: 10).GetValue();
 
         private static int GetRandomNegativeNumber() =>
             -1 * new IntRange(min: 2, max: 10).GetValue();
@@ -52,14 +47,6 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification
             return result.Length > length ? result.Substring(0, length) : result;
         }
 
-        private static string GetRandomEmail()
-        {
-            string randomPrefix = GetRandomStringWithLengthOf(15);
-            string emailSuffix = "@email.com";
-
-            return randomPrefix + emailSuffix;
-        }
-
         private async ValueTask<OdsData> PostRandomOdsDataAsync()
         {
             OdsData randomOdsData = CreateRandomOdsData();
@@ -69,9 +56,6 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification
 
         private static OdsData CreateRandomOdsData() =>
             CreateOdsDataFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
-
-        private static OdsData CreateRandomOdsData(DateTimeOffset dateTimeOffset) =>
-            CreateOdsDataFiller(dateTimeOffset).Create();
 
         private static Filler<OdsData> CreateOdsDataFiller(
             DateTimeOffset dateTimeOffset, HierarchyId hierarchyId = null)
@@ -102,9 +86,6 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification
 
         private static PdsData CreateRandomPdsData(string orgCode, string orgName) =>
             CreatePdsDataFiller(dateTimeOffset: GetRandomDateTimeOffset(), orgCode, orgName).Create();
-
-        private static PdsData CreateRandomPdsData(DateTimeOffset dateTimeOffset, string orgCode, string orgName) =>
-            CreatePdsDataFiller(dateTimeOffset, orgCode, orgName).Create();
 
         private static Filler<PdsData> CreatePdsDataFiller(DateTimeOffset dateTimeOffset, string orgCode, string orgName)
         {
@@ -176,12 +157,6 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification
             };
         }
 
-        private static AccessRequest CreateImpersonationContextAccessRequest() =>
-            new AccessRequest
-            {
-                ImpersonationContext = CreateRandomImpersonationContext()
-            };
-
         private static IdentificationRequest CreateRandomIdentificationRequest(Guid entraUserId, string pseudoId) =>
             CreateIdentificationRequestFiller(entraUserId, pseudoId).Create();
 
@@ -217,54 +192,6 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification
 
             filler.Setup()
                 .OnProperty(item => item.Identifier).Use(psuedoNhsNumber);
-
-            return filler;
-        }
-
-        private static ImpersonationContext CreateRandomImpersonationContext() =>
-           CreateRandomImpersonationContextFiller().Create();
-
-        private static ImpersonationContext UpdateImpersonationContextWithRandomValues(
-            ImpersonationContext inputImpersonationContext)
-        {
-            DateTimeOffset now = DateTimeOffset.UtcNow;
-            var updatedImpersonationContext = CreateRandomImpersonationContext();
-            updatedImpersonationContext.Id = inputImpersonationContext.Id;
-            updatedImpersonationContext.CreatedDate = inputImpersonationContext.CreatedDate;
-            updatedImpersonationContext.CreatedBy = inputImpersonationContext.CreatedBy;
-            updatedImpersonationContext.UpdatedDate = now;
-
-            return updatedImpersonationContext;
-        }
-
-        private static Filler<ImpersonationContext> CreateRandomImpersonationContextFiller()
-        {
-            string user = Guid.NewGuid().ToString();
-            DateTimeOffset now = DateTimeOffset.UtcNow;
-            var filler = new Filler<ImpersonationContext>();
-
-            filler.Setup()
-                .OnType<DateTimeOffset>().Use(now)
-
-                .OnProperty(impersonationContext => impersonationContext.RequesterEmail)
-                    .Use(() => GetRandomEmail())
-
-                .OnProperty(impersonationContext => impersonationContext.ResponsiblePersonEmail)
-                    .Use(() => GetRandomEmail())
-
-                .OnProperty(impersonationContext => impersonationContext.Organisation)
-                    .Use(() => GetRandomStringWithLengthOf(255))
-
-                .OnProperty(impersonationContext => impersonationContext.ProjectName)
-                    .Use(() => GetRandomStringWithLengthOf(255))
-
-                .OnProperty(impersonationContext => impersonationContext.IdentifierColumn)
-                    .Use(() => GetRandomStringWithLengthOf(10))
-
-                .OnProperty(impersonationContext => impersonationContext.CreatedDate).Use(now)
-                .OnProperty(impersonationContext => impersonationContext.CreatedBy).Use(user)
-                .OnProperty(impersonationContext => impersonationContext.UpdatedDate).Use(now)
-                .OnProperty(impersonationContext => impersonationContext.UpdatedBy).Use(user);
 
             return filler;
         }
