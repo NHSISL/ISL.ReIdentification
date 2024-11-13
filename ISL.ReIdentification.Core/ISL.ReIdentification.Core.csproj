@@ -15,6 +15,18 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="Brokers\Storages\Sql\ReIdentifications\Scripts\CreatePdsTempTable.sql" />
+	  <None Remove="Brokers\Storages\Sql\ReIdentifications\Scripts\GenerateHeirarchy.sql" />
+	  <None Remove="Brokers\Storages\Sql\ReIdentifications\Scripts\LoadPdsData.sql" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="Brokers\Storages\Sql\ReIdentifications\Scripts\CreatePdsTempTable.sql" />
+	  <EmbeddedResource Include="Brokers\Storages\Sql\ReIdentifications\Scripts\GenerateHeirarchy.sql" />
+	  <EmbeddedResource Include="Brokers\Storages\Sql\ReIdentifications\Scripts\LoadPdsData.sql" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="EFxceptions" Version="0.4.5" />
 		<PackageReference Include="ISL.Providers.Notifications.GovukNotify" Version="0.0.0.2" />
 		<PackageReference Include="ISL.Providers.ReIdentification.Abstractions" Version="0.0.0.3" />
