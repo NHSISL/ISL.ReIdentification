@@ -7,5 +7,6 @@ export enum FeatureDefinitions {
     ReportReidentify,
     SinglePatientReidentify,
     CsvReidentify,
-    Projects
+    Projects,
+    Unknown
 }

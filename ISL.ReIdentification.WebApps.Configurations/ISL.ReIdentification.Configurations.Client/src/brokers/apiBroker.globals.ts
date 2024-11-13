@@ -7,9 +7,11 @@ export const queryClientGlobalOptions = new QueryClient({
         }
     },
     queryCache: new QueryCache({
-        onError: () => {
+        onError: (error: Error) => {
             //toastError("An unknown error has occurred, please refresh the page and try again.");
             console.log("An unknown error has occurred, please refresh the page and try again.");
+
+            throw error;
         }
     }),
     mutationCache: new MutationCache({
@@ -24,8 +26,10 @@ export const queryClientGlobalOptions = new QueryClient({
             } else {
                 //toastWarning("Your record has not been saved, please correct and try again.");
                 console.log("Your record has not been saved, please correct and try again.")
-               // throw new ApiValidationError(error?.response?.data?.errors);
+                // throw new ApiValidationError(error?.response?.data?.errors);
             }
+
+            throw error;
         }
     })
 });

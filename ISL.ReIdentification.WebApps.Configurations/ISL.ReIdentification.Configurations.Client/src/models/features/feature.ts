@@ -7,7 +7,9 @@ export class Feature {
         this.feature = FeatureDefinitions[feature];
 
         if (this.feature === undefined) {
-            throw new Error("Unknown feature - ensure appSettings and the feature definitions match.");
+
+            this.feature = FeatureDefinitions["Unknown"];
+            //throw new Error("Unknown feature - ensure appSettings and the feature definitions match.");
         }
     }
 }
