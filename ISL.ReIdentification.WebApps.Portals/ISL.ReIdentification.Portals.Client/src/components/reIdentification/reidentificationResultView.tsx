@@ -23,9 +23,9 @@ const ReidentificationResultView: FunctionComponent<ReidentificationResultViewPr
                         <code>Hiding in: {remainingSeconds}</code>
                     </>
                     }
-                    { timerExpired && <Alert variant="success">
-                            Patient NHS Number hidden to maintain confidentiality.
-                        </Alert>
+                    {timerExpired && <Alert variant="success">
+                        Patient NHS Number hidden to maintain confidentiality.
+                    </Alert>
                     }
                 </Card.Body>
                 {children &&
@@ -61,7 +61,6 @@ const ReidentificationResultView: FunctionComponent<ReidentificationResultViewPr
         </CardFooter>
         }
     </Card>
-
 }
 
 export default ReidentificationResultView;

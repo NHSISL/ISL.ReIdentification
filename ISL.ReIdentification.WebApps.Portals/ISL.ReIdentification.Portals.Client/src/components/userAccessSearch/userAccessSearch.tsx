@@ -1,4 +1,4 @@
-import  debounce from "lodash/debounce";
+import debounce from "lodash/debounce";
 import { FunctionComponent, useMemo, useState } from "react";
 import { Button, Form, FormGroup, InputGroup, Spinner, Table } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -15,7 +15,7 @@ const UserAccessSearch: FunctionComponent<UserAccessSearchProps> = ({ selectUser
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [debouncedTerm, setDebouncedTerm] = useState<string>("");
     const [selectedUserName, setSelectedUserName] = useState<string | null>(null);
-    const { data, isLoading} = userAccessService.useSearchUserAccess(debouncedTerm);
+    const { data, isLoading } = userAccessService.useSearchUserAccess(debouncedTerm);
 
     const handleSearchChange = (value: string) => {
         setSearchTerm(value);
@@ -76,33 +76,33 @@ const UserAccessSearch: FunctionComponent<UserAccessSearchProps> = ({ selectUser
                     </Button>
                 </div>
             ) : (
-                    <div style={{ paddingTop: "10px" }}>
-                        {isLoading ? (
-                            <Spinner animation="border" role="status">
-                                <span className="visually-hidden">Loading...</span>
-                            </Spinner>
-                        ) : (
-                    <Table size="sm" striped hover>
-                        <tbody>
-                            {data && data.map((userAccess: UserAccessView) => (
-                                <tr onClick={() => handleUserSelect(userAccess)} key={userAccess.id}>
-                                    <td><small>{userAccess.displayName}</small></td>
-                                    <td><small>{userAccess.email}</small></td>
-                                    <td><small>{userAccess.jobTitle}</small></td>
-                                    <td>
-                                        <Button
-                                            size="sm"
-                                            variant="link"
-                                            onClick={() => handleUserSelect(userAccess)}
-                                            key={userAccess.id}>
-                                            Select
-                                        </Button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                            </Table>
-                        )}
+                <div style={{ paddingTop: "10px" }}>
+                    {isLoading ? (
+                        <Spinner animation="border" role="status">
+                            <span className="visually-hidden">Loading...</span>
+                        </Spinner>
+                    ) : (
+                        <Table size="sm" striped hover>
+                            <tbody>
+                                {data && data.map((userAccess: UserAccessView) => (
+                                    <tr onClick={() => handleUserSelect(userAccess)} key={userAccess.id}>
+                                        <td><small>{userAccess.displayName}</small></td>
+                                        <td><small>{userAccess.email}</small></td>
+                                        <td><small>{userAccess.jobTitle}</small></td>
+                                        <td>
+                                            <Button
+                                                size="sm"
+                                                variant="link"
+                                                onClick={() => handleUserSelect(userAccess)}
+                                                key={userAccess.id}>
+                                                Select
+                                            </Button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </Table>
+                    )}
                 </div>
             )}
         </>
