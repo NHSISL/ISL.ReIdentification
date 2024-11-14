@@ -17,13 +17,9 @@ class UserAccessBroker {
             .then(result => {
                 if (result.data && result.data.value) {
                     const userAccesses = result.data.value as UserAccess[];
-                    const distinctUserAccessesMap = new Map<string, UserAccess>();
-
-                    userAccesses.forEach(userAccess => {
-                        distinctUserAccessesMap.set(userAccess.entraUserId, userAccess);
-                    });
-
-                    return Array.from(distinctUserAccessesMap.values());
+                    const deduplicatedAddress = [... new Set(userAccesses.map(x => x.email))]
+                    const deduplicatedRecords = deduplicatedAddress.map(i => userAccesses.find(y => y.email === i));
+                    return deduplicatedRecords;
                 }
             })
     }
