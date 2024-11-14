@@ -66,7 +66,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.persistanceOrchestrationServiceMock.VerifyNoOtherCalls();
-            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

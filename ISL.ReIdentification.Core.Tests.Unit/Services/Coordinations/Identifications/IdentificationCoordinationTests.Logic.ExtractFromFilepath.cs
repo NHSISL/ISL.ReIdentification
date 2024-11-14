@@ -50,7 +50,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 securityBroker: this.securityBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
-                identifierBroker: this.identifierBrokerMock.Object,
                 projectStorageConfiguration: new ProjectStorageConfiguration
                 {
                     Container = GetRandomString(),
