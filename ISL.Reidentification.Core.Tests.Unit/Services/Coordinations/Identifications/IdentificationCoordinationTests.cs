@@ -11,7 +11,6 @@ using System.Linq.Expressions;
 using System.Security.Claims;
 using ISL.ReIdentification.Core.Brokers.CsvHelpers;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
-using ISL.ReIdentification.Core.Brokers.Identifiers;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Securities;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
@@ -42,7 +41,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
         private readonly Mock<IIdentificationOrchestrationService> identificationOrchestrationServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
-        private readonly Mock<IIdentifierBroker> identifierBrokerMock;
         private readonly IdentificationCoordinationService identificationCoordinationService;
         private readonly ProjectStorageConfiguration projectStorageConfiguration;
         private readonly ICompareLogic compareLogic;
@@ -56,7 +54,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             this.identificationOrchestrationServiceMock = new Mock<IIdentificationOrchestrationService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
-            this.identifierBrokerMock = new Mock<IIdentifierBroker>();
             this.compareLogic = new CompareLogic();
 
             this.projectStorageConfiguration = new ProjectStorageConfiguration
@@ -75,12 +72,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 securityBroker: this.securityBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
-                identifierBroker: this.identifierBrokerMock.Object,
                 projectStorageConfiguration);
         }
 
         private IdentificationRequest HydrateAccessRequestIdentificationRequest(
-            AccessRequest accessRequest, Guid identificationRequestId)
+            AccessRequest accessRequest)
         {
             IdentificationRequest identificationRequest = new IdentificationRequest();
             identificationRequest.Id = accessRequest.CsvIdentificationRequest.Id;

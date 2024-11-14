@@ -23,7 +23,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
         {
             // given
             Guid entraUserId = Guid.NewGuid();
-            Guid newIdentificationRequestId = Guid.NewGuid();
             AccessRequest randomAccessRequest = CreateRandomAccessRequest();
             randomAccessRequest.CsvIdentificationRequest.RecipientEntraUserId = entraUserId;
             randomAccessRequest.ImpersonationContext = null;
@@ -50,7 +49,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             AccessRequest outputAccessRequest = randomAccessRequest.DeepClone();
 
             IdentificationRequest hydratedIdentificationRequest =
-                HydrateAccessRequestIdentificationRequest(outputAccessRequest, newIdentificationRequestId);
+                HydrateAccessRequestIdentificationRequest(outputAccessRequest);
 
             outputAccessRequest.IdentificationRequest = hydratedIdentificationRequest;
             outputAccessRequest.IdentificationRequest.IdentificationItems = convertedIdentificationItems;
