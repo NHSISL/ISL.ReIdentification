@@ -20,11 +20,7 @@ export const UserAccess = () => {
                     <Alert variant="danger">Any modification to data on this screen is audited.</Alert>
                     <UserAccessTable />
                 </div>
-                <SecuredComponent allowedRoles={securityPoints.userAccess.add}>
-                    <Link to="/userAccess/newUser">
-                        <Button>Add New User</Button>
-                    </Link>
-                </SecuredComponent>
+               
             </section>
         </Container>
     )

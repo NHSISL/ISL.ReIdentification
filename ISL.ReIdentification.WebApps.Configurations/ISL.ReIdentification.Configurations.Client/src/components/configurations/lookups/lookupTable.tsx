@@ -86,6 +86,7 @@ const LookupTable: FunctionComponent<LookupTableProps> = (props) => {
                                 <tr>
                                     <th>Name</th>
                                     <th>Value</th>
+                                    <th>Group</th>
                                     <th>Created By</th>
                                     <th>Created When</th>
                                     <th>Action(s)</th>
