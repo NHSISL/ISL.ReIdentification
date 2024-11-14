@@ -18,11 +18,10 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification
 {
     public partial class ReIdentificationTests
     {
-        [Fact]
+        [ReleaseCandidateFact]
         public async Task ShouldPostCsvIdentificationRequestsAsync()
         {
             // given
-            string pseudoIdentifier = "0000000001";
             OdsData randomOdsData = await PostRandomOdsDataAsync();
             PdsData pdsData = await PostPdsDataAsync(randomOdsData.OrganisationCode, randomOdsData.OrganisationName);
             Guid securityOid = TestAuthHandler.SecurityOid;
@@ -35,7 +34,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification
             inputCsvIdentificationRequest.RecipientEntraUserId = securityOid;
             inputCsvIdentificationRequest.HasHeaderRecord = false;
             inputCsvIdentificationRequest.IdentifierColumnIndex = 0;
-            inputCsvIdentificationRequest.Data = Encoding.UTF8.GetBytes(pseudoIdentifier);
+            inputCsvIdentificationRequest.Data = Encoding.UTF8.GetBytes(pdsData.PseudoNhsNumber);
             string randomString = GetRandomStringWithLengthOf(GetRandomNumber());
             string inputReason = randomString;
 
@@ -57,8 +56,6 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification
             // then
             actualHasAccessAuditsCount.Should().Be(expectedHasAccessAuditCount);
 
-            // Uses IdentificationRequestId rather than CsvIdentificationRequestId
-            // ALSO Returns NoAccess so need to look at the setup above to ensure the user does have access
             List<AccessAudit> requestRelatedAccesAudits =
                 accessAudits.Where(accessAudit => accessAudit.RequestId == exisingCsvIdentificationRequest.Id)
                     .ToList();
