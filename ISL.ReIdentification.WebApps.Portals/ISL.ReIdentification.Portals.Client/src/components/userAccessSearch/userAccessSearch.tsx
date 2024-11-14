@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { UserAccessView } from "../../models/views/components/userAccess/userAccessView";
 import { userAccessService } from "../../services/foundations/userAccessService";
+import { UserAccess } from "../../models/userAccess/userAccess";
 
 type UserAccessSearchProps = {
     selectUser: (value: UserAccessView) => void;
@@ -84,22 +85,24 @@ const UserAccessSearch: FunctionComponent<UserAccessSearchProps> = ({ selectUser
                     ) : (
                         <Table size="sm" striped hover>
                             <tbody>
-                                {data && data.map((userAccess: UserAccessView) => (
-                                    <tr onClick={() => handleUserSelect(userAccess)} key={userAccess.id}>
-                                        <td><small>{userAccess.displayName}</small></td>
-                                        <td><small>{userAccess.email}</small></td>
-                                        <td><small>{userAccess.jobTitle}</small></td>
-                                        <td>
-                                            <Button
-                                                size="sm"
-                                                variant="link"
-                                                onClick={() => handleUserSelect(userAccess)}
-                                                key={userAccess.id}>
-                                                Select
-                                            </Button>
-                                        </td>
-                                    </tr>
-                                ))}
+                                {data && data.map((userAccess: UserAccess | undefined) =>
+                                    userAccess && (
+                                        <tr onClick={() => handleUserSelect(userAccess)} key={userAccess.id}>
+                                            <td><small>{userAccess.displayName}</small></td>
+                                            <td><small>{userAccess.email}</small></td>
+                                            <td><small>{userAccess.jobTitle}</small></td>
+                                            <td>
+                                                <Button
+                                                    size="sm"
+                                                    variant="link"
+                                                    onClick={() => handleUserSelect(userAccess)}
+                                                    key={userAccess.id}>
+                                                    Select
+                                                </Button>
+                                            </td>
+                                        </tr>
+                                    )
+                                )}
                             </tbody>
                         </Table>
                     )}
