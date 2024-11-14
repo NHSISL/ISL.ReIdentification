@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification.Brokers;
 using ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification.Models.Accesses;
+using ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification.Models.CsvIdentificationRequests;
 using ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification.Models.OdsDatas;
 using ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification.Models.PdsDatas;
 using ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification.Models.ReIdentifications;
@@ -24,6 +25,9 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification
 
         public ReIdentificationTests(ApiBroker apiBroker) =>
             this.apiBroker = apiBroker;
+
+        private static int GetRandomNumber() =>
+            new IntRange(min: 2, max: 10).GetValue();
 
         private static int GetRandomNegativeNumber() =>
             -1 * new IntRange(min: 2, max: 10).GetValue();
@@ -45,6 +49,14 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification
             string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
 
             return result.Length > length ? result.Substring(0, length) : result;
+        }
+
+        private static string GetRandomEmail()
+        {
+            string randomPrefix = GetRandomStringWithLengthOf(15);
+            string emailSuffix = "@email.com";
+
+            return randomPrefix + emailSuffix;
         }
 
         private async ValueTask<OdsData> PostRandomOdsDataAsync()
@@ -192,6 +204,34 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification
 
             filler.Setup()
                 .OnProperty(item => item.Identifier).Use(psuedoNhsNumber);
+
+            return filler;
+        }
+
+        private static CsvIdentificationRequest CreateRandomCsvIdentificationRequest() =>
+            CreateCsvIdentificationRequestFiller().Create();
+
+        private static Filler<CsvIdentificationRequest> CreateCsvIdentificationRequestFiller()
+        {
+            string user = Guid.NewGuid().ToString();
+            DateTimeOffset now = DateTimeOffset.UtcNow;
+            var filler = new Filler<CsvIdentificationRequest>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
+
+                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.RequesterEmail)
+                    .Use(GetRandomEmail())
+
+                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.RecipientEmail)
+                    .Use(GetRandomEmail())
+
+                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.Organisation)
+                    .Use(GetRandomStringWithLengthOf(255))
+
+                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.CreatedBy).Use(user)
+                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.UpdatedBy).Use(user);
 
             return filler;
         }
