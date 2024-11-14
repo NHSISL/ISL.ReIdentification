@@ -23,9 +23,9 @@ const ReidentificationResultView: FunctionComponent<ReidentificationResultViewPr
                         <code>Hiding in: {remainingSeconds}</code>
                     </>
                     }
-                    { timerExpired && <Alert variant="success">
-                            Patient NHS Number hidden to maintain confidentiality.
-                        </Alert>
+                    {timerExpired && <Alert variant="success">
+                        Patient NHS Number hidden to maintain confidentiality.
+                    </Alert>
                     }
                 </Card.Body>
                 {children &&
@@ -38,13 +38,22 @@ const ReidentificationResultView: FunctionComponent<ReidentificationResultViewPr
     }
 
     return <Card>
-        <Card.Header><h4>Reidentification not allowed.</h4></Card.Header>
+        <Card.Header><h4>Re-identification is not permitted.</h4></Card.Header>
         <Card.Body>
             <Alert variant="danger">
-                <p>You have tried to reidentify a patient's that our records indicate that you do not have access to.</p>
-                <p>Check that the patient is registered to an GP practice that you have access to.</p>
-                <p>To view your ODS organisations configured in the reidentification tool click <a href="about:blank">here</a> and contact your local ICB should you need further access.</p>
-                <p>Any changes to the patient record regisistration will take 24 hours to apply to the reidentification service </p>
+                <p>
+                    It appears you tried to re-identify a patient you don't have access to.
+                </p>
+                <p>
+                    Please check that the
+                    patient is registered with a GP practice you're authorised to access. To see your ODS organisations
+                    in the re-identification tool click your user profile in the top right of the screen.
+                    For more access, contact your local ICB.
+                </p>
+                <p>
+                    <strong>Note</strong> that any
+                    changes to the patient's registration may take up to 24 hours to update in the system.
+                </p>
             </Alert>
         </Card.Body>
         {children && <CardFooter>
@@ -52,7 +61,6 @@ const ReidentificationResultView: FunctionComponent<ReidentificationResultViewPr
         </CardFooter>
         }
     </Card>
-
 }
 
 export default ReidentificationResultView;

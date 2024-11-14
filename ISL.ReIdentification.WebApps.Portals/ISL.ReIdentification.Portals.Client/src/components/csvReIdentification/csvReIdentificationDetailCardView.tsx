@@ -184,9 +184,8 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
 
                         <Card.Subtitle className="text-start text-muted mb-3">
                             <small>
-                                Please upload your csv below,
-                                provide a reason why you are identifying this patient
-                                and select the column that the identifier is in.
+                                Please upload your CSV file below, specify the reason for identifying these patients
+                                from the drop-down menu, and select the column containing the identifier.
                             </small>
                         </Card.Subtitle>
                         <Form onSubmit={handleSubmit}>
@@ -242,7 +241,7 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                             )}
                             {isLoading ? <Spinner /> : <>
                                 <Form.Group className="text-start">
-                                    <Form.Label><strong>Reidentification Reason:</strong></Form.Label>
+                                    <Form.Label><strong>Re-identification Reason:</strong></Form.Label>
                                     <Form.Select
                                         value={selectedLookupId}
                                         onChange={handleLookupChange}
@@ -254,7 +253,7 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                                         ))}
                                     </Form.Select>
                                     <Form.Text className="text-muted">
-                                        Please supply a reason why you are requesting to Reidentify this csv of patients.
+                                        Please supply a reason why you are requesting to Reidentify.
                                     </Form.Text>
                                 </Form.Group>
                             </>}

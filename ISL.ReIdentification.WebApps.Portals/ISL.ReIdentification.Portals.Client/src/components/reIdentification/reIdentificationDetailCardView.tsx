@@ -8,6 +8,7 @@ import { faCircleInfo } from "@fortawesome/free-solid-svg-icons/faCircleInfo";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { OverlayInjectedProps } from "react-bootstrap/esm/Overlay";
 import ReidentificationResultView from "./reidentificationResultView";
+import { userAccessViewService } from "../../services/views/userAccess/userAccessViewService";
 
 interface Option {
     value: string;
@@ -26,6 +27,9 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
     const [submittedPseudoCode, setSubmittedPseudoCode] = useState("");
     const account = useMsal();
 
+    const { data: userAccessData } = userAccessViewService.useGetAccessForUser(account.accounts[0].idTokenClaims!.oid!);
+    const orgCodes = userAccessData?.map(item => item.orgCode);
+
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const acc = account.accounts[0];
@@ -43,7 +47,7 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
                 }],
                 displayName: acc.name || "",
                 email: acc.username,
-                organisation: "TODO",
+                organisation: orgCodes?.toString() || "",
                 reason: selectedLookupId
             }
         }
@@ -93,8 +97,8 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
                 <Card.Body>
                     <Card.Subtitle className="text-start text-muted mb-3">
                         <small>
-                            Please paste the pseudo identifer in the box below and
-                            provide a reason why you are identifying this patient.
+                            Please enter the pseudo identifier in the box below and select the
+                            reason for identifying the patient from the dropdown menu.
                         </small>
                     </Card.Subtitle>
                     <Form onSubmit={handleSubmit}>
@@ -118,7 +122,7 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
                         <br />
                         <br />
                         <Form.Group className="text-start">
-                            <Form.Label>Reidentification Reason:</Form.Label>
+                            <Form.Label>Re-identification Reason:</Form.Label>
                             <Form.Select
                                 value={selectedLookupId}
                                 onChange={handleLookupChange}
