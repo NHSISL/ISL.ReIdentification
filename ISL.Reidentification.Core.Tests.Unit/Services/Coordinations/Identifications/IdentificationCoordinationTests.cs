@@ -83,7 +83,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             AccessRequest accessRequest, Guid identificationRequestId)
         {
             IdentificationRequest identificationRequest = new IdentificationRequest();
-            identificationRequest.Id = identificationRequestId;
+            identificationRequest.Id = accessRequest.CsvIdentificationRequest.Id;
             identificationRequest.EntraUserId = accessRequest.CsvIdentificationRequest.RecipientEntraUserId;
             identificationRequest.Email = accessRequest.CsvIdentificationRequest.RecipientEmail;
             identificationRequest.JobTitle = accessRequest.CsvIdentificationRequest.RecipientJobTitle;

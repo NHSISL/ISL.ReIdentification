@@ -61,10 +61,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                     randomAccessRequest.CsvIdentificationRequest.IdentifierColumnIndex }
             };
 
-            this.identifierBrokerMock.Setup(broker =>
-                broker.GetIdentifierAsync())
-                    .ReturnsAsync(newIdentificationRequestId);
-
             this.csvHelperBrokerMock.Setup(broker =>
                 broker.MapCsvToObjectAsync<CsvIdentificationItem>(csvDataString, hasHeaderRecord, fieldMappings))
                     .ReturnsAsync(randomCsvIdentificationItems);
@@ -76,15 +72,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             // then
             actualResult.Should().BeEquivalentTo(outputAccessRequest);
 
-            this.identifierBrokerMock.Verify(broker =>
-                broker.GetIdentifierAsync(),
-                    Times.Once);
-
             this.csvHelperBrokerMock.Verify(service =>
                 service.MapCsvToObjectAsync<CsvIdentificationItem>(csvDataString, hasHeaderRecord, fieldMappings),
                     Times.Once);
 
-            this.identifierBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
         }
     }

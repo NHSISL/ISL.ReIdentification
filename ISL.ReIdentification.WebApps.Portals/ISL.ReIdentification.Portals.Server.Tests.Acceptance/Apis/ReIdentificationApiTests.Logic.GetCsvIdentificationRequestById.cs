@@ -3,9 +3,12 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.AccessAudits;
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.CsvIdentificationRequests;
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.OdsDatas;
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.PdsDatas;
@@ -67,6 +70,17 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             // then
             string actualResult = Encoding.UTF8.GetString(actualData);
             actualResult.Should().BeEquivalentTo(expectedResult);
+            List<AccessAudit> accessAudits = await this.apiBroker.GetAllAccessAuditsAsync();
+
+            List<AccessAudit> requestRelatedAccesAudits =
+                accessAudits.Where(accessAudit => accessAudit.RequestId == inputCsvIdentificationRequest.Id)
+                    .ToList();
+
+            foreach (AccessAudit accessAudit in requestRelatedAccesAudits)
+            {
+                await this.apiBroker.DeleteAccessAuditByIdAsync(accessAudit.Id);
+            }
+
             await this.apiBroker.DeleteCsvIdentificationRequestByIdAsync(exisingCsvIdentificationRequest.Id);
             await this.apiBroker.DeleteUserAccessByIdAsync(createdUserAccess.Id);
             await this.apiBroker.DeleteOdsDataByIdAsync(createdOdsData.Id);
