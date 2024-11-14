@@ -53,11 +53,13 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
 
             List<AccessAudit> accessAudits = await this.apiBroker.GetAllAccessAuditsAsync();
 
-            int actualHasNoAccessAuditsCount = accessAudits.Where(accessAudit => accessAudit.HasAccess == false)
-                .Count();
+            int actualHasNoAccessAuditsCount = accessAudits.Where(accessAudit => accessAudit.HasAccess == false
+                && accessAudit.RequestId == inputAccessRequest.IdentificationRequest.Id)
+                    .Count();
 
-            int actualHasAccessAuditsCount = accessAudits.Where(accessAudit => accessAudit.HasAccess == true)
-                .Count();
+            int actualHasAccessAuditsCount = accessAudits.Where(accessAudit => accessAudit.HasAccess == true
+                && accessAudit.RequestId == inputAccessRequest.IdentificationRequest.Id)
+                    .Count();
 
             // then
             actualHasNoAccessIdentificationItemsCount.Should().Be(expectedHasNoAccessIdentificationItemsCount);
