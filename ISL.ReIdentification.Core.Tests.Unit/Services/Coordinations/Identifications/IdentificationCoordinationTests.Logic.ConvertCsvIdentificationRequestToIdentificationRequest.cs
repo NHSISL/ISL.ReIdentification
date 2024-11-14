@@ -23,7 +23,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
         {
             // given
             Guid entraUserId = Guid.NewGuid();
-            Guid newIdentificationRequestId = Guid.NewGuid();
             AccessRequest randomAccessRequest = CreateRandomAccessRequest();
             randomAccessRequest.CsvIdentificationRequest.RecipientEntraUserId = entraUserId;
             randomAccessRequest.ImpersonationContext = null;
@@ -50,7 +49,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             AccessRequest outputAccessRequest = randomAccessRequest.DeepClone();
 
             IdentificationRequest hydratedIdentificationRequest =
-                HydrateAccessRequestIdentificationRequest(outputAccessRequest, newIdentificationRequestId);
+                HydrateAccessRequestIdentificationRequest(outputAccessRequest);
 
             outputAccessRequest.IdentificationRequest = hydratedIdentificationRequest;
             outputAccessRequest.IdentificationRequest.IdentificationItems = convertedIdentificationItems;
@@ -60,10 +59,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 { nameof(CsvIdentificationItem.Identifier),
                     randomAccessRequest.CsvIdentificationRequest.IdentifierColumnIndex }
             };
-
-            this.identifierBrokerMock.Setup(broker =>
-                broker.GetIdentifierAsync())
-                    .ReturnsAsync(newIdentificationRequestId);
 
             this.csvHelperBrokerMock.Setup(broker =>
                 broker.MapCsvToObjectAsync<CsvIdentificationItem>(csvDataString, hasHeaderRecord, fieldMappings))
@@ -76,15 +71,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             // then
             actualResult.Should().BeEquivalentTo(outputAccessRequest);
 
-            this.identifierBrokerMock.Verify(broker =>
-                broker.GetIdentifierAsync(),
-                    Times.Once);
-
             this.csvHelperBrokerMock.Verify(service =>
                 service.MapCsvToObjectAsync<CsvIdentificationItem>(csvDataString, hasHeaderRecord, fieldMappings),
                     Times.Once);
 
-            this.identifierBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
         }
     }
