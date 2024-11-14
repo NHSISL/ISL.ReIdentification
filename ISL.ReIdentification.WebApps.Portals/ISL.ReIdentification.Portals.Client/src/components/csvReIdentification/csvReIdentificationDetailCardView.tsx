@@ -58,7 +58,7 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                 recipientJobTitle: selectedUser?.jobTitle || "",
                 data: csvData || "",
                 reason: selectedLookupId,
-                organisation: "TODO: where is this coming from",
+                organisation: selectedUser?.orgCode,
                 createdBy: acc.username,
                 updatedBy: acc.username,
                 createdDate: new Date(),

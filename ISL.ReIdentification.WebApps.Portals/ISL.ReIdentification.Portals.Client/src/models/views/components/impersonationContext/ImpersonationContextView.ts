@@ -13,7 +13,7 @@ export class ImpersonationContextView {
     public responsiblePersonEmail: string = "";
     public responsiblePersonJobTitle: string = "";
     public reason: string = "";
-    public organisation: string[] = [];
+    public organisation: string = "";
     public projectName: string = "";
     public inboxToken?: string;
     public outboxToken?: string;
