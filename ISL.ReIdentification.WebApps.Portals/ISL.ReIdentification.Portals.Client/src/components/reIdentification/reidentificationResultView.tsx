@@ -2,6 +2,7 @@ import { FunctionComponent, ReactElement } from "react";
 import { ReIdRecord } from "../../types/ReIdRecord"
 import { Alert, Card, CardFooter } from "react-bootstrap";
 import CopyIcon from "../core/copyIcon";
+import { useTimer } from "../../hooks/useTimer";
 
 type ReidentificationResultViewProps = {
     reidentificationRecord: ReIdRecord;
@@ -9,13 +10,23 @@ type ReidentificationResultViewProps = {
 }
 const ReidentificationResultView: FunctionComponent<ReidentificationResultViewProps> = ({ reidentificationRecord, children }) => {
 
+    const { remainingSeconds, timerExpired } = useTimer(60);
+
     if (reidentificationRecord.hasAccess) {
         return <>
             <Card>
                 <Card.Body>
-                    <Alert variant="success">
-                        NHS Number: {reidentificationRecord.nhsnumber}&nbsp;<CopyIcon content={reidentificationRecord.nhsnumber} />
-                    </Alert>
+                    {!timerExpired && <>
+                        <Alert variant="success">
+                            NHS Number: {reidentificationRecord.nhsnumber}&nbsp;<CopyIcon content={reidentificationRecord.nhsnumber} />
+                        </Alert>
+                        <code>Hiding in: {remainingSeconds}</code>
+                    </>
+                    }
+                    { timerExpired && <Alert variant="success">
+                            Patient NHS Number hidden to maintain confidentiality.
+                        </Alert>
+                    }
                 </Card.Body>
                 {children &&
                     <CardFooter>
@@ -49,7 +60,7 @@ const ReidentificationResultView: FunctionComponent<ReidentificationResultViewPr
             {children}
         </CardFooter>
         }
-    </>
+    </Card>
 
 }
 
