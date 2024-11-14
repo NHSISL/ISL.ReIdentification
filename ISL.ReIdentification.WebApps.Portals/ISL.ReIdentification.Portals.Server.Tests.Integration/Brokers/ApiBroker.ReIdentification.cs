@@ -4,6 +4,7 @@
 
 
 
+using System;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification.Models.Accesses;
 
@@ -16,7 +17,14 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification
         public async ValueTask<AccessRequest> PostIdentificationRequestsAsync(AccessRequest accessRequest) =>
             await this.apiFactoryClient.PostContentAsync($"{reIdentificationRelativeUrl}", accessRequest);
 
-        public async ValueTask<AccessRequest> PostCsvIdentificationRequestAsync(AccessRequest accessRequest) =>
-            await this.apiFactoryClient.PostContentAsync($"{reIdentificationRelativeUrl}/submitcsv", accessRequest);
+        public async ValueTask<byte[]> PostCsvIdentificationRequestAsync(
+            Guid csvIdentificationRequestId,
+            string reason)
+        {
+            byte[] fileContent = await this.apiFactoryClient.GetContentByteArrayAsync(
+                    $"{reIdentificationRelativeUrl}/csvreidentification/{csvIdentificationRequestId}/{reason}");
+
+            return fileContent;
+        }
     }
 }
