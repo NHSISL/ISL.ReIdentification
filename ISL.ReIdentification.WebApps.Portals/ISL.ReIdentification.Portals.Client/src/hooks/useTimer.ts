@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 
-
 export function useTimer(totalSeconds : number = 60) {
 
     const [remainingSeconds, setRemainingSeconds] = useState(totalSeconds);
@@ -29,4 +28,3 @@ export function useTimer(totalSeconds : number = 60) {
         remainingSeconds, timerExpired
     }
 }
-
