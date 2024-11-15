@@ -23,7 +23,7 @@ const NavbarComponent: React.FC<NavbarComponentProps> = ({ toggleSidebar, showMe
                     <img src="LHDLogoRound.png" alt="London Data Service logo" height="30" width="30" />
                     <span style={{ marginLeft: "10px" }}>
                     London Data Service -
-                        <strong className="hero-text"> Re-Identification Management Portal</strong>
+                        <strong className="hero-text"> Re-Identification Management</strong>
                     </span>
                 </Navbar.Brand>
                 <Navbar.Text>
