@@ -15,16 +15,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <None Remove="Brokers\Storages\Sql\ReIdentifications\Scripts\CreateGenerateHeirarchyProcedure.sql" />
-	  <None Remove="Brokers\Storages\Sql\ReIdentifications\Scripts\CreateLoadPdsDataProcedure.sql" />
-	  <None Remove="Brokers\Storages\Sql\ReIdentifications\Scripts\CreatePdsTempTable.sql" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <EmbeddedResource Include="Brokers\Storages\Sql\ReIdentifications\Scripts\CreateOrganisationDescendentTempTable.sql" />
-	  <EmbeddedResource Include="Brokers\Storages\Sql\ReIdentifications\Scripts\CreatePdsTempTable.sql" />
-	  <EmbeddedResource Include="Brokers\Storages\Sql\ReIdentifications\Scripts\CreateGenerateHeirarchyProcedure.sql" />
-	  <EmbeddedResource Include="Brokers\Storages\Sql\ReIdentifications\Scripts\CreateLoadPdsDataProcedure.sql" />
+	  <EmbeddedResource Include="Brokers\Storages\Sql\ReIdentifications\Scripts\CreateGenerateHeirarchyStoredProcedure.sql" />
+	  <EmbeddedResource Include="Brokers\Storages\Sql\ReIdentifications\Scripts\CreateLoadPdsDataStoredProcedure.sql" />
+	  <EmbeddedResource Include="Brokers\Storages\Sql\ReIdentifications\Scripts\CreateTempOdsInboundTable.sql" />
+	  <EmbeddedResource Include="Brokers\Storages\Sql\ReIdentifications\Scripts\CreateTempPdsInboundTable.sql" />
 	</ItemGroup>
 
 	<ItemGroup>

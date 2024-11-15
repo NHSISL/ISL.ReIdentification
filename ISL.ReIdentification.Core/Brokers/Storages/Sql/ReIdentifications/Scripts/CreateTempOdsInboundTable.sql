@@ -1,11 +1,4 @@
-﻿-- Check if the table already exists and drop it if so
-IF OBJECT_ID('dbo.Temp_Dictionary_dbo_OrganisationDescendent', 'U') IS NOT NULL
-BEGIN
-    DROP TABLE dbo.Temp_Dictionary_dbo_OrganisationDescendent;
-END
-
--- Create the table
-CREATE TABLE [dbo].[Temp_Dictionary_dbo_OrganisationDescendent](
+﻿CREATE TABLE [dbo].[TempOdsInbound](
 	Id int IDENTITY(1,1) NOT NULL,
 	[ParentPath] [varchar](500) NULL,
 	[ParentId] int NULL,

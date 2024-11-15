@@ -1,11 +1,10 @@
 ﻿-- Check if the table already exists and drop it if so
-IF OBJECT_ID('dbo.tempSample_PDS_PDS_PATIENT_CARE_PRACTICE', 'U') IS NOT NULL
+IF OBJECT_ID('dbo.TempPdsInbound', 'U') IS NOT NULL
 BEGIN
-    DROP TABLE dbo.tempSample_PDS_PDS_PATIENT_CARE_PRACTICE;
+    DROP TABLE dbo.TempPdsInbound;
 END
 
--- Create the table
-CREATE TABLE dbo.tempSample_PDS_PDS_PATIENT_CARE_PRACTICE
+CREATE TABLE dbo.TempPdsInbound
 (
 	[RowID] [bigint] NOT NULL,
 	[Pseudo NHS Number] [varchar](15) NULL,
