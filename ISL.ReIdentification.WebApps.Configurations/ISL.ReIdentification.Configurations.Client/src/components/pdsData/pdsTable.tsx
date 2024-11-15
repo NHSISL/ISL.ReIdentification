@@ -55,18 +55,18 @@ const PdsTable: FunctionComponent<PdsTableProps> = () => {
 
             <Container fluid className="infiniteScrollContainer">
                 <Card>
-                    <Card.Header> <FontAwesomeIcon icon={faDatabase} className="me-2" /> Csv Identification Reques</Card.Header>
+                    <Card.Header> <FontAwesomeIcon icon={faDatabase} className="me-2" /> PDS Table</Card.Header>
                     <Card.Body>
                         <InfiniteScroll loading={isLoading || showSpinner} hasNextPage={hasNextPage || false} loadMore={fetchNextPage}>
 
                             <Table striped bordered hover variant="light">
                                 <thead>
                                     <tr>
-                                        <th>PseudoNhsNumber</th>
-                                        <th>OrgCode</th>
-                                        <th>OrganisationName</th>
-                                        <th>RelationshipWithOrganisationEffectiveFromDate</th>
-                                        <th>RelationshipWithOrganisationEffectiveToDate</th>
+                                        <th>Pseudo Nhs Number</th>
+                                        <th>Org Code</th>
+                                        <th>Organisation Name</th>
+                                        <th>Relationship With Organisation Effective FromDate</th>
+                                        <th>Relationship With Organisation Effective ToDate</th>
                                     </tr>
                                 </thead>
                                 <tbody>
