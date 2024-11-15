@@ -3,6 +3,7 @@ import { ReIdRecord } from "../../types/ReIdRecord"
 import { Alert, Card, CardFooter } from "react-bootstrap";
 import CopyIcon from "../core/copyIcon";
 import { useTimer } from "../../hooks/useTimer";
+import { UserProfile } from "../securitys/userProfile";
 
 type ReidentificationResultViewProps = {
     reidentificationRecord: ReIdRecord;
@@ -20,7 +21,7 @@ const ReidentificationResultView: FunctionComponent<ReidentificationResultViewPr
                         <Alert variant="success">
                             NHS Number: {reidentificationRecord.nhsnumber}&nbsp;<CopyIcon content={reidentificationRecord.nhsnumber} />
                         </Alert>
-                        <code>Hiding in: {remainingSeconds}</code>
+                        <small>Hiding in: {remainingSeconds}</small>
                     </>
                     }
                     {timerExpired && <Alert variant="success">
@@ -47,8 +48,9 @@ const ReidentificationResultView: FunctionComponent<ReidentificationResultViewPr
                 <p>
                     Please check that the
                     patient is registered with a GP practice you're authorised to access. To see your ODS organisations
-                    in the re-identification tool click your user profile in the top right of the screen.
+                    in the re-identification tool <u><UserProfile modalTitle="Click Here" className="customAnchor" /></u> to view your user profile in.
                     For more access, contact your local ICB.
+
                 </p>
                 <p>
                     <strong>Note</strong> that any

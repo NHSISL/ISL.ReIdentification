@@ -41,7 +41,7 @@ const ReportsReasonPage: FunctionComponent<ReportReasonPageProps> = (props: Repo
                 <div className="mt-5">
                     <p><strong>Note:</strong> you will only be able to reidentify patients that are present within your organisation.</p>
                     <p><strong>Note:</strong> all re-identification requests are subject to breach monitoring and reporting</p>
-                    <p>Details of breach thresholds can be found <Button size="sm" variant="secondary" onClick={()=> setShowBreachModal(true)}>here</Button>.</p>
+                    <p>Details of breach thresholds can be found <Button size="sm" variant="link" onClick={()=> setShowBreachModal(true)}>here</Button>.</p>
                 </div>
             </Card.Body>
         </Card>

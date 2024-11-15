@@ -4,7 +4,6 @@ import { ILookupErrors, LookupErrors } from "./lookupErrors";
 import { lookupValidations } from "./lookupValidations";
 import { useValidation } from "../../../hooks/useValidation";
 import { Button } from "react-bootstrap";
-import TextAreaInputBase from "../../bases/inputs/TextAreaInputBase";
 import TextInputBase from "../../bases/inputs/TextInputBase";
 import { ILookupApiErrors } from "./lookupApiErrors";
 
@@ -63,14 +62,23 @@ const LookupRowAdd: FunctionComponent<LookupRowAddProps> = (props) => {
                     onChange={handleChange} />
             </td>
             <td>
-                <TextAreaInputBase
+                <TextInputBase
                     id="value"
                     name="value"
                     placeholder="Lookup Value"
                     value={lookup.value}
                     error={errors.value}
-                    onChange={handleChange}
-                    rows={3} />
+                    onChange={handleChange}/>
+            </td>
+            <td>
+                <TextInputBase
+                    id="group"
+                    name="groupName"
+                    placeholder="Lookup Group Value"
+                    value={lookup.groupName}
+                    required={true}
+                    error={errors.groupName}
+                    onChange={handleChange} />
             </td>
             <td></td>
             <td></td>
