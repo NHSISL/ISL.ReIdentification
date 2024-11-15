@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ISL.ReIdentification.Core.Migrations
 {
     /// <inheritdoc />
-    public partial class CreateLoadPdsDataProcedure : Migration
+    public partial class AddOrganisationDescendentTempTable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -18,12 +18,12 @@ namespace ISL.ReIdentification.Core.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql(
-                $@"IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'LoadPdsData') 
-                BEGIN                
-                    DROP PROCEDURE LoadPdsData;
-                END
-                ");
+            var dropIfTableExists = $@"
+                    IF OBJECT_ID('dbo.Temp_Dictionary_dbo_OrganisationDescendent', 'U') IS NOT NULL
+                        DROP TABLE dbo.Temp_Dictionary_dbo_OrganisationDescendent;
+                    GO";
+
+            migrationBuilder.Sql(dropIfTableExists);
         }
     }
 }
