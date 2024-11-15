@@ -3,12 +3,15 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Hashing;
+using ISL.ReIdentification.Core.Brokers.Identifiers;
 using ISL.ReIdentification.Core.Brokers.Loggings;
+using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
@@ -29,6 +32,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
         private readonly ILoggingBroker loggingBroker;
         private readonly IHashBroker hashBroker;
         private readonly IDateTimeBroker dateTimeBroker;
+        private readonly IIdentifierBroker identifierBroker;
         private readonly CsvReIdentificationConfigurations csvReIdentificationConfigurations;
 
         public PersistanceOrchestrationService(
@@ -39,6 +43,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
             ILoggingBroker loggingBroker,
             IHashBroker hashBroker,
             IDateTimeBroker dateTimeBroker,
+            IIdentifierBroker identifierBroker,
             CsvReIdentificationConfigurations csvReIdentificationConfigurations)
         {
             this.impersonationContextService = impersonationContextService;
@@ -48,6 +53,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
             this.loggingBroker = loggingBroker;
             this.hashBroker = hashBroker;
             this.dateTimeBroker = dateTimeBroker;
+            this.identifierBroker = identifierBroker;
             this.csvReIdentificationConfigurations = csvReIdentificationConfigurations;
         }
 
@@ -150,9 +156,48 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
             return new AccessRequest { CsvIdentificationRequest = csvIdentificationRequest };
         });
 
-        public ValueTask PurgeCsvReIdentificationRecordsThatExpired()
+        public async ValueTask PurgeCsvReIdentificationRecordsThatExpired()
         {
-            throw new NotImplementedException();
+            DateTimeOffset dateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+
+            DateTimeOffset expiryDate =
+                dateTimeOffset.AddDays(this.csvReIdentificationConfigurations.ExpireAfterDays * -1);
+
+            IQueryable<CsvIdentificationRequest> csvIdentificationRequests = await this.csvIdentificationRequestService
+                .RetrieveAllCsvIdentificationRequestsAsync();
+
+            List<CsvIdentificationRequest> expiredCsvIdentificationRequests = csvIdentificationRequests.Where(request =>
+                request.Data != null && request.CreatedDate < expiryDate).ToList();
+
+            foreach (CsvIdentificationRequest csvIdentificationRequest in expiredCsvIdentificationRequests)
+            {
+                var accessAuditId = await this.identifierBroker.GetIdentifierAsync();
+                csvIdentificationRequest.Data = null;
+                csvIdentificationRequest.UpdatedDate = dateTimeOffset;
+
+                await this.csvIdentificationRequestService.ModifyCsvIdentificationRequestAsync(csvIdentificationRequest);
+
+                AccessAudit accessAudit = new AccessAudit
+                {
+                    Id = accessAuditId,
+                    RequestId = csvIdentificationRequest.Id,
+                    PseudoIdentifier = "PURGED",
+                    EntraUserId = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+                    GivenName = "PURGED",
+                    Surname = "PURGED",
+                    Email = "PURGED",
+                    Reason = "PURGED",
+                    Organisation = "PURGED",
+                    HasAccess = false,
+                    Message = $"Purged on {dateTimeOffset}",
+                    CreatedBy = "System",
+                    CreatedDate = dateTimeOffset,
+                    UpdatedBy = "System",
+                    UpdatedDate = dateTimeOffset
+                };
+
+                await this.accessAuditService.AddAccessAuditAsync(accessAudit);
+            }
         }
     }
 }

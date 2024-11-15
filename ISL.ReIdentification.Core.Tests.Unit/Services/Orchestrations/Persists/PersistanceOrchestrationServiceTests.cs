@@ -8,6 +8,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Hashing;
+using ISL.ReIdentification.Core.Brokers.Identifiers;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
@@ -22,6 +23,7 @@ using ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Services.Foundations.Notifications;
 using ISL.ReIdentification.Core.Services.Orchestrations.Persists;
+using KellermanSoftware.CompareNetObjects;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
@@ -37,8 +39,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IHashBroker> hashBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
+        private readonly Mock<IIdentifierBroker> identifierBrokerMock;
         private readonly CsvReIdentificationConfigurations csvReIdentificationConfigurations;
         private readonly PersistanceOrchestrationService persistanceOrchestrationService;
+        private readonly ICompareLogic compareLogic;
         private static readonly int expireAfterDays = 7;
 
         public PersistanceOrchestrationServiceTests()
@@ -50,10 +54,15 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.hashBrokerMock = new Mock<IHashBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
+            this.identifierBrokerMock = new Mock<IIdentifierBroker>();
+            this.compareLogic = new CompareLogic();
+
             this.csvReIdentificationConfigurations = new CsvReIdentificationConfigurations
             {
                 ExpireAfterDays = expireAfterDays
             };
+
+
 
             this.persistanceOrchestrationService =
                 new PersistanceOrchestrationService(
@@ -64,6 +73,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                     loggingBroker: loggingBrokerMock.Object,
                     hashBroker: hashBrokerMock.Object,
                     dateTimeBroker: dateTimeBrokerMock.Object,
+                    identifierBroker: identifierBrokerMock.Object,
                     csvReIdentificationConfigurations: csvReIdentificationConfigurations);
         }
 
@@ -109,7 +119,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
         private static List<CsvIdentificationRequest> CreateRandomCsvIdentificationRequests()
         {
             List<CsvIdentificationRequest> csvIdentificationRequests =
-                CreateCsvIdentificationRequestFiller(GetRandomDateTimeOffset()).Create(GetRandomNumber()).ToList();
+                CreateCsvIdentificationRequestFiller(DateTimeOffset.UtcNow).Create(GetRandomNumber()).ToList();
 
             return csvIdentificationRequests;
         }
@@ -148,8 +158,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
 
         private static Filler<CsvIdentificationRequest> CreateExpiredCsvIdentificationRequestFiller()
         {
-            var expiredDays = expireAfterDays;
-            var expiredDateTimeOffset = DateTimeOffset.UtcNow.AddDays(expireAfterDays * -1);
+            var expiredDays = expireAfterDays + GetRandomNumber();
+            var expiredDateTimeOffset = DateTimeOffset.UtcNow.AddDays(expiredDays * -1);
             string user = Guid.NewGuid().ToString();
             var filler = new Filler<CsvIdentificationRequest>();
 
@@ -172,13 +182,15 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             return filler;
         }
 
-        private static AccessAudit CreateRandomPurgedAccessAudit(Guid requestId) =>
-            CreateRandomPurgedAccessAuditFiller(requestId).Create();
+        private static AccessAudit CreateRandomPurgedAccessAudit(Guid accessAuditId, Guid requestId, DateTimeOffset now) =>
+            CreateRandomPurgedAccessAuditFiller(accessAuditId, requestId, now).Create();
 
-        private static Filler<AccessAudit> CreateRandomPurgedAccessAuditFiller(Guid requestId)
+        private static Filler<AccessAudit> CreateRandomPurgedAccessAuditFiller(
+            Guid accessAuditId,
+            Guid requestId,
+            DateTimeOffset now)
         {
             string user = Guid.NewGuid().ToString();
-            DateTimeOffset now = DateTimeOffset.UtcNow;
             Guid entraUserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
             string purgedValue = "PURGED";
             string message = $"Purged on {now}";
@@ -187,6 +199,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
 
+                .OnProperty(accessAudit => accessAudit.Id).Use(accessAuditId)
                 .OnProperty(accessAudit => accessAudit.RequestId).Use(requestId)
                 .OnProperty(accessAudit => accessAudit.PseudoIdentifier).Use(requestId.ToString())
                 .OnProperty(accessAudit => accessAudit.EntraUserId).Use(entraUserId)
@@ -240,6 +253,16 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             return actualException =>
                 actualException.SameExceptionAs(expectedException);
         }
+
+        private Expression<Func<CsvIdentificationRequest, bool>> SameCsvIdentificationRequestAs(
+            CsvIdentificationRequest expectedCsvIdentificationRequest) =>
+                actualCsvIdentificationRequest => this.compareLogic
+                    .Compare(expectedCsvIdentificationRequest, actualCsvIdentificationRequest).AreEqual;
+
+        private Expression<Func<AccessAudit, bool>> SameAccessAuditAs(
+            AccessAudit expectedAccessAudit) =>
+                actualAccessAudit => this.compareLogic
+                    .Compare(expectedAccessAudit, actualAccessAudit).AreEqual;
 
         public static TheoryData<Xeption> DependencyValidationExceptions()
         {

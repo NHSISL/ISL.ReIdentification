@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using FluentAssertions;
 using Force.DeepCloner;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
@@ -27,15 +26,15 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             List<CsvIdentificationRequest> expiredCsvIdentificationRequests =
                 CreateRandomExpiredCsvIdentificationRequests();
 
-            outputCsvIdentificationRequests.AddRange(csvIdentificationRequests);
-            outputCsvIdentificationRequests.AddRange(expiredCsvIdentificationRequests);
+            List<CsvIdentificationRequest> unmodifiedExpiredCsvIdentificationRequests =
+                expiredCsvIdentificationRequests.DeepClone();
 
-            List<CsvIdentificationRequest> expectedExpiredCsvIdentificationRequests = expiredCsvIdentificationRequests
-                .DeepClone();
+            outputCsvIdentificationRequests.AddRange(csvIdentificationRequests);
+            outputCsvIdentificationRequests.AddRange(unmodifiedExpiredCsvIdentificationRequests);
 
             List<AccessAudit> accessAudits = new List<AccessAudit>();
 
-            foreach (CsvIdentificationRequest csvIdentificationRequest in expectedExpiredCsvIdentificationRequests)
+            foreach (CsvIdentificationRequest csvIdentificationRequest in expiredCsvIdentificationRequests)
             {
                 csvIdentificationRequest.Data = null;
                 csvIdentificationRequest.UpdatedDate = now;
@@ -49,17 +48,23 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                 service.RetrieveAllCsvIdentificationRequestsAsync())
                     .ReturnsAsync(outputCsvIdentificationRequests.AsQueryable());
 
-            foreach (CsvIdentificationRequest csvIdentificationRequest in expectedExpiredCsvIdentificationRequests)
+            foreach (CsvIdentificationRequest csvIdentificationRequest in expiredCsvIdentificationRequests)
             {
                 this.csvIdentificationRequestServiceMock.Setup(service =>
-                    service.ModifyCsvIdentificationRequestAsync(csvIdentificationRequest))
+                    service.ModifyCsvIdentificationRequestAsync(It.Is(SameCsvIdentificationRequestAs(csvIdentificationRequest))))
                         .ReturnsAsync(csvIdentificationRequest);
 
-                var accessAudit = CreateRandomPurgedAccessAudit(csvIdentificationRequest.Id);
+                var accessAuditId = Guid.NewGuid();
+
+                this.identifierBrokerMock.Setup(broker =>
+                    broker.GetIdentifierAsync())
+                        .ReturnsAsync(accessAuditId);
+
+                var accessAudit = CreateRandomPurgedAccessAudit(accessAuditId, csvIdentificationRequest.Id, now);
                 accessAudits.Add(accessAudit);
 
                 this.accessAuditServiceMock.Setup(service =>
-                    service.AddAccessAuditAsync(accessAudit))
+                    service.AddAccessAuditAsync(It.Is(SameAccessAuditAs(accessAudit))))
                         .ReturnsAsync(accessAudit);
             }
 
@@ -67,10 +72,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             await this.persistanceOrchestrationService
                 .PurgeCsvReIdentificationRecordsThatExpired();
 
-            List<CsvIdentificationRequest> actualExpiredCsvIdentificationRequests = expiredCsvIdentificationRequests;
-
             // then
-            actualExpiredCsvIdentificationRequests.Should().BeEquivalentTo(expectedExpiredCsvIdentificationRequests);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
@@ -80,19 +82,23 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                 service.RetrieveAllCsvIdentificationRequestsAsync(),
                     Times.Once);
 
-            foreach (CsvIdentificationRequest csvIdentificationRequest in expectedExpiredCsvIdentificationRequests)
+            foreach (CsvIdentificationRequest csvIdentificationRequest in expiredCsvIdentificationRequests)
             {
                 this.csvIdentificationRequestServiceMock.Verify(service =>
-                    service.ModifyCsvIdentificationRequestAsync(csvIdentificationRequest)
+                    service.ModifyCsvIdentificationRequestAsync(It.Is(SameCsvIdentificationRequestAs(csvIdentificationRequest)))
                         , Times.Once);
             }
 
             foreach (AccessAudit accessAudit in accessAudits)
             {
                 this.accessAuditServiceMock.Verify(service =>
-                    service.AddAccessAuditAsync(accessAudit)
+                    service.AddAccessAuditAsync(It.Is(SameAccessAuditAs(accessAudit)))
                         , Times.Once);
             }
+
+            this.identifierBrokerMock.Verify(broker =>
+                broker.GetIdentifierAsync(),
+                    Times.Exactly(accessAudits.Count));
 
             this.csvIdentificationRequestServiceMock.VerifyNoOtherCalls();
             this.impersonationContextServiceMock.VerifyNoOtherCalls();
@@ -101,6 +107,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.hashBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
     }
 }
