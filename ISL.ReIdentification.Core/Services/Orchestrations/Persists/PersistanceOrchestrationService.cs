@@ -6,12 +6,14 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Hashing;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Models.Orchestrations.Persists;
+using ISL.ReIdentification.Core.Services.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Services.Foundations.Notifications;
@@ -23,23 +25,29 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
         private readonly IImpersonationContextService impersonationContextService;
         private readonly ICsvIdentificationRequestService csvIdentificationRequestService;
         private readonly INotificationService notificationService;
+        private readonly IAccessAuditService accessAuditService;
         private readonly ILoggingBroker loggingBroker;
         private readonly IHashBroker hashBroker;
+        private readonly IDateTimeBroker dateTimeBroker;
         private readonly CsvReIdentificationConfigurations csvReIdentificationConfigurations;
 
         public PersistanceOrchestrationService(
             IImpersonationContextService impersonationContextService,
             ICsvIdentificationRequestService csvIdentificationRequestService,
             INotificationService notificationService,
+            IAccessAuditService accessAuditService,
             ILoggingBroker loggingBroker,
             IHashBroker hashBroker,
+            IDateTimeBroker dateTimeBroker,
             CsvReIdentificationConfigurations csvReIdentificationConfigurations)
         {
             this.impersonationContextService = impersonationContextService;
             this.csvIdentificationRequestService = csvIdentificationRequestService;
             this.notificationService = notificationService;
+            this.accessAuditService = accessAuditService;
             this.loggingBroker = loggingBroker;
             this.hashBroker = hashBroker;
+            this.dateTimeBroker = dateTimeBroker;
             this.csvReIdentificationConfigurations = csvReIdentificationConfigurations;
         }
 

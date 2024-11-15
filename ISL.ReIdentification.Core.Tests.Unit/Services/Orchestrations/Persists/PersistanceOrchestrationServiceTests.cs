@@ -3,9 +3,13 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
+using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Hashing;
 using ISL.ReIdentification.Core.Brokers.Loggings;
+using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
@@ -13,6 +17,7 @@ using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts.Excepti
 using ISL.ReIdentification.Core.Models.Foundations.Notifications.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Models.Orchestrations.Persists;
+using ISL.ReIdentification.Core.Services.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Services.Foundations.Notifications;
@@ -28,21 +33,26 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
         private readonly Mock<IImpersonationContextService> impersonationContextServiceMock;
         private readonly Mock<ICsvIdentificationRequestService> csvIdentificationRequestServiceMock;
         private readonly Mock<INotificationService> notificationServiceMock;
+        private readonly Mock<IAccessAuditService> accessAuditServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IHashBroker> hashBrokerMock;
+        private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly CsvReIdentificationConfigurations csvReIdentificationConfigurations;
         private readonly PersistanceOrchestrationService persistanceOrchestrationService;
+        private static readonly int expireAfterDays = 7;
 
         public PersistanceOrchestrationServiceTests()
         {
             this.impersonationContextServiceMock = new Mock<IImpersonationContextService>();
             this.csvIdentificationRequestServiceMock = new Mock<ICsvIdentificationRequestService>();
             this.notificationServiceMock = new Mock<INotificationService>();
+            this.accessAuditServiceMock = new Mock<IAccessAuditService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.hashBrokerMock = new Mock<IHashBroker>();
+            this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.csvReIdentificationConfigurations = new CsvReIdentificationConfigurations
             {
-                ExpireAfterDays = 7
+                ExpireAfterDays = expireAfterDays
             };
 
             this.persistanceOrchestrationService =
@@ -50,10 +60,15 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                     impersonationContextService: impersonationContextServiceMock.Object,
                     csvIdentificationRequestService: csvIdentificationRequestServiceMock.Object,
                     notificationService: notificationServiceMock.Object,
+                    accessAuditService: accessAuditServiceMock.Object,
                     loggingBroker: loggingBrokerMock.Object,
                     hashBroker: hashBrokerMock.Object,
+                    dateTimeBroker: dateTimeBrokerMock.Object,
                     csvReIdentificationConfigurations: csvReIdentificationConfigurations);
         }
+
+        private static int GetRandomNumber() =>
+            new IntRange(max: 15, min: 2).GetValue();
 
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
@@ -91,6 +106,22 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
         private static CsvIdentificationRequest CreateRandomCsvIdentificationRequest() =>
             CreateCsvIdentificationRequestFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
 
+        private static List<CsvIdentificationRequest> CreateRandomCsvIdentificationRequests()
+        {
+            List<CsvIdentificationRequest> csvIdentificationRequests =
+                CreateCsvIdentificationRequestFiller(GetRandomDateTimeOffset()).Create(GetRandomNumber()).ToList();
+
+            return csvIdentificationRequests;
+        }
+
+        private static List<CsvIdentificationRequest> CreateRandomExpiredCsvIdentificationRequests()
+        {
+            List<CsvIdentificationRequest> expiredCsvIdentificationRequests =
+                CreateExpiredCsvIdentificationRequestFiller().Create(GetRandomNumber()).ToList();
+
+            return expiredCsvIdentificationRequests;
+        }
+
         private static Filler<CsvIdentificationRequest> CreateCsvIdentificationRequestFiller(DateTimeOffset dateTimeOffset)
         {
             string user = Guid.NewGuid().ToString();
@@ -111,6 +142,64 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
 
                 .OnProperty(csvIdentificationRequest => csvIdentificationRequest.CreatedBy).Use(user)
                 .OnProperty(csvIdentificationRequest => csvIdentificationRequest.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
+        private static Filler<CsvIdentificationRequest> CreateExpiredCsvIdentificationRequestFiller()
+        {
+            var expiredDays = expireAfterDays;
+            var expiredDateTimeOffset = DateTimeOffset.UtcNow.AddDays(expireAfterDays * -1);
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<CsvIdentificationRequest>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(expiredDateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(expiredDateTimeOffset)
+
+                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.RequesterEmail)
+                    .Use(GetRandomStringWithLengthOf(320))
+
+                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.RecipientEmail)
+                    .Use(GetRandomStringWithLengthOf(320))
+
+                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.Organisation)
+                    .Use(GetRandomStringWithLengthOf(255))
+
+                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.CreatedBy).Use(user)
+                .OnProperty(csvIdentificationRequest => csvIdentificationRequest.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
+        private static AccessAudit CreateRandomPurgedAccessAudit(Guid requestId) =>
+            CreateRandomPurgedAccessAuditFiller(requestId).Create();
+
+        private static Filler<AccessAudit> CreateRandomPurgedAccessAuditFiller(Guid requestId)
+        {
+            string user = Guid.NewGuid().ToString();
+            DateTimeOffset now = DateTimeOffset.UtcNow;
+            Guid entraUserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+            string purgedValue = "PURGED";
+            string message = $"Purged on {now}";
+            var filler = new Filler<AccessAudit>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(now)
+
+                .OnProperty(accessAudit => accessAudit.RequestId).Use(requestId)
+                .OnProperty(accessAudit => accessAudit.PseudoIdentifier).Use(requestId.ToString())
+                .OnProperty(accessAudit => accessAudit.EntraUserId).Use(entraUserId)
+                .OnProperty(accessAudit => accessAudit.GivenName).Use(purgedValue)
+                .OnProperty(accessAudit => accessAudit.Surname).Use(purgedValue)
+                .OnProperty(accessAudit => accessAudit.Email).Use(purgedValue)
+                .OnProperty(accessAudit => accessAudit.Purpose).Use(purgedValue)
+                .OnProperty(accessAudit => accessAudit.Reason).Use(purgedValue)
+                .OnProperty(accessAudit => accessAudit.Organisation).Use(purgedValue)
+                .OnProperty(accessAudit => accessAudit.HasAccess).Use(false)
+                .OnProperty(accessAudit => accessAudit.Message).Use(message)
+                .OnProperty(accessAudit => accessAudit.CreatedBy).Use(user)
+                .OnProperty(accessAudit => accessAudit.UpdatedBy).Use(user);
 
             return filler;
         }
