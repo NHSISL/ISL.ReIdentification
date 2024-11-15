@@ -19,34 +19,20 @@ export const pdsDataViewService = {
     },
 
     useGetAllPdsData: (searchTerm?: string): PdsDataViewServiceResponse => {
-        let query = `?$orderby=createdDate desc`;
+        let query = `?$orderby=orgCode desc`;
 
         if (searchTerm) {
-            query = query + `&$filter=contains(UserEmail,'${searchTerm}')`;
+            query = query + `&$filter=contains(pseudoNhsNumber,'${searchTerm}') or contains(orgCode,'${searchTerm}') or contains(organisationName,'${searchTerm}')`;
         }
 
         const response = pdsDataService.useRetrieveAllPdsDataPages(query);
         const [mappedPdsData, setMappedPdsData] = useState<Array<PdsDataView>>();
-        const [pages, setPages] = useState<Array<{ data: PdsDataView[] }>>([]);
+        const [pages] = useState<Array<{ data: PdsDataView[] }>>([]);
 
         useEffect(() => {
-            if (response.data && response.data.pages) {
-                const pdsDataes: Array<PdsDataView> = [];
-                response.data.pages.forEach((x: { data: PdsDataView[] }) => {
-                    x.data.forEach((pdsData: PdsDataView) => {
-                        pdsDataes.push(new PdsDataView(
-                            pdsData.rowId,
-                            pdsData.pseudoNhsNumber,
-                            pdsData.OrgCode,
-                            pdsData.OrganisationName,
-                            pdsData.RelationshipWithOrganisationEffectiveFromDate,
-                            pdsData.RelationshipWithOrganisationEffectiveToDate
-                        ));
-                    });
-                });
-
-                setMappedPdsData(pdsDataes);
-                setPages(response.data.pages);
+            if (response.data && Array.isArray(response.data.pages)) {
+                const validPages = (response.data.pages as Array<{ data: PdsDataView[] }>).filter(page => page.data).flatMap(x => x.data as PdsDataView[]);
+                setMappedPdsData(validPages);
             }
         }, [response.data]);
 
@@ -71,7 +57,7 @@ export const pdsDataViewService = {
             if (response.data && response.data.pages && response.data.pages[0].data[0]) {
                 const pdsData = response.data.pages[0].data[0];
                 const pdsDataView = new PdsDataView(
-                    pdsData.rowId,
+                    pdsData.id,
                     pdsData.pseudoNhsNumber,
                     pdsData.OrgCode,
                     pdsData.OrganisationName,
