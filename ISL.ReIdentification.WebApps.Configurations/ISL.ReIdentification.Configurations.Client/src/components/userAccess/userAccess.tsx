@@ -1,9 +1,6 @@
-import { Alert, Button, Container } from "react-bootstrap"
+import { Alert, Container } from "react-bootstrap"
 import BreadCrumbBase from "../bases/layouts/BreadCrumb/BreadCrumbBase"
 import UserAccessTable from "./userAccessTable"
-import { Link } from "react-router-dom"
-import securityPoints from "../../securityMatrix"
-import { SecuredComponent } from "../securitys/securedComponents"
 
 export const UserAccess = () => {
     return (
@@ -20,11 +17,7 @@ export const UserAccess = () => {
                     <Alert variant="danger">Any modification to data on this screen is audited.</Alert>
                     <UserAccessTable />
                 </div>
-                <SecuredComponent allowedRoles={securityPoints.userAccess.add}>
-                    <Link to="/userAccess/newUser">
-                        <Button>Add New User</Button>
-                    </Link>
-                </SecuredComponent>
+               
             </section>
         </Container>
     )

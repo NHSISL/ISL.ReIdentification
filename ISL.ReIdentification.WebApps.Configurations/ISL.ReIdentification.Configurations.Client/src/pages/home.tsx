@@ -3,25 +3,22 @@ import { Container, Row, Col } from "react-bootstrap";
 export const Home = () => {
     return (
         <Container fluid className="mt-4">
-            <Row className="mb-4">
-                <Col>
-                    <h1>Welcome to Re-Identification</h1>
-                </Col>
-            </Row>
             <Row>
                 <Col>
+                    <h1 className="display-4">Welcome to Re-Identification</h1>
+                    <br />
                     <p>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.
-                        Welcome to our site where you can manage various configurations and settings to optimize your experience.
+                        Introducing the new re-identification platform from Intelligent Solutions for London (ISL),
+                        built to support Integrated Care Boards (ICBs). This service enables bulk re-identification of
+                        patient records, integrating with BI tools for analysts and data teams.
                     </p>
                     <p>
-                        Our platform provides a comprehensive suite of tools to help you manage lookups, settings, users, roles,
-                        and more. Whether you are an administrator looking to configure system settings or a user looking to
-                        customize your experience, we have the tools you need.
+                        The platform uses a permission-based model to verify user-patient relationships, cross-checking
+                        with patient data from the Personal Demographic Service (PDS). It ensures privacy by redacting
+                        patient details when access is not authorised, maintaining compliance and security.
                     </p>
                     <p>
-                        Explore the various sections of our site to learn more about what we offer and how we can help you
-                        achieve your goals. If you have any questions, feel free to reach out to our support team.
+                        Further details on the permission model and access controls can be found here
                     </p>
                 </Col>
             </Row>
