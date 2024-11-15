@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { OverlayInjectedProps } from "react-bootstrap/esm/Overlay";
 import ReidentificationResultView from "./reidentificationResultView";
 import { userAccessViewService } from "../../services/views/userAccess/userAccessViewService";
+import { getPseudo } from "../../helpers/hxHelpers";
 
 interface Option {
     value: string;
@@ -40,7 +41,7 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
                 id: crypto.randomUUID(),
                 identificationItems: [{
                     rowNumber: "1",
-                    identifier: pseudoCode,
+                    identifier: getPseudo(pseudoCode),
                     hasAccess: false,
                     message: undefined,
                     isReidentified: undefined,
@@ -52,7 +53,7 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
             }
         }
 
-        setSubmittedPseudoCode(pseudoCode);
+        setSubmittedPseudoCode(getPseudo(pseudoCode));
         submit(identificationRequest);
     };
 
@@ -110,8 +111,6 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
                                 value={pseudoCode}
                                 maxLength={10}
                                 minLength={10}
-                                inputMode="numeric"
-                                pattern="\d*"
                                 onChange={handlePseudoCodeChange}
                                 placeholder="Pseudo Number"
                                 required />
