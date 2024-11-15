@@ -4,7 +4,6 @@ import { ILookupErrors, LookupErrors } from "./lookupErrors";
 import { lookupValidations } from "./lookupValidations";
 import { useValidation } from "../../../hooks/useValidation";
 import { Button } from "react-bootstrap";
-import TextAreaInputBase from "../../bases/inputs/TextAreaInputBase";
 import TextInputBase from "../../bases/inputs/TextInputBase";
 import { ILookupApiErrors } from "./lookupApiErrors";
 
