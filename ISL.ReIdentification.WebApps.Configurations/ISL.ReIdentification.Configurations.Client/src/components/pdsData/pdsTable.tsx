@@ -25,7 +25,6 @@ const PdsTable: FunctionComponent<PdsTableProps> = () => {
         fetchNextPage,
         isFetchingNextPage,
         hasNextPage,
-        data,
     } = pdsDataViewService.useGetAllPdsData(
         debouncedTerm
     );
