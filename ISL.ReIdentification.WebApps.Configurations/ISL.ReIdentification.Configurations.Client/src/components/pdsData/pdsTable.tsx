@@ -44,7 +44,7 @@ const PdsTable: FunctionComponent<PdsTableProps> = () => {
     );
 
     const hasNoMorePages = () => {
-        return !isLoading && data?.pages.at(-1)?.nextPage === undefined;
+        return hasNextPage;
     };
 
     return (
@@ -87,11 +87,12 @@ const PdsTable: FunctionComponent<PdsTableProps> = () => {
                                                 )
                                             )}
                                             <tr>
-                                                <td colSpan={7} className="text-center">
+                                                    <td colSpan={7} className="text-center">
+                                                TEST
                                                     <InfiniteScrollLoader
-                                                        loading={isLoading || isFetchingNextPage}
+                                                        loading={isFetchingNextPage}
                                                         spinner={<SpinnerBase />}
-                                                        noMorePages={hasNoMorePages()}
+                                                        noMorePages={!hasNoMorePages()}
                                                         noMorePagesMessage={<>-- No more pages --</>}
                                                     />
                                                 </td>

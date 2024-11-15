@@ -24,8 +24,7 @@ const OdsTable: FunctionComponent<OdsTableProps> = () => {
         isLoading,
         fetchNextPage,
         isFetchingNextPage,
-        hasNextPage,
-        data,
+        hasNextPage
     } = odsDataViewService.useGetAllOdsData(
         debouncedTerm
     );
@@ -44,7 +43,7 @@ const OdsTable: FunctionComponent<OdsTableProps> = () => {
     );
 
     const hasNoMorePages = () => {
-        return !isLoading && data?.pages.at(-1)?.nextPage === undefined;
+        return !hasNextPage;
     };
 
     return (
