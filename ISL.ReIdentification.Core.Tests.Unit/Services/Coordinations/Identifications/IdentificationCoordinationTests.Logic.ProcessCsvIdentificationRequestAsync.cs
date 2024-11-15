@@ -51,7 +51,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             inputConversionAccessRequest.IdentificationRequest = outputOrchestrationIdentificationRequest;
             AccessRequest resultingAccessRequest = CreateRandomCsvIdentificationRequestAccessRequest();
             AccessRequest expectedAccessRequest = resultingAccessRequest.DeepClone();
-            string expectedFileName = $"data_{outputTimestamp}.csv";
+            string expectedFileName = $"{expectedAccessRequest.CsvIdentificationRequest.Filepath}_{outputTimestamp}.csv";
             expectedAccessRequest.CsvIdentificationRequest.Filepath = expectedFileName;
 
             this.persistanceOrchestrationServiceMock.Setup(service =>
