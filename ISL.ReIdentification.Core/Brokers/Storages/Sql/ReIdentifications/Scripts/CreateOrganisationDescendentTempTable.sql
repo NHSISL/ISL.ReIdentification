@@ -1,0 +1,34 @@
+﻿-- Check if the table already exists and drop it if so
+IF OBJECT_ID('dbo.Temp_Dictionary_dbo_OrganisationDescendent', 'U') IS NOT NULL
+BEGIN
+    DROP TABLE dbo.Temp_Dictionary_dbo_OrganisationDescendent;
+END
+
+-- Create the table
+CREATE TABLE [dbo].[Temp_Dictionary_dbo_OrganisationDescendent](
+	Id int IDENTITY(1,1) NOT NULL,
+	[ParentPath] [varchar](500) NULL,
+	[ParentId] int NULL,
+	RowNumber int NULL,
+	OdsHierarchy hierarchyid NULL,
+	[SK_OrganisationID_Root] [int]  NULL,
+	[OrganisationCode_Root] [varchar](15)  NULL,
+	[OrganisationPrimaryRole_Root] [varchar](5) NULL,
+	[SK_OrganisationID_Parent] [int]  NULL,
+	[OrganisationCode_Parent] [varchar](15)  NULL,
+	[OrganisationPrimaryRole_Parent] [varchar](5) NULL,
+	[SK_OrganisationID_Child] [int]  NULL,
+	[OrganisationCode_Child] [varchar](15)  NULL,
+	[OrganisationPrimaryRole_Child] [varchar](5) NULL,
+	[RelationshipType] [varchar](5)  NULL,
+	[RelationshipStartDate] [date]  NULL,
+	[RelationshipEndDate] [date]  NULL,
+	[Path] [varchar](500)  NULL,
+	[Depth] [tinyint]  NULL,
+	[PathStartDate] [date]  NULL,
+	[PathEndDate] [date]  NULL,
+	[DateAdded] [date]  NULL,
+	[DateUpdated] [date]  NULL,
+	[ODSOrgName] [varchar](25) NULL,
+	[IsActive] [bit] NULL Default(0),
+) ON [PRIMARY]
