@@ -21,7 +21,7 @@ const ReidentificationResultView: FunctionComponent<ReidentificationResultViewPr
                         <Alert variant="success">
                             NHS Number: {reidentificationRecord.nhsnumber}&nbsp;<CopyIcon content={reidentificationRecord.nhsnumber} />
                         </Alert>
-                        <code>Hiding in: {remainingSeconds}</code>
+                        <small>Hiding in: {remainingSeconds}</small>
                     </>
                     }
                     {timerExpired && <Alert variant="success">
