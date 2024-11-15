@@ -74,7 +74,7 @@ const LookupRowAdd: FunctionComponent<LookupRowAddProps> = (props) => {
             <td>
                 <TextInputBase
                     id="group"
-                    name="group"
+                    name="groupName"
                     placeholder="Lookup Group Value"
                     value={lookup.groupName}
                     required={true}
