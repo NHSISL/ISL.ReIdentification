@@ -11,6 +11,7 @@ using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
+using ISL.ReIdentification.Core.Models.Orchestrations.Persists;
 using ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Services.Foundations.Notifications;
@@ -24,19 +25,22 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
         private readonly INotificationService notificationService;
         private readonly ILoggingBroker loggingBroker;
         private readonly IHashBroker hashBroker;
+        private readonly CsvReIdentificationConfigurations csvReIdentificationConfigurations;
 
         public PersistanceOrchestrationService(
             IImpersonationContextService impersonationContextService,
             ICsvIdentificationRequestService csvIdentificationRequestService,
             INotificationService notificationService,
             ILoggingBroker loggingBroker,
-            IHashBroker hashBroker)
+            IHashBroker hashBroker,
+            CsvReIdentificationConfigurations csvReIdentificationConfigurations)
         {
             this.impersonationContextService = impersonationContextService;
             this.csvIdentificationRequestService = csvIdentificationRequestService;
             this.notificationService = notificationService;
             this.loggingBroker = loggingBroker;
             this.hashBroker = hashBroker;
+            this.csvReIdentificationConfigurations = csvReIdentificationConfigurations;
         }
 
         public ValueTask<AccessRequest> PersistImpersonationContextAsync(AccessRequest accessRequest) =>
@@ -137,5 +141,10 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
 
             return new AccessRequest { CsvIdentificationRequest = csvIdentificationRequest };
         });
+
+        public ValueTask PurgeCsvReIdentificationRecordsThatExpired()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -12,6 +12,7 @@ using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.Notifications.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
+using ISL.ReIdentification.Core.Models.Orchestrations.Persists;
 using ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Services.Foundations.Notifications;
@@ -29,6 +30,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
         private readonly Mock<INotificationService> notificationServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IHashBroker> hashBrokerMock;
+        private readonly CsvReIdentificationConfigurations csvReIdentificationConfigurations;
         private readonly PersistanceOrchestrationService persistanceOrchestrationService;
 
         public PersistanceOrchestrationServiceTests()
@@ -38,6 +40,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             this.notificationServiceMock = new Mock<INotificationService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.hashBrokerMock = new Mock<IHashBroker>();
+            this.csvReIdentificationConfigurations = new CsvReIdentificationConfigurations
+            {
+                ExpireAfterDays = 7
+            };
 
             this.persistanceOrchestrationService =
                 new PersistanceOrchestrationService(
@@ -45,7 +51,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                     csvIdentificationRequestService: csvIdentificationRequestServiceMock.Object,
                     notificationService: notificationServiceMock.Object,
                     loggingBroker: loggingBrokerMock.Object,
-                    hashBroker: hashBrokerMock.Object);
+                    hashBroker: hashBrokerMock.Object,
+                    csvReIdentificationConfigurations: csvReIdentificationConfigurations);
         }
 
         private static string GetRandomString() =>
