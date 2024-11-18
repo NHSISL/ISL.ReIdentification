@@ -7,6 +7,7 @@ import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { OverlayInjectedProps } from "react-bootstrap/esm/Overlay";
 import BreadCrumbBase from "../bases/layouts/BreadCrumb/BreadCrumbBase";
+import AccessAuditTable from "../accessAudits/accessAuditTable";
 
 interface CsvReIdentificationDownloadDetailProps {
     csvIdentificationRequestId: string | undefined;
@@ -94,7 +95,7 @@ const CsvReIdentificationDownloadDetail: FunctionComponent<CsvReIdentificationDo
                     backLink="Worklist"
                     currentLink="Dataset Download">
                 </BreadCrumbBase>
-                
+
             </section>
             <Row className="justify-content-md-center mt-3">
                 <Card style={{ width: '50rem' }}>
@@ -156,6 +157,7 @@ const CsvReIdentificationDownloadDetail: FunctionComponent<CsvReIdentificationDo
                     </Card.Body>
                 </Card>
             </Row>
+            <AccessAuditTable requestId={data.id!.toString()} />
         </Container>
     );
 };
