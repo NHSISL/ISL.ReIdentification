@@ -162,7 +162,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
             DateTimeOffset dateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
             DateTimeOffset expiryDate =
-                dateTimeOffset.AddDays(this.csvReIdentificationConfigurations.ExpireAfterDays * -1);
+                dateTimeOffset.AddMinutes(this.csvReIdentificationConfigurations.ExpireAfterMinutes * -1);
 
             IQueryable<CsvIdentificationRequest> csvIdentificationRequests = await this.csvIdentificationRequestService
                 .RetrieveAllCsvIdentificationRequestsAsync();

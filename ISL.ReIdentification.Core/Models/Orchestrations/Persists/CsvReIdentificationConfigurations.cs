@@ -6,6 +6,6 @@ namespace ISL.ReIdentification.Core.Models.Orchestrations.Persists
 {
     public class CsvReIdentificationConfigurations
     {
-        public int ExpireAfterDays { get; set; }
+        public int ExpireAfterMinutes { get; set; }
     }
 }

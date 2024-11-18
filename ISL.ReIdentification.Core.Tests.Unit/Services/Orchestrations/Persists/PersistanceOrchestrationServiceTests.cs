@@ -44,7 +44,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
         private readonly CsvReIdentificationConfigurations csvReIdentificationConfigurations;
         private readonly PersistanceOrchestrationService persistanceOrchestrationService;
         private readonly ICompareLogic compareLogic;
-        private static readonly int expireAfterDays = 7;
+        private static readonly int expireAfterMinutes = 10080;
 
         public PersistanceOrchestrationServiceTests()
         {
@@ -60,7 +60,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
 
             this.csvReIdentificationConfigurations = new CsvReIdentificationConfigurations
             {
-                ExpireAfterDays = expireAfterDays
+                ExpireAfterMinutes = expireAfterMinutes
             };
 
 
@@ -159,8 +159,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
 
         private static Filler<CsvIdentificationRequest> CreateExpiredCsvIdentificationRequestFiller()
         {
-            var expiredDays = expireAfterDays + GetRandomNumber();
-            var expiredDateTimeOffset = DateTimeOffset.UtcNow.AddDays(expiredDays * -1);
+            var expiredMinutes = expireAfterMinutes + GetRandomNumber();
+            var expiredDateTimeOffset = DateTimeOffset.UtcNow.AddMinutes(expiredMinutes * -1);
             string user = Guid.NewGuid().ToString();
             var filler = new Filler<CsvIdentificationRequest>();
 
