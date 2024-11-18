@@ -33,7 +33,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.Acce
                     .ReturnsAsync(storageAccessAudits);
 
             // when
-            ActionResult<IQueryable<AccessAudit>> actualActionResult = await accessAuditsController.GetAsync();
+            ActionResult<IQueryable<AccessAudit>> actualActionResult = await accessAuditsController.Get();
 
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
