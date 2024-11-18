@@ -59,7 +59,7 @@ const AccessAuditTable: FunctionComponent<AccessAuditTableProps> = () => {
                     <Card.Body>
                         <InfiniteScroll loading={isLoading || showSpinner} hasNextPage={hasNextPage || false} loadMore={fetchNextPage}>
 
-                            <Table striped bordered hover variant="light">
+                            <Table striped bordered hover variant="light" responsive>
                                 <thead>
                                     <tr>
                                         <th>Pseudo Number</th>

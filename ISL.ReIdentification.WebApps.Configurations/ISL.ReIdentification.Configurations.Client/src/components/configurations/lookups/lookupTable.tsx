@@ -81,7 +81,7 @@ const LookupTable: FunctionComponent<LookupTableProps> = (props) => {
                     </Card.Header>
                     <Card.Body>
                         {isLoading && <> <SpinnerBase />.</>}
-                        <Table striped bordered hover variant="light">
+                        <Table striped bordered hover variant="light" responsive>
                             <thead>
                                 <tr>
                                     <th>Name</th>

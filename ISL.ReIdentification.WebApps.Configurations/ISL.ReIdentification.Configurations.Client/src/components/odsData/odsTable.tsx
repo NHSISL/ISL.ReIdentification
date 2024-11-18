@@ -58,7 +58,7 @@ const OdsTable: FunctionComponent<OdsTableProps> = () => {
                     <Card.Body>
                         <InfiniteScroll loading={isLoading || showSpinner} hasNextPage={hasNextPage || false} loadMore={fetchNextPage}>
 
-                            <Table striped bordered hover variant="light">
+                            <Table striped bordered hover variant="light" responsive>
                                 <thead>
                                     <tr>
                                         <th>Organisation Name</th>
