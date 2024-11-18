@@ -1,25 +1,25 @@
 
 export class PdsDataView {
-    public rowId: string;
+    public id: string;
     public pseudoNhsNumber: string;
-    public OrgCode: string;
-    public OrganisationName: string;
-    public RelationshipWithOrganisationEffectiveFromDate?: Date | undefined;
-    public RelationshipWithOrganisationEffectiveToDate?: Date | undefined;
+    public orgCode: string;
+    public organisationName: string;
+    public relationshipWithOrganisationEffectiveFromDate?: Date | undefined;
+    public relationshipWithOrganisationEffectiveToDate?: Date | undefined;
 
     constructor(
-        rowId: string,
+        id: string,
         pseudoNhsNumber: string,
-        OrgCode: string,
-        OrganisationName: string,
-        RelationshipWithOrganisationEffectiveFromDate?: Date,
-        RelationshipWithOrganisationEffectiveToDate?: Date,
+        orgCode: string,
+        organisationName: string,
+        relationshipWithOrganisationEffectiveFromDate?: Date,
+        relationshipWithOrganisationEffectiveToDate?: Date,
     ) {
-        this.rowId = rowId;
+        this.id = id;
         this.pseudoNhsNumber = pseudoNhsNumber;
-        this.OrgCode = OrgCode;
-        this.OrganisationName = OrganisationName
-        this.RelationshipWithOrganisationEffectiveFromDate = RelationshipWithOrganisationEffectiveFromDate
-        this.RelationshipWithOrganisationEffectiveToDate = RelationshipWithOrganisationEffectiveToDate;
+        this.orgCode = orgCode;
+        this.organisationName = organisationName
+        this.relationshipWithOrganisationEffectiveFromDate = relationshipWithOrganisationEffectiveFromDate
+        this.relationshipWithOrganisationEffectiveToDate = relationshipWithOrganisationEffectiveToDate;
     }
 }
