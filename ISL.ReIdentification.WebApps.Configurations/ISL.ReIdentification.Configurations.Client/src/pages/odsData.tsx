@@ -12,7 +12,6 @@ export const OdsData = () => {
                     currentLink="ODS Data">
                 </BreadCrumbBase>
                 <div className="mt-3">
-                    <p>Role Needs to be in Security Matrix and Azure AD against user.</p>
                     <OdsTable />
                 </div>
             </section>
