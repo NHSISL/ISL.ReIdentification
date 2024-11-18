@@ -21,14 +21,6 @@ const CsvIdentificationRequestRow: FunctionComponent<CsvIdentificationRequestRow
             <td>{csvIdentificationRequest.recipientFirstName}</td>
             <td>{csvIdentificationRequest.recipientLastName}</td>
             <td>{csvIdentificationRequest.reason}</td>
-           
-            <td>
-                <Link to={`/csvIdentificationRequestDetail/${csvIdentificationRequest.id}`}>
-                    <Button onClick={() => { }}>
-                        Details
-                    </Button>
-                </Link>
-            </td>
         </tr>
     );
 }
