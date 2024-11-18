@@ -156,7 +156,8 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
             return new AccessRequest { CsvIdentificationRequest = csvIdentificationRequest };
         });
 
-        public async ValueTask PurgeCsvReIdentificationRecordsThatExpired()
+        public ValueTask PurgeCsvReIdentificationRecordsThatExpired() =>
+        TryCatch(async () =>
         {
             DateTimeOffset dateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
@@ -199,6 +200,6 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
 
                 await this.accessAuditService.AddAccessAuditAsync(accessAudit);
             }
-        }
+        });
     }
 }

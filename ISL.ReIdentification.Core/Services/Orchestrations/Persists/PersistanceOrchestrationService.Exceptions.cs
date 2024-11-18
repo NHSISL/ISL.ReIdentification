@@ -4,6 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
+using ISL.ReIdentification.Core.Models.Foundations.AccessAudits.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.Notifications.Exceptions;
@@ -17,6 +18,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
     public partial class PersistanceOrchestrationService
     {
         private delegate ValueTask<AccessRequest> ReturningAccessRequestFunction();
+        private delegate ValueTask ReturningNothingFunction();
 
         private async ValueTask<AccessRequest> TryCatch(ReturningAccessRequestFunction returningAccessRequestFunction)
         {
@@ -101,6 +103,35 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
                         innerException: exception);
 
                 throw await CreateAndLogServiceExceptionAsync(failedServicePersistanceOrchestrationException);
+            }
+        }
+
+        private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
+        {
+            try
+            {
+                await returningNothingFunction();
+            }
+            catch (CsvIdentificationRequestValidationException csvIdentificationRequestValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    csvIdentificationRequestValidationException);
+            }
+            catch (CsvIdentificationRequestDependencyValidationException
+                csvIdentificationRequestDependencyValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    csvIdentificationRequestDependencyValidationException);
+            }
+            catch (AccessAuditValidationException accessAuditValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    accessAuditValidationException);
+            }
+            catch (AccessAuditDependencyValidationException accessAuditDependencyValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    accessAuditDependencyValidationException);
             }
         }
 
