@@ -153,6 +153,15 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
                 throw await CreateAndLogDependencyExceptionAsync(
                     accessAuditServiceException);
             }
+            catch (Exception exception)
+            {
+                var failedServicePersistanceOrchestrationException =
+                    new FailedServicePersistanceOrchestrationException(
+                        message: "Failed service persistance orchestration error occurred, contact support.",
+                        innerException: exception);
+
+                throw await CreateAndLogServiceExceptionAsync(failedServicePersistanceOrchestrationException);
+            }
         }
 
         private async ValueTask<PersistanceOrchestrationValidationException>
