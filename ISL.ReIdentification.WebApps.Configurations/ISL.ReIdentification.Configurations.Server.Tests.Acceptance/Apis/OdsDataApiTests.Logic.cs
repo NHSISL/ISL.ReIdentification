@@ -183,12 +183,22 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
 
             foreach (OdsData odsData in childOdsDatas)
             {
-                await this.apiBroker.DeleteOdsDataByIdAsync(odsData.Id);
+                OdsData odsItem = await this.apiBroker.GetOdsDataByIdAsync(odsData.Id);
+
+                if (odsItem != null)
+                {
+                    await this.apiBroker.DeleteOdsDataByIdAsync(odsData.Id);
+                }
             }
 
             foreach (OdsData odsData in grandchildrenOdsDatas)
             {
-                await this.apiBroker.DeleteOdsDataByIdAsync(odsData.Id);
+                OdsData odsItem = await this.apiBroker.GetOdsDataByIdAsync(odsData.Id);
+
+                if (odsItem != null)
+                {
+                    await this.apiBroker.DeleteOdsDataByIdAsync(odsData.Id);
+                }
             }
 
             await this.apiBroker.DeleteOdsDataByIdAsync(randomOdsData.Id);
