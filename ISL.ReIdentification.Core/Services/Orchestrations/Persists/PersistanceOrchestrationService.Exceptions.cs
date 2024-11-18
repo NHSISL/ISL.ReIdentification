@@ -133,6 +133,26 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
                 throw await CreateAndLogDependencyValidationExceptionAsync(
                     accessAuditDependencyValidationException);
             }
+            catch (CsvIdentificationRequestDependencyException csvIdentificationRequestDependencyException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(
+                    csvIdentificationRequestDependencyException);
+            }
+            catch (CsvIdentificationRequestServiceException csvIdentificationRequestServiceException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(
+                    csvIdentificationRequestServiceException);
+            }
+            catch (AccessAuditDependencyException accessAuditDependencyException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(
+                    accessAuditDependencyException);
+            }
+            catch (AccessAuditServiceException accessAuditServiceException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(
+                    accessAuditServiceException);
+            }
         }
 
         private async ValueTask<PersistanceOrchestrationValidationException>
