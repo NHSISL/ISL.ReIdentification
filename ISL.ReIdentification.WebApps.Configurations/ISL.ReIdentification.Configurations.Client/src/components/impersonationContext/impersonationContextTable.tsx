@@ -49,13 +49,13 @@ const ImpersonationContextTable: FunctionComponent<ImpersonationContextTableProp
 
     return (
         <>
-            <SearchBase id="search" label="Search lookups" value={searchTerm} placeholder="Search User Access"
+            <SearchBase id="search" label="Search lookups" value={searchTerm} placeholder="Search Impersonation Table"
                 onChange={(e) => { handleSearchChange(e.currentTarget.value) }} />
             <br />
 
             <Container fluid className="infiniteScrollContainer">
                 <Card>
-                    <Card.Header> <FontAwesomeIcon icon={faDatabase} className="me-2" /> Impersonation Context</Card.Header>
+                    <Card.Header> <FontAwesomeIcon icon={faDatabase} className="me-2" /> Impersonation</Card.Header>
                     <Card.Body>
                         <InfiniteScroll loading={isLoading || showSpinner} hasNextPage={hasNextPage || false} loadMore={fetchNextPage}>
 

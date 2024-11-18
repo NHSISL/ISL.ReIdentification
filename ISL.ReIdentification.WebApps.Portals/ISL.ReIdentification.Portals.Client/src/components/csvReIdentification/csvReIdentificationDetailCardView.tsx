@@ -170,17 +170,17 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
             {!savedSuccessfull ? (
                 <>
 
-                    
 
-                        <Card.Header>
-                            <Card.Title className="text-start">
-                                <OverlayTrigger placement="right" overlay={renderTooltip}>
-                                    <FontAwesomeIcon icon={faCircleInfo} className="text-primary" size="lg" />
-                                </OverlayTrigger>&nbsp;Dataset Upload
-                            </Card.Title>
-                        </Card.Header>
 
-                       <Card.Body>
+                    <Card.Header>
+                        <Card.Title className="text-start">
+                            <OverlayTrigger placement="right" overlay={renderTooltip}>
+                                <FontAwesomeIcon icon={faCircleInfo} className="text-primary" size="lg" />
+                            </OverlayTrigger>&nbsp;Dataset Upload
+                        </Card.Title>
+                    </Card.Header>
+
+                    <Card.Body>
 
                         <Card.Subtitle className="text-start text-muted mb-3">
                             <small>
@@ -273,7 +273,14 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                 </>
             ) : (
                 <>
-                    SENT - Need Some Copy here
+                    <Alert variant="success" className="mb-0">
+                        <h4>CSV Sent</h4>
+                        <p>The recipient should receive an email with a link to download the re-identified file.</p>
+                        <p>Please ensure the recipient checks their inbox and follows the instructions provided in the email to access the file.</p>
+                        <p>Alternatively, the recipient can launch their worklist in the portal and re-identify from there.</p>
+                        <p><strong>Note:</strong> Files will last for 7 days and then be removed from the system.</p>
+                    </Alert>
+
                 </>
             )}
 

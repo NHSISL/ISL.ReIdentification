@@ -2,13 +2,13 @@
 AS
 BEGIN
     -- Check if the temporary table exists
-    IF OBJECT_ID('dbo.Temp_Dictionary_dbo_OrganisationDescendent') IS NULL
+    IF OBJECT_ID('[dbo].[TempOdsInbound]') IS NULL
     BEGIN
         THROW 50000, 'Temp Table does not exist.', 1;
     END
 
     -- Check if the temporary table has data
-    IF (SELECT COUNT(*) FROM dbo.Temp_Dictionary_dbo_OrganisationDescendent) = 0
+    IF (SELECT COUNT(*) FROM [dbo].[TempOdsInbound]) = 0
     BEGIN
         RAISERROR(N'Temp Table is empty.', 16, 1);
         RETURN;
@@ -21,7 +21,7 @@ BEGIN
     TRUNCATE TABLE dbo.OdsDatas;
 
     -- Set active status for valid records
-    UPDATE dbo.Temp_Dictionary_dbo_OrganisationDescendent
+    UPDATE [dbo].[TempOdsInbound]
     SET IsActive = 1
     WHERE PathStartDate <= GETDATE()
       AND PathEndDate >= GETDATE()
@@ -29,12 +29,12 @@ BEGIN
       AND RelationshipEndDate >= GETDATE();
 
     -- Attach any 'SELF' relationships to the root node
-    UPDATE dbo.Temp_Dictionary_dbo_OrganisationDescendent
+    UPDATE [dbo].[TempOdsInbound]
     SET ParentId = 1, ParentPath = 'ROOT'
     WHERE RelationshipType = 'SELF';
 
     -- Generate readable parent path and assign a parent ID
-    UPDATE dbo.Temp_Dictionary_dbo_OrganisationDescendent
+    UPDATE [dbo].[TempOdsInbound]
     SET ParentPath = LEFT(Path, LEN(Path) - LEN(OrganisationCode_Child) - LEN(RelationshipType) - 10)
     WHERE RelationshipType <> 'SELF';
 
@@ -42,19 +42,19 @@ BEGIN
     UPDATE od
     SET ParentId = (
         SELECT id 
-        FROM dbo.Temp_Dictionary_dbo_OrganisationDescendent od1 
+        FROM [dbo].[TempOdsInbound] od1 
         WHERE od1.path = od.ParentPath
     )
-    FROM dbo.Temp_Dictionary_dbo_OrganisationDescendent od
+    FROM [dbo].[TempOdsInbound] od
     WHERE ParentId IS NULL;
 
     -- Assign row numbers for each child
     UPDATE od
     SET RowNumber = rn
-    FROM dbo.Temp_Dictionary_dbo_OrganisationDescendent od
+    FROM [dbo].[TempOdsInbound] od
     JOIN (
         SELECT id, ROW_NUMBER() OVER (PARTITION BY ParentId ORDER BY ParentId) AS rn 
-        FROM dbo.Temp_Dictionary_dbo_OrganisationDescendent
+        FROM [dbo].[TempOdsInbound]
     ) od1 ON od.id = od1.id;
 
     -- Recursive CTE to calculate hierarchical paths
@@ -64,7 +64,7 @@ BEGIN
         SELECT 
             hierarchyid::GetRoot(),
             id
-        FROM dbo.Temp_Dictionary_dbo_OrganisationDescendent
+        FROM [dbo].[TempOdsInbound]
         WHERE ParentId IS NULL
 
         UNION ALL
@@ -73,18 +73,18 @@ BEGIN
         SELECT 
             CAST(p.path.ToString() + CAST(od.RowNumber AS VARCHAR(30)) + '/' AS hierarchyid), 
             od.Id 
-        FROM dbo.Temp_Dictionary_dbo_OrganisationDescendent od
+        FROM [dbo].[TempOdsInbound] od
         JOIN paths AS p ON od.ParentId = p.Id
     )
     UPDATE od
     SET OdsHierarchy = p.path
-    FROM dbo.Temp_Dictionary_dbo_OrganisationDescendent od
+    FROM [dbo].[TempOdsInbound] od
     JOIN paths p ON od.Id = p.Id;
 
     -- Insert data into OdsDatas
     INSERT INTO dbo.OdsDatas (Id, OdsHierarchy, OrganisationCode, OrganisationName)
     SELECT NEWID(), OdsHierarchy, OrganisationCode_Child, ODSOrgName
-    FROM dbo.Temp_Dictionary_dbo_OrganisationDescendent
+    FROM [dbo].[TempOdsInbound]
     WHERE IsActive = 1;
 
     -- Mark records with children in OdsDatas
