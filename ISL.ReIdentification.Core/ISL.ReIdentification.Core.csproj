@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net8.0</TargetFramework>
+		<TargetFramework>net9.0</TargetFramework>
 		<Nullable>disable</Nullable>
 		<ImplicitUsings>disable</ImplicitUsings>
 		<OutputType>Library</OutputType>
@@ -23,6 +23,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="EFxceptions" Version="0.4.5" />
+		<PackageReference Include="FluentAssertions" Version="6.12.2" />
 		<PackageReference Include="ISL.Providers.Notifications.GovukNotify" Version="0.0.0.2" />
 		<PackageReference Include="ISL.Providers.ReIdentification.Abstractions" Version="0.0.0.3" />
 		<PackageReference Include="ISL.Providers.ReIdentification.Necs" Version="0.0.0.3" />
@@ -34,17 +35,17 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.1" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.2" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.1" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="8.0.0" />
-		<PackageReference Include="Azure.Storage.Blobs" Version="12.22.2" />
-		<PackageReference Include="Azure.Storage.Files.Shares" Version="12.20.1" />
-		<PackageReference Include="Azure.Storage.Queues" Version="12.20.1" />
+		<PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="9.0.0" />
+		<PackageReference Include="Azure.Storage.Blobs" Version="12.23.0" />
+		<PackageReference Include="Azure.Storage.Files.Shares" Version="12.21.0" />
+		<PackageReference Include="Azure.Storage.Queues" Version="12.21.0" />
 		<PackageReference Include="Microsoft.Extensions.Azure" Version="1.8.0" />
 		<PackageReference Include="NHSISL.CsvHelperClient" Version="0.0.0.5" />
 		<PackageReference Include="RESTFulSense" Version="3.1.0" />
-		<PackageReference Include="STX.EFCore.Client" Version="0.0.0.3" />
+		<PackageReference Include="STX.EFCore.Client" Version="0.0.0.4" />
 		<PackageReference Include="Tynamix.ObjectFiller" Version="1.5.9" />
 		<PackageReference Include="Xeption" Version="2.8.0" />
 	</ItemGroup>
