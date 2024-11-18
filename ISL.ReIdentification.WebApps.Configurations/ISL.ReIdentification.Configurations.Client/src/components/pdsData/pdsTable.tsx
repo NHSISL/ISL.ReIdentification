@@ -58,7 +58,7 @@ const PdsTable: FunctionComponent<PdsTableProps> = () => {
                     <Card.Body>
                         <InfiniteScroll loading={isLoading || showSpinner} hasNextPage={hasNextPage || false} loadMore={fetchNextPage}>
 
-                            <Table striped bordered hover variant="light">
+                            <Table striped bordered hover variant="light" responsive>
                                 <thead>
                                     <tr>
                                         <th>Pseudo Nhs Number</th>
@@ -87,7 +87,6 @@ const PdsTable: FunctionComponent<PdsTableProps> = () => {
                                             )}
                                             <tr>
                                                     <td colSpan={7} className="text-center">
-                                                TEST
                                                     <InfiniteScrollLoader
                                                         loading={isFetchingNextPage}
                                                         spinner={<SpinnerBase />}

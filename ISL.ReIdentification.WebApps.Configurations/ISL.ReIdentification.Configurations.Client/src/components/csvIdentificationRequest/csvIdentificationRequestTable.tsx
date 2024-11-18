@@ -68,7 +68,6 @@ const CsvIdentificationRequestTable: FunctionComponent<CsvIdentificationRequestT
                                         <th>Recipient FirstName</th>
                                         <th>Recipient LastName</th>
                                         <th>Reason</th>
-                                        <th>Action(s)</th>
                                     </tr>
                                 </thead>
                                 <tbody>

@@ -8,6 +8,7 @@ import securityPoints from '../../securityMatrix';
 import { SecuredComponent } from '../securitys/securedComponents';
 import { FeatureDefinitions } from '../../featureDefinitions';
 import { FeatureSwitch } from '../accessControls/featureSwitch';
+import { faFontAwesomeLogoFull } from '@fortawesome/free-solid-svg-icons/faFontAwesomeLogoFull';
 
 const MenuComponent: React.FC = () => {
     const location = useLocation();
@@ -37,6 +38,13 @@ const MenuComponent: React.FC = () => {
                     </ListGroup.Item>
                 </SecuredComponent>
             </FeatureSwitch>
+
+            <ListGroup.Item
+                className={`bg-dark text-white ${activePath === '/accessAudit' ? 'active' : ''}`}
+                onClick={() => handleItemClick('/accessAudit')}>
+                <FontAwesomeIcon icon={faFontAwesomeLogoFull} className="me-2 fa-icon" />
+                <SecuredLink to="/accessAudit">Access Audit</SecuredLink>
+            </ListGroup.Item>
 
             {/*<ListGroup.Item*/}
             {/*    className={`bg-dark text-white ${activePath === '/impersonationContext' ? 'active' : ''}`}*/}

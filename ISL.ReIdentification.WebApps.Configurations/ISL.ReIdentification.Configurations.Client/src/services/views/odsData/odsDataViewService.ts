@@ -28,7 +28,6 @@ export const odsDataViewService = {
         useEffect(() => {
             if (response.data && Array.isArray(response.data.pages)) {
                 const allData = response.data.pages.flatMap(page => page.data as OdsDataView[]);
-                //const validPages = (response.data.pages as Array<{ data: OdsDataView[] }>).filter(page => page.data).flatMap(x => x.data as OdsDataView[]);
                 setMappedOdsData(allData);
                 setPages(response.data.pages);
             }

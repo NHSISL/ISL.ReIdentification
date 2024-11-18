@@ -1,31 +1,32 @@
 import { FunctionComponent, useMemo, useState } from "react";
 import { Card, Container, Table } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import OdsRow from "./odsRow";
+import AccessAuditRow from "./accessAuditRow";
 import debounce from "lodash/debounce";
 import SearchBase from "../bases/search/SearchBase";
 import { faDatabase } from "@fortawesome/free-solid-svg-icons/faDatabase";
 import InfiniteScroll from "../bases/pagers/InfiniteScroll";
 import { SpinnerBase } from "../bases/spinner/SpinnerBase";
-import { OdsDataView } from "../../models/views/components/odsData/odsDataView";
 import InfiniteScrollLoader from "../bases/pagers/InfiniteScroll.Loader";
-import { odsDataViewService } from "../../services/views/odsData/odsDataViewService";
+import { AccessAudit } from "../../models/accessAudit/accessAudit";
+import { accessAuditViewService } from "../../services/views/accessAudit/accessAuditViewService";
 
-type OdsTableProps = object;
+type AccessAuditTableProps = object;
 
-const OdsTable: FunctionComponent<OdsTableProps> = () => {
+const AccessAuditTable: FunctionComponent<AccessAuditTableProps> = () => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [debouncedTerm, setDebouncedTerm] = useState<string>("");
     const [showSpinner] = useState(false);
 
 
     const {
-        mappedOdsData: odsRetrieved,
+        mappedAccessAudit: accessAuditRetrieved,
         isLoading,
         fetchNextPage,
         isFetchingNextPage,
-        hasNextPage
-    } = odsDataViewService.useGetAllOdsData(
+        hasNextPage,
+        totalPages
+    } = accessAuditViewService.useGetAllAccessAuditData(
         debouncedTerm
     );
 
@@ -43,29 +44,31 @@ const OdsTable: FunctionComponent<OdsTableProps> = () => {
     );
 
     const hasNoMorePages = () => {
-        return !hasNextPage;
+        return hasNextPage;
     };
 
     return (
         <>
-            <SearchBase id="search" label="Search ods" value={searchTerm} placeholder="Search ODS Table"
+            <SearchBase id="search" label="Search accessAudit" value={searchTerm} placeholder="Search Access Audit Table"
                 onChange={(e) => { handleSearchChange(e.currentTarget.value) }} />
             <br />
 
             <Container fluid className="infiniteScrollContainer">
                 <Card>
-                    <Card.Header> <FontAwesomeIcon icon={faDatabase} className="me-2" /> ODS Table</Card.Header>
+                    <Card.Header> <FontAwesomeIcon icon={faDatabase} className="me-2" /> Access Audit Table</Card.Header>
                     <Card.Body>
                         <InfiniteScroll loading={isLoading || showSpinner} hasNextPage={hasNextPage || false} loadMore={fetchNextPage}>
 
                             <Table striped bordered hover variant="light" responsive>
                                 <thead>
                                     <tr>
-                                        <th>Organisation Name</th>
-                                        <th>Organisation Code</th>
-                                        <th>Has Children</th>
-                                        <th>Relationship With Parent StartDate</th>
-                                        <th>Relationship With Parent EndDate</th>
+                                        <th>Pseudo Number</th>
+                                        <th>display Name</th>
+                                        <th>email</th>
+                                        <th>Reason</th>
+                                        <th>Message</th>
+                                        <th>Organisation</th>
+                                        <th>Creeated Date</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -77,21 +80,22 @@ const OdsTable: FunctionComponent<OdsTableProps> = () => {
                                         </tr>
                                     ) : (
                                         <>
-                                                {odsRetrieved?.map(
-                                                    (odsDataView: OdsDataView) => (
-                                                        <OdsRow
-                                                            key={odsDataView.id}
-                                                            ods={odsDataView}
+                                            {accessAuditRetrieved?.map(
+                                                (accessAudit: AccessAudit) => (
+                                                    <AccessAuditRow
+                                                        key={accessAudit.id}
+                                                        accessAudit={accessAudit}
                                                     />
                                                 )
                                             )}
                                             <tr>
                                                 <td colSpan={7} className="text-center">
                                                     <InfiniteScrollLoader
-                                                        loading={isLoading || isFetchingNextPage}
-                                                        spinner={<SpinnerBase />}
-                                                        noMorePages={hasNoMorePages()}
-                                                        noMorePagesMessage={<>-- No more pages --</>}
+                                                            loading={isFetchingNextPage}
+                                                            spinner={<SpinnerBase />}
+                                                            noMorePages={!hasNoMorePages()}
+                                                            noMorePagesMessage={<>-- No more pages --</>}
+                                                            totalPages={totalPages}
                                                     />
                                                 </td>
                                             </tr>
@@ -107,4 +111,4 @@ const OdsTable: FunctionComponent<OdsTableProps> = () => {
     );
 };
 
-export default OdsTable;
+export default AccessAuditTable;

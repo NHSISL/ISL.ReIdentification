@@ -23,6 +23,7 @@ import { ImpersonationContext } from './pages/impersonationContext';
 import { ImpersonationContextDetailPage } from './pages/impersonationContextDetail';
 import { OdsData } from './pages/odsData';
 import { PdsData } from './pages/pdsData';
+import { AccessAuditPage } from './pages/accesssAuditPage';
 
 function App({ instance }: any) {
 
@@ -79,6 +80,10 @@ function App({ instance }: any) {
                 {
                     path: "pdsData",
                     element: <PdsData />
+                },
+                {
+                    path: "accessAudit",
+                    element: <AccessAuditPage />
                 },
                 {
                     index: true,

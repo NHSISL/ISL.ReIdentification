@@ -35,7 +35,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.Acce
 
             // when
             ActionResult<IQueryable<AccessAudit>> actualActionResult =
-                await this.accessAuditsController.GetAsync();
+                await this.accessAuditsController.Get();
 
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
