@@ -11,6 +11,7 @@ using ISL.ReIdentification.Core.Brokers.Hashing;
 using ISL.ReIdentification.Core.Brokers.Identifiers;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
+using ISL.ReIdentification.Core.Models.Foundations.AccessAudits.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
@@ -329,6 +330,34 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
 
                 new NotificationServiceException(
                     message: "Notification service error occurred, please contact support.",
+                    innerException),
+            };
+        }
+
+        public static TheoryData<Xeption> PurgeDependencyValidationExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new CsvIdentificationRequestValidationException(
+                    message: "CSV identification request validation error occurred, please fix errors and try again.",
+                    innerException),
+
+                new CsvIdentificationRequestDependencyValidationException(
+                    message: "CSV identification request dependency validation error occurred, " +
+                        "fix errors and try again.",
+                    innerException),
+
+                new AccessAuditValidationException(
+                    message: "Access audit validation error occurred, please fix errors and try again.",
+                    innerException),
+
+                new AccessAuditDependencyValidationException(
+                    message: "Access audit dependency validation error occurred, " +
+                        "fix errors and try again.",
                     innerException),
             };
         }
