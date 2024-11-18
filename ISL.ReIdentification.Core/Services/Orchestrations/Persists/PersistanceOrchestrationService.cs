@@ -186,6 +186,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
                     GivenName = "PURGED",
                     Surname = "PURGED",
                     Email = "PURGED",
+                    Purpose = "PURGED",
                     Reason = "PURGED",
                     Organisation = "PURGED",
                     HasAccess = false,

@@ -48,17 +48,18 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                 service.RetrieveAllCsvIdentificationRequestsAsync())
                     .ReturnsAsync(outputCsvIdentificationRequests.AsQueryable());
 
+            var accessAuditId = Guid.NewGuid();
+
+            this.identifierBrokerMock.Setup(broker =>
+                broker.GetIdentifierAsync())
+                    .ReturnsAsync(accessAuditId);
+
             foreach (CsvIdentificationRequest csvIdentificationRequest in expiredCsvIdentificationRequests)
             {
                 this.csvIdentificationRequestServiceMock.Setup(service =>
-                    service.ModifyCsvIdentificationRequestAsync(It.Is(SameCsvIdentificationRequestAs(csvIdentificationRequest))))
-                        .ReturnsAsync(csvIdentificationRequest);
-
-                var accessAuditId = Guid.NewGuid();
-
-                this.identifierBrokerMock.Setup(broker =>
-                    broker.GetIdentifierAsync())
-                        .ReturnsAsync(accessAuditId);
+                    service.ModifyCsvIdentificationRequestAsync(
+                        It.Is(SameCsvIdentificationRequestAs(csvIdentificationRequest))))
+                            .ReturnsAsync(csvIdentificationRequest);
 
                 var accessAudit = CreateRandomPurgedAccessAudit(accessAuditId, csvIdentificationRequest.Id, now);
                 accessAudits.Add(accessAudit);
@@ -85,8 +86,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             foreach (CsvIdentificationRequest csvIdentificationRequest in expiredCsvIdentificationRequests)
             {
                 this.csvIdentificationRequestServiceMock.Verify(service =>
-                    service.ModifyCsvIdentificationRequestAsync(It.Is(SameCsvIdentificationRequestAs(csvIdentificationRequest)))
-                        , Times.Once);
+                    service.ModifyCsvIdentificationRequestAsync(
+                        It.Is(SameCsvIdentificationRequestAs(csvIdentificationRequest)))
+                            , Times.Once);
             }
 
             foreach (AccessAudit accessAudit in accessAudits)
