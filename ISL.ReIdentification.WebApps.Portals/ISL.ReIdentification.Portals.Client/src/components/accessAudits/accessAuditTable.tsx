@@ -75,19 +75,20 @@ const AccessAuditTable: FunctionComponent<AccessAuditTableProps> = ({ requestId 
                                         <th>Display Name</th>
                                         <th>Email</th>
                                         <th>Downloaded Date</th>
+                                        <th>Count of Records</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {isLoading || showSpinner ? (
                                         <tr>
-                                            <td colSpan={3} className="text-center">
+                                            <td colSpan={4} className="text-center">
                                                 <SpinnerBase />
                                             </td>
                                         </tr>
                                     ) : (
                                         <>
                                             {accessAuditRetrieved && accessAuditRetrieved.map(
-                                                (accessAudit: AccessAudit) => (
+                                                (accessAudit: AccessAudit & { count: number }) => (
                                                     <AccessAuditRow
                                                         key={accessAudit.id}
                                                         accessAudit={accessAudit}
@@ -95,7 +96,7 @@ const AccessAuditTable: FunctionComponent<AccessAuditTableProps> = ({ requestId 
                                                 )
                                             )}
                                             <tr>
-                                                <td colSpan={3} className="text-center">
+                                                <td colSpan={4} className="text-center">
                                                     <InfiniteScrollLoader
                                                         loading={isFetchingNextPage}
                                                         spinner={<SpinnerBase />}

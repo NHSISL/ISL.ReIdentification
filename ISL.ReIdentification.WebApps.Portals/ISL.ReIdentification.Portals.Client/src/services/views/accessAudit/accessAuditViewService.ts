@@ -3,7 +3,7 @@ import { AccessAudit } from "../../../models/accessAudit/accessAudit";
 import { accessAuditService } from "../../foundations/accessAuditService";
 
 type AccessAuditViewServiceResponse = {
-    mappedAccessAudit: AccessAudit[] | undefined;
+    mappedAccessAudit: (AccessAudit & { count: number })[] | undefined;
     groupedAccessAudit: { [key: string]: AccessAudit[] } | undefined;
     pages: Array<{ data: AccessAudit[] }>;
     isLoading: boolean;
@@ -20,11 +20,7 @@ export const accessAuditViewService = {
         let query = `?$filter=requestId eq ${requestId}`;
 
         if (searchTerm) {
-            query = query + ` and (contains(pseudoIdentifier,'${searchTerm}') or 
-                 contains(Email,'${searchTerm}') or 
-                 contains(message,'${searchTerm}') or 
-                 contains(organisation,'${searchTerm}') or 
-                 contains(Reason,'${searchTerm}'))`;
+            query = query + ` and (contains(Email,'${searchTerm}'))`;
         }
 
         query = query + `&$orderby=createdDate desc`;
@@ -32,7 +28,7 @@ export const accessAuditViewService = {
         console.log("Query:", query); // Log the query to verify it's correct
 
         const response = accessAuditService.useRetrieveAllAccessAusitPages(query);
-        const [mappedAccessAudit, setMappedAccessAudit] = useState<Array<AccessAudit>>([]);
+        const [mappedAccessAudit, setMappedAccessAudit] = useState<Array<AccessAudit & { count: number }>>([]);
         const [pages, setPages] = useState<Array<{ data: AccessAudit[] }>>([]);
         const [groupedAccessAudit, setGroupedAccessAudit] = useState<{ [key: string]: AccessAudit[] }>({});
         const [totalPages, setTotalPages] = useState<number>(0);
@@ -63,10 +59,17 @@ export const accessAuditViewService = {
 
                 setGroupedAccessAudit(groupedData);
                 console.log("Grouped Data:", groupedData);
-                setMappedAccessAudit(allData);
+
+                // Filter to only include one entry per transactionId and add count
+                const uniqueAccessAudit = Object.values(groupedData).map(group => ({
+                    ...group[0],
+                    count: group.length
+                }));
+
+                setMappedAccessAudit(uniqueAccessAudit);
                 setPages(response.data.pages);
                 const itemsPerPage = response.data.pages[0]?.data.length || 1;
-                const totalItems = allData.length;
+                const totalItems = uniqueAccessAudit.length;
                 setTotalPages(Math.ceil(totalItems / itemsPerPage));
             } else {
                 console.error("Response data pages are not an array or are undefined", response.data);

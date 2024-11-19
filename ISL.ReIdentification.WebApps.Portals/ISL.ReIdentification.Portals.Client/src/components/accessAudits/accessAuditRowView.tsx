@@ -16,6 +16,7 @@ const AccessAuditRowView: FunctionComponent<AccessAuditRowProps> = (props) => {
                 <td><small>{accessAudit.givenName} {accessAudit.surname}</small></td>
                 <td><small>{accessAudit.email}</small></td>
                 <td><small>{moment(accessAudit.createdDate?.toString()).format("Do-MMM-yyyy HH:mm")}</small></td>
+                <td><small>{accessAudit.count}</small></td>
             </tr>
 
 

@@ -11,6 +11,7 @@ export class AccessAudit {
     public hasAccess: string[] = [];
     public message: string = "";
     public transactionId: string = "";
+    public count: number = 0
     public createdBy?: string;
     public createdDate?: Date | undefined;
     public updatedBy?: string;
