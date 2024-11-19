@@ -10,7 +10,6 @@ import { SpinnerBase } from "../bases/spinner/SpinnerBase";
 import InfiniteScrollLoader from "../bases/pagers/InfiniteScroll.Loader";
 import { AccessAudit } from "../../models/accessAudit/accessAudit";
 import { accessAuditViewService } from "../../services/views/accessAudit/accessAuditViewService";
-import React from "react";
 
 type AccessAuditTableProps = {
     requestId: string;
@@ -23,7 +22,6 @@ const AccessAuditTable: FunctionComponent<AccessAuditTableProps> = ({ requestId 
 
     const {
         mappedAccessAudit: accessAuditRetrieved,
-        groupedAccessAudit: groupedAccessAuditRetrieved,
         isLoading,
         fetchNextPage,
         isFetchingNextPage,
