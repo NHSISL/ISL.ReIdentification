@@ -10,11 +10,12 @@ using ISL.ReIdentification.Core.Models.Foundations.AccessAudits.Exceptions;
 using ISL.ReIdentification.Core.Services.Foundations.AccessAudits;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
 
 namespace ISL.ReIdentification.Portals.Server.Controllers
 {
-    [Authorize(Roles = "Administrators")]
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class AccessAuditsController : RESTFulController
@@ -58,7 +59,8 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
         }
 
         [HttpGet]
-        public async ValueTask<ActionResult<IQueryable<AccessAudit>>> GetAsync()
+        [EnableQuery(PageSize = 25)]
+        public async ValueTask<ActionResult<IQueryable<AccessAudit>>> Get()
         {
             try
             {
