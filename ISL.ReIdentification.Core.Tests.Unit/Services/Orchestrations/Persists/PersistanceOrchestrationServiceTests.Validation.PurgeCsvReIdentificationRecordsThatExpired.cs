@@ -5,8 +5,8 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses.Exceptions;
-using ISL.ReIdentification.Core.Models.Orchestrations.Persists;
 using ISL.ReIdentification.Core.Models.Orchestrations.Persists.Exceptions;
+using ISL.ReIdentification.Core.Services.Orchestrations.Persists;
 using Moq;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
@@ -18,7 +18,16 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             ShouldThrowValidationExceptionOnPurgeCsvReIdentificationRecordsThatExpiredWhenConfigurationIsNullAndLogItAsync()
         {
             // given
-            CsvReIdentificationConfigurations invalidCsvIdentificationConfiguration = null;
+            var service = new PersistanceOrchestrationService(
+                impersonationContextService: this.impersonationContextServiceMock.Object,
+                csvIdentificationRequestService: this.csvIdentificationRequestServiceMock.Object,
+                notificationService: this.notificationServiceMock.Object,
+                accessAuditService: this.accessAuditServiceMock.Object,
+                loggingBroker: this.loggingBrokerMock.Object,
+                hashBroker: this.hashBrokerMock.Object,
+                dateTimeBroker: this.dateTimeBrokerMock.Object,
+                identifierBroker: this.identifierBrokerMock.Object,
+                csvReIdentificationConfigurations: null);
 
             var nullCsvReIdentificationConfigurationPersistanceOrchestrationException =
                 new NullCsvReIdentificationConfigurationException(
@@ -31,7 +40,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
 
             // when
             ValueTask purgeCsvIdentificationRequestAsyncTask =
-                this.persistanceOrchestrationService.PurgeCsvReIdentificationRecordsThatExpired();
+                service.PurgeCsvReIdentificationRecordsThatExpired();
 
             PersistanceOrchestrationValidationException actualCsvIdentificationRequestValidationException =
                 await Assert.ThrowsAsync<PersistanceOrchestrationValidationException>(

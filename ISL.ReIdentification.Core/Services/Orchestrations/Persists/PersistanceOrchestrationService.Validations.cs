@@ -7,6 +7,7 @@ using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses.Exceptions;
+using ISL.ReIdentification.Core.Models.Orchestrations.Persists;
 using ISL.ReIdentification.Core.Models.Orchestrations.Persists.Exceptions;
 
 namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
@@ -50,6 +51,15 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
             Validate(
                 (Rule: IsInvalid(accessRequest.ImpersonationContext),
                     Parameter: nameof(accessRequest.ImpersonationContext)));
+        }
+
+        private static void ValidateCsvReIdentificationConfigurationIsNotNull(
+            CsvReIdentificationConfigurations csvReIdentificationConfigurations)
+        {
+            if (csvReIdentificationConfigurations is null)
+            {
+                throw new NullCsvReIdentificationConfigurationException("Csv reidentification configuration is null.");
+            }
         }
 
         private static dynamic IsInvalid(Guid id) => new

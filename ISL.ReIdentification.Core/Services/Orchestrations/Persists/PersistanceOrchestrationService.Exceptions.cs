@@ -112,6 +112,10 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
             {
                 await returningNothingFunction();
             }
+            catch (NullCsvReIdentificationConfigurationException nullCsvReIdentificationConfigurationException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(nullCsvReIdentificationConfigurationException);
+            }
             catch (CsvIdentificationRequestValidationException csvIdentificationRequestValidationException)
             {
                 throw await CreateAndLogDependencyValidationExceptionAsync(
