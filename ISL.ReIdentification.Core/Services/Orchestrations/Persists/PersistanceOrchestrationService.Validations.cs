@@ -62,6 +62,16 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
             }
         }
 
+        private static void ValidateOnPurgeCsvIdentificationRecordsThatExpiredAsync(
+             CsvReIdentificationConfigurations csvReIdentificationConfigurations)
+        {
+            ValidateCsvReIdentificationConfigurationIsNotNull(csvReIdentificationConfigurations);
+
+            Validate(
+                (Rule: IsInvalid(csvReIdentificationConfigurations.ExpireAfterMinutes),
+                    Parameter: $"{nameof(CsvReIdentificationConfigurations)}.{nameof(CsvReIdentificationConfigurations.ExpireAfterMinutes)}"));
+        }
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,
@@ -78,6 +88,12 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
         {
             Condition = impersonationContext == null,
             Message = "AccessRequest is invalid"
+        };
+
+        private static dynamic IsInvalid(int value) => new
+        {
+            Condition = value <= 5,
+            Message = "Value is invalid"
         };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)

@@ -159,7 +159,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
         public ValueTask PurgeCsvReIdentificationRecordsThatExpired() =>
         TryCatch(async () =>
         {
-            ValidateCsvReIdentificationConfigurationIsNotNull(this.csvReIdentificationConfigurations);
+            ValidateOnPurgeCsvIdentificationRecordsThatExpiredAsync(this.csvReIdentificationConfigurations);
 
             DateTimeOffset dateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 

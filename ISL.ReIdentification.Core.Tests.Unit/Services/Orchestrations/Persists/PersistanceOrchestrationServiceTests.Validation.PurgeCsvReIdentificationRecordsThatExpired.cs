@@ -89,7 +89,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
 
             var invalidPersistanceOrchestrationException =
                 new InvalidArgumentPersistanceOrchestrationException(
-                    message: "Invalid argument persistance orchestration exception. Please correct the errors and try again.");
+                    message: "Invalid argument persistance orchestration exception, please correct the errors and try again.");
 
             invalidPersistanceOrchestrationException.AddData(
                 key: $"{nameof(CsvReIdentificationConfigurations)}.{nameof(CsvReIdentificationConfigurations.ExpireAfterMinutes)}",
