@@ -22,6 +22,7 @@ const CsvReIdentificationDownloadDetail: FunctionComponent<CsvReIdentificationDo
 
     const { mappedLookups, isLoading } = lookupViewService.useGetAllLookups("", "Reasons");
     const [selectedLookupId, setSelectedLookupId] = useState<string>("");
+    const [refreshKey, setRefreshKey] = useState<number>(0);
 
     const {
         data,
@@ -75,6 +76,7 @@ const CsvReIdentificationDownloadDetail: FunctionComponent<CsvReIdentificationDo
         e.preventDefault();
         try {
             await fetch();
+            setRefreshKey(prevKey => prevKey + 1); // Update the refresh key to trigger re-render
         } catch (error) {
             console.error("Error downloading the file", error);
         }
@@ -157,7 +159,7 @@ const CsvReIdentificationDownloadDetail: FunctionComponent<CsvReIdentificationDo
                     </Card.Body>
                 </Card>
             </Row>
-            <AccessAuditTable requestId={data.id!.toString()} />
+            <AccessAuditTable key={refreshKey} requestId={data.id!.toString()} />
         </Container>
     );
 };

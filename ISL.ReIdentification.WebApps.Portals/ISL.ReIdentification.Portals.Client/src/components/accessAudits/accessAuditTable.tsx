@@ -1,4 +1,4 @@
-import { FunctionComponent, useMemo, useState } from "react";
+import { FunctionComponent, useMemo, useState, useEffect } from "react";
 import { Card, Container, Table } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AccessAuditRow from "./accessAuditRow";
@@ -20,17 +20,21 @@ const AccessAuditTable: FunctionComponent<AccessAuditTableProps> = ({ requestId 
     const [debouncedTerm, setDebouncedTerm] = useState<string>("");
     const [showSpinner] = useState(false);
 
-
     const {
         mappedAccessAudit: accessAuditRetrieved,
         isLoading,
         fetchNextPage,
         isFetchingNextPage,
         hasNextPage,
-        totalPages
+        totalPages,
+        refetch
     } = accessAuditViewService.useGetAllAccessAuditByRequestId(
         debouncedTerm, requestId
     );
+
+    useEffect(() => {
+        refetch();
+    }, [requestId, refetch]);
 
     const handleSearchChange = (value: string) => {
         setSearchTerm(value);
