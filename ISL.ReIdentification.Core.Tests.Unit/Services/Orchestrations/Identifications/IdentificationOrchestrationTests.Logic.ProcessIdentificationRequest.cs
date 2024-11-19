@@ -61,7 +61,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
 
             this.identifierBrokerMock.Verify(broker =>
                 broker.GetIdentifierAsync(),
-                    Times.Exactly(itemCount));
+                    Times.Exactly(itemCount + 1));
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
@@ -73,6 +73,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                 {
                     Id = randomGuid,
                     RequestId = randomIdentificationRequest.Id,
+                    TransactionId = randomGuid,
                     PseudoIdentifier = item.Identifier,
                     EntraUserId = randomIdentificationRequest.EntraUserId,
                     GivenName = randomIdentificationRequest.GivenName,
@@ -178,7 +179,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
 
             this.identifierBrokerMock.Verify(broker =>
                 broker.GetIdentifierAsync(),
-                    Times.Exactly(itemCount * 2));
+                    Times.Exactly((itemCount * 2) + 1));
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
@@ -190,6 +191,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                 {
                     Id = randomGuid,
                     RequestId = randomIdentificationRequest.Id,
+                    TransactionId = randomGuid,
                     PseudoIdentifier = item.Identifier,
                     EntraUserId = randomIdentificationRequest.EntraUserId,
                     GivenName = randomIdentificationRequest.GivenName,
@@ -222,6 +224,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                 {
                     Id = randomGuid,
                     RequestId = randomIdentificationRequest.Id,
+                    TransactionId = randomGuid,
                     PseudoIdentifier = $"{item.Identifier}",
                     EntraUserId = randomIdentificationRequest.EntraUserId,
                     GivenName = randomIdentificationRequest.GivenName,
