@@ -10,6 +10,7 @@ export class AccessAudit {
     public organisation: string = "";
     public hasAccess: string[] = [];
     public message: string = "";
+    public transactionId: string = "";
     public createdBy?: string;
     public createdDate?: Date | undefined;
     public updatedBy?: string;

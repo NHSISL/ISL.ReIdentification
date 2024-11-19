@@ -10,6 +10,7 @@ import { SpinnerBase } from "../bases/spinner/SpinnerBase";
 import InfiniteScrollLoader from "../bases/pagers/InfiniteScroll.Loader";
 import { AccessAudit } from "../../models/accessAudit/accessAudit";
 import { accessAuditViewService } from "../../services/views/accessAudit/accessAuditViewService";
+import React from "react";
 
 type AccessAuditTableProps = {
     requestId: string;
@@ -22,6 +23,7 @@ const AccessAuditTable: FunctionComponent<AccessAuditTableProps> = ({ requestId 
 
     const {
         mappedAccessAudit: accessAuditRetrieved,
+        groupedAccessAudit: groupedAccessAuditRetrieved,
         isLoading,
         fetchNextPage,
         isFetchingNextPage,
@@ -58,10 +60,10 @@ const AccessAuditTable: FunctionComponent<AccessAuditTableProps> = ({ requestId 
             <br /> <br />
             <Container className="infiniteScrollContainer">
                 <Card>
-                    <Card.Header> <FontAwesomeIcon icon={faDatabase} className="me-2" /> Access Audit Table</Card.Header>
+                    <Card.Header> <FontAwesomeIcon icon={faDatabase} className="me-2" />Download History</Card.Header>
                     <Card.Body>
 
-                        <SearchBase id="search" label="Search accessAudit" value={searchTerm} placeholder="Search Access Audit Table"
+                        <SearchBase id="search" label="Search accessAudit" value={searchTerm} placeholder="Search Download History"
                             onChange={(e) => { handleSearchChange(e.currentTarget.value) }} />
                         <br />
 
@@ -70,25 +72,21 @@ const AccessAuditTable: FunctionComponent<AccessAuditTableProps> = ({ requestId 
                             <Table striped bordered hover variant="light" responsive>
                                 <thead>
                                     <tr>
-                                        <th>Pseudo Number</th>
-                                        <th>display Name</th>
-                                        <th>email</th>
-                                        <th>Reason</th>
-                                        <th>Message</th>
-                                        <th>Organisation</th>
-                                        <th>Creeated Date</th>
+                                        <th>Display Name</th>
+                                        <th>Email</th>
+                                        <th>Downloaded Date</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {isLoading || showSpinner ? (
                                         <tr>
-                                            <td colSpan={6} className="text-center">
+                                            <td colSpan={3} className="text-center">
                                                 <SpinnerBase />
                                             </td>
                                         </tr>
                                     ) : (
                                         <>
-                                            {accessAuditRetrieved?.map(
+                                            {accessAuditRetrieved && accessAuditRetrieved.map(
                                                 (accessAudit: AccessAudit) => (
                                                     <AccessAuditRow
                                                         key={accessAudit.id}
@@ -97,7 +95,7 @@ const AccessAuditTable: FunctionComponent<AccessAuditTableProps> = ({ requestId 
                                                 )
                                             )}
                                             <tr>
-                                                <td colSpan={7} className="text-center">
+                                                <td colSpan={3} className="text-center">
                                                     <InfiniteScrollLoader
                                                         loading={isFetchingNextPage}
                                                         spinner={<SpinnerBase />}
