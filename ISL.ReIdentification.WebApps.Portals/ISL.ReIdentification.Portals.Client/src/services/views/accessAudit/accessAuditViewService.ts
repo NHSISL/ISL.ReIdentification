@@ -46,7 +46,10 @@ export const accessAuditViewService = {
 
                 console.log("All Data:", allData);
 
-                const groupedData = allData.reduce((acc, audit) => {
+                // Exclude entries with transactionId == Guid.Empty
+                const filteredData = allData.filter(audit => audit.transactionId !== "00000000-0000-0000-0000-000000000000");
+
+                const groupedData = filteredData.reduce((acc, audit) => {
                     const requestIdKey = audit.transactionId;
 
                     if (!acc[requestIdKey]) {
