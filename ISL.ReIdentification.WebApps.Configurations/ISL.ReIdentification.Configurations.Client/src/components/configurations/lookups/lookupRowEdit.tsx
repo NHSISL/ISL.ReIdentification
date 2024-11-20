@@ -79,7 +79,7 @@ const LookupRowEdit: FunctionComponent<LookupRowEditProps> = (props) => {
             <td>
                 <TextInputBase
                     id="group"
-                    name="group"
+                    name="groupName"
                     placeholder="Lookup Group Value"
                     value={editLookup.groupName}
                     required={true}
