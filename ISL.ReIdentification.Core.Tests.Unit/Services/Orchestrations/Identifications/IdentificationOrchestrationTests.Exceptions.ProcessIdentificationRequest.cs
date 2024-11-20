@@ -25,8 +25,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             IdentificationRequest someIdentificationRequest =
                CreateRandomIdentificationRequest(hasAccess: false, itemCount: itemCount);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
+            this.identifierBrokerMock.Setup(broker =>
+                broker.GetIdentifierAsync())
                     .ThrowsAsync(dependencyValidationException);
 
             var expectedIdentificationOrchestrationDependencyValidationException =
@@ -49,8 +49,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             actualIdentificationOrchestrationDependencyValidationException
                 .Should().BeEquivalentTo(expectedIdentificationOrchestrationDependencyValidationException);
 
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffsetAsync(),
+            this.identifierBrokerMock.Verify(broker =>
+                broker.GetIdentifierAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -76,8 +76,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             IdentificationRequest someIdentificationRequest =
                CreateRandomIdentificationRequest(hasAccess: false, itemCount: itemCount);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
+            this.identifierBrokerMock.Setup(broker =>
+                broker.GetIdentifierAsync())
                     .ThrowsAsync(dependencyValidationException);
 
             var expectedIdentificationOrchestrationDependencyException =
@@ -100,8 +100,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             actualIdentificationOrchestrationDependencyException
                 .Should().BeEquivalentTo(expectedIdentificationOrchestrationDependencyException);
 
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffsetAsync(),
+            this.identifierBrokerMock.Verify(broker =>
+                broker.GetIdentifierAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -137,8 +137,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                     message: "Service error occurred, contact support.",
                     innerException: failedServiceIdentificationOrchestrationException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
+            this.identifierBrokerMock.Setup(broker =>
+                broker.GetIdentifierAsync())
                     .ThrowsAsync(serviceException);
 
             // when
@@ -155,8 +155,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             actualIdentificationOrchestrationValidationException.Should().BeEquivalentTo(
                 expectedIdentificationOrchestrationServiceException);
 
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffsetAsync(),
+            this.identifierBrokerMock.Verify(broker =>
+                broker.GetIdentifierAsync(),
                         Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
