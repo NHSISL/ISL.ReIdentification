@@ -77,7 +77,8 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
 
             for (int i = 0; i < randomNumber; i++)
             {
-                randomOdsDatas.Add(await PostRandomOdsDataAsync());
+                OdsData randomOdsData = await PostRandomOdsDataAsync();
+                randomOdsDatas.Add(randomOdsData);
             }
 
             return randomOdsDatas;
