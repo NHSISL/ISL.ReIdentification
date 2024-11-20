@@ -186,7 +186,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
                     RequestId = csvIdentificationRequest.Id,
                     PseudoIdentifier = "PURGED",
                     EntraUserId = Guid.Parse("00000000-0000-0000-0000-000000000001"),
-                    TransactionId = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+                    TransactionId = Guid.Empty,
                     GivenName = "PURGED",
                     Surname = "PURGED",
                     Email = "PURGED",

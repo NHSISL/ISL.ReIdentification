@@ -192,7 +192,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             DateTimeOffset now)
         {
             string user = "System";
-            Guid purgedGuid = Guid.Parse("00000000-0000-0000-0000-000000000001");
+            Guid entraUserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
             string purgedValue = "PURGED";
             string message = $"Purged on {now}";
             var filler = new Filler<AccessAudit>();
@@ -202,9 +202,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
 
                 .OnProperty(accessAudit => accessAudit.Id).Use(accessAuditId)
                 .OnProperty(accessAudit => accessAudit.RequestId).Use(requestId)
-                .OnProperty(accessAudit => accessAudit.TransactionId).Use(purgedGuid)
+                .OnProperty(accessAudit => accessAudit.TransactionId).Use(Guid.Empty)
                 .OnProperty(accessAudit => accessAudit.PseudoIdentifier).Use(purgedValue)
-                .OnProperty(accessAudit => accessAudit.EntraUserId).Use(purgedGuid)
+                .OnProperty(accessAudit => accessAudit.EntraUserId).Use(entraUserId)
                 .OnProperty(accessAudit => accessAudit.GivenName).Use(purgedValue)
                 .OnProperty(accessAudit => accessAudit.Surname).Use(purgedValue)
                 .OnProperty(accessAudit => accessAudit.Email).Use(purgedValue)
