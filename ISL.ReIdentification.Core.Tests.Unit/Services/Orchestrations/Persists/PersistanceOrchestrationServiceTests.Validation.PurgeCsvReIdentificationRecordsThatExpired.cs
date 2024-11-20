@@ -16,7 +16,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
     {
         [Fact]
         public async Task
-            ShouldThrowValidationExceptionOnPurgeCsvReIdentificationRecordsThatExpiredWhenConfigurationIsNullAndLogItAsync()
+            ShouldThrowCriticalValidationExceptionOnPurgeCsvReIdentificationRecordsThatExpiredWhenConfigurationIsNullAndLogItAsync()
         {
             // given
             var service = new PersistanceOrchestrationService(
@@ -52,7 +52,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                 expectedPersistanceOrchestrationValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                broker.LogCriticalAsync(It.Is(SameExceptionAs(
                     expectedPersistanceOrchestrationValidationException))),
                     Times.Once);
 

@@ -235,7 +235,8 @@ namespace ISL.ReIdentification.Configurations.Server
         {
             CsvReIdentificationConfigurations csvReIdentificationConfigurations = configuration
                 .GetSection("csvReIdentificationConfigurations")
-                    .Get<CsvReIdentificationConfigurations>();
+                    .Get<CsvReIdentificationConfigurations>() ??
+                        new CsvReIdentificationConfigurations();
 
             services.AddSingleton(csvReIdentificationConfigurations);
             services.AddTransient<IAccessOrchestrationService, AccessOrchestrationService>();
