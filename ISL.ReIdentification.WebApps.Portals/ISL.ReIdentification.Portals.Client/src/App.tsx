@@ -74,10 +74,12 @@ function App({ instance }: any) {
         },
         {
             path: "report/:reportGroupId/:reportId/:pseudoColumn/:reportPage?",
+            errorElement: <ErrorPage />,
             element: <ReportsHome />
         },
         {
             path: "webpart/:pseudoId",
+            errorElement: <ErrorPage />,
             element: <WebPart />
         },  
     ]);

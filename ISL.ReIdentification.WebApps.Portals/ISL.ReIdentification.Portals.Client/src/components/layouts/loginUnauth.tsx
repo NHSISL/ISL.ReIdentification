@@ -26,8 +26,10 @@ export const LoginUnAuthorisedComponent = () => {
 
                             </Card.Title>
                             <Card.Text className="mb-4 align-items-left" >
-                                <p>Welcome to the Lodon Data Service Reidentification Portal.</p>
-                                <p>Please sign in to continue.</p>
+                                Welcome to the Lodon Data Service Reidentification Portal.
+                            </Card.Text>
+                            <Card.Text className="mb-4 align-items-left" >
+                                Please sign in to continue.
                             </Card.Text>
                             <Button onClick={handleLoginRedirect} className="me-3">Sign in</Button>
                         </Card.Body>
