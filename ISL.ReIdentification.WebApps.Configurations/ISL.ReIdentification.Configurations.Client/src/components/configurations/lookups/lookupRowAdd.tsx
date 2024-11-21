@@ -59,7 +59,8 @@ const LookupRowAdd: FunctionComponent<LookupRowAddProps> = (props) => {
                     value={lookup.name}
                     required={true}
                     error={errors.name}
-                    onChange={handleChange} />
+                    onChange={handleChange}
+                    maxLength={50} />
             </td>
             <td>
                 <TextInputBase
@@ -68,7 +69,8 @@ const LookupRowAdd: FunctionComponent<LookupRowAddProps> = (props) => {
                     placeholder="Lookup Value"
                     value={lookup.value}
                     error={errors.value}
-                    onChange={handleChange}/>
+                    onChange={handleChange}
+                    maxLength={50} />
             </td>
             <td>
                 <TextInputBase
@@ -78,7 +80,8 @@ const LookupRowAdd: FunctionComponent<LookupRowAddProps> = (props) => {
                     value={lookup.groupName}
                     required={true}
                     error={errors.groupName}
-                    onChange={handleChange} />
+                    onChange={handleChange}
+                    maxLength={50}/>
             </td>
             <td></td>
             <td></td>

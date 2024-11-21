@@ -25,8 +25,6 @@ export const accessAuditViewService = {
 
         query = query + `&$orderby=createdDate desc`;
 
-        console.log("Query:", query); // Log the query to verify it's correct
-
         const response = accessAuditService.useRetrieveAllAccessAusitPages(query);
         const [mappedAccessAudit, setMappedAccessAudit] = useState<Array<AccessAudit & { count: number }>>([]);
         const [pages, setPages] = useState<Array<{ data: AccessAudit[] }>>([]);
@@ -44,9 +42,9 @@ export const accessAuditViewService = {
                     }
                 });
 
-                console.log("All Data:", allData);
+                const filteredData = allData.filter(audit => audit.transactionId !== "00000000-0000-0000-0000-000000000000");
 
-                const groupedData = allData.reduce((acc, audit) => {
+                const groupedData = filteredData.reduce((acc, audit) => {
                     const requestIdKey = audit.transactionId;
 
                     if (!acc[requestIdKey]) {
@@ -58,9 +56,7 @@ export const accessAuditViewService = {
                 }, {} as { [key: string]: AccessAudit[] });
 
                 setGroupedAccessAudit(groupedData);
-                console.log("Grouped Data:", groupedData);
 
-                // Filter to only include one entry per transactionId and add count
                 const uniqueAccessAudit = Object.values(groupedData).map(group => ({
                     ...group[0],
                     count: group.length

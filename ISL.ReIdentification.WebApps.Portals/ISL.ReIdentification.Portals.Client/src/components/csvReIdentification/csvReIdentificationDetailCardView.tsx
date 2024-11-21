@@ -300,7 +300,7 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                             <li>Right-click on the selected column and choose Format Cells.</li>
                             <li>In the Format Cells dialog box, go to the Number tab and choose Custom from the list on the left.</li>
                             <li>
-                                In the Type field, enter the following format code:This will ensure that all numbers in the column
+                                In the Type field, enter the following format code 0000000000. This will ensure that all numbers in the column
                                 are displayed with 10 digits, padding with leading zeroes if necessary. Click OK.
                             </li>
                         </ol>
