@@ -14,8 +14,8 @@ import { Configuration, PopupRequest } from "@azure/msal-browser";
 
 export const msalConfig : Configuration = {
     auth: {
-        clientId: '88b349fd-f69d-470e-ac92-a74bba3216a4', // This is the ONLY mandatory field that you need to supply.
-        authority: 'https://login.microsoftonline.com/2f7a9b80-2e65-4ed6-9851-2f727effb3a1', // Replace the placeholder with your tenant subdomain 
+        clientId: import.meta.env.VITE_REACT_APP_CLIENTID || "", // This is the ONLY mandatory field that you need to supply.
+        authority: import.meta.env.VITE_REACT_APP_AUTHORITY || "", // Replace the placeholder with your tenant subdomain 
         redirectUri: '/', // Points to window.location.origin. You must register this URI on Azure Portal/App Registration.
         postLogoutRedirectUri: '/', // Indicates the page to navigate after logout.
         navigateToLoginRequestUrl: false, // If "true", will navigate back to the original request location before processing the auth code response.
@@ -57,8 +57,9 @@ export const msalConfig : Configuration = {
  * For more information about OIDC scopes, visit: 
  * https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-permissions-and-consent#openid-connect-scopes
  */
-export const loginRequest : PopupRequest = {
-    scopes: ["api://88b349fd-f69d-470e-ac92-a74bba3216a4/Reidentify","User.Read"],
+const scopes = import.meta.env.VITE_REACT_APP_API_SCOPE ? import.meta.env.VITE_REACT_APP_API_SCOPE.split(",") : [""];
+export const loginRequest: PopupRequest = {
+    scopes: scopes
 };
 
 /**

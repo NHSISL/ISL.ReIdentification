@@ -30,4 +30,8 @@
 		<ProjectReference Include="..\ISL.ReIdentification.Configurations.Client\ISL.ReIdentification.Configurations.Client.esproj" />
 	</ItemGroup>
 
+	<Target Name="NpmBuild" BeforeTargets="BeforePublish">
+		<Exec Command="npm run build:$(Configuration)" WorkingDirectory="$(SpaRoot)" />
+	</Target>
+
 </Project>
