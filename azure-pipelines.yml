@@ -92,19 +92,19 @@ steps:
 
 - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_frontend_portal_development
   displayName: 'Publish Artifact - frontend portal'
-  artifact: portal/frontend/development
+  artifact: drop-frontend-portal-development
 - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_frontend_portal_test
   displayName: 'Publish Artifact - frontend portal (Test)'
-  artifact: portal/frontend/test
+  artifact: drop-frontend-portal-test
 - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_frontend_portal_release
   displayName: 'Publish Artifact - frontend portal (Release)'
-  artifact: portal/frontend/release
+  artifact: drop-frontend-portal-release
 - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_management_portal_development
   displayName: 'Publish Artifact - management portal (Development)'
-  artifact: portal/management/development
+  artifact: drop-management-portal-development
 - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_management_portal_test
   displayName: 'Publish Artifact - management portal (Test)'
-  artifact: portal/management/test
+  artifact: drop-management-portal-test
 - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_management_portal_release
   displayName: 'Publish Artifact - management portal (Release)'
-  artifact: portal/management/release
+  artifact: drop-management-portal-release
