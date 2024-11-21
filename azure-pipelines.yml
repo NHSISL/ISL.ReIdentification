@@ -93,7 +93,8 @@ steps:
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_frontend_portal_development
-    ArtifactName: drop/frontend/development
+    ArtifactName: drop\frontend\development
+    publishLocation: pipeline
     
     
 # - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_frontend_portal_development
