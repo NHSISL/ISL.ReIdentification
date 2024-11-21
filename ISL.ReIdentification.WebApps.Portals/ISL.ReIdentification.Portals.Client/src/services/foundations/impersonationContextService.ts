@@ -89,4 +89,14 @@ export const impersonationContextService = {
             }
         });
     },
+
+    useRetrieveAllImpersonationById: (impersonationId: string) => {
+        const broker = new ImpersonationContextBroker();
+
+        return useQuery<ImpersonationContext>({
+            queryKey: ["GetAllImpersonationById", { impersonationId: impersonationId }],
+            queryFn: () => broker.GetImpersonationContextByIdAsync(impersonationId),
+            staleTime: Infinity
+        });
+    },
 }
