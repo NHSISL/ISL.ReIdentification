@@ -1,4 +1,4 @@
-import { Button, Card, CardBody, CardFooter, CardHeader, Container } from "react-bootstrap"
+import { Button, Card, CardBody, CardFooter, CardHeader, Container, Spinner } from "react-bootstrap"
 import { Link, useNavigate, useParams } from "react-router-dom"
 import BreadCrumbBase from "../bases/layouts/BreadCrumb/BreadCrumbBase"
 import OdsTree from "../odsData/odsTree";
@@ -13,12 +13,12 @@ import { toastError } from "../../brokers/toastBroker.error";
 export const UserAccessEdit = () => {
     const { entraUserId } = useParams();
     const [selectedOdsRecords, setSelectedOdsRecords] = useState<OdsData[]>([]);
-    const { data } = userAccessViewService.useGetAccessForUser(entraUserId);
+    const { data, isLoading: isUserAccessLoading } = userAccessViewService.useGetAccessForUser(entraUserId);
     const [selectedUser, setSelectedUser] = useState<UserAccess>();
     const [odsSearchString, setOdsSearchString] = useState("");
-    const { data: rootRecord } = odsDataService.useRetrieveAllOdsData(odsSearchString);
-    const { mutateAsync : createUserAccess  } = userAccessService.useCreateUserAccess();
-    const { mutateAsync : deleteUserAccess } = userAccessService.useRemoveUserAccess();
+    const { data: rootRecord, isLoading: isOdsDataLoading } = odsDataService.useRetrieveAllOdsData(odsSearchString);
+    const { mutateAsync: createUserAccess } = userAccessService.useCreateUserAccess();
+    const { mutateAsync: deleteUserAccess } = userAccessService.useRemoveUserAccess();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -49,7 +49,7 @@ export const UserAccessEdit = () => {
                 await createUserAccess(ua);
                 navigate("/userAccess");
             } catch (error) {
-                if(error instanceof Error) {
+                if (error instanceof Error) {
                     toastError(error.message);
                 }
             }
@@ -57,7 +57,7 @@ export const UserAccessEdit = () => {
     }
 
     const deleteUser = async () => {
-        if(data) {
+        if (data) {
             await data.forEach(async (ua) => {
                 await deleteUserAccess(ua.id);
             });
@@ -66,52 +66,59 @@ export const UserAccessEdit = () => {
         }
     }
 
-    return (<Container fluid className="mt-4">
-        <section>
-            <BreadCrumbBase
-                link="/userAccess"
-                backLink="User Access"
-                currentLink="Edit User">
-            </BreadCrumbBase>
-            <div className="mt-3">
-                <Card>
-                    <CardHeader>
-                        Edit Account For:
-                    </CardHeader>
-                    <CardBody>
-                        {selectedUser && <>
-                            <div>display Name: {selectedUser.displayName}</div>
-                            <div>Job Title: {selectedUser.jobTitle}</div>
-                            <div>Mail: {selectedUser.email}</div>
-                            <div>UPN: {selectedUser.userPrincipalName}</div>
-                            <div style={{ paddingTop: "10px" }}>
-                                <Card>
-                                    <CardHeader>
-                                        Select Organsisations {selectedUser.displayName} has access to:
-                                    </CardHeader>
-                                    <CardBody>
-                                        <OdsTree rootName="Root" selectedRecords={selectedOdsRecords} setSelectedRecords={setSelectedOdsRecords} />
-                                    </CardBody>
-                                </Card>
-                            </div>
-                        </>
-                        }
-                    </CardBody>
+    return (
+        <Container fluid className="mt-4">
+            <section>
+                <BreadCrumbBase
+                    link="/userAccess"
+                    backLink="User Access"
+                    currentLink="Edit User">
+                </BreadCrumbBase>
+                <div className="mt-3">
+                    {isUserAccessLoading || isOdsDataLoading ? (
+                        <Spinner animation="border" role="status">
+                            <span className="visually-hidden">Loading...</span>
+                        </Spinner>
+                    ) : (
+                        <Card>
+                            <CardHeader>
+                                Edit Account For:
+                            </CardHeader>
+                            <CardBody>
+                                {selectedUser && <>
+                                    <div>display Name: {selectedUser.displayName}</div>
+                                    <div>Job Title: {selectedUser.jobTitle}</div>
+                                    <div>Mail: {selectedUser.email}</div>
+                                    <div>UPN: {selectedUser.userPrincipalName}</div>
+                                    <div style={{ paddingTop: "10px" }}>
+                                        <Card>
+                                            <CardHeader>
+                                                Select Organsisations {selectedUser.displayName} has access to:
+                                            </CardHeader>
+                                            <CardBody>
+                                                <OdsTree rootName="Root" selectedRecords={selectedOdsRecords} setSelectedRecords={setSelectedOdsRecords} />
+                                            </CardBody>
+                                        </Card>
+                                    </div>
+                                </>
+                                }
+                            </CardBody>
 
-                    <CardFooter>
-                        {selectedOdsRecords.length === 0 ? 
-                            <Button onClick={deleteUser}>Remove User</Button>
-                            :
-                            <Button onClick={saveRecord}>Save</Button>
-                        }
-                        
-                        <Link to="/userAccess" style={{ paddingLeft: '10px' }}>
-                            <Button variant="secondary">Cancel</Button>
-                        </Link>
-                    </CardFooter>
-                </Card>
-            </div>
-        </section>
-    </Container>
+                            <CardFooter>
+                                {selectedOdsRecords.length === 0 ?
+                                    <Button onClick={deleteUser}>Remove User</Button>
+                                    :
+                                    <Button onClick={saveRecord}>Save</Button>
+                                }
+
+                                <Link to="/userAccess" style={{ paddingLeft: '10px' }}>
+                                    <Button variant="secondary">Cancel</Button>
+                                </Link>
+                            </CardFooter>
+                        </Card>
+                    )}
+                </div>
+            </section>
+        </Container>
     )
 }
