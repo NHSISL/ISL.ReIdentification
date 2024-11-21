@@ -90,10 +90,10 @@ steps:
     zipAfterPublish: true
     modifyOutputPath: false
 
-- publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_frontend_portal_*
+- publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_frontend_portal_**/*.zip
   displayName: 'Publish Artifact - frontend portal'
   artifact: drop-frontend-portal
 
-- publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_management_portal_*
+- publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_management_portal_**/*.zip
   displayName: 'Publish Artifact - management portal'
   artifact: drop-management-portal
