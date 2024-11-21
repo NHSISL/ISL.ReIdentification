@@ -93,18 +93,18 @@ steps:
 - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_frontend_portal_development
   displayName: 'Publish Artifact - frontend portal'
   artifact: drop-frontend-portal
-#- publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_frontend_portal_Test/*.zip
-#  displayName: 'Publish Artifact - frontend portal (Test)'
-#  artifact: drop-frontend-portal
-#- publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_frontend_portal_*/*.zip
-#  displayName: 'Publish Artifact - frontend portal (Release)'
-#  artifact: drop-frontend-portal
-#- publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_management_portal_Development/*.zip
-#  displayName: 'Publish Artifact - management portal (Development)'
-#  artifact: drop-management-portal
-#- publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_management_portal_*/*.zip
-#  displayName: 'Publish Artifact - management portal (Test)'
-#  artifact: drop-management-portal
-#- publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_management_portal_*/*.zip
-#  displayName: 'Publish Artifact - management portal (Release)'
-#  artifact: drop-management-portal
+- publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_frontend_portal_test
+  displayName: 'Publish Artifact - frontend portal (Test)'
+  artifact: drop-frontend-portal
+- publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_frontend_portal_release
+  displayName: 'Publish Artifact - frontend portal (Release)'
+  artifact: drop-frontend-portal
+- publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_management_portal_development
+  displayName: 'Publish Artifact - management portal (Development)'
+  artifact: drop-management-portal
+- publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_management_portal_test
+  displayName: 'Publish Artifact - management portal (Test)'
+  artifact: drop-management-portal
+- publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_management_portal_release
+  displayName: 'Publish Artifact - management portal (Release)'
+  artifact: drop-management-portal
