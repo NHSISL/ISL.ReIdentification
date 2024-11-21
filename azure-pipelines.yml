@@ -90,8 +90,7 @@ steps:
     zipAfterPublish: true
     modifyOutputPath: false
 
-- task: ArchiveFiles@2
-  input
+
 - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_frontend_portal_development
   displayName: 'Publish Artifact - frontend portal'
   artifact: drop-frontend-portal-development
