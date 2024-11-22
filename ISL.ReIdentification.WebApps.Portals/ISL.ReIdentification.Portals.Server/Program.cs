@@ -143,7 +143,7 @@ namespace ISL.ReIdentification.Portals.Server
         private static void AddProviders(IServiceCollection services, IConfiguration configuration)
         {
             NotificationConfigurations notificationConfigurations = configuration
-                .GetSection("notificationConfigurations")
+                .GetSection("NotificationConfigurations")
                     .Get<NotificationConfigurations>();
 
             NotifyConfigurations notifyConfigurations = new NotifyConfigurations
@@ -157,12 +157,12 @@ namespace ISL.ReIdentification.Portals.Server
             services.AddTransient<INotificationProvider, GovukNotifyProvider>();
 
             bool reIdentificationProviderOfflineMode = configuration
-                .GetSection("reIdentificationProviderOfflineMode").Get<bool>();
+                .GetSection("ReIdentificationProviderOfflineMode").Get<bool>();
 
             if (reIdentificationProviderOfflineMode == true)
             {
                 OfflineSourceReIdentificationConfigurations offlineSourceReIdentificationConfigurations = configuration
-                    .GetSection("offlineSourceReIdentificationConfigurations")
+                    .GetSection("OfflineSourceReIdentificationConfigurations")
                         .Get<OfflineSourceReIdentificationConfigurations>();
 
                 services.AddSingleton(offlineSourceReIdentificationConfigurations);
@@ -171,7 +171,7 @@ namespace ISL.ReIdentification.Portals.Server
             else
             {
                 NecsReIdentificationConfigurations necsReIdentificationConfigurations = configuration
-                    .GetSection("necsReIdentificationConfigurations")
+                    .GetSection("NecsReIdentificationConfigurations")
                         .Get<NecsReIdentificationConfigurations>();
 
                 services.AddSingleton(necsReIdentificationConfigurations);
@@ -232,7 +232,7 @@ namespace ISL.ReIdentification.Portals.Server
         private static void AddCoordinationServices(IServiceCollection services, IConfiguration configuration)
         {
             ProjectStorageConfiguration projectStorageConfiguration = configuration
-                .GetSection("projectStorageConfiguration")
+                .GetSection("ProjectStorageConfiguration")
                     .Get<ProjectStorageConfiguration>();
 
             services.AddSingleton(projectStorageConfiguration);
