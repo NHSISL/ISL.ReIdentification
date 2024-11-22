@@ -63,6 +63,11 @@ namespace ISL.ReIdentification.Portals.Server
             var builder =
                 WebApplication.CreateBuilder(args);
 
+            builder.Configuration
+                .AddJsonFile("appsettings.json")
+                .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
+                .AddEnvironmentVariables();
+
             // Add services to the container.
             var azureAdOptions = builder.Configuration.GetSection("AzureAd");
 
