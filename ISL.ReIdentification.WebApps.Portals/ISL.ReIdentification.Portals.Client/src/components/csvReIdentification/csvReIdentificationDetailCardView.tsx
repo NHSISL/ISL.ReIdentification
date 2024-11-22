@@ -7,13 +7,7 @@ import { AccessRequest } from "../../models/accessRequest/accessRequest";
 import { useMsal } from "@azure/msal-react";
 import UserAccessSearch from "../userAccessSearch/userAccessSearch";
 import { UserAccessView } from "../../models/views/components/userAccess/userAccessView";
-import { lookupViewService } from "../../services/views/lookups/lookupViewService";
 import { OverlayInjectedProps } from "react-bootstrap/esm/Overlay";
-
-interface Option {
-    value: string;
-    name: string;
-}
 
 const CsvReIdentificationDetailCardView: FunctionComponent = () => {
 
@@ -29,9 +23,7 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
     const [fileName, setFileName] = useState<string>("");
     const [hasHeaderRecord, setHasHeaderRecord] = useState<boolean>(false);
     const [showHelpModal, setShowHelpModal] = useState<boolean>(false);
-
-    const { mappedLookups, isLoading } = lookupViewService.useGetAllLookups("", "Reasons");
-    const [selectedLookupId, setSelectedLookupId] = useState<string>("");
+    const [reason, setReason] = useState<string>("");
     const account = useMsal();
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -57,7 +49,7 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                 recipientEmail: selectedUser?.email || "",
                 recipientJobTitle: selectedUser?.jobTitle || "",
                 data: csvData || "",
-                reason: selectedLookupId,
+                reason: reason,
                 organisation: selectedUser?.orgCode,
                 createdBy: acc.username,
                 updatedBy: acc.username,
@@ -153,18 +145,6 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
         </Tooltip>
     );
 
-    const handleLookupChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setSelectedLookupId(e.target.value);
-    };
-
-    const lookupOptions: Array<Option> = [
-        { value: "", name: "Select Reason..." },
-        ...mappedLookups.map((lookup) => ({
-            value: lookup.value.toString() || "0",
-            name: lookup.value || "",
-        })),
-    ];
-
     return (
         <>
             {!savedSuccessfull ? (
@@ -239,24 +219,22 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                                     <br />
                                 </>
                             )}
-                            {isLoading ? <Spinner /> : <>
                                 <Form.Group className="text-start">
                                     <Form.Label><strong>Re-identification Reason:</strong></Form.Label>
-                                    <Form.Select
-                                        value={selectedLookupId}
-                                        onChange={handleLookupChange}
-                                        required >
-                                        {lookupOptions.map((option) => (
-                                            <option key={option.value} value={option.value}>
-                                                {option.name}
-                                            </option>
-                                        ))}
-                                    </Form.Select>
+
+                                    <Form.Control
+                                        as="textarea"
+                                        value={reason}
+                                        onChange={(e) => setReason(e.target.value)}
+                                        placeholder="Enter a reason"
+                                        rows={3}
+                                        required
+                                    />
+
                                     <Form.Text className="text-muted">
-                                        Please supply a reason why you are requesting to Reidentify.
+                                        Please supply a reason why you are requesting to Reidentify, this will be visable in the email to the recipient.
                                     </Form.Text>
                                 </Form.Group>
-                            </>}
                             <br />
 
                             {error && <Alert variant="danger">
