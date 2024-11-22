@@ -3,10 +3,8 @@
 // ---------------------------------------------------------
 
 using System;
-using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
-using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Models.Orchestrations.Persists.Exceptions;
 using Moq;
 using Xeptions;
@@ -16,15 +14,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
     public partial class PersistanceOrchestrationServiceTests
     {
         [Theory]
-        [MemberData(nameof(DependencyValidationExceptions))]
-        public async Task ShouldThrowDependencyValidationOnPersistCsvIdentificationRequestAndLogItAsync(
+        [MemberData(nameof(PurgeDependencyValidationExceptions))]
+        public async Task ShouldThrowDependencyValidationOnPurgeCsvIdentificationRecordsThatExpiredAndLogItAsync(
             Xeption dependencyValidationException)
         {
             // given
-            AccessRequest someAccessRequest = CreateRandomAccessRequest();
-
-            this.hashBrokerMock.Setup(broker =>
-                broker.GenerateSha256Hash(It.IsAny<MemoryStream>()))
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Throws(dependencyValidationException);
 
             var expectedPersistanceOrchestrationDependencyValidationException =
@@ -34,21 +30,20 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             // when
-            ValueTask<AccessRequest> persistCsvIdentificationRequestAsyncTask =
-                this.persistanceOrchestrationService.PersistCsvIdentificationRequestAsync(
-                    accessRequest: someAccessRequest);
+            ValueTask purgeCsvIdentificationRecordsAsyncTask =
+                this.persistanceOrchestrationService.PurgeCsvReIdentificationRecordsThatExpired();
 
             PersistanceOrchestrationDependencyValidationException
                 actualPersistanceOrchestrationDependencyValidationException =
                 await Assert.ThrowsAsync<PersistanceOrchestrationDependencyValidationException>(
-                    testCode: persistCsvIdentificationRequestAsyncTask.AsTask);
+                    testCode: purgeCsvIdentificationRecordsAsyncTask.AsTask);
 
             // then
             actualPersistanceOrchestrationDependencyValidationException
                 .Should().BeEquivalentTo(expectedPersistanceOrchestrationDependencyValidationException);
 
-            this.hashBrokerMock.Verify(broker =>
-                broker.GenerateSha256Hash(It.IsAny<MemoryStream>()),
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -67,15 +62,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
         }
 
         [Theory]
-        [MemberData(nameof(DependencyExceptions))]
-        public async Task ShouldThrowDependencyOnPersistCsvIdentificationRequestAndLogItAsync(
+        [MemberData(nameof(PurgeDependencyExceptions))]
+        public async Task ShouldThrowDependencyOnPurgeCsvIdentificationRecordsThatExpiredAndLogItAsync(
             Xeption dependencyException)
         {
             // given
-            AccessRequest someAccessRequest = CreateRandomAccessRequest();
-
-            this.hashBrokerMock.Setup(broker =>
-                broker.GenerateSha256Hash(It.IsAny<MemoryStream>()))
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Throws(dependencyException);
 
             var expectedPersistanceOrchestrationDependencyException =
@@ -85,21 +78,20 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                     innerException: dependencyException.InnerException as Xeption);
 
             // when
-            ValueTask<AccessRequest> persistCsvIdentificationRequestAsyncTask =
-                this.persistanceOrchestrationService.PersistCsvIdentificationRequestAsync(
-                    accessRequest: someAccessRequest);
+            ValueTask purgeCsvIdentificationRequestAsyncTask =
+                this.persistanceOrchestrationService.PurgeCsvReIdentificationRecordsThatExpired();
 
             PersistanceOrchestrationDependencyException
                 actualPersistanceOrchestrationDependencyException =
                 await Assert.ThrowsAsync<PersistanceOrchestrationDependencyException>(
-                    testCode: persistCsvIdentificationRequestAsyncTask.AsTask);
+                    testCode: purgeCsvIdentificationRequestAsyncTask.AsTask);
 
             // then
             actualPersistanceOrchestrationDependencyException
                 .Should().BeEquivalentTo(expectedPersistanceOrchestrationDependencyException);
 
-            this.hashBrokerMock.Verify(broker =>
-                broker.GenerateSha256Hash(It.IsAny<MemoryStream>()),
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -119,10 +111,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
 
         [Fact]
         public async Task
-            ShouldThrowServiceExceptionOnPersistCsvIdentificationRequestIfServiceErrorOccurredAndLogItAsync()
+            ShouldThrowServiceExceptionOnPurgeCsvIdentificationRecordsThatExpiredIfServiceErrorOccurredAndLogItAsync()
         {
             // given
-            AccessRequest someAccessRequest = CreateRandomAccessRequest();
             var serviceException = new Exception();
 
             var failedServicePersistanceOrchestrationException =
@@ -135,26 +126,25 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                     message: "Persistance orchestration service error occurred, contact support.",
                     innerException: failedServicePersistanceOrchestrationException);
 
-            this.hashBrokerMock.Setup(broker =>
-                broker.GenerateSha256Hash(It.IsAny<MemoryStream>()))
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Throws(serviceException);
 
             // when
-            ValueTask<AccessRequest> persistCsvIdentificationRequestAsyncTask =
-                this.persistanceOrchestrationService.PersistCsvIdentificationRequestAsync(
-                    accessRequest: someAccessRequest);
+            ValueTask purgeCsvIdentificationRequestAsyncTask =
+                this.persistanceOrchestrationService.PurgeCsvReIdentificationRecordsThatExpired();
 
             PersistanceOrchestrationServiceException
                 actualPersistanceOrchestrationValidationException =
                 await Assert.ThrowsAsync<PersistanceOrchestrationServiceException>(
-                    testCode: persistCsvIdentificationRequestAsyncTask.AsTask);
+                    testCode: purgeCsvIdentificationRequestAsyncTask.AsTask);
 
             // then
             actualPersistanceOrchestrationValidationException.Should().BeEquivalentTo(
                 expectedPersistanceOrchestrationServiceException);
 
-            this.hashBrokerMock.Verify(broker =>
-                broker.GenerateSha256Hash(It.IsAny<MemoryStream>()),
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

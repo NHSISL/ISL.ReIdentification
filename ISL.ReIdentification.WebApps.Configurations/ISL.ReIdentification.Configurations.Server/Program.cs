@@ -31,6 +31,7 @@ using ISL.ReIdentification.Core.Models.Foundations.Lookups;
 using ISL.ReIdentification.Core.Models.Foundations.OdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.PdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
+using ISL.ReIdentification.Core.Models.Orchestrations.Persists;
 using ISL.ReIdentification.Core.Services.Coordinations.Identifications;
 using ISL.ReIdentification.Core.Services.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationRequests;
@@ -97,7 +98,7 @@ namespace ISL.ReIdentification.Configurations.Server
             AddBrokers(builder.Services, builder.Configuration);
             AddFoundationServices(builder.Services);
             AddProcessingServices(builder.Services);
-            AddOrchestrationServices(builder.Services);
+            AddOrchestrationServices(builder.Services, builder.Configuration);
             AddCoordinationServices(builder.Services, builder.Configuration);
 
             // Register IConfiguration to be available for dependency injection
@@ -230,8 +231,14 @@ namespace ISL.ReIdentification.Configurations.Server
             services.AddTransient<IUserAccessProcessingService, UserAccessProcessingService>();
         }
 
-        private static void AddOrchestrationServices(IServiceCollection services)
+        private static void AddOrchestrationServices(IServiceCollection services, IConfiguration configuration)
         {
+            CsvReIdentificationConfigurations csvReIdentificationConfigurations = configuration
+                .GetSection("csvReIdentificationConfigurations")
+                    .Get<CsvReIdentificationConfigurations>() ??
+                        new CsvReIdentificationConfigurations();
+
+            services.AddSingleton(csvReIdentificationConfigurations);
             services.AddTransient<IAccessOrchestrationService, AccessOrchestrationService>();
             services.AddTransient<IPersistanceOrchestrationService, PersistanceOrchestrationService>();
             services.AddTransient<IAccessOrchestrationService, AccessOrchestrationService>();

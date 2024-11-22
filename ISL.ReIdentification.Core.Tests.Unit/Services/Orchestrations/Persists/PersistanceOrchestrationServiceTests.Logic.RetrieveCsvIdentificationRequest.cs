@@ -44,8 +44,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             this.csvIdentificationRequestServiceMock.VerifyNoOtherCalls();
             this.impersonationContextServiceMock.VerifyNoOtherCalls();
             this.notificationServiceMock.VerifyNoOtherCalls();
+            this.accessAuditServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.hashBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
     }
 }
