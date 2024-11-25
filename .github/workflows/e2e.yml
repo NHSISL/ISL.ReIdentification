@@ -21,12 +21,21 @@ jobs:
           uses: actions/setup-dotnet@v3
           with:
             dotnet-version: 9.0.100-rc.2.24474.11
+        - name: Restore
+          run: dotnet restore
+          working-directory: ./ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Server
+        - name: Build
+          run: dotnet build --no-restore
+          working-directory: ./ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Server
         - name: Install dependencies
           run: npm ci
           working-directory: ./ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Client
         - name: Install Playwright Browsers
           run: npx playwright install --with-deps
           working-directory: ./ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Client
+        - name: Run Playwright tests
+          working-directory: ./ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Client
+          run: dotnet
         - name: Run Playwright tests
           working-directory: ./ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Client
           run: npx playwright test
