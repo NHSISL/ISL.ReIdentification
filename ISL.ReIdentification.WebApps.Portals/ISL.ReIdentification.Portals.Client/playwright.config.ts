@@ -1,4 +1,13 @@
 import { defineConfig, devices } from '@playwright/test';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
+const __dirname = path.dirname(__filename); // get the name of the directory
+
+const authFile = path.join(__dirname, './playwright/.auth/user.json');
+
+
 
 /**
  * Read environment variables from file.
@@ -56,7 +65,7 @@ export default defineConfig({
     /* Test against branded browsers. */
      {
        name: 'Microsoft Edge',
-       use: { ...devices['Desktop Edge'], channel: 'msedge' },
+       use: { ...devices['Desktop Edge'], channel: 'msedge', storageState: authFile, },
        dependencies: ['setup']
      },
      //{
@@ -69,7 +78,7 @@ export default defineConfig({
    webServer: {
      command: "dotnet run --project ..\\ISL.ReIdentification.Portals.Server\\",
      url: 'https://localhost:5173/',
-       reuseExistingServer: true,
-       ignoreHTTPSErrors: true,
+     reuseExistingServer: true,
+     ignoreHTTPSErrors: true,
    },
 });

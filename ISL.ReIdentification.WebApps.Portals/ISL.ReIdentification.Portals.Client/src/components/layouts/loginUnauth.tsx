@@ -7,7 +7,7 @@ export const LoginUnAuthorisedComponent = () => {
     const { instance } = useMsal();
 
     const handleLoginRedirect = () => {
-        instance.loginPopup(loginRequest).catch((error) => console.log(error));
+        instance.loginRedirect(loginRequest).catch((error) => console.log(error));
     };
 
     return (
