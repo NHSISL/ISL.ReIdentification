@@ -22,7 +22,7 @@ jobs:
           with:
             dotnet-version: 9.0.100-rc.2.24474.11
         - name: Install dependencies
-          run: npm install
+          run: npm ci
           working-directory: ./ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Client
         - name: Install Playwright Browsers
           run: npx playwright install --with-deps
@@ -35,3 +35,6 @@ jobs:
             name: playwright-report
             path: playwright-report/
             retention-days: 30
+        env:
+            TEST_USERNAME: ${{ secrets.TEST_USERNAME }}
+            TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
