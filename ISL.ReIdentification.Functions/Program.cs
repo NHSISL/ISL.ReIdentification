@@ -22,6 +22,7 @@ using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Notifications;
 using ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Orchestrations.Persists;
+using ISL.ReIdentification.Core.Services.Coordinations.Identifications;
 using ISL.ReIdentification.Core.Services.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts;
@@ -154,5 +155,7 @@ internal class Program
     }
 
     private static void AddCoordinations(IServiceCollection services)
-    { }
+    {
+        services.AddTransient<IIdentificationCoordinationService, IdentificationCoordinationService>();
+    }
 }

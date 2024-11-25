@@ -10,6 +10,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Attrify" Version="0.0.0.2" />
 		<PackageReference Include="FluentAssertions" Version="6.12.2" />
 		<PackageReference Include="ISL.Providers.ReIdentification.Abstractions" Version="0.0.0.3" />
 		<PackageReference Include="ISL.Providers.ReIdentification.Necs" Version="0.0.0.3" />

@@ -6,17 +6,21 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Brokers.Loggings;
+using ISL.ReIdentification.Core.Services.Coordinations.Identifications;
 using Microsoft.Azure.Functions.Worker;
 
 namespace ISL.ReIdentification.Functions
 {
     public class ResolvedAddressLoaderFunction
     {
+        private readonly IIdentificationCoordinationService identificationCoordinationService;
         private readonly ILoggingBroker loggingBroker;
 
         public ResolvedAddressLoaderFunction(
+            IIdentificationCoordinationService identificationCoordinationService,
             ILoggingBroker loggingBroker)
         {
+            this.identificationCoordinationService = identificationCoordinationService;
             this.loggingBroker = loggingBroker;
         }
 
@@ -31,7 +35,8 @@ namespace ISL.ReIdentification.Functions
 
             try
             {
-                // TODO: Implement the logic here
+                // TODO:  Refactor the identification service to take in the stream and name
+                // await this.identificationCoordinationService.ProcessImpersonationContextRequestAsync(name, myBlob);
             }
             catch (Exception ex)
             {

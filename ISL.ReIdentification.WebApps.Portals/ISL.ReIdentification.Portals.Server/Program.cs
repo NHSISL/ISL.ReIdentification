@@ -43,6 +43,7 @@ using ISL.ReIdentification.Core.Services.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Services.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Services.Orchestrations.Identifications;
 using ISL.ReIdentification.Core.Services.Orchestrations.Persists;
+using ISL.ReIdentification.Core.Services.Processings.UserAccesses;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.OData;
