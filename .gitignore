@@ -377,3 +377,4 @@ local.appsettings.json
 /ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Server/appsettings.Development.json
 /ISL.Reidentification.WebApps.Configurations/ISL.Reidentification.Configurations.Server/appsettings.Development.json
 /ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Server.Tests.Integration/appsettings.Development.json
+/ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Client/playwright/.auth/user.json
