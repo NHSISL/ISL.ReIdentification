@@ -12,6 +12,7 @@ using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Securities;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Models.Securities;
+using ISL.ReIdentification.Core.Services.Processings.UserAccesses;
 
 namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
 {
