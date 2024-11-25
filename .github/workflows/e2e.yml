@@ -26,6 +26,7 @@ jobs:
           working-directory: ./ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Client
         - name: Install Playwright Browsers
           run: npx playwright install --with-deps
+          working-directory: ./ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Client
         - name: Run Playwright tests
           working-directory: ./ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Client
           run: npx playwright test
