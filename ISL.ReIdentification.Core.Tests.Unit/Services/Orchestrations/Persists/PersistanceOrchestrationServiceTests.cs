@@ -202,6 +202,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
 
                 .OnProperty(accessAudit => accessAudit.Id).Use(accessAuditId)
                 .OnProperty(accessAudit => accessAudit.RequestId).Use(requestId)
+                .OnProperty(accessAudit => accessAudit.TransactionId).Use(Guid.Empty)
                 .OnProperty(accessAudit => accessAudit.PseudoIdentifier).Use(purgedValue)
                 .OnProperty(accessAudit => accessAudit.EntraUserId).Use(entraUserId)
                 .OnProperty(accessAudit => accessAudit.GivenName).Use(purgedValue)

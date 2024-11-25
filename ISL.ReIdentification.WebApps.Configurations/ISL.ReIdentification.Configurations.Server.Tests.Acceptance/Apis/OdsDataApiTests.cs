@@ -77,7 +77,8 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
 
             for (int i = 0; i < randomNumber; i++)
             {
-                randomOdsDatas.Add(await PostRandomOdsDataAsync());
+                OdsData randomOdsData = await PostRandomOdsDataAsync();
+                randomOdsDatas.Add(randomOdsData);
             }
 
             return randomOdsDatas;
@@ -85,6 +86,9 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
 
         private int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
+
+        private static int GetRandomLargeRangeNumber() =>
+            new IntRange(min: 2, max: 999).GetValue();
 
         private static string GetRandomStringWithLengthOf(int length)
         {
@@ -109,7 +113,8 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
 
             if (hierarchyId == null)
             {
-                hierarchyId = HierarchyId.Parse("/");
+                var randomNumber = GetRandomLargeRangeNumber();
+                hierarchyId = HierarchyId.Parse($"/{randomNumber}/");
             }
 
             filler.Setup()

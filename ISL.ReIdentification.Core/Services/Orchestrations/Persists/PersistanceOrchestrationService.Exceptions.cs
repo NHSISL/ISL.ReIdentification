@@ -112,6 +112,14 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
             {
                 await returningNothingFunction();
             }
+            catch (NullCsvReIdentificationConfigurationException nullCsvReIdentificationConfigurationException)
+            {
+                throw await CreateAndLogCriticalValidationExceptionAsync(nullCsvReIdentificationConfigurationException);
+            }
+            catch (InvalidArgumentPersistanceOrchestrationException invalidArgumentPersistanceOrchestrationException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentPersistanceOrchestrationException);
+            }
             catch (CsvIdentificationRequestValidationException csvIdentificationRequestValidationException)
             {
                 throw await CreateAndLogDependencyValidationExceptionAsync(
@@ -173,6 +181,19 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
                     innerException: exception);
 
             await this.loggingBroker.LogErrorAsync(persistanceOrchestrationValidationException);
+
+            return persistanceOrchestrationValidationException;
+        }
+
+        private async ValueTask<PersistanceOrchestrationValidationException>
+            CreateAndLogCriticalValidationExceptionAsync(Xeption exception)
+        {
+            var persistanceOrchestrationValidationException =
+                new PersistanceOrchestrationValidationException(
+                    message: "Persistance orchestration validation error occurred, please fix errors and try again.",
+                    innerException: exception);
+
+            await this.loggingBroker.LogCriticalAsync(persistanceOrchestrationValidationException);
 
             return persistanceOrchestrationValidationException;
         }

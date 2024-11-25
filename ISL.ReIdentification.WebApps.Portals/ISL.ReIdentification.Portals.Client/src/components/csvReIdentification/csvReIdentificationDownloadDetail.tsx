@@ -7,6 +7,7 @@ import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { OverlayInjectedProps } from "react-bootstrap/esm/Overlay";
 import BreadCrumbBase from "../bases/layouts/BreadCrumb/BreadCrumbBase";
+import AccessAuditTable from "../accessAudits/accessAuditTable";
 
 interface CsvReIdentificationDownloadDetailProps {
     csvIdentificationRequestId: string | undefined;
@@ -21,6 +22,7 @@ const CsvReIdentificationDownloadDetail: FunctionComponent<CsvReIdentificationDo
 
     const { mappedLookups, isLoading } = lookupViewService.useGetAllLookups("", "Reasons");
     const [selectedLookupId, setSelectedLookupId] = useState<string>("");
+    const [refreshKey, setRefreshKey] = useState<number>(0);
 
     const {
         data,
@@ -74,6 +76,7 @@ const CsvReIdentificationDownloadDetail: FunctionComponent<CsvReIdentificationDo
         e.preventDefault();
         try {
             await fetch();
+            setRefreshKey(prevKey => prevKey + 1); // Update the refresh key to trigger re-render
         } catch (error) {
             console.error("Error downloading the file", error);
         }
@@ -94,7 +97,7 @@ const CsvReIdentificationDownloadDetail: FunctionComponent<CsvReIdentificationDo
                     backLink="Worklist"
                     currentLink="Dataset Download">
                 </BreadCrumbBase>
-                
+
             </section>
             <Row className="justify-content-md-center mt-3">
                 <Card style={{ width: '50rem' }}>
@@ -156,6 +159,7 @@ const CsvReIdentificationDownloadDetail: FunctionComponent<CsvReIdentificationDo
                     </Card.Body>
                 </Card>
             </Row>
+            <AccessAuditTable key={refreshKey} requestId={data.id!.toString()} />
         </Container>
     );
 };

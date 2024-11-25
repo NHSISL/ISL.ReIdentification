@@ -63,7 +63,8 @@ const LookupRowEdit: FunctionComponent<LookupRowEditProps> = (props) => {
                     value={editLookup.name}
                     required={true}
                     error={errors.name}
-                    onChange={handleChange} />
+                    onChange={handleChange}
+                    maxLength={50} />
             </td>
             <td>
                 <TextInputBase
@@ -73,19 +74,19 @@ const LookupRowEdit: FunctionComponent<LookupRowEditProps> = (props) => {
                     value={editLookup.value}
                     required={true}
                     error={errors.name}
-                    onChange={handleChange} />
-
+                    onChange={handleChange}
+                    maxLength={50} />
             </td>
             <td>
                 <TextInputBase
                     id="group"
-                    name="group"
+                    name="groupName"
                     placeholder="Lookup Group Value"
                     value={editLookup.groupName}
                     required={true}
                     error={errors.groupName}
-                    onChange={handleChange} />
-
+                    onChange={handleChange}
+                    maxLength={50} />
             </td>
             <td></td>
             <td></td>
