@@ -35,9 +35,6 @@ jobs:
           working-directory: ./ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Client
         - name: Run Playwright tests
           working-directory: ./ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Client
-          run: dotnet
-        - name: Run Playwright tests
-          working-directory: ./ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Client
           run: npx playwright test
         - uses: actions/upload-artifact@v4
           if: ${{ !cancelled() }}
