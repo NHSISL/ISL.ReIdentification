@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ISL.ReIdentification.Core.Extensions.Loggings
+namespace ISL.ReIdentification.Core.Extensions.Exceptions
 {
     internal static class ExceptionDetailExtension
     {
@@ -40,8 +40,8 @@ namespace ISL.ReIdentification.Core.Extensions.Loggings
                 foreach (DictionaryEntry entry in exception.Data)
                 {
                     string errorSummary = ((List<string>)entry.Value)
-                        .Select((string value) => value)
-                        .Aggregate((string current, string next) => current + ", " + next);
+                        .Select((value) => value)
+                        .Aggregate((current, next) => current + ", " + next);
 
                     string line = $"{entry.Key} => {errorSummary};  ";
 

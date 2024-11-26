@@ -51,6 +51,8 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             var noAccessItems = identificationRequest.IdentificationItems
                 .FindAll(x => x.HasAccess == false).ToList();
 
+            var transactionId = await this.identifierBroker.GetIdentifierAsync();
+
             foreach (IdentificationItem item in identificationRequest.IdentificationItems)
             {
                 var now = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
@@ -66,6 +68,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                 {
                     Id = accessAuditId,
                     RequestId = identificationRequest.Id,
+                    TransactionId = transactionId,
                     PseudoIdentifier = item.Identifier,
                     EntraUserId = identificationRequest.EntraUserId,
                     GivenName = identificationRequest.GivenName,
@@ -129,6 +132,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                 {
                     Id = accessAuditId,
                     RequestId = identificationRequest.Id,
+                    TransactionId = transactionId,
                     PseudoIdentifier = record.Identifier,
                     EntraUserId = identificationRequest.EntraUserId,
                     GivenName = identificationRequest.GivenName,

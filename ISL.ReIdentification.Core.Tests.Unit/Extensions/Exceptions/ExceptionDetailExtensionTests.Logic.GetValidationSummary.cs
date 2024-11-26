@@ -5,7 +5,7 @@
 using System;
 using System.Collections.Generic;
 using FluentAssertions;
-using ISL.ReIdentification.Core.Extensions.Loggings;
+using ISL.ReIdentification.Core.Extensions.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Tests.Unit.Extensions

@@ -23,11 +23,13 @@ using ISL.ReIdentification.Core.Brokers.Storages.Blob;
 using ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Brokers.Notifications;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
+using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Foundations.Lookups;
 using ISL.ReIdentification.Core.Models.Foundations.OdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
+using ISL.ReIdentification.Core.Models.Orchestrations.Persists;
 using ISL.ReIdentification.Core.Services.Coordinations.Identifications;
 using ISL.ReIdentification.Core.Services.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationRequests;
@@ -42,6 +44,7 @@ using ISL.ReIdentification.Core.Services.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Services.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Services.Orchestrations.Identifications;
 using ISL.ReIdentification.Core.Services.Orchestrations.Persists;
+using ISL.ReIdentification.Core.Services.Processings.UserAccesses;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.OData;
@@ -61,6 +64,11 @@ namespace ISL.ReIdentification.Portals.Server
             var builder =
                 WebApplication.CreateBuilder(args);
 
+            builder.Configuration
+                .AddJsonFile("appsettings.json")
+                .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
+                .AddEnvironmentVariables();
+
             // Add services to the container.
             var azureAdOptions = builder.Configuration.GetSection("AzureAd");
 
@@ -79,7 +87,7 @@ namespace ISL.ReIdentification.Portals.Server
             AddBrokers(builder.Services, builder.Configuration);
             AddFoundationServices(builder.Services);
             AddProcessingServices(builder.Services);
-            AddOrchestrationServices(builder.Services);
+            AddOrchestrationServices(builder.Services, builder.Configuration);
             AddCoordinationServices(builder.Services, builder.Configuration);
 
             // Register IConfiguration to be available for dependency injection
@@ -110,6 +118,7 @@ namespace ISL.ReIdentification.Portals.Server
                 builder.EntitySet<ImpersonationContext>("ImpersonationContexts");
                 builder.EntitySet<CsvIdentificationRequest>("CsvIdentificationRequests");
                 builder.EntitySet<OdsData>("OdsData");
+                builder.EntitySet<AccessAudit>("AccessAudits");
                 builder.EnableLowerCamelCase();
 
                 return builder.GetEdmModel();
@@ -140,7 +149,7 @@ namespace ISL.ReIdentification.Portals.Server
         private static void AddProviders(IServiceCollection services, IConfiguration configuration)
         {
             NotificationConfigurations notificationConfigurations = configuration
-                .GetSection("notificationConfigurations")
+                .GetSection("NotificationConfigurations")
                     .Get<NotificationConfigurations>();
 
             NotifyConfigurations notifyConfigurations = new NotifyConfigurations
@@ -154,12 +163,12 @@ namespace ISL.ReIdentification.Portals.Server
             services.AddTransient<INotificationProvider, GovukNotifyProvider>();
 
             bool reIdentificationProviderOfflineMode = configuration
-                .GetSection("reIdentificationProviderOfflineMode").Get<bool>();
+                .GetSection("ReIdentificationProviderOfflineMode").Get<bool>();
 
             if (reIdentificationProviderOfflineMode == true)
             {
                 OfflineSourceReIdentificationConfigurations offlineSourceReIdentificationConfigurations = configuration
-                    .GetSection("offlineSourceReIdentificationConfigurations")
+                    .GetSection("OfflineSourceReIdentificationConfigurations")
                         .Get<OfflineSourceReIdentificationConfigurations>();
 
                 services.AddSingleton(offlineSourceReIdentificationConfigurations);
@@ -168,7 +177,7 @@ namespace ISL.ReIdentification.Portals.Server
             else
             {
                 NecsReIdentificationConfigurations necsReIdentificationConfigurations = configuration
-                    .GetSection("necsReIdentificationConfigurations")
+                    .GetSection("NecsReIdentificationConfigurations")
                         .Get<NecsReIdentificationConfigurations>();
 
                 services.AddSingleton(necsReIdentificationConfigurations);
@@ -212,8 +221,14 @@ namespace ISL.ReIdentification.Portals.Server
             services.AddTransient<IUserAccessProcessingService, UserAccessProcessingService>();
         }
 
-        private static void AddOrchestrationServices(IServiceCollection services)
+        private static void AddOrchestrationServices(IServiceCollection services, IConfiguration configuration)
         {
+            CsvReIdentificationConfigurations csvReIdentificationConfigurations = configuration
+                .GetSection("csvReIdentificationConfigurations")
+                    .Get<CsvReIdentificationConfigurations>() ??
+                        new CsvReIdentificationConfigurations();
+
+            services.AddSingleton(csvReIdentificationConfigurations);
             services.AddTransient<IAccessOrchestrationService, AccessOrchestrationService>();
             services.AddTransient<IPersistanceOrchestrationService, PersistanceOrchestrationService>();
             services.AddTransient<IIdentificationOrchestrationService, IdentificationOrchestrationService>();
@@ -223,7 +238,7 @@ namespace ISL.ReIdentification.Portals.Server
         private static void AddCoordinationServices(IServiceCollection services, IConfiguration configuration)
         {
             ProjectStorageConfiguration projectStorageConfiguration = configuration
-                .GetSection("projectStorageConfiguration")
+                .GetSection("ProjectStorageConfiguration")
                     .Get<ProjectStorageConfiguration>();
 
             services.AddSingleton(projectStorageConfiguration);
