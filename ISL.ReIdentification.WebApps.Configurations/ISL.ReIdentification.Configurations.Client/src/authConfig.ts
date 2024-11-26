@@ -5,8 +5,7 @@
 
 import { LogLevel } from '@azure/msal-browser';
 import { Configuration, PopupRequest } from "@azure/msal-browser";
-import axios from 'axios';
-import FrontendConfigurationBroker from './brokers/apiBroker.FrontendConfigurationBroker';
+import FrontendConfigurationBroker from './brokers/apiBroker.frontendConfigurationBroker';
 
 /**
  * Configuration object to be passed to MSAL instance on creation. 
