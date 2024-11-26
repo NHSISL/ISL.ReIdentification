@@ -30,6 +30,10 @@
 	</ItemGroup>
 
 	<Target Name="NpmBuild" AfterTargets="ComputeFilesToPublish">
+		<ItemGroup>
+			<ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="*">
+			</ResolvedFileToPublish>
+		</ItemGroup>
 		<Exec Command="npm run build:$(Configuration)" WorkingDirectory="$(SpaRoot)" />
 		<ItemGroup>
 			<DistFiles Include="$(SpaRoot)build\**" />
