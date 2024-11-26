@@ -184,6 +184,7 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
 
                                 <div className="d-flex align-items-center">
                                     <Form.Control
+                                        id="csvUpload"
                                         type="file"
                                         name="PseudoCsv"
                                         onChange={handleFileChange}

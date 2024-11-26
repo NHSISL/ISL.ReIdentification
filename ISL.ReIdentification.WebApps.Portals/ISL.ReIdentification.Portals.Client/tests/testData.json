@@ -1,0 +1,14 @@
+[
+  {
+    "validPseudoNumber": "1111112000",
+    "inValidPseudoNumber": "1111112000",
+    "reason": "Direct patient care",
+    "expectedText": "NHS Number: DEC1111112"
+  },
+  {
+    "validPseudoNumber": "0000000001",
+    "inValidPseudoNumber": "1111112003",
+    "reason": "Direct patient care",
+    "expectedText": "NHS Number: DEC1111112"
+  }
+]

@@ -93,6 +93,7 @@ const UserAccessSearch: FunctionComponent<UserAccessSearchProps> = ({ selectUser
                                             <td><small>{userAccess.jobTitle}</small></td>
                                             <td>
                                                 <Button
+                                                    id="selectUserEmail"
                                                     size="sm"
                                                     variant="link"
                                                     onClick={() => handleUserSelect(userAccess)}
