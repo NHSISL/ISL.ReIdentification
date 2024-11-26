@@ -14,12 +14,11 @@ import { Configuration, PopupRequest } from "@azure/msal-browser";
 
 export const msalConfig : Configuration = {
     auth: {
-        clientId: 'ce08ea6a-e9a7-428b-a488-fd36a0c116aa', // This is the ONLY mandatory field that you need to supply.
-        authority: 'https://login.microsoftonline.com/2f7a9b80-2e65-4ed6-9851-2f727effb3a1', // Replace the placeholder with your tenant subdomain 
+        clientId: import.meta.env.VITE_REACT_APP_CLIENTID || "", // This is the ONLY mandatory field that you need to supply.
+        authority: import.meta.env.VITE_REACT_APP_AUTHORITY || "", // Replace the placeholder with your tenant subdomain 
         redirectUri: '/', // Points to window.location.origin. You must register this URI on Azure Portal/App Registration.
         postLogoutRedirectUri: '/', // Indicates the page to navigate after logout.
         navigateToLoginRequestUrl: false, // If "true", will navigate back to the original request location before processing the auth code response.
-        //tenantId: "2f7a9b80-2e65-4ed6-9851-2f727effb3a1",
     },
     cache: {
         cacheLocation: 'localStorage', // Configures cache location. "sessionStorage" is more secure, but "localStorage" gives you SSO between tabs.
@@ -36,7 +35,7 @@ export const msalConfig : Configuration = {
                         console.error(message);
                         return;
                     case LogLevel.Info:
-                        //console.info(message);
+                        console.info(message);
                         return;
                     case LogLevel.Verbose:
                         console.debug(message);
@@ -58,8 +57,9 @@ export const msalConfig : Configuration = {
  * For more information about OIDC scopes, visit: 
  * https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-permissions-and-consent#openid-connect-scopes
  */
-export const loginRequest : PopupRequest = {
-    scopes: ["api://ce08ea6a-e9a7-428b-a488-fd36a0c116aa/manage", "User.Read"],
+const scopes = import.meta.env.VITE_REACT_APP_API_SCOPE ? import.meta.env.VITE_REACT_APP_API_SCOPE.split(",") : [""];
+export const loginRequest: PopupRequest = {
+    scopes: scopes
 };
 
 /**

@@ -4,6 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
+using ISL.ReIdentification.Core.Models.Foundations.AccessAudits.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.Notifications.Exceptions;
@@ -17,6 +18,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
     public partial class PersistanceOrchestrationService
     {
         private delegate ValueTask<AccessRequest> ReturningAccessRequestFunction();
+        private delegate ValueTask ReturningNothingFunction();
 
         private async ValueTask<AccessRequest> TryCatch(ReturningAccessRequestFunction returningAccessRequestFunction)
         {
@@ -104,6 +106,72 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
             }
         }
 
+        private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
+        {
+            try
+            {
+                await returningNothingFunction();
+            }
+            catch (NullCsvReIdentificationConfigurationException nullCsvReIdentificationConfigurationException)
+            {
+                throw await CreateAndLogCriticalValidationExceptionAsync(nullCsvReIdentificationConfigurationException);
+            }
+            catch (InvalidArgumentPersistanceOrchestrationException invalidArgumentPersistanceOrchestrationException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentPersistanceOrchestrationException);
+            }
+            catch (CsvIdentificationRequestValidationException csvIdentificationRequestValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    csvIdentificationRequestValidationException);
+            }
+            catch (CsvIdentificationRequestDependencyValidationException
+                csvIdentificationRequestDependencyValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    csvIdentificationRequestDependencyValidationException);
+            }
+            catch (AccessAuditValidationException accessAuditValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    accessAuditValidationException);
+            }
+            catch (AccessAuditDependencyValidationException accessAuditDependencyValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    accessAuditDependencyValidationException);
+            }
+            catch (CsvIdentificationRequestDependencyException csvIdentificationRequestDependencyException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(
+                    csvIdentificationRequestDependencyException);
+            }
+            catch (CsvIdentificationRequestServiceException csvIdentificationRequestServiceException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(
+                    csvIdentificationRequestServiceException);
+            }
+            catch (AccessAuditDependencyException accessAuditDependencyException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(
+                    accessAuditDependencyException);
+            }
+            catch (AccessAuditServiceException accessAuditServiceException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(
+                    accessAuditServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedServicePersistanceOrchestrationException =
+                    new FailedServicePersistanceOrchestrationException(
+                        message: "Failed service persistance orchestration error occurred, contact support.",
+                        innerException: exception);
+
+                throw await CreateAndLogServiceExceptionAsync(failedServicePersistanceOrchestrationException);
+            }
+        }
+
         private async ValueTask<PersistanceOrchestrationValidationException>
             CreateAndLogValidationExceptionAsync(Xeption exception)
         {
@@ -113,6 +181,19 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
                     innerException: exception);
 
             await this.loggingBroker.LogErrorAsync(persistanceOrchestrationValidationException);
+
+            return persistanceOrchestrationValidationException;
+        }
+
+        private async ValueTask<PersistanceOrchestrationValidationException>
+            CreateAndLogCriticalValidationExceptionAsync(Xeption exception)
+        {
+            var persistanceOrchestrationValidationException =
+                new PersistanceOrchestrationValidationException(
+                    message: "Persistance orchestration validation error occurred, please fix errors and try again.",
+                    innerException: exception);
+
+            await this.loggingBroker.LogCriticalAsync(persistanceOrchestrationValidationException);
 
             return persistanceOrchestrationValidationException;
         }

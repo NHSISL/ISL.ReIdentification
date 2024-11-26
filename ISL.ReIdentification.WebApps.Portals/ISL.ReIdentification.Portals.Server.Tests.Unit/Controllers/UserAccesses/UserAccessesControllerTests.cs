@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Models.Processings.UserAccesses.Exceptions;
-using ISL.ReIdentification.Core.Services.Foundations.UserAccesses;
+using ISL.ReIdentification.Core.Services.Processings.UserAccesses;
 using ISL.ReIdentification.Portals.Server.Controllers;
 using Moq;
 using RESTFulSense.Controllers;

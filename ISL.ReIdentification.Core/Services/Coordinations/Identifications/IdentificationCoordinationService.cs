@@ -18,11 +18,11 @@ using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Models.Securities;
-using ISL.ReIdentification.Core.Services.Coordinations.Identifications;
 using ISL.ReIdentification.Core.Services.Orchestrations.Accesses;
+using ISL.ReIdentification.Core.Services.Orchestrations.Identifications;
 using ISL.ReIdentification.Core.Services.Orchestrations.Persists;
 
-namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
+namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
 {
     public partial class IdentificationCoordinationService : IIdentificationCoordinationService
     {

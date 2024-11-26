@@ -4,7 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
-using ISL.ReIdentification.Core.Extensions.Loggings;
+using ISL.ReIdentification.Core.Extensions.Exceptions;
 using Microsoft.Extensions.Logging;
 
 namespace ISL.ReIdentification.Core.Brokers.Loggings

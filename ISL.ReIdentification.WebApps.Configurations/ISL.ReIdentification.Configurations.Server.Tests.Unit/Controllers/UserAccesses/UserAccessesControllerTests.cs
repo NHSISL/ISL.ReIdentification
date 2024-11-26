@@ -8,7 +8,7 @@ using System.Linq;
 using ISL.ReIdentification.Configurations.Server.Controllers;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Models.Processings.UserAccesses.Exceptions;
-using ISL.ReIdentification.Core.Services.Foundations.UserAccesses;
+using ISL.ReIdentification.Core.Services.Processings.UserAccesses;
 using Moq;
 using RESTFulSense.Controllers;
 using Tynamix.ObjectFiller;
