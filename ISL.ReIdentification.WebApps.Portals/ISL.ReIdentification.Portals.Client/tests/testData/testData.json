@@ -9,6 +9,6 @@
     "validPseudoNumber": "0000000001",
     "inValidPseudoNumber": "1111112003",
     "reason": "Direct patient care",
-    "expectedText": "NHS Number: DEC1111112"
+    "expectedText": "NHS Number: 1111111111"
   }
 ]
