@@ -7,6 +7,7 @@ using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses.Exceptions;
+using ISL.ReIdentification.Core.Models.Orchestrations.Persists;
 using ISL.ReIdentification.Core.Models.Orchestrations.Persists.Exceptions;
 
 namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
@@ -52,6 +53,25 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
                     Parameter: nameof(accessRequest.ImpersonationContext)));
         }
 
+        private static void ValidateCsvReIdentificationConfigurationIsNotNull(
+            CsvReIdentificationConfigurations csvReIdentificationConfigurations)
+        {
+            if (csvReIdentificationConfigurations is null)
+            {
+                throw new NullCsvReIdentificationConfigurationException("Csv reidentification configuration is null.");
+            }
+        }
+
+        private static void ValidateOnPurgeCsvIdentificationRecordsThatExpiredAsync(
+             CsvReIdentificationConfigurations csvReIdentificationConfigurations)
+        {
+            ValidateCsvReIdentificationConfigurationIsNotNull(csvReIdentificationConfigurations);
+
+            Validate(
+                (Rule: IsInvalid(csvReIdentificationConfigurations.ExpireAfterMinutes),
+                    Parameter: $"{nameof(CsvReIdentificationConfigurations)}.{nameof(CsvReIdentificationConfigurations.ExpireAfterMinutes)}"));
+        }
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,
@@ -68,6 +88,12 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
         {
             Condition = impersonationContext == null,
             Message = "AccessRequest is invalid"
+        };
+
+        private static dynamic IsInvalid(int value) => new
+        {
+            Condition = value <= 5,
+            Message = "Value is invalid"
         };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
