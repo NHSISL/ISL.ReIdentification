@@ -6,6 +6,7 @@
 import { LogLevel } from '@azure/msal-browser';
 import { Configuration, PopupRequest } from "@azure/msal-browser";
 import axios from 'axios';
+import FrontendConfigurationBroker from './brokers/apiBroker.FrontendConfigurationBroker';
 
 /**
  * Configuration object to be passed to MSAL instance on creation. 
@@ -13,17 +14,13 @@ import axios from 'axios';
  * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-browser/docs/configuration.md 
  */
 
-const config = await axios.get("/api/frontendconfigurations")
-const clientId = config.data.clientId;
-const authority = config.data.authority;
-const scopes = config.data.scopes.split(",");
-
+const config = await new FrontendConfigurationBroker().GetFrontendConfigruationAsync()
 
 
 export const msalConfig : Configuration = {
     auth: {
-        clientId: clientId || "", // This is the ONLY mandatory field that you need to supply.
-        authority: authority || "", // Replace the placeholder with your tenant subdomain 
+        clientId: config.clientId || "", // This is the ONLY mandatory field that you need to supply.
+        authority: config.authority || "", // Replace the placeholder with your tenant subdomain 
         redirectUri: '/', // Points to window.location.origin. You must register this URI on Azure Portal/App Registration.
         postLogoutRedirectUri: '/', // Indicates the page to navigate after logout.
         navigateToLoginRequestUrl: false, // If "true", will navigate back to the original request location before processing the auth code response.
@@ -65,9 +62,8 @@ export const msalConfig : Configuration = {
  * For more information about OIDC scopes, visit: 
  * https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-permissions-and-consent#openid-connect-scopes
  */
-//const scopes = import.meta.env.VITE_REACT_APP_API_SCOPE ? import.meta.env.VITE_REACT_APP_API_SCOPE.split(",") : [""];
 export const loginRequest: PopupRequest = {
-    scopes: scopes
+    scopes: config.scopes
 };
 
 /**

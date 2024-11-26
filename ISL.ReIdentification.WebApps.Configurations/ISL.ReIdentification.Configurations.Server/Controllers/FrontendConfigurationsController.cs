@@ -21,7 +21,7 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetFrontendConfiguration()
+        public ActionResult GetFeatures()
         {
             var activeFeatures = configuration.GetSection("FrontendConfiguration").GetChildren().ToDictionary(x => x.Key, x => x.Value);
             return Ok(activeFeatures);
