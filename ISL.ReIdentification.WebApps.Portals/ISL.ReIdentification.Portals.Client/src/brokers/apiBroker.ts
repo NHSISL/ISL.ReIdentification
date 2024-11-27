@@ -1,22 +1,35 @@
 import axios from 'axios';
-import { InteractionRequiredAuthError, PublicClientApplication } from "@azure/msal-browser";
-import { loginRequest, msalConfig } from '../authConfig';
+import { InteractionRequiredAuthError, PopupRequest, PublicClientApplication } from "@azure/msal-browser";
+import { MsalConfig } from '../authConfig';
 
 class ApiBroker {
-    msalInstance = new PublicClientApplication(msalConfig);
+
+    loginRequest?: PopupRequest;
+    msalInstance? : PublicClientApplication;
 
     private async initialize() {
+      //  const configuration = await MsalConfig.build();
+        this.loginRequest = MsalConfig.loginRequest;
+        this.msalInstance = new PublicClientApplication(MsalConfig.msalConfig);
         await this.msalInstance.initialize();
     }
 
     private async acquireAccessToken() {
         await this.initialize(); // Ensure MSAL is initialized
 
+        if (!this.msalInstance) {
+            throw "msalInstance not correctly initialised";
+        }
+
+        if (!this.loginRequest) {
+            throw "login request not correctly initialised";
+        }
+
         const activeAccount = this.msalInstance.getActiveAccount();
         const accounts = this.msalInstance.getAllAccounts();
 
         const request = {
-            scopes: loginRequest.scopes,
+            scopes: this.loginRequest.scopes,
             account: activeAccount || accounts[0]
         };
 

@@ -4,12 +4,16 @@ export type FrontendConfigurationResponse = {
     clientId: string,
     authority: string,
     scopes: string,
+    environment: string,
+    application: string
 }
 
 export type FrontendConfiguration = {
     clientId: string,
     authority: string,
     scopes: string[],
+    environment: string,
+    application: string
 }
 
 class FrontendConfigurationBroker {
