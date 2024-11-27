@@ -5,7 +5,6 @@
 
 import { LogLevel } from '@azure/msal-browser';
 import { Configuration, PopupRequest } from "@azure/msal-browser";
-import FrontendConfigurationBroker from './brokers/apiBroker.frontendConfigurationBroker';
 
 /**
  * Configuration object to be passed to MSAL instance on creation. 
@@ -13,7 +12,7 @@ import FrontendConfigurationBroker from './brokers/apiBroker.frontendConfigurati
  * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-browser/docs/configuration.md 
  */
 
-const config = await new FrontendConfigurationBroker().GetFrontendConfigruationAsync()
+const config = { clientId: 'F', authority : 'b', scopes: []};//await new FrontendConfigurationBroker().GetFrontendConfigruationAsync()
 
 
 export const msalConfig : Configuration = {
