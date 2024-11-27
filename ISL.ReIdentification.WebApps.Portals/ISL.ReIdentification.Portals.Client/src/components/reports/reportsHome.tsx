@@ -10,6 +10,7 @@ import ReportDeveloperTools from "./reportDeveloperTools";
 import { DeveloperEvents } from "../../types/DeveloperEvents";
 import { ToastPosition } from "react-bootstrap/esm/ToastContainer";
 import { useParams } from "react-router-dom";
+import LoginUnAuthorisedComponent from "../layouts/loginUnauth";
 
 const ReportsHome: FunctionComponent = () => {
     const { accounts, instance } = useMsal();
@@ -126,12 +127,7 @@ const ReportsHome: FunctionComponent = () => {
             <Row className="flex-grow-1 align-items-center m-0">
                 <Col>
                     <UnauthenticatedTemplate>
-                        <Card>
-                            <Card.Body>
-                                <p>Please Login to use the re-identfication Portal</p>
-                                <p><Button onClick={() => { instance.loginPopup() }}>Login</Button></p>
-                            </Card.Body>
-                        </Card>
+                       <LoginUnAuthorisedComponent/>
                     </UnauthenticatedTemplate>
                     <AuthenticatedTemplate>
                         {!noAccess && !isLaunched && <ReportsReasonPage launchReport={launch} reidReason={reidReason} setReidReason={setReidReason} />}
