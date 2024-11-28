@@ -1,7 +1,12 @@
 [
   {
     "recipientEmail": "david.hayes17@nhs.net",
-    "invalidRecipientEmail": "david.cunliffe",
+    "invalidRecipientEmail": "christo",
+    "reason": "This is an example reason from Playwright"
+  }
+  ,{
+    "recipientEmail": "david.cunliffe2@nhs.net",
+    "invalidRecipientEmail": "ian",
     "reason": "This is an example reason from Playwright"
   }
 ]

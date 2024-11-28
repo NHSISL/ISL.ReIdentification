@@ -1,4 +1,13 @@
 import { defineConfig, devices } from '@playwright/test';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
+const __dirname = path.dirname(__filename); // get the name of the directory
+
+const authFile = path.join(__dirname, './playwright/.auth/user.json');
+
+
 
 /**
  * Read environment variables from file.
@@ -31,45 +40,45 @@ export default defineConfig({
         trace: 'on-first-retry',
     },
 
-    /* Configure projects for major browsers */
-    projects: [
-        { name: 'setup', testMatch: /.*\.setup\.ts/ },
-        //{
-        //  name: 'chromium',
-        //  use: { ...devices['Desktop Chrome'] },
-        //},
-        //{
-        //  name: 'firefox',
-        //  use: { ...devices['Desktop Firefox'] },
-        //},
+  /* Configure projects for major browsers */
+  projects: [
+    { name: 'setup', testMatch: /.*\.setup\.ts/ },
+    //{
+    //  name: 'chromium',
+    //  use: { ...devices['Desktop Chrome'] },
+    //},
+    //{
+    //  name: 'firefox',
+    //  use: { ...devices['Desktop Firefox'] },
+    //},
 
-        /* Test against mobile viewports. */
-        // {
-        //   name: 'Mobile Chrome',
-        //   use: { ...devices['Pixel 5'] },
-        // },
-        // {
-        //   name: 'Mobile Safari',
-        //   use: { ...devices['iPhone 12'] },
-        // },
+    /* Test against mobile viewports. */
+    // {
+    //   name: 'Mobile Chrome',
+    //   use: { ...devices['Pixel 5'] },
+    // },
+    // {
+    //   name: 'Mobile Safari',
+    //   use: { ...devices['iPhone 12'] },
+    // },
 
-        /* Test against branded browsers. */
-        {
-            name: 'Microsoft Edge',
-            use: { ...devices['Desktop Edge'], channel: 'msedge' },
-            dependencies: ['setup']
-        },
-        //{
-        //  name: 'Google Chrome',
-        //  use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-        //},
-    ],
+    /* Test against branded browsers. */
+     {
+       name: 'Microsoft Edge',
+       use: { ...devices['Desktop Edge'], channel: 'msedge', storageState: authFile, },
+       dependencies: ['setup']
+     },
+     //{
+     //  name: 'Google Chrome',
+     //  use: { ...devices['Desktop Chrome'], channel: 'chrome' },
+     //},
+  ],
 
-    /* Run your local dev server before starting the tests */
-    webServer: {
-        command: "dotnet run --project ..\\ISL.ReIdentification.Portals.Server\\",
-        url: 'https://localhost:5173/',
-        reuseExistingServer: true,
-        ignoreHTTPSErrors: true,
-    },
+  /* Run your local dev server before starting the tests */
+   webServer: {
+     command: "dotnet run --project ..\\ISL.ReIdentification.Portals.Server\\",
+     url: 'https://localhost:5173/',
+     reuseExistingServer: true,
+     ignoreHTTPSErrors: true,
+   },
 });

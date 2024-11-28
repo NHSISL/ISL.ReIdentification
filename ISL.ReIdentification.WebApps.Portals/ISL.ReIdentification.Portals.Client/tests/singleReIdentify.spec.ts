@@ -36,20 +36,20 @@ test.describe('Re-Identify Single Patient Tests', () => {
             await fillReIdentifyForm(page, validHexNumber, reason);
 
             const startOverButton = page.getByRole('button', { name: 'Start Over' });
-            await startOverButton.waitFor({ state: 'visible', timeout: 40000 })
-            await expect(startOverButton).toBeVisible();
+            await startOverButton.waitFor({ state: 'visible'})
+            await expect(startOverButton).toBeVisible({ timeout: 5000 });
 
             const nhsNumberText = page.getByText(expectedText);
             await nhsNumberText.waitFor({ state: 'visible' });
-            await expect(nhsNumberText).toBeVisible();
+            await expect(nhsNumberText).toBeVisible({ timeout: 5000 });
 
             const hidingInText = page.getByText('Hiding in:');
             await hidingInText.waitFor({ state: 'visible' });
-            await expect(hidingInText).toBeVisible();
+            await expect(hidingInText).toBeVisible({ timeout: 5000 });
 
             await startOverButton.click();
             const link = page.getByRole('link', { name: 'Re-identify Single Patient' });
-            await expect(link).toBeVisible();
+            await expect(link).toBeVisible({ timeout: 5000 });
         });
     });
 
@@ -60,15 +60,15 @@ test.describe('Re-Identify Single Patient Tests', () => {
 
         const startOverButton = page.getByRole('button', { name: 'Start Over' });
         await startOverButton.waitFor({ state: 'visible' });
-        await expect(startOverButton).toBeVisible();
+        await expect(startOverButton).toBeVisible({ timeout: 5000 });
 
         const noAccessText = page.getByText(inValidExpectedText);
         await noAccessText.waitFor({ state: 'visible', timeout: 20000 })
-        await expect(noAccessText).toBeVisible();
+        await expect(noAccessText).toBeVisible({ timeout: 5000 });
 
         await startOverButton.click();
         const link = page.getByRole('link', { name: 'Re-identify Single Patient' });
-        await expect(link).toBeVisible();
+        await expect(link).toBeVisible({ timeout: 5000 });
 
         });
     });
@@ -78,14 +78,14 @@ test.describe('Re-Identify Single Patient Tests', () => {
         await fillReIdentifyForm(page, '111111XXXX', 'Direct patient care');
 
         const startOverButton = page.getByRole('button', { name: 'Start Over' });
-        await expect(startOverButton).toBeVisible();
+        await expect(startOverButton).toBeVisible({ timeout: 5000 });
 
         const noAccessText = page.getByText('It appears you tried to re-identify a patient you don\'t have access to.Please');
-        await expect(noAccessText).toBeVisible();
+        await expect(noAccessText).toBeVisible({ timeout: 5000 });
 
         await startOverButton.click();
         const link = page.getByRole('link', { name: 'Re-identify Single Patient' });
-        await expect(link).toBeVisible();
+        await expect(link).toBeVisible({ timeout: 5000 });
 
     });
 
@@ -104,19 +104,19 @@ test.describe('Re-Identify Single Patient Tests', () => {
 
             const startOverButton = page.getByRole('button', { name: 'Start Over' });
             await startOverButton.waitFor({ state: 'visible', timeout: 10000 })
-            await expect(startOverButton).toBeVisible();
+            await expect(startOverButton).toBeVisible({ timeout: 5000 });
 
             const nhsNumberText = page.getByText(expectedText);
             await nhsNumberText.waitFor({ state: 'visible' });
-            await expect(nhsNumberText).toBeVisible();
+            await expect(nhsNumberText).toBeVisible({ timeout: 5000 });
 
             const hidingInText = page.getByText('Hiding in:');
             await hidingInText.waitFor({ state: 'visible' });
-            await expect(hidingInText).toBeVisible();
+            await expect(hidingInText).toBeVisible({ timeout: 5000 });
 
             await startOverButton.click();
             const link = page.getByRole('link', { name: 'Re-identify Single Patient' });
-            await expect(link).toBeVisible();
+            await expect(link).toBeVisible({ timeout: 5000 });
 
         });
     });
@@ -128,11 +128,11 @@ test.describe('Re-Identify Single Patient Tests', () => {
 
             const startOverButton = page.getByRole('button', { name: 'Start Over' });
             await startOverButton.waitFor({ state: 'visible' });
-            await expect(startOverButton).toBeVisible();
+            await expect(startOverButton).toBeVisible({ timeout: 5000 });
 
             const noAccessText = page.getByText(inValidExpectedText);
             await noAccessText.waitFor({ state: 'visible', timeout: 20000 })
-            await expect(noAccessText).toBeVisible();
+            await expect(noAccessText).toBeVisible({ timeout: 5000 });
 
             await startOverButton.click();
             const link = page.getByRole('link', { name: 'Re-identify Single Patient' });

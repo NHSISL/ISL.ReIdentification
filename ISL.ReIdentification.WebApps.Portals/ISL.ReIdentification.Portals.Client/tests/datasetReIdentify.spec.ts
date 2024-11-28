@@ -29,7 +29,9 @@ async function fillReIdentifyForm(page: Page, recipientEmail: string, reason: st
         await hasHeaderCheckbox.check();
     }
 
-    const fileInput = page.locator('#csvUpload');
+    const fileInput = page.getByPlaceholder('Upload CSV');
+    await expect(fileInput).toBeVisible();
+    await expect(fileInput).toBeEnabled();
     const filePath = path.resolve(__dirname, 'resources/valid.csv');
     await fileInput.setInputFiles(filePath);
 
@@ -37,7 +39,7 @@ async function fillReIdentifyForm(page: Page, recipientEmail: string, reason: st
     await reasonDropdown.fill(reason);
 
     const colSelectDropdown = page.getByRole('combobox');
-    await expect(colSelectDropdown).toBeVisible();
+    await expect(colSelectDropdown).toBeVisible({ timeout: 5000 });
     await colSelectDropdown.selectOption({ label: "Col-4 - PseudoID" });
 }
 
