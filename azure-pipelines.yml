@@ -31,29 +31,29 @@ steps:
     includeNuGetOrg: true
 
 - task: DotNetCoreCLI@2
-  displayName: "Dotnet Publish Portal (Development)"
+  displayName: "Dotnet Publish Portal"
   inputs:
     command: "publish"
     publishWebProjects: false
     projects: "**/ISL.ReIdentification.Portals.Server.csproj"
-    arguments: "-o $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_frontend_portal --configuration Release"
-    zipAfterPublish: true
-    modifyOutputPath: false
-
-- task: DotNetCoreCLI@2
-  displayName: "Dotnet Publish Management Portal (Development)"
-  inputs:
-    command: "publish"
-    publishWebProjects: false
-    projects: "**/ISL.ReIdentification.Configurations.Server.csproj"
-    arguments: "-o $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_management_portal --configuration Release"
+    arguments: "-o $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_frontend_portal"
     zipAfterPublish: true
     modifyOutputPath: false
 
 - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_frontend_portal
-  displayName: 'Publish Artifact - frontend portal'
+  displayName: 'Publish Artifact - Portal'
   artifact: drop-frontend-portal
 
-- publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_management_portal
-  displayName: 'Publish Artifact - management portal'
-  artifact: drop-management-portal
+- task: DotNetCoreCLI@2
+  displayName: "Dotnet Publish Configuration"
+  inputs:
+    command: "publish"
+    publishWebProjects: false
+    projects: "**/ISL.ReIdentification.Configurations.Server.csproj"
+    arguments: "-o $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_configuration"
+    zipAfterPublish: true
+    modifyOutputPath: false
+    
+- publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_configuration
+  displayName: 'Publish Artifact - Configuration'
+  artifact: drop-frontend-management

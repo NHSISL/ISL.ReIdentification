@@ -9,7 +9,7 @@ using Attrify.Attributes;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses.Exceptions;
 using ISL.ReIdentification.Core.Models.Processings.UserAccesses.Exceptions;
-using ISL.ReIdentification.Core.Services.Foundations.UserAccesses;
+using ISL.ReIdentification.Core.Services.Processings.UserAccesses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
