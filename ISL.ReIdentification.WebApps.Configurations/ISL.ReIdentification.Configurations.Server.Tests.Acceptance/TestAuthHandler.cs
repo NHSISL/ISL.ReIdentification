@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -12,23 +13,41 @@ using Microsoft.Extensions.Options;
 
 namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance
 {
-    public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
+    public class TestAuthHandler : AuthenticationHandler<CustomAuthenticationSchemeOptions>
     {
+        private static Guid securityOid = Guid.Parse("65b5ccfb-b501-4ad5-8dd7-2a33ff64eaa3");
+        private static string givenName = "TestGivenName";
+        private static string surname = "TesSurname";
+        private static string displayName = "TestDisplayName";
+        private static string email = "TestEmail@test.com";
+        private static string jobTitle = "TestJobTitle";
+
+        private static List<Claim> claims = new List<Claim>
+        {
+            new Claim("oid", securityOid.ToString()),
+            new Claim(ClaimTypes.GivenName, givenName),
+            new Claim(ClaimTypes.Surname, surname),
+            new Claim("displayName", displayName),
+            new Claim(ClaimTypes.Email, email),
+            new Claim("jobTitle", jobTitle),
+            new Claim(ClaimTypes.Name, "TestUser"),
+            new Claim(ClaimTypes.Role, "ISL.Reidentification.Configuration.Administrators"),
+            new Claim(ClaimTypes.Role, "ISL.Reidentification.Configuration.Users")
+        };
+
         public TestAuthHandler(
-            IOptionsMonitor<AuthenticationSchemeOptions> options,
+            IOptionsMonitor<CustomAuthenticationSchemeOptions> options,
             ILoggerFactory logger,
             UrlEncoder encoder)
             : base(options, logger, encoder) { }
 
         protected override Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            string randomOidGuid = Guid.NewGuid().ToString();
-
-            var claims = new[] {
-                new Claim(ClaimTypes.Name, "TestUser"),
-                new Claim(ClaimTypes.Role, "Administrators"),
-                new Claim("oid", randomOidGuid)
-            };
+            var invisibleApiKey = Options.InvisibleApiKey;
+            if (invisibleApiKey != null && !string.IsNullOrWhiteSpace(invisibleApiKey.Key))
+            {
+                claims.Add(new Claim(ClaimTypes.Role, invisibleApiKey.Key));
+            }
 
             var identity = new ClaimsIdentity(claims, "TestScheme");
             var principal = new ClaimsPrincipal(identity);

@@ -16,7 +16,7 @@ using RESTFulSense.Controllers;
 
 namespace ISL.ReIdentification.Configurations.Server.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "ISL.Reidentification.Configuration.Administrators")]
     [ApiController]
     [Route("api/[controller]")]
     public class OdsDataController : RESTFulController
@@ -26,6 +26,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
         public OdsDataController(IOdsDataService odsDataService) =>
             this.odsDataService = odsDataService;
 
+        [Authorize(Roles = "ISL.Reidentification.Configuration.Administrators")]
         [HttpPost]
         public async ValueTask<ActionResult<OdsData>> PostOdsDataAsync([FromBody] OdsData odsData)
         {
@@ -168,6 +169,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.Reidentification.Configuration.Administrators")]
         [HttpPut]
         public async ValueTask<ActionResult<OdsData>> PutOdsDataAsync([FromBody] OdsData odsData)
         {
@@ -206,6 +208,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.Reidentification.Configuration.Administrators")]
         [HttpDelete("{odsDataId}")]
         public async ValueTask<ActionResult<OdsData>> DeleteOdsDataByIdAsync(Guid odsDataId)
         {

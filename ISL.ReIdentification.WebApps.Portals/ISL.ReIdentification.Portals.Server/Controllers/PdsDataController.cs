@@ -5,6 +5,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Attrify.Attributes;
 using ISL.ReIdentification.Core.Models.Foundations.PdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.PdsDatas.Exceptions;
 using ISL.ReIdentification.Core.Services.Foundations.PdsDatas;
@@ -15,7 +16,7 @@ using RESTFulSense.Controllers;
 
 namespace ISL.ReIdentification.Portals.Server.Controllers
 {
-    [Authorize(Roles = "Administrators")]
+    [Authorize(Roles = "ISL.Reidentification.Portal.Administrators")]
     [ApiController]
     [Route("api/[controller]")]
     public class PdsDataController : RESTFulController
@@ -25,6 +26,8 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
         public PdsDataController(IPdsDataService pdsDataService) =>
             this.pdsDataService = pdsDataService;
 
+        [Authorize(Roles = "ISL.Reidentification.Portal.Administrators")]
+        [InvisibleApi]
         [HttpPost]
         public async ValueTask<ActionResult<PdsData>> PostPdsDataAsync([FromBody] PdsData pdsData)
         {
@@ -58,9 +61,10 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             }
         }
 
+        [InvisibleApi]
         [HttpGet]
         [EnableQuery(PageSize = 25)]
-        public async ValueTask<ActionResult<IQueryable<PdsData>>> GetAsync()
+        public async ValueTask<ActionResult<IQueryable<PdsData>>> Get()
         {
             try
             {
@@ -78,6 +82,7 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             }
         }
 
+        [InvisibleApi]
         [HttpGet("{pdsDataId}")]
         public async ValueTask<ActionResult<PdsData>> GetPdsDataByIdAsync(Guid pdsDataId)
         {
@@ -110,6 +115,8 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.Reidentification.Portal.Administrators")]
+        [InvisibleApi]
         [HttpPut]
         public async ValueTask<ActionResult<PdsData>> PutPdsDataAsync([FromBody] PdsData pdsData)
         {
@@ -148,6 +155,8 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.Reidentification.Portal.Administrators")]
+        [InvisibleApi]
         [HttpDelete("{pdsDataId}")]
         public async ValueTask<ActionResult<PdsData>> DeletePdsDataByIdAsync(Guid pdsDataId)
         {
