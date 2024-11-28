@@ -9,7 +9,7 @@ using ISL.ReIdentification.Core.Services.Orchestrations.Persists;
 using ISL.ReIdentification.Functions.Models;
 using Microsoft.Azure.Functions.Worker;
 
-namespace LHDS.Functions.Addresses
+namespace ISL.ReIdentification.Functions
 {
     public class ResolvedAddressExporterTimerFunction
     {
