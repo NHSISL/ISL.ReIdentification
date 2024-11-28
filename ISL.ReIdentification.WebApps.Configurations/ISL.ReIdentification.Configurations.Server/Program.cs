@@ -82,8 +82,8 @@ namespace ISL.ReIdentification.Configurations.Server
             }
 
             builder.Configuration
-                .AddJsonFile("appsettings.json")
-                .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange:true)
                 .AddEnvironmentVariables();
 
             // Add services to the container.
