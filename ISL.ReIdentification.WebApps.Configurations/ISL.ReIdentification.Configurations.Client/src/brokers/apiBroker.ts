@@ -1,13 +1,13 @@
 import axios from 'axios';
 import { InteractionRequiredAuthError, PublicClientApplication } from "@azure/msal-browser";
-import { loginRequest, msalConfig } from '../authConfig';
+import { MsalConfig } from '../authConfig';
 
 class ApiBroker {
-    msalInstance = new PublicClientApplication(msalConfig);
+    msalInstance = new PublicClientApplication(MsalConfig.msalConfig);
     scope: string[];
 
     constructor(scope?: string) {
-        this.scope = scope ? [scope] : loginRequest.scopes;
+        this.scope = scope ? [scope] : MsalConfig.loginRequest.scopes;
     }
 
 
