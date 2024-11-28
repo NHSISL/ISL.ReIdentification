@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useState } from "react";
-import { Form, Button, Card, Spinner, Tooltip, OverlayTrigger } from "react-bootstrap";
+import { Form, Button, Card, Spinner, Tooltip, OverlayTrigger, Alert } from "react-bootstrap";
 import { LookupView } from "../../models/views/components/lookups/lookupView";
 import { reIdentificationService } from "../../services/foundations/reIdentificationService";
 import { AccessRequest } from "../../models/accessRequest/accessRequest";
@@ -162,9 +162,12 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
         </>
     }
 
-
-    return <>Something went wrong.</>
-
+    return <>
+        <Alert variant="info" className="mb-0">
+            <p>Something went wrong. Please Contact helpdesk.</p>
+            <p>Pleae confirm you have access to the system for the user you are logged in with.</p>
+        </Alert>
+    </>
 
 }
 
