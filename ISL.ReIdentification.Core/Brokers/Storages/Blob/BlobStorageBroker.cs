@@ -119,5 +119,15 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Blob
         /// Thrown when there is a general issue in the storage service layer.
         public async ValueTask<List<string>> RetrieveAllAccessPoliciesFromContainerAsync(string container) =>
             await this.storageAbstractionProvider.RetrieveAllAccessPoliciesFromContainerAsync(container);
+
+        /// <summary>
+        /// Creates the provided stored access policies on the container.
+        /// </summary>
+        /// <param name="container">The name of the storage container where the access policies will be created.</param>
+        /// <param name="policyNames"><see cref="List<string>"/>
+        /// The names of the policies you want to create. Options are read, write, delete and fullaccess.</param>
+        /// <returns>A <see cref="ValueTask"/> representing the asynchronous operation.</returns>
+        public async ValueTask CreateAndAssignAccessPoliciesToContainerAsync(string container, List<string> policyNames) =>
+            await this.storageAbstractionProvider.CreateAndAssignAccessPoliciesToContainerAsync(container, policyNames);
     }
 }
