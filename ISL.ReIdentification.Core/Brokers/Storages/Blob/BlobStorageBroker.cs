@@ -19,8 +19,15 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Blob
             this.storageAbstractionProvider = storageAbstractionProvider;
         }
 
+        /// <summary>
+        /// Creates a file in the storage container.
+        /// </summary>
+        /// <param name="input">The <see cref="Stream"/> containing the file data to be uploaded.</param>
+        /// <param name="fileName">The name of the file to create in the container.</param>
+        /// <param name="container">The name of the storage container where the file will be stored.</param>
+        /// <returns>A <see cref="ValueTask"/> representing the asynchronous operation.</returns>
         public async ValueTask InsertFileAsync(Stream input, string fileName, string container) =>
-            throw new NotImplementedException();
+            await this.storageAbstractionProvider.CreateFileAsync(input, fileName, container);
 
         public async ValueTask SelectByFileNameAsync(Stream output, string fileName, string container) =>
             throw new NotImplementedException();
