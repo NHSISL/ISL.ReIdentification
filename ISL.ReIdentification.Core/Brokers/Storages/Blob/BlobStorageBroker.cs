@@ -39,8 +39,14 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Blob
         public async ValueTask SelectByFileNameAsync(Stream output, string fileName, string container) =>
             await this.storageAbstractionProvider.RetrieveFileAsync(output, fileName, container);
 
+        /// <summary>
+        /// Asynchronously deletes a file from the specified storage container.
+        /// </summary>
+        /// <param name="fileName">The name of the file to delete.</param>
+        /// <param name="container">The name of the storage container where the file is located.</param>
+        /// <returns>A <see cref="ValueTask"/> representing the asynchronous operation.</returns>
         public async ValueTask DeleteFileAsync(string fileName, string container) =>
-            throw new NotImplementedException();
+           await this.storageAbstractionProvider.DeleteFileAsync(fileName, container);
 
         public async ValueTask<string> GetDownloadLinkAsync(
                 string fileName,
