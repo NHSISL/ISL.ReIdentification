@@ -129,5 +129,13 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Blob
         /// <returns>A <see cref="ValueTask"/> representing the asynchronous operation.</returns>
         public async ValueTask CreateAndAssignAccessPoliciesToContainerAsync(string container, List<string> policyNames) =>
             await this.storageAbstractionProvider.CreateAndAssignAccessPoliciesToContainerAsync(container, policyNames);
+
+        /// <summary>
+        /// Removes all stored access policies from the container.
+        /// </summary>
+        /// <param name="container">The name of the storage container.</param>
+        /// <returns>A <see cref="ValueTask"/> representing the asynchronous operation.</returns>
+        public async ValueTask RemoveAccessPoliciesFromContainerAsync(string container) =>
+            await this.storageAbstractionProvider.RemoveAccessPoliciesFromContainerAsync(container);
     }
 }
