@@ -137,5 +137,14 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Blob
         /// <returns>A <see cref="ValueTask"/> representing the asynchronous operation.</returns>
         public async ValueTask RemoveAccessPoliciesFromContainerAsync(string container) =>
             await this.storageAbstractionProvider.RemoveAccessPoliciesFromContainerAsync(container);
+
+        /// <summary>
+        /// Creates a folder within the specified container.
+        /// </summary>
+        /// <param name="container">The name of the storage container to create the folder in.</param>
+        /// <param name="folder">The name of the folder to create.</param>
+        /// <returns>A <see cref="ValueTask"/> representing the asynchronous operation.</returns>
+        public async ValueTask CreateFolderInContainerAsync(string container, string folder) =>
+            await this.storageAbstractionProvider.CreateFolderInContainerAsync(container, folder);
     }
 }
