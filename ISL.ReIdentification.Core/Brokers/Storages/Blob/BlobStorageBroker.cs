@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using ISL.Providers.Storages.Abstractions;
@@ -68,5 +69,13 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Blob
         /// <returns>A <see cref="ValueTask"/> representing the asynchronous operation.</returns>
         public async ValueTask CreateContainerAsync(string container) =>
             await this.storageAbstractionProvider.CreateContainerAsync(container);
+
+        /// <summary>
+        /// Asynchronously lists all files in the specified storage container.
+        /// </summary>
+        /// <param name="container">The name of the storage container to list files from.</param>
+        /// <returns>A <see cref="ValueTask{List{String}}"/> containing the list of file names.</returns>
+        public async ValueTask<List<string>> ListFilesInContainerAsync(string container) =>
+            await this.storageAbstractionProvider.ListFilesInContainerAsync(container);
     }
 }
