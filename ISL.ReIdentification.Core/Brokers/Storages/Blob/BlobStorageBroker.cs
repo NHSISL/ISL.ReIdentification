@@ -44,7 +44,7 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Blob
             string accessPolicyIdentifier, 
             DateTimeOffset expiresOn)
         {
-            await this.storageAbstractionProvider.CreateDirectorySasTokenAsync(
+            return await this.storageAbstractionProvider.CreateDirectorySasTokenAsync(
                 container, directoryPath, accessPolicyIdentifier, expiresOn);
         }
 
