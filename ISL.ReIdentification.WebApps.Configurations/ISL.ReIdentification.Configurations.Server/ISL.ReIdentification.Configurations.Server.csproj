@@ -29,6 +29,6 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\ISL.ReIdentification.Core\ISL.ReIdentification.Core.csproj" />
-		<ProjectReference Include="..\ISL.Reidentification.Configurations.Client\ISL.ReIdentification.Configurations.Client.esproj" />
+		<ProjectReference Include="..\ISL.ReIdentification.Configurations.Client\ISL.ReIdentification.Configurations.Client.esproj" />
 	</ItemGroup>
 </Project>

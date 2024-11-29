@@ -4,7 +4,7 @@ import { AuthenticatedTemplate, UnauthenticatedTemplate, useMsal } from "@azure/
 import ReportsReasonPage from "./ReportsReasonPage";
 import ReportsLaunchPage from "./reportsLaunchPage";
 import axios, { AxiosError } from "axios";
-import { InteractionRequiredAuthError } from "@azure/msal-browser";
+import { AuthenticationResult, InteractionRequiredAuthError } from "@azure/msal-browser";
 import { IReportEmbedConfiguration } from "embed";
 import ReportDeveloperTools from "./reportDeveloperTools";
 import { DeveloperEvents } from "../../types/DeveloperEvents";
@@ -14,7 +14,7 @@ import LoginUnAuthorisedComponent from "../layouts/loginUnauth";
 
 const ReportsHome: FunctionComponent = () => {
     const { accounts, instance } = useMsal();
-    const {reportGroupId, reportId, reportPage } = useParams();
+    const { reportGroupId, reportId, reportPage } = useParams();
     const [toastPostion, setToastPosition] = useState<ToastPosition>("bottom-end")
     const [showDeveloperTools, setShowDeveloperTools] = useState("");
     const [reidReason, setReidReason] = useState("");
@@ -35,7 +35,8 @@ const ReportsHome: FunctionComponent = () => {
             account: activeAccount || accounts[0]
         };
         try {
-            return (await instance.acquireTokenSilent(request)).accessToken;
+            const token = await instance.acquireTokenSilent(request);
+            return token;
         } catch (error) {
             if (error instanceof InteractionRequiredAuthError) {
                 // fallback to interaction when silent call fails
@@ -47,11 +48,11 @@ const ReportsHome: FunctionComponent = () => {
         }
     }
 
-    const aquireReportEmbeddingUrl = async (accessToken: string) => {
+    const aquireReportEmbeddingUrl = async (accessToken: AuthenticationResult) => {
         return axios.get("https://api.powerbi.com/v1.0/myorg/groups/" + reportGroupId + "/reports/" + reportId,
             {
                 headers: {
-                    "Authorization": "Bearer " + accessToken
+                    "Authorization": "Bearer " + accessToken.accessToken
                 }
             }
         ).then(response => {
@@ -59,7 +60,7 @@ const ReportsHome: FunctionComponent = () => {
         });
     }
 
-    const launch = async () => {
+    const refreshToken = async () => {
 
         const at = await aquireAccessToken();
         if (at) {
@@ -68,20 +69,38 @@ const ReportsHome: FunctionComponent = () => {
                 setReportConfig({
                     type: 'report',
                     embedUrl: reportUrl,
-                    accessToken: at
+                    accessToken: at.accessToken
                 } as IReportEmbedConfiguration);
-
                 setIsLaunched(true);
+
+                if (at.expiresOn) {
+                    const refreshMs = at.expiresOn.getTime() - (new Date()).getTime();
+                    console.info(`Token refreshed, setting timeout for ${at.expiresOn} - ${refreshMs} ms.`)
+                    setTimeout(() => {
+                        refreshToken();
+                    }, refreshMs)
+                }
             } catch (err) {
                 const error = err as Error | AxiosError;
                 if (axios.isAxiosError(error)) {
-                    if(error.response && error.response.status === 401) {
+                    if (error.response && error.response.status === 401) {
                         setNoAccess(true);
                         return;
                     }
                 }
                 throw err;
             }
+        }
+    }
+
+    const launch = async () => {
+        if(reportGroupId == "fake") {
+            setReportConfig({
+                type: 'fake'
+            })
+            setIsLaunched(true);
+        } else {
+            refreshToken();
         }
     }
 
@@ -115,7 +134,7 @@ const ReportsHome: FunctionComponent = () => {
                                         <Dropdown.Item onClick={() => { setToastPosition("top-end") }}>Top-Right</Dropdown.Item>
                                         <Dropdown.Item onClick={() => { setToastPosition("bottom-end") }}>Bottom-Right</Dropdown.Item>
                                         <Dropdown.Item onClick={() => { setToastPosition("bottom-start") }}>Bottom-Left</Dropdown.Item>
-                                       {/** <Dropdown.Divider />
+                                        {/** <Dropdown.Divider />
                                         <Dropdown.Item onClick={() => { setShowDeveloperTools("end"); }}>Show Developer Tools</Dropdown.Item>*/}
                                     </DropdownButton>
                                 </Navbar.Text>
@@ -127,7 +146,7 @@ const ReportsHome: FunctionComponent = () => {
             <Row className="flex-grow-1 align-items-center m-0">
                 <Col>
                     <UnauthenticatedTemplate>
-                       <LoginUnAuthorisedComponent/>
+                        <LoginUnAuthorisedComponent />
                     </UnauthenticatedTemplate>
                     <AuthenticatedTemplate>
                         {!noAccess && !isLaunched && <ReportsReasonPage launchReport={launch} reidReason={reidReason} setReidReason={setReidReason} />}
@@ -144,12 +163,12 @@ const ReportsHome: FunctionComponent = () => {
                             <ReportsLaunchPage
                                 reportConfig={reportConfig}
                                 addDeveloperEvent={raiseEvent}
-                                toastPostion={toastPostion} 
+                                toastPostion={toastPostion}
                                 activePage={reportPage}
                                 toastHidden={toastHidden}
                                 reidReason={reidReason}
                                 hideToast={() => setToastHidden(true)}
-                                />
+                            />
                         }
                     </AuthenticatedTemplate>
                 </Col>
