@@ -2,8 +2,12 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
+using Attrify.Extensions;
+using Attrify.InvisibleApi.Models;
 using ISL.Providers.Notifications.Abstractions;
 using ISL.Providers.Notifications.GovukNotify.Models;
 using ISL.Providers.Notifications.GovukNotify.Providers.Notifications;
@@ -58,6 +62,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web;
 using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
+using Microsoft.OpenApi.Models;
 
 namespace ISL.ReIdentification.Configurations.Server
 {
@@ -66,13 +71,17 @@ namespace ISL.ReIdentification.Configurations.Server
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            ConfigureServices(builder, builder.Configuration);
+            var invisibleApiKey = new InvisibleApiKey();
+            ConfigureServices(builder, builder.Configuration, invisibleApiKey);
             var app = builder.Build();
-            ConfigurePipeline(app);
+            ConfigurePipeline(app, invisibleApiKey);
             app.Run();
         }
 
-        public static void ConfigureServices(WebApplicationBuilder builder, IConfiguration configuration)
+        public static void ConfigureServices(
+            WebApplicationBuilder builder,
+            IConfiguration configuration,
+            InvisibleApiKey invisibleApiKey)
         {
             // Load settings from launchSettings.json (for testing)
             var projectDir = Directory.GetCurrentDirectory();
@@ -94,6 +103,49 @@ namespace ISL.ReIdentification.Configurations.Server
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApi(azureAdOptions);
 
+
+            var instance = builder.Configuration["AzureAd:Instance"];
+            var tenantId = builder.Configuration["AzureAd:TenantId"];
+            var scopes = builder.Configuration["AzureAd:Scopes"];
+
+            if (string.IsNullOrEmpty(instance) || string.IsNullOrEmpty(tenantId) || string.IsNullOrEmpty(scopes))
+            {
+                throw new InvalidOperationException("AzureAd configuration is incomplete. Please check appsettings.json.");
+            }
+
+            builder.Services.AddSwaggerGen(configuration =>
+            {
+                configuration.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+                {
+                    Type = SecuritySchemeType.OAuth2,
+                    Flows = new OpenApiOAuthFlows
+                    {
+                        AuthorizationCode = new OpenApiOAuthFlow
+                        {
+                            AuthorizationUrl = new Uri($"{instance}{tenantId}/oauth2/v2.0/authorize"),
+                            TokenUrl = new Uri($"{instance}{tenantId}/oauth2/v2.0/token"),
+                            Scopes = scopes.Split(' ').ToDictionary(scope => scope, scope => "Access API as user")
+                        }
+                    }
+                });
+
+                configuration.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "oauth2"
+                            }
+                        },
+                        scopes.Split(' ')
+                    }
+                });
+            });
+
+            builder.Services.AddSingleton(invisibleApiKey);
             builder.Services.AddAuthorization();
             builder.Services.AddDbContext<ReIdentificationStorageBroker>();
             builder.Services.AddHttpContextAccessor();
@@ -128,7 +180,7 @@ namespace ISL.ReIdentification.Configurations.Server
                });
         }
 
-        public static void ConfigurePipeline(WebApplication app)
+        public static void ConfigurePipeline(WebApplication app, InvisibleApiKey invisibleApiKey)
         {
             app.UseDefaultFiles();
             app.UseStaticFiles();
@@ -137,12 +189,22 @@ namespace ISL.ReIdentification.Configurations.Server
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerUI(configuration =>
+                {
+                    configuration.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+
+                    // Configure OAuth2 for Swagger UI
+                    configuration.OAuthClientId(app.Configuration["AzureAd:ClientId"]); // Use the application ClientId
+                    configuration.OAuthClientSecret(""); // For PKCE, client secret can be empty
+                    configuration.OAuthUsePkce(); // Enable PKCE (Proof Key for Code Exchange)
+                    configuration.OAuthScopes(app.Configuration["AzureAd:Scopes"]); // Add required scopes
+                });
             }
 
             app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseInvisibleApiMiddleware(invisibleApiKey);
             app.MapControllers().WithOpenApi();
             app.MapFallbackToFile("/index.html");
         }

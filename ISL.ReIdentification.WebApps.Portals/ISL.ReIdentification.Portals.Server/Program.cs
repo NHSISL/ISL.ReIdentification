@@ -2,7 +2,12 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
+using System.IO;
+using System.Linq;
 using System.Text.Json;
+using Attrify.Extensions;
+using Attrify.InvisibleApi.Models;
 using ISL.Providers.Notifications.Abstractions;
 using ISL.Providers.Notifications.GovukNotify.Models;
 using ISL.Providers.Notifications.GovukNotify.Providers.Notifications;
@@ -29,6 +34,7 @@ using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Foundations.Lookups;
 using ISL.ReIdentification.Core.Models.Foundations.OdsDatas;
+using ISL.ReIdentification.Core.Models.Foundations.PdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Models.Orchestrations.Persists;
 using ISL.ReIdentification.Core.Providers.Storage;
@@ -56,6 +62,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web;
 using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
+using Microsoft.OpenApi.Models;
 
 namespace ISL.ReIdentification.Portals.Server
 {
@@ -63,8 +70,27 @@ namespace ISL.ReIdentification.Portals.Server
     {
         public static void Main(string[] args)
         {
-            var builder =
-                WebApplication.CreateBuilder(args);
+            var builder = WebApplication.CreateBuilder(args);
+            var invisibleApiKey = new InvisibleApiKey();
+            ConfigureServices(builder, builder.Configuration, invisibleApiKey);
+            var app = builder.Build();
+            ConfigurePipeline(app, invisibleApiKey);
+            app.Run();
+        }
+
+        public static void ConfigureServices(
+            WebApplicationBuilder builder,
+            IConfiguration configuration,
+            InvisibleApiKey invisibleApiKey)
+        {
+            // Load settings from launchSettings.json (for testing)
+            var projectDir = Directory.GetCurrentDirectory();
+            var launchSettingsPath = Path.Combine(projectDir, "Properties", "launchSettings.json");
+
+            if (File.Exists(launchSettingsPath))
+            {
+                builder.Configuration.AddJsonFile(launchSettingsPath);
+            }
 
             builder.Configuration
                 .AddJsonFile("appsettings.json")
@@ -77,6 +103,51 @@ namespace ISL.ReIdentification.Portals.Server
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApi(azureAdOptions);
 
+            var instance = builder.Configuration["AzureAd:Instance"];
+            var tenantId = builder.Configuration["AzureAd:TenantId"];
+            var scopes = builder.Configuration["AzureAd:Scopes"];
+            var clientId = builder.Configuration["AzureAd:ClientId"];
+
+            if (string.IsNullOrEmpty(instance) || string.IsNullOrEmpty(tenantId) || string.IsNullOrEmpty(scopes) || string.IsNullOrEmpty(clientId))
+            {
+                throw new InvalidOperationException("AzureAd configuration is incomplete. Please check appsettings.json.");
+            }
+
+            builder.Services.AddSwaggerGen(configuration =>
+            {
+                // Add an OAuth2 security definition for Azure AD
+                configuration.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+                {
+                    Type = SecuritySchemeType.OAuth2,
+                    Flows = new OpenApiOAuthFlows
+                    {
+                        AuthorizationCode = new OpenApiOAuthFlow
+                        {
+                            AuthorizationUrl = new Uri($"{instance}{tenantId}/oauth2/v2.0/authorize"),
+                            TokenUrl = new Uri($"{instance}{tenantId}/oauth2/v2.0/token"),
+                            Scopes = scopes.Split(' ').ToDictionary(scope => scope, scope => "Access API as user")
+                        }
+                    }
+                });
+
+                // Add a global security requirement
+                configuration.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "oauth2"
+                            }
+                        },
+                        scopes.Split(' ')
+                    }
+                });
+            });
+
+            builder.Services.AddSingleton(invisibleApiKey);
             builder.Services.AddAuthorization();
             builder.Services.AddDbContext<ReIdentificationStorageBroker>();
             builder.Services.AddHttpContextAccessor();
@@ -109,24 +180,10 @@ namespace ISL.ReIdentification.Portals.Server
                    options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
                    options.JsonSerializerOptions.WriteIndented = true;
                });
+        }
 
-            static IEdmModel GetEdmModel()
-            {
-                ODataConventionModelBuilder builder =
-                   new ODataConventionModelBuilder();
-
-                builder.EntitySet<Lookup>("Lookups");
-                builder.EntitySet<UserAccess>("UserAccesses");
-                builder.EntitySet<ImpersonationContext>("ImpersonationContexts");
-                builder.EntitySet<CsvIdentificationRequest>("CsvIdentificationRequests");
-                builder.EntitySet<OdsData>("OdsData");
-                builder.EntitySet<AccessAudit>("AccessAudits");
-                builder.EnableLowerCamelCase();
-
-                return builder.GetEdmModel();
-            }
-
-            var app = builder.Build();
+        public static void ConfigurePipeline(WebApplication app, InvisibleApiKey invisibleApiKey)
+        {
             app.UseDefaultFiles();
             app.UseStaticFiles();
 
@@ -134,18 +191,41 @@ namespace ISL.ReIdentification.Portals.Server
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerUI(configuration =>
+                {
+                    configuration.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+
+                    // Configure OAuth2 for Swagger UI
+                    configuration.OAuthClientId(app.Configuration["AzureAd:ClientId"]); // Use the application ClientId
+                    configuration.OAuthClientSecret("");
+                    configuration.OAuthUsePkce(); // Enable PKCE (Proof Key for Code Exchange)
+                    configuration.OAuthScopes(app.Configuration["AzureAd:Scopes"]); // Add required scopes
+                });
             }
 
             app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();
-
+            app.UseInvisibleApiMiddleware(invisibleApiKey);
             app.MapControllers().WithOpenApi();
-
             app.MapFallbackToFile("/index.html");
+        }
 
-            app.Run();
+        private static IEdmModel GetEdmModel()
+        {
+            ODataConventionModelBuilder builder =
+               new ODataConventionModelBuilder();
+
+            builder.EntitySet<Lookup>("Lookups");
+            builder.EntitySet<UserAccess>("UserAccesses");
+            builder.EntitySet<ImpersonationContext>("ImpersonationContexts");
+            builder.EntitySet<CsvIdentificationRequest>("CsvIdentificationRequests");
+            builder.EntitySet<OdsData>("OdsData");
+            builder.EntitySet<PdsData>("PdsData");
+            builder.EntitySet<AccessAudit>("AccessAudits");
+            builder.EnableLowerCamelCase();
+
+            return builder.GetEdmModel();
         }
 
         private static void AddProviders(IServiceCollection services, IConfiguration configuration)
