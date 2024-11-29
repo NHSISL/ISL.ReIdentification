@@ -48,10 +48,17 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Blob
         public async ValueTask DeleteFileAsync(string fileName, string container) =>
            await this.storageAbstractionProvider.DeleteFileAsync(fileName, container);
 
+        /// <summary>
+        /// Asynchronously generates a download link for a file in the specified storage container.
+        /// </summary>
+        /// <param name="fileName">The name of the file to generate a download link for.</param>
+        /// <param name="container">The name of the storage container where the file is located.</param>
+        /// <param name="expiresOn">The <see cref="DateTimeOffset"/> indicating when the download link will expire.</param>
+        /// <returns>A <see cref="ValueTask{String}"/> containing the download link.</returns>
         public async ValueTask<string> GetDownloadLinkAsync(
-                string fileName,
-                string container,
-                DateTimeOffset expiresOn) =>
-            throw new NotImplementedException();
+            string fileName,
+            string container,
+            DateTimeOffset expiresOn) =>
+            await this.storageAbstractionProvider.GetDownloadLinkAsync(fileName, container, expiresOn);
     }
 }
