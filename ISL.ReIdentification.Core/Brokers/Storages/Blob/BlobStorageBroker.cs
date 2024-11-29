@@ -89,7 +89,19 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Blob
         /// <returns>A <see cref="ValueTask{String}"/> containing the generated access token.</returns>
         public async ValueTask<string> CreateDirectorySasTokenAsync(
             string container, string directoryPath, string accessPolicyIdentifier, DateTimeOffset expiresOn) =>
-            await this.storageAbstractionProvider.CreateDirectorySasTokenAsync(
-                container, directoryPath, accessPolicyIdentifier, expiresOn);
+                await this.storageAbstractionProvider.CreateDirectorySasTokenAsync(
+                    container, directoryPath, accessPolicyIdentifier, expiresOn);
+
+        /// <summary>
+        /// Asynchronously generates an access token for a specified path in the storage container with a given access level.
+        /// </summary>
+        /// <param name="path">The path within the container for which the access token is generated.</param>
+        /// <param name="container">The name of the storage container.</param>
+        /// <param name="accessLevel">The access level for the token (e.g., "read" or "write").</param>
+        /// <param name="expiresOn">The <see cref="DateTimeOffset"/> indicating when the access token will expire.</param>
+        /// <returns>A <see cref="ValueTask{String}"/> containing the generated access token.</returns>
+        public async ValueTask<string> GetAccessTokenAsync(
+            string path, string container, string accessLevel, DateTimeOffset expiresOn) =>
+                await this.storageAbstractionProvider.GetAccessTokenAsync(path, container, accessLevel, expiresOn);
     }
 }
