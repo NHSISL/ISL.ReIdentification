@@ -12,6 +12,7 @@ using ISL.Providers.ReIdentification.Necs.Models.Brokers.NECS;
 using ISL.Providers.ReIdentification.Necs.Providers.NecsReIdentifications;
 using ISL.Providers.ReIdentification.OfflineFileSources.Models;
 using ISL.Providers.ReIdentification.OfflineFileSources.Providers.OfflineFileSources;
+using ISL.Providers.Storages.Abstractions;
 using ISL.ReIdentification.Core.Brokers.CsvHelpers;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Hashing;
@@ -32,6 +33,7 @@ using ISL.ReIdentification.Core.Models.Foundations.OdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.PdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Models.Orchestrations.Persists;
+using ISL.ReIdentification.Core.Providers.Storage;
 using ISL.ReIdentification.Core.Services.Coordinations.Identifications;
 using ISL.ReIdentification.Core.Services.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationRequests;
@@ -83,7 +85,7 @@ namespace ISL.ReIdentification.Configurations.Server
 
             builder.Configuration
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange:true)
+                .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables();
 
             // Add services to the container.
@@ -176,7 +178,9 @@ namespace ISL.ReIdentification.Configurations.Server
             services.AddSingleton(notificationConfigurations);
             services.AddSingleton(notifyConfigurations);
             services.AddTransient<INotificationAbstractionProvider, NotificationAbstractionProvider>();
+            services.AddTransient<IStorageAbstractionProvider, StorageAbstractionProvider>();
             services.AddTransient<INotificationProvider, GovukNotifyProvider>();
+            services.AddTransient<IStorageProvider, FakeStorageProvider>();
 
             bool reIdentificationProviderOfflineMode = configuration
                 .GetSection("ReIdentificationProviderOfflineMode").Get<bool>();
