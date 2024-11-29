@@ -18,7 +18,6 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.PdsD
         public void GetShouldHaveRoleAttributeWithRoles()
         {
             // Given
-
             var controllerType = typeof(PdsDataController);
             var methodInfo = controllerType.GetMethod("GetPdsDataByIdAsync");
             Type attributeType = typeof(AuthorizeAttribute);
@@ -60,7 +59,6 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.PdsD
         public void GetShouldHaveInvisibleApiAttribute()
         {
             // Given
-
             var controllerType = typeof(PdsDataController);
             var methodInfo = controllerType.GetMethod("GetPdsDataByIdAsync");
             Type attributeType = typeof(InvisibleApiAttribute);

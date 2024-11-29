@@ -18,7 +18,6 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.PdsD
         public void DeleteShouldHaveRoleAttributeWithRoles()
         {
             // Given
-
             var controllerType = typeof(PdsDataController);
             var methodInfo = controllerType.GetMethod("DeletePdsDataByIdAsync");
             Type attributeType = typeof(AuthorizeAttribute);
@@ -60,7 +59,6 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.PdsD
         public void DeleteShouldHaveInvisibleApiAttribute()
         {
             // Given
-
             var controllerType = typeof(PdsDataController);
             var methodInfo = controllerType.GetMethod("DeletePdsDataByIdAsync");
             Type attributeType = typeof(InvisibleApiAttribute);

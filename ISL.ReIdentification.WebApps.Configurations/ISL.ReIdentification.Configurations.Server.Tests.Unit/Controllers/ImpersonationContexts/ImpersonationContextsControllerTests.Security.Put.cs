@@ -18,7 +18,6 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.Impe
         public void PutShouldHaveRoleAttributeWithRoles()
         {
             // Given
-
             var controllerType = typeof(ImpersonationContextsController);
             var methodInfo = controllerType.GetMethod("PutImpersonationContextAsync");
             Type attributeType = typeof(AuthorizeAttribute);
@@ -60,7 +59,6 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.Impe
         public void PutShouldHaveInvisibleApiAttribute()
         {
             // Given
-
             var controllerType = typeof(ImpersonationContextsController);
             var methodInfo = controllerType.GetMethod("PutImpersonationContextAsync");
             Type attributeType = typeof(InvisibleApiAttribute);

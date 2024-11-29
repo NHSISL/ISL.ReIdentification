@@ -18,7 +18,6 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.User
         public void PutShouldHaveRoleAttributeWithRoles()
         {
             // Given
-
             var controllerType = typeof(UserAccessesController);
             var methodInfo = controllerType.GetMethod("PutUserAccessAsync");
             Type attributeType = typeof(AuthorizeAttribute);
@@ -61,7 +60,6 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.User
         public void PutShouldHaveInvisibleApiAttribute()
         {
             // Given
-
             var controllerType = typeof(UserAccessesController);
             var methodInfo = controllerType.GetMethod("PutUserAccessAsync");
             Type attributeType = typeof(InvisibleApiAttribute);

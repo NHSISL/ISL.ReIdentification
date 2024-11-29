@@ -18,7 +18,6 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.CsvI
         public void PostShouldHaveRoleAttributeWithRoles()
         {
             // Given
-
             var controllerType = typeof(CsvIdentificationRequestsController);
             var methodInfo = controllerType.GetMethod("PostCsvIdentificationRequestAsync");
             Type attributeType = typeof(AuthorizeAttribute);
@@ -60,7 +59,6 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.CsvI
         public void PostShouldHaveInvisibleApiAttribute()
         {
             // Given
-
             var controllerType = typeof(CsvIdentificationRequestsController);
             var methodInfo = controllerType.GetMethod("PostCsvIdentificationRequestAsync");
             Type attributeType = typeof(InvisibleApiAttribute);

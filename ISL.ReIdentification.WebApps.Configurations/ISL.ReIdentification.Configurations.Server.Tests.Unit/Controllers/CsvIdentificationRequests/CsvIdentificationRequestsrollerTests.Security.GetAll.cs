@@ -18,7 +18,6 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.CsvI
         public void GetAllShouldHaveRoleAttributeWithRoles()
         {
             // Given
-
             var controllerType = typeof(CsvIdentificationRequestsController);
             var methodInfo = controllerType.GetMethod("Get");
             Type attributeType = typeof(AuthorizeAttribute);
@@ -60,7 +59,6 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.CsvI
         public void GetAllShouldHaveInvisibleApiAttribute()
         {
             // Given
-
             var controllerType = typeof(CsvIdentificationRequestsController);
             var methodInfo = controllerType.GetMethod("Get");
             Type attributeType = typeof(InvisibleApiAttribute);

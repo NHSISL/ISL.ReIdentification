@@ -18,7 +18,6 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.Look
         public void PostShouldHaveRoleAttributeWithRoles()
         {
             // Given
-
             var controllerType = typeof(LookupsController);
             var methodInfo = controllerType.GetMethod("PostLookupAsync");
             Type attributeType = typeof(AuthorizeAttribute);
@@ -60,7 +59,6 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.Look
         public void PostShouldHaveInvisibleApiAttribute()
         {
             // Given
-
             var controllerType = typeof(LookupsController);
             var methodInfo = controllerType.GetMethod("PostLookupAsync");
             Type attributeType = typeof(InvisibleApiAttribute);

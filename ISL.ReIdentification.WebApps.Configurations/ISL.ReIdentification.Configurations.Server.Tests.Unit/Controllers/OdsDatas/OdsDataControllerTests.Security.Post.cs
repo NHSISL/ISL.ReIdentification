@@ -18,7 +18,6 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.OdsD
         public void PostShouldHaveRoleAttributeWithRoles()
         {
             // Given
-
             var controllerType = typeof(OdsDataController);
             var methodInfo = controllerType.GetMethod("PostOdsDataAsync");
             Type attributeType = typeof(AuthorizeAttribute);
@@ -60,7 +59,6 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.OdsD
         public void PostShouldHaveInvisibleApiAttribute()
         {
             // Given
-
             var controllerType = typeof(OdsDataController);
             var methodInfo = controllerType.GetMethod("PostOdsDataAsync");
             Type attributeType = typeof(InvisibleApiAttribute);

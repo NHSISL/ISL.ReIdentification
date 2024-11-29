@@ -18,7 +18,6 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.Impe
         public void DeleteShouldHaveRoleAttributeWithRoles()
         {
             // Given
-
             var controllerType = typeof(ImpersonationContextsController);
             var methodInfo = controllerType.GetMethod("DeleteImpersonationContextByIdAsync");
             Type attributeType = typeof(AuthorizeAttribute);
@@ -60,7 +59,6 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.Impe
         public void DeleteShouldHaveInvisibleApiAttribute()
         {
             // Given
-
             var controllerType = typeof(ImpersonationContextsController);
             var methodInfo = controllerType.GetMethod("DeleteImpersonationContextByIdAsync");
             Type attributeType = typeof(InvisibleApiAttribute);

@@ -18,7 +18,6 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.User
         public void DeleteShouldHaveRoleAttributeWithRoles()
         {
             // Given
-
             var controllerType = typeof(UserAccessesController);
             var methodInfo = controllerType.GetMethod("DeleteUserAccessByIdAsync");
             Type attributeType = typeof(AuthorizeAttribute);
@@ -61,7 +60,6 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.User
         public void DeleteShouldHaveInvisibleApiAttribute()
         {
             // Given
-
             var controllerType = typeof(UserAccessesController);
             var methodInfo = controllerType.GetMethod("DeleteUserAccessByIdAsync");
             Type attributeType = typeof(InvisibleApiAttribute);
