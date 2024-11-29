@@ -60,5 +60,13 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Blob
             string container,
             DateTimeOffset expiresOn) =>
             await this.storageAbstractionProvider.GetDownloadLinkAsync(fileName, container, expiresOn);
+
+        /// <summary>
+        /// Creates a container in the storage account.
+        /// </summary>
+        /// <param name="container">The name of the created storage container.</param>
+        /// <returns>A <see cref="ValueTask"/> representing the asynchronous operation.</returns>
+        public async ValueTask CreateContainerAsync(string container) =>
+            await this.storageAbstractionProvider.CreateContainerAsync(container);
     }
 }
