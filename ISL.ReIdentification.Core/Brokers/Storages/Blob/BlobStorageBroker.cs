@@ -14,136 +14,58 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Blob
     {
         private readonly IStorageAbstractionProvider storageAbstractionProvider;
 
-        public BlobStorageBroker(
-            IStorageAbstractionProvider storageAbstractionProvider)
-        {
+        public BlobStorageBroker(IStorageAbstractionProvider storageAbstractionProvider) =>
             this.storageAbstractionProvider = storageAbstractionProvider;
-        }
 
-        /// <summary>
-        /// Creates a file in the storage container.
-        /// </summary>
-        /// <param name="input">The <see cref="Stream"/> containing the file data to be uploaded.</param>
-        /// <param name="fileName">The name of the file to create in the container.</param>
-        /// <param name="container">The name of the storage container where the file will be stored.</param>
-        /// <returns>A <see cref="ValueTask"/> representing the asynchronous operation.</returns>
         public async ValueTask InsertFileAsync(Stream input, string fileName, string container) =>
             await this.storageAbstractionProvider.CreateFileAsync(input, fileName, container);
 
-        /// <summary>
-        /// Retrieves a file from the storage container.
-        /// </summary>
-        /// <param name="output">The <see cref="Stream"/> containing the file data to be downloaded.</param>
-        /// <param name="fileName">The name of the file to retrieve in the container.</param>
-        /// <param name="container">The name of the storage container where the file is located.</param>
-        /// <returns>A <see cref="ValueTask"/> representing the asynchronous operation.</returns>
         public async ValueTask SelectByFileNameAsync(Stream output, string fileName, string container) =>
             await this.storageAbstractionProvider.RetrieveFileAsync(output, fileName, container);
 
-        /// <summary>
-        /// Asynchronously deletes a file from the specified storage container.
-        /// </summary>
-        /// <param name="fileName">The name of the file to delete.</param>
-        /// <param name="container">The name of the storage container where the file is located.</param>
-        /// <returns>A <see cref="ValueTask"/> representing the asynchronous operation.</returns>
         public async ValueTask DeleteFileAsync(string fileName, string container) =>
            await this.storageAbstractionProvider.DeleteFileAsync(fileName, container);
 
-        /// <summary>
-        /// Asynchronously generates a download link for a file in the specified storage container.
-        /// </summary>
-        /// <param name="fileName">The name of the file to generate a download link for.</param>
-        /// <param name="container">The name of the storage container where the file is located.</param>
-        /// <param name="expiresOn">The <see cref="DateTimeOffset"/> indicating when the download link will expire.</param>
-        /// <returns>A <see cref="ValueTask{String}"/> containing the download link.</returns>
         public async ValueTask<string> GetDownloadLinkAsync(
             string fileName,
             string container,
             DateTimeOffset expiresOn) =>
             await this.storageAbstractionProvider.GetDownloadLinkAsync(fileName, container, expiresOn);
 
-        /// <summary>
-        /// Creates a container in the storage account.
-        /// </summary>
-        /// <param name="container">The name of the created storage container.</param>
-        /// <returns>A <see cref="ValueTask"/> representing the asynchronous operation.</returns>
         public async ValueTask CreateContainerAsync(string container) =>
             await this.storageAbstractionProvider.CreateContainerAsync(container);
 
-        /// <summary>
-        /// Asynchronously lists all files in the specified storage container.
-        /// </summary>
-        /// <param name="container">The name of the storage container to list files from.</param>
-        /// <returns>A <see cref="ValueTask{List{String}}"/> containing the list of file names.</returns>
         public async ValueTask<List<string>> ListFilesInContainerAsync(string container) =>
             await this.storageAbstractionProvider.ListFilesInContainerAsync(container);
 
-        /// <summary>
-        /// Creates a SAS token scoped to the provided container and directory, with the permissions of 
-        /// the provided access policy.
-        /// </summary>
-        /// <param name="container">The name of the storage container where the SAS token will be created.</param>
-        /// <param name="directoryPath">The path to which the SAS token will be scoped</param>
-        /// <param name="accessPolicyIdentifier">The name of the stored access policy.</param>
-        /// <param name="expiresOn">The <see cref="DateTimeOffset"/> indicating when the SAS token will expire.</param>
-        /// <returns>A <see cref="ValueTask{String}"/> containing the generated access token.</returns>
         public async ValueTask<string> CreateDirectorySasTokenAsync(
-            string container, string directoryPath, string accessPolicyIdentifier, DateTimeOffset expiresOn) =>
-                await this.storageAbstractionProvider.CreateDirectorySasTokenAsync(
-                    container, directoryPath, accessPolicyIdentifier, expiresOn);
+            string container, 
+            string directoryPath, 
+            string accessPolicyIdentifier, 
+            DateTimeOffset expiresOn)
+        {
+            await this.storageAbstractionProvider.CreateDirectorySasTokenAsync(
+                container, directoryPath, accessPolicyIdentifier, expiresOn);
+        }
 
-        /// <summary>
-        /// Asynchronously generates an access token for a specified path in the storage container with a given access level.
-        /// </summary>
-        /// <param name="path">The path within the container for which the access token is generated.</param>
-        /// <param name="container">The name of the storage container.</param>
-        /// <param name="accessLevel">The access level for the token (e.g., "read" or "write").</param>
-        /// <param name="expiresOn">The <see cref="DateTimeOffset"/> indicating when the access token will expire.</param>
-        /// <returns>A <see cref="ValueTask{String}"/> containing the generated access token.</returns>
         public async ValueTask<string> GetAccessTokenAsync(
-            string path, string container, string accessLevel, DateTimeOffset expiresOn) =>
+            string path, 
+            string container, 
+            string accessLevel, 
+            DateTimeOffset expiresOn) =>
                 await this.storageAbstractionProvider.GetAccessTokenAsync(path, container, accessLevel, expiresOn);
 
-        /// <summary>
-        /// Retrieves all stored access policies from the container.
-        /// </summary>
-        /// <param name="container">The name of the storage container.</param>
-        /// <returns>A <see cref="ValueTask{List{String}}"/> containing the access policy names.</returns>
-        /// <exception cref="StorageValidationProviderException">
-        /// Thrown when validation of input parameters fails.
-        /// </exception>
-        /// <exception cref="StorageDependencyProviderException">
-        /// Thrown when there is an issue with the storage dependency.
-        /// </exception>
-        /// <exception cref="StorageServiceProviderException">
-        /// Thrown when there is a general issue in the storage service layer.
         public async ValueTask<List<string>> RetrieveAllAccessPoliciesFromContainerAsync(string container) =>
             await this.storageAbstractionProvider.RetrieveAllAccessPoliciesFromContainerAsync(container);
 
-        /// <summary>
-        /// Creates the provided stored access policies on the container.
-        /// </summary>
-        /// <param name="container">The name of the storage container where the access policies will be created.</param>
-        /// <param name="policyNames"><see cref="List<string>"/>
-        /// The names of the policies you want to create. Options are read, write, delete and fullaccess.</param>
-        /// <returns>A <see cref="ValueTask"/> representing the asynchronous operation.</returns>
-        public async ValueTask CreateAndAssignAccessPoliciesToContainerAsync(string container, List<string> policyNames) =>
+        public async ValueTask CreateAndAssignAccessPoliciesToContainerAsync(
+            string container, 
+            List<string> policyNames) =>
             await this.storageAbstractionProvider.CreateAndAssignAccessPoliciesToContainerAsync(container, policyNames);
 
-        /// <summary>
-        /// Removes all stored access policies from the container.
-        /// </summary>
-        /// <param name="container">The name of the storage container.</param>
-        /// <returns>A <see cref="ValueTask"/> representing the asynchronous operation.</returns>
         public async ValueTask RemoveAccessPoliciesFromContainerAsync(string container) =>
             await this.storageAbstractionProvider.RemoveAccessPoliciesFromContainerAsync(container);
 
-        /// <summary>
-        /// Creates a folder within the specified container.
-        /// </summary>
-        /// <param name="container">The name of the storage container to create the folder in.</param>
-        /// <param name="folder">The name of the folder to create.</param>
-        /// <returns>A <see cref="ValueTask"/> representing the asynchronous operation.</returns>
         public async ValueTask CreateFolderInContainerAsync(string container, string folder) =>
             await this.storageAbstractionProvider.CreateFolderInContainerAsync(container, folder);
     }
