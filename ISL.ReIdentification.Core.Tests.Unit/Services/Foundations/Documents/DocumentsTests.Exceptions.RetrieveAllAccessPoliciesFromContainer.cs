@@ -1,0 +1,60 @@
+﻿// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
+using FluentAssertions;
+using ISL.Providers.Storages.Abstractions.Models.Exceptions;
+using ISL.ReIdentification.Core.Models.Foundations.Documents.Exceptions;
+using Moq;
+using Xeptions;
+
+namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
+{
+    public partial class DocumentsTests
+    {
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRetrieveAllAccessPoliciesFromContainerAsync()
+        {
+            // given
+            string someContainer = GetRandomString();
+
+            var storageProviderValidationException = new StorageProviderValidationException(
+                message: "Storage provider validation errors occurred, please try again.",
+                innerException: new Xeption() );
+                
+            var expectedDocumentServiceException = new DocumentDependencyValidationException(
+                message: "Document service error occurred, contact support.",
+                innerException: storageProviderValidationException);
+
+            this.blobStorageBrokerMock.Setup(broker =>
+                broker.RetrieveAllAccessPoliciesFromContainerAsync(someContainer))
+                    .ThrowsAsync(storageProviderValidationException);
+
+            // when
+            ValueTask<List<string>> retrieveAccessPolicyTask =
+                this.documentService.RetrieveAllAccessPoliciesFromContainerAsync(someContainer);
+
+            DocumentDependencyValidationException actualDocumentServiceException =
+                await Assert.ThrowsAsync<DocumentDependencyValidationException>(retrieveAccessPolicyTask.AsTask);
+
+            // then
+            actualDocumentServiceException.Should().BeEquivalentTo(expectedDocumentServiceException);
+
+            this.blobStorageBrokerMock.Verify(broker =>
+                broker.RetrieveAllAccessPoliciesFromContainerAsync(someContainer),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedDocumentServiceException))),
+                        Times.Once);
+
+            this.blobStorageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+    }
+}
