@@ -59,6 +59,15 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             {
                 throw await CreateAndLogDependencyExceptionAsync(storageProviderServiceException);
             }
+            catch (Exception exception)
+            {
+                var failedServiceDocumentException =
+                    new FailedServiceDocumentException(
+                        message: "Failed service document error occurred, contact support.",
+                        innerException: exception);
+
+                throw await CreateAndLogServiceExceptionAsync(failedServiceDocumentException);
+            }
         }
 
         private async ValueTask<DocumentValidationException> CreateAndLogValidationExceptionAsync(Xeption exception)
