@@ -26,7 +26,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                 message: "Invalid document. Please correct the errors and try again.");
 
             invalidDocumentException.AddData(
-                key: "container",
+                key: "Container",
                 values: "Text is invalid");
 
             var expectedDocumentValidationException = new DocumentValidationException(

@@ -48,7 +48,11 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
         public ValueTask<string> GetDownloadLinkAsync(string fileName, string container) =>
            throw new NotImplementedException();
 
-        public async ValueTask<List<string>> RetrieveAllAccessPoliciesFromContainerAsync(string container) =>
-            await this.blobStorageBroker.RetrieveAllAccessPoliciesFromContainerAsync(container);
+        public ValueTask<List<string>> RetrieveAllAccessPoliciesFromContainerAsync(string container) =>
+        TryCatch(async () =>
+        {
+            ValidateStorageArgumentsOnRetrieveAccessPolicies(container);
+            return await this.blobStorageBroker.RetrieveAllAccessPoliciesFromContainerAsync(container);
+        });
     }
 }

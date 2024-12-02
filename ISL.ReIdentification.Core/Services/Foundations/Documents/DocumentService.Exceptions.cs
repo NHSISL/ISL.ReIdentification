@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Foundations.Documents.Exceptions;
 using Xeptions;
@@ -12,6 +13,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
     public partial class DocumentService : IDocumentService
     {
         private delegate ValueTask ReturningNothingFunction();
+        private delegate ValueTask<List<string>> ReturnStringListFunction();
 
         private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
         {
@@ -31,6 +33,18 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
                         innerException: exception);
 
                 throw await CreateAndLogServiceExceptionAsync(failedServiceDocumentException);
+            }
+        }
+
+        private async ValueTask<List<string>> TryCatch(ReturnStringListFunction returnStringListFunction)
+        {
+            try
+            {
+                return await returnStringListFunction();
+            }
+            catch (InvalidDocumentException invalidDocumentException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(invalidDocumentException);
             }
         }
 
