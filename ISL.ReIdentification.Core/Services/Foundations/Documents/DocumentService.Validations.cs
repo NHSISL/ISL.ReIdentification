@@ -67,5 +67,10 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
 
             invalidDocumentException.ThrowIfContainsErrors();
         }
+
+        private static void ValidateStorageArgumentsOnRemoveAccessPolicies(string container)
+        {
+            Validate((Rule: IsInvalid(container), Parameter: "Container"));
+        }
     }
 }
