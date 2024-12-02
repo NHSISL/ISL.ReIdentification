@@ -17,7 +17,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
     public partial class DocumentsTests
     {
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnRetrieveAllAccessPoliciesFromContainerAsync()
+        public async Task ShouldThrowDependencyValidationExceptionOnRetrieveAllAccessPoliciesFromContainerAsync()
         {
             // given
             string someContainer = GetRandomString();
@@ -27,7 +27,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                 innerException: new Xeption() );
                 
             var expectedDocumentServiceException = new DocumentDependencyValidationException(
-                message: "Document service error occurred, contact support.",
+                message: "Document dependency validation error occurred, please fix errors and try again.",
                 innerException: storageProviderValidationException);
 
             this.blobStorageBrokerMock.Setup(broker =>

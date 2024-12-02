@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ISL.Providers.Storages.Abstractions.Models.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.Documents.Exceptions;
 using Xeptions;
 
@@ -46,6 +47,10 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             {
                 throw await CreateAndLogValidationExceptionAsync(invalidDocumentException);
             }
+            catch (StorageProviderValidationException storageProviderValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(storageProviderValidationException);
+            }
         }
 
         private async ValueTask<DocumentValidationException> CreateAndLogValidationExceptionAsync(Xeption exception)
@@ -58,6 +63,18 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             await this.loggingBroker.LogErrorAsync(documentValidationException);
 
             return documentValidationException;
+        }
+
+        private async ValueTask<DocumentDependencyValidationException> CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
+        {
+            var documentDependencyValidationException =
+                new DocumentDependencyValidationException(
+                    message: "Document dependency validation error occurred, please fix errors and try again.",
+                    innerException: exception);
+
+            await this.loggingBroker.LogErrorAsync(documentDependencyValidationException);
+
+            return documentDependencyValidationException;
         }
 
         private async ValueTask<DocumentServiceException> CreateAndLogServiceExceptionAsync(Xeption exception)
