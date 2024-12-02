@@ -51,6 +51,10 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             {
                 throw await CreateAndLogDependencyValidationExceptionAsync(storageProviderValidationException);
             }
+            catch (StorageProviderDependencyException storageProviderDependencyException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(storageProviderDependencyException);
+            }
         }
 
         private async ValueTask<DocumentValidationException> CreateAndLogValidationExceptionAsync(Xeption exception)
@@ -75,6 +79,18 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             await this.loggingBroker.LogErrorAsync(documentDependencyValidationException);
 
             return documentDependencyValidationException;
+        }
+
+        private async ValueTask<DocumentDependencyException> CreateAndLogDependencyExceptionAsync(Xeption exception)
+        {
+            var documentDependencyException =
+                new DocumentDependencyException(
+                    message: "Document dependency error occurred, please fix errors and try again.",
+                    innerException: exception);
+
+            await this.loggingBroker.LogErrorAsync(documentDependencyException);
+
+            return documentDependencyException;
         }
 
         private async ValueTask<DocumentServiceException> CreateAndLogServiceExceptionAsync(Xeption exception)
