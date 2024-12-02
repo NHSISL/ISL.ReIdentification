@@ -6,8 +6,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq.Expressions;
+using ISL.Providers.Storages.Abstractions.Models.Exceptions;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Storages.Blob;
+using ISL.ReIdentification.Core.Models.Foundations.UserAccesses.Exceptions;
 using ISL.ReIdentification.Core.Services.Foundations.Documents;
 using KellermanSoftware.CompareNetObjects;
 using Moq;
@@ -116,6 +118,24 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                 stream.CopyTo(memoryStream);
                 return memoryStream.ToArray();
             }
+        }
+
+        public static TheoryData<Xeption> DependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new StorageProviderDependencyException(
+                    message: "Storage provider dependency error occurred, please contact support.",
+                    innerException),
+
+                new StorageProviderServiceException(
+                    message: "Storage provider service error occurred, please contact support.",
+                    innerException),
+            };
         }
     }
 }
