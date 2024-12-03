@@ -55,5 +55,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             
             return await this.blobStorageBroker.RetrieveAllAccessPoliciesFromContainerAsync(container);
         });
+
+        public ValueTask RemoveAllAccessPoliciesFromContainerAsync(string container) =>
+        throw new NotImplementedException();
     }
 }
