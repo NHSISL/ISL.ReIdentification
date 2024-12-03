@@ -52,6 +52,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
         TryCatch(async () =>
         {
             ValidateStorageArgumentsOnRetrieveAccessPolicies(container);
+            
             return await this.blobStorageBroker.RetrieveAllAccessPoliciesFromContainerAsync(container);
         });
     }
