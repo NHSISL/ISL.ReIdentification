@@ -34,6 +34,10 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             {
                 throw await CreateAndLogDependencyExceptionAsync(storageProviderDependencyException);
             }
+            catch (StorageProviderServiceException storageProviderServiceException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(storageProviderServiceException);
+            }
             catch (Exception exception)
             {
                 var failedServiceDocumentException =
