@@ -15,7 +15,6 @@ const PdsRow: FunctionComponent<PdsRowProps> = (props) => {
             <tr>
                 <td>{pds.pseudoNhsNumber}</td>
                 <td>{pds.orgCode}</td>
-                <td>{pds.odsHierarchy}</td>
                 <td>{moment(pds.relationshipWithOrganisationEffectiveFromDate?.toString()).format("Do-MMM-yyyy HH:mm")}</td>
                 <td>{moment(pds.relationshipWithOrganisationEffectiveToDate?.toString()).format("Do-MMM-yyyy HH:mm")}</td>
             </tr>
