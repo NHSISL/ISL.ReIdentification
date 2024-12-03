@@ -75,5 +75,5 @@ steps:
     replaceExistingArchive: true
 
 - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_reid_func.zip
-    displayName: 'Publish Artifact - Re-id Function'
-    artifact: drop-reid-func
+  displayName: 'Publish Artifact - Re-id Function'
+  artifact: drop-reid-func
