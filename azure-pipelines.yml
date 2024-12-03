@@ -22,7 +22,7 @@ steps:
     targetType: inline
     script: |
       pwd
-      ls -l
+      ls -lR
 
 - task: UseDotNet@2
   displayName: "Install .NET Core SDK"
