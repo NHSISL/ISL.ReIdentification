@@ -15,6 +15,10 @@ type AccessAuditTableProps = {
     requestId: string;
 };
 
+type Page = {
+    data: AccessAudit[];
+};
+
 const AccessAuditTable: FunctionComponent<AccessAuditTableProps> = ({ requestId }) => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [debouncedTerm, setDebouncedTerm] = useState<string>("");
@@ -39,48 +43,69 @@ const AccessAuditTable: FunctionComponent<AccessAuditTableProps> = ({ requestId 
 
     useEffect(() => {
         if (pages && Array.isArray(pages)) {
-            const allData = pages.flatMap(page => {
-                if (Array.isArray(page.data)) {
-                    return page.data;
-                } else {
-                    console.error("Page data is not an array", page.data);
-                    return [];
-                }
-            });
+            console.log("Fetched pages:", pages);
 
-            const filteredData = allData.filter(audit => audit.transactionId !== "00000000-0000-0000-0000-000000000000");
+            const allData = extractAllData(pages);
+            const filteredData = filterData(allData);
+            const groupedData = groupDataByTransactionId(filteredData);
+            const uniqueAccessAudit = mapToUniqueAccessAudit(groupedData);
 
-            const groupedData = filteredData.reduce((acc, audit) => {
-                const transactionIdKey = audit.transactionId;
-
-                if (!acc[transactionIdKey]) {
-                    acc[transactionIdKey] = [];
-                }
-
-                acc[transactionIdKey].push(audit);
-                return acc;
-            }, {} as { [key: string]: AccessAudit[] });
-
-            const uniqueAccessAudit = Object.values(groupedData).map(group => {
-                const okCount = group.filter(audit => audit.message === 'Re-identification outcome: OK').length;
-                const notOkCount = group.filter(audit => audit.message === 'User do not have access to the organisation(s) associated with patient.  Re-identification blocked.').length;
-
-                return {
-                    ...group[0],
-                    count: group.length,
-                    okCount,
-                    notOkCount
-                };
-            });
+            console.log("Unique access audit:", uniqueAccessAudit);
 
             setMappedAccessAudit(uniqueAccessAudit);
-            const itemsPerPage = pages[0]?.data.length || 1;
-            const totalItems = uniqueAccessAudit.length;
-            setTotalPages(Math.ceil(totalItems / itemsPerPage));
+            updateTotalPages(pages, uniqueAccessAudit);
         } else {
             console.error("Pages are not an array or are undefined", pages);
         }
     }, [pages]);
+
+    const extractAllData = (pages: Page[]): AccessAudit[] => {
+        return pages.flatMap(page => {
+            if (Array.isArray(page.data)) {
+                return page.data;
+            } else {
+                console.error("Page data is not an array", page.data);
+                return [];
+            }
+        });
+    };
+
+    const filterData = (data: AccessAudit[]): AccessAudit[] => {
+        return data.filter(audit => audit.transactionId !== "00000000-0000-0000-0000-000000000000");
+    };
+
+    const groupDataByTransactionId = (data: AccessAudit[]): { [key: string]: AccessAudit[] } => {
+        return data.reduce((acc, audit) => {
+            const transactionIdKey = audit.transactionId;
+
+            if (!acc[transactionIdKey]) {
+                acc[transactionIdKey] = [];
+            }
+
+            acc[transactionIdKey].push(audit);
+            return acc;
+        }, {} as { [key: string]: AccessAudit[] });
+    };
+
+    const mapToUniqueAccessAudit = (groupedData: { [key: string]: AccessAudit[] }): Array<AccessAudit & { count: number, okCount: number, notOkCount: number }> => {
+        return Object.values(groupedData).map(group => {
+            const okCount = group.filter(audit => audit.message === 'Re-identification outcome: OK').length;
+            const notOkCount = group.filter(audit => audit.message === 'User do not have access to the organisation(s) associated with patient.  Re-identification blocked.').length;
+
+            return {
+                ...group[0],
+                count: group.length,
+                okCount,
+                notOkCount
+            };
+        });
+    };
+
+    const updateTotalPages = (pages: Page[], uniqueAccessAudit: Array<AccessAudit & { count: number, okCount: number, notOkCount: number }>) => {
+        const itemsPerPage = pages[0]?.data.length || 1;
+        const totalItems = uniqueAccessAudit.length;
+        setTotalPages(Math.ceil(totalItems / itemsPerPage));
+    };
 
     const handleSearchChange = (value: string) => {
         setSearchTerm(value);
@@ -95,7 +120,7 @@ const AccessAuditTable: FunctionComponent<AccessAuditTableProps> = ({ requestId 
         []
     );
 
-    const hasNoMorePages = () => {
+    const hasNoMorePages = (): boolean => {
         return hasNextPage;
     };
 
