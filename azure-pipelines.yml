@@ -31,6 +31,13 @@ steps:
     includeNuGetOrg: true
 
 - task: DotNetCoreCLI@2
+  displayName: "Dotnet Build (REID Management Function)"
+  inputs:
+    command: 'build'
+    projects: '**/ISL.ReIdentification.Functions.csproj'
+    arguments: --output $(System.DefaultWorkingDirectory)/publish_output_reid_func --configuration Release
+
+- task: DotNetCoreCLI@2
   displayName: "Dotnet Publish Portal"
   inputs:
     command: "publish"
@@ -58,12 +65,7 @@ steps:
   displayName: 'Publish Artifact - Configuration'
   artifact: drop-frontend-management
 
-- task: DotNetCoreCLI@2
-  displayName: "Dotnet Build (REID Management Function)"
-  inputs:
-    command: 'build'
-    projects: '**/ISL.ReIdentification.Functions.csproj'
-    arguments: --output $(System.DefaultWorkingDirectory)/publish_output_reid_func --configuration Release
+
 
 - task: ArchiveFiles@2
   displayName: 'Archive files - Re-id Function'
