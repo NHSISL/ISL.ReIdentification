@@ -39,6 +39,21 @@ steps:
     projects: "**/*.csproj"
     includeNuGetOrg: true
 
+- task: Bash@3
+  enabled: true
+  displayName: diag
+  inputs:
+    targetType: inline
+    script: |
+      pwd
+      ls -lR
+
+- task: DotNetCoreCLI@2
+  displayName: "Dotnet Build (core Management Function)"
+  inputs:
+    command: 'build'
+    projects: '**/ISL.ReIdentification.Core.csproj'
+
 - task: DotNetCoreCLI@2
   displayName: "Dotnet Build (REID Management Function)"
   inputs:
