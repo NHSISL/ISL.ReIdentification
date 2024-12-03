@@ -59,7 +59,7 @@ steps:
   artifact: drop-frontend-management
 
 - task: DotNetCoreCLI@2
-  displayName: "Dotnet Build (EMIS Landing Function)"
+  displayName: "Dotnet Build (REID Management Function)"
   inputs:
     command: 'build'
     projects: '**/ISL.ReIdentification.Functions.csproj'
