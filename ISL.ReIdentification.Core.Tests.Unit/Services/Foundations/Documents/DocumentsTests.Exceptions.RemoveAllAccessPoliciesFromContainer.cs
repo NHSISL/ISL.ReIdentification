@@ -56,23 +56,20 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
-        [Fact]
-        public async Task ShouldThrowDependencyExceptionOnRemoveAllAccessPoliciesFromContainerAsync()
+        [Theory]
+        [MemberData(nameof(DependencyExceptions))]
+        public async Task ShouldThrowDocumentDependencyExceptionOnRemoveAllAccessPoliciesFromContainerAsync(Xeption dependencyException)
         {
             // given
             string someContainer = GetRandomString();
 
-            var storageProviderDependencyException = new StorageProviderDependencyException(
-                message: "Storage provider dependency errors occurred, please try again.",
-                innerException: new Xeption());
-
             var expectedDocumentDependencyException = new DocumentDependencyException(
                 message: "Document dependency error occurred, please fix errors and try again.",
-                innerException: storageProviderDependencyException);
+                innerException: dependencyException);
 
             this.blobStorageBrokerMock.Setup(broker =>
                 broker.RemoveAccessPoliciesFromContainerAsync(someContainer))
-                    .ThrowsAsync(storageProviderDependencyException);
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask removeAccessPolicyTask =
