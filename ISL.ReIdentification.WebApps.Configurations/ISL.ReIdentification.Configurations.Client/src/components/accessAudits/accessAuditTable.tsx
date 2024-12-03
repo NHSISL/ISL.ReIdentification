@@ -67,7 +67,7 @@ const AccessAuditTable: FunctionComponent<AccessAuditTableProps> = () => {
                                         <th>Email</th>
                                         <th>Reason</th>
                                         <th>Message</th>
-                                        <th>Creeated Date</th>
+                                        <th>Created Date</th>
                                     </tr>
                                 </thead>
                                 <tbody>

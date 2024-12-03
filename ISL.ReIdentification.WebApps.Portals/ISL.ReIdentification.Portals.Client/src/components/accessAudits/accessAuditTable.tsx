@@ -19,14 +19,15 @@ const AccessAuditTable: FunctionComponent<AccessAuditTableProps> = ({ requestId 
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [debouncedTerm, setDebouncedTerm] = useState<string>("");
     const [showSpinner] = useState(false);
+    const [mappedAccessAudit, setMappedAccessAudit] = useState<Array<AccessAudit & { count: number, okCount: number, notOkCount: number }>>([]);
+    const [totalPages, setTotalPages] = useState<number>(0);
 
     const {
-        mappedAccessAudit: accessAuditRetrieved,
+        pages,
         isLoading,
         fetchNextPage,
         isFetchingNextPage,
         hasNextPage,
-        totalPages,
         refetch
     } = accessAuditViewService.useGetAllAccessAuditByRequestId(
         debouncedTerm, requestId
@@ -35,6 +36,51 @@ const AccessAuditTable: FunctionComponent<AccessAuditTableProps> = ({ requestId 
     useEffect(() => {
         refetch();
     }, [requestId, refetch]);
+
+    useEffect(() => {
+        if (pages && Array.isArray(pages)) {
+            const allData = pages.flatMap(page => {
+                if (Array.isArray(page.data)) {
+                    return page.data;
+                } else {
+                    console.error("Page data is not an array", page.data);
+                    return [];
+                }
+            });
+
+            const filteredData = allData.filter(audit => audit.transactionId !== "00000000-0000-0000-0000-000000000000");
+
+            const groupedData = filteredData.reduce((acc, audit) => {
+                const transactionIdKey = audit.transactionId;
+
+                if (!acc[transactionIdKey]) {
+                    acc[transactionIdKey] = [];
+                }
+
+                acc[transactionIdKey].push(audit);
+                return acc;
+            }, {} as { [key: string]: AccessAudit[] });
+
+            const uniqueAccessAudit = Object.values(groupedData).map(group => {
+                const okCount = group.filter(audit => audit.message === 'Re-identification outcome: OK').length;
+                const notOkCount = group.filter(audit => audit.message === 'User do not have access to the organisation(s) associated with patient.  Re-identification blocked.').length;
+
+                return {
+                    ...group[0],
+                    count: group.length,
+                    okCount,
+                    notOkCount
+                };
+            });
+
+            setMappedAccessAudit(uniqueAccessAudit);
+            const itemsPerPage = pages[0]?.data.length || 1;
+            const totalItems = uniqueAccessAudit.length;
+            setTotalPages(Math.ceil(totalItems / itemsPerPage));
+        } else {
+            console.error("Pages are not an array or are undefined", pages);
+        }
+    }, [pages]);
 
     const handleSearchChange = (value: string) => {
         setSearchTerm(value);
@@ -70,10 +116,10 @@ const AccessAuditTable: FunctionComponent<AccessAuditTableProps> = ({ requestId 
                             <Table striped bordered hover variant="light" responsive>
                                 <thead>
                                     <tr>
-                                        <th>Display Name</th>
+                                        <th>Name</th>
                                         <th>Email</th>
                                         <th>Downloaded Date</th>
-                                        <th>Count of Records</th>
+                                        <th>Counts</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -85,11 +131,13 @@ const AccessAuditTable: FunctionComponent<AccessAuditTableProps> = ({ requestId 
                                         </tr>
                                     ) : (
                                         <>
-                                            {accessAuditRetrieved && accessAuditRetrieved.map(
-                                                (accessAudit: AccessAudit & { count: number }) => (
+                                            {mappedAccessAudit && mappedAccessAudit.map(
+                                                (accessAudit: AccessAudit & { count: number, okCount: number, notOkCount: number }) => (
                                                     <AccessAuditRow
                                                         key={accessAudit.id}
                                                         accessAudit={accessAudit}
+                                                        okCount={accessAudit.okCount}
+                                                        notOkCount={accessAudit.notOkCount}
                                                     />
                                                 )
                                             )}
