@@ -61,9 +61,8 @@ const PdsTable: FunctionComponent<PdsTableProps> = () => {
                             <Table striped bordered hover variant="light" responsive>
                                 <thead>
                                     <tr>
-                                        <th>Pseudo Nhs Number</th>
-                                        <th>Org Code</th>
-                                        <th>Organisation Name</th>
+                                        <th>Pseudo Identifier</th>
+                                        <th>Organisation Code</th>
                                         <th>Relationship With Organisation Effective FromDate</th>
                                         <th>Relationship With Organisation Effective ToDate</th>
                                     </tr>

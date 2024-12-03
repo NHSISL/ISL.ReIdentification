@@ -11,6 +11,7 @@ export class CsvIdentificationRequest {
     public data: Uint8Array;
     public sha256Hash: string;
     public identifierColumn: string;
+    public filepath: string;
     public createdBy?: string;
     public createdDate?: Date | undefined;
     public updatedBy?: string;
@@ -29,6 +30,7 @@ export class CsvIdentificationRequest {
         this.data = csvIdentificationRequest.data || 0;
         this.sha256Hash = csvIdentificationRequest.sha256Hash || "";
         this.identifierColumn = csvIdentificationRequest.identifierColumn || ""; 
+        this.filepath = csvIdentificationRequest.filepath || ""; 
         this.createdDate = csvIdentificationRequest.createdDate ? new Date(csvIdentificationRequest.createdDate) : undefined;
         this.createdBy = csvIdentificationRequest.createdBy || "";
         this.updatedDate = csvIdentificationRequest.updatedDate ? new Date(csvIdentificationRequest.updatedDate) : undefined;

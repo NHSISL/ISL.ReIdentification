@@ -13,12 +13,11 @@ const AccessAuditRowView: FunctionComponent<AccessAuditRowProps> = (props) => {
     return (
         <>
             <tr>
-                <td><small>{accessAudit.pseudoIdentifier}</small></td>
+                {/*<td><small>{accessAudit.pseudoIdentifier}</small></td>*/}
                 <td><small>{accessAudit.givenName} {accessAudit.surname}</small></td>
                 <td><small>{accessAudit.email}</small></td>
                 <td><small>{accessAudit.reason}</small></td>
                 <td><small>{accessAudit.message}</small></td>
-                <td><small>{accessAudit.organisation}</small></td>
                 <td><small>{moment(accessAudit.createdDate?.toString()).format("Do-MMM-yyyy HH:mm")}</small></td>
             </tr>
 

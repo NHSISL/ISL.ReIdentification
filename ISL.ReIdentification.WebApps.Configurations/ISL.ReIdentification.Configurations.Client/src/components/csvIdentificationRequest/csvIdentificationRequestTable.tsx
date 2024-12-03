@@ -62,12 +62,11 @@ const CsvIdentificationRequestTable: FunctionComponent<CsvIdentificationRequestT
                             <Table striped bordered hover variant="light">
                                 <thead>
                                     <tr>
-                                        <th>Requester FirstName</th>
-                                        <th>Requester LastName</th>
+                                        <th>Requester Name</th>
                                         <th>Requester Email</th>
-                                        <th>Recipient FirstName</th>
-                                        <th>Recipient LastName</th>
+                                        <th>Recipient Name</th>
                                         <th>Reason</th>
+                                        <th>FileName</th>
                                     </tr>
                                 </thead>
                                 <tbody>

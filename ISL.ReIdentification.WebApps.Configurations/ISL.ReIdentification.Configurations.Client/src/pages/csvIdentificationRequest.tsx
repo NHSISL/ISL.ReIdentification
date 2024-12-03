@@ -12,7 +12,6 @@ export const CsvIdentificationRequestPage = () => {
                     currentLink="CSV Identification Request">
                 </BreadCrumbBase>
                 <div className="mt-3">
-                    <p>Role Needs to be in Security Matrix and Azure AD against user.</p>
                     <CsvIdentificationRequestTable />
                 </div>
             </section>
