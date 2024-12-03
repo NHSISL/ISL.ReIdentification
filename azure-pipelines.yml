@@ -15,15 +15,6 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-- task: Bash@3
-  enabled: true
-  displayName: diag
-  inputs:
-    targetType: inline
-    script: |
-      pwd
-      ls -lR
-
 - task: UseDotNet@2
   displayName: "Install .NET Core SDK"
   inputs:
@@ -39,27 +30,6 @@ steps:
     projects: "**/*.csproj"
     includeNuGetOrg: true
 
-- task: Bash@3
-  enabled: true
-  displayName: diag
-  inputs:
-    targetType: inline
-    script: |
-      pwd
-      ls -lR
-
-- task: DotNetCoreCLI@2
-  displayName: "Dotnet Build (core Management Function)"
-  inputs:
-    command: 'build'
-    projects: '**/ISL.ReIdentification.Core.csproj'
-
-- task: DotNetCoreCLI@2
-  displayName: "Dotnet Build (REID Management Function)"
-  inputs:
-    command: 'build'
-    projects: '**/ISL.ReIdentification.Functions.csproj'
-    arguments: --output $(System.DefaultWorkingDirectory)/publish_output_reid_func --configuration Release
 
 - task: DotNetCoreCLI@2
   displayName: "Dotnet Publish Portal"
@@ -89,6 +59,12 @@ steps:
   displayName: 'Publish Artifact - Configuration'
   artifact: drop-frontend-management
 
+- task: DotNetCoreCLI@2
+  displayName: "Dotnet Build (REID Management Function)"
+  inputs:
+    command: 'build'
+    projects: '**/ISL.ReIdentification.Functions.csproj'
+    arguments: --output $(System.DefaultWorkingDirectory)/publish_output_reid_func --configuration Release
 
 
 - task: ArchiveFiles@2

@@ -42,7 +42,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\ISL.Reidentification.Core\ISL.ReIdentification.Core.csproj" />
+	  <ProjectReference Include="..\ISL.ReIdentification.Core\ISL.ReIdentification.Core.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
