@@ -16,13 +16,13 @@ variables:
 
 steps:
 - task: Bash@3
-    enabled: true
-    displayName: diag
-    inputs:
-      targetType: inline
-      script: |
-        pwd
-        ls -l
+  enabled: true
+  displayName: diag
+  inputs:
+    targetType: inline
+    script: |
+      pwd
+      ls -l
 
 - task: UseDotNet@2
   displayName: "Install .NET Core SDK"
