@@ -55,5 +55,46 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnRemoveAllAccessPoliciesFromContainerAsync()
+        {
+            // given
+            string someContainer = GetRandomString();
+
+            var storageProviderDependencyException = new StorageProviderDependencyException(
+                message: "Storage provider dependency errors occurred, please try again.",
+                innerException: new Xeption());
+
+            var expectedDocumentDependencyException = new DocumentDependencyException(
+                message: "Document dependency validation error occurred, please fix errors and try again.",
+                innerException: storageProviderDependencyException);
+
+            this.blobStorageBrokerMock.Setup(broker =>
+                broker.RemoveAccessPoliciesFromContainerAsync(someContainer))
+                    .ThrowsAsync(storageProviderDependencyException);
+
+            // when
+            ValueTask removeAccessPolicyTask =
+                this.documentService.RemoveAllAccessPoliciesFromContainerAsync(someContainer);
+
+            DocumentDependencyException actualDocumentDependencyException =
+                await Assert.ThrowsAsync<DocumentDependencyException>(removeAccessPolicyTask.AsTask);
+
+            // then
+            actualDocumentDependencyException.Should().BeEquivalentTo(expectedDocumentDependencyException);
+
+            this.blobStorageBrokerMock.Verify(broker =>
+                broker.RemoveAccessPoliciesFromContainerAsync(someContainer),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedDocumentDependencyException))),
+                        Times.Once);
+
+            this.blobStorageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
