@@ -67,7 +67,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                 innerException: new Xeption());
 
             var expectedDocumentDependencyException = new DocumentDependencyException(
-                message: "Document dependency validation error occurred, please fix errors and try again.",
+                message: "Document dependency error occurred, please fix errors and try again.",
                 innerException: storageProviderDependencyException);
 
             this.blobStorageBrokerMock.Setup(broker =>
