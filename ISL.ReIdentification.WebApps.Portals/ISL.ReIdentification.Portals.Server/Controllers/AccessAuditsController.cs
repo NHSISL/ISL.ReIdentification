@@ -26,8 +26,6 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
         public AccessAuditsController(IAccessAuditService accessAuditService) =>
             this.accessAuditService = accessAuditService;
 
-        [Authorize(Roles = "ISL.Reidentification.Portal.DataEngineers")]
-        [InvisibleApi]
         [HttpPost]
         public async ValueTask<ActionResult<AccessAudit>> PostAccessAuditAsync([FromBody] AccessAudit accessAudit)
         {

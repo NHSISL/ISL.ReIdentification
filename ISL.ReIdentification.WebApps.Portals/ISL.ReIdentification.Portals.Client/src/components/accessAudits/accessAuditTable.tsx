@@ -43,19 +43,13 @@ const AccessAuditTable: FunctionComponent<AccessAuditTableProps> = ({ requestId 
 
     useEffect(() => {
         if (pages && Array.isArray(pages)) {
-            console.log("Fetched pages:", pages);
-
             const allData = extractAllData(pages);
             const filteredData = filterData(allData);
             const groupedData = groupDataByTransactionId(filteredData);
             const uniqueAccessAudit = mapToUniqueAccessAudit(groupedData);
 
-            console.log("Unique access audit:", uniqueAccessAudit);
-
             setMappedAccessAudit(uniqueAccessAudit);
             updateTotalPages(pages, uniqueAccessAudit);
-        } else {
-            console.error("Pages are not an array or are undefined", pages);
         }
     }, [pages]);
 
@@ -64,7 +58,6 @@ const AccessAuditTable: FunctionComponent<AccessAuditTableProps> = ({ requestId 
             if (Array.isArray(page.data)) {
                 return page.data;
             } else {
-                console.error("Page data is not an array", page.data);
                 return [];
             }
         });

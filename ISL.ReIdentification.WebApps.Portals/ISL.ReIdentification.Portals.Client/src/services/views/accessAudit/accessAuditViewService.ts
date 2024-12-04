@@ -28,9 +28,7 @@ export const accessAuditViewService = {
         useEffect(() => {
             if (response.data && Array.isArray(response.data.pages)) {
                 setPages(response.data.pages);
-            } else {
-                console.error("Response data pages are not an array or are undefined", response.data);
-            }
+            } 
         }, [response.data]);
 
         return {
