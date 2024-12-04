@@ -1,9 +1,9 @@
 import debounce from "lodash/debounce";
 import { FunctionComponent, useMemo, useState } from "react";
 import { SpinnerBase } from "../bases/spinner/SpinnerBase";
-import { Button, Card, Container, InputGroup, Table } from "react-bootstrap";
+import { Button, Container, InputGroup, Table } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDatabase, faRefresh } from "@fortawesome/free-solid-svg-icons";
+import { faRefresh } from "@fortawesome/free-solid-svg-icons";
 import { CsvIdentificationRequestView } from "../../models/views/components/csvIdentificationRequest/csvIdentificationRequestView";
 import InfiniteScroll from "../bases/pagers/InfiniteScroll";
 import InfiniteScrollLoader from "../bases/pagers/InfiniteScroll.Loader";
