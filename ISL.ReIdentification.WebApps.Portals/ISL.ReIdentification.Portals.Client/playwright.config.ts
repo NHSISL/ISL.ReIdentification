@@ -100,7 +100,7 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
    webServer: {
-     command: "dotnet run --project ..\\ISL.ReIdentification.Portals.Server\\",
+     command: "dotnet run --project ../ISL.ReIdentification.Portals.Server/",
      url: 'https://localhost:5173/',
      reuseExistingServer: true,
      ignoreHTTPSErrors: true,
