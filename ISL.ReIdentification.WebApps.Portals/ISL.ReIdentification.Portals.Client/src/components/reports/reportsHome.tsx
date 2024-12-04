@@ -120,7 +120,7 @@ const ReportsHome: FunctionComponent = () => {
                 <Navbar style={{ padding: 1 }}>
                     <Container fluid>
                         <Navbar.Brand style={{ fontSize: "1em", padding: 0 }}>
-                            <Card.Link href="/" style={{ color: "black", textDecoration: "none" }}>ISL Reidentification Portal</Card.Link>
+                            <Card.Link href="/" style={{ color: "black", textDecoration: "none" }}>ISL Re-Identification Portal</Card.Link>
                         </Navbar.Brand>
                         {toastHidden && <Button onClick={() => setToastHidden(false)}>Show reidentification window</Button>}
                         {accounts.length > 0 &&
