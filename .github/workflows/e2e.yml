@@ -22,14 +22,13 @@ jobs:
           with:
             dotnet-version: 9.0.100-rc.2.24474.11
         - name: Install certificates
-          run: dotnet dev-certs https --verbose --trust non-interactive
+          run: dotnet dev-certs https --verbose
         - name: Restore
           run: dotnet restore
           working-directory: ./ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Server
         - name: Build
           run: dotnet build --no-restore
           working-directory: ./ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Server
-       
         - name: Install dependencies
           run: npm ci
           working-directory: ./ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Client
