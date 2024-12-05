@@ -1,6 +1,5 @@
 import { test, expect } from '@playwright/test';
 
-
 test.describe('navigation', () => {
 
     test.beforeEach(async ({ page }) => {
@@ -19,4 +18,3 @@ test.describe('navigation', () => {
         await expect(page.getByRole('link', { name: 'Projects' })).toBeVisible();
     });
 });
-
