@@ -44,35 +44,31 @@ async function fillReIdentifyForm(page: Page, recipientEmail: string, reason: st
     await colSelectDropdown.selectOption({ label: "Col-4 - PseudoID" });
 }
 
-test.describe('Re-Identify dataset Patient Tests', () => {
+test.beforeEach(async ({ page }) => {
+    await page.goto('https://localhost:5173/home');
+});
 
-    test.beforeEach(async ({ page }) => {
-        await page.goto('https://localhost:5173/home');
+testDataForDataset.forEach(({ recipientEmail, reason }) => {
+    test(`Can upload CSV and recieve Email: ${recipientEmail}`, async ({ page }) => {
+        await navigateToReIdentifySinglePatient(page);
+        await fillReIdentifyForm(page, recipientEmail, reason);
+
+        const sendFileButton = page.getByRole('button', { name: 'Send File' });
+        await sendFileButton.click();
+
+        const successMessage = page.getByText('CSV Sent');
+        await expect(successMessage).toBeVisible();
     });
+});
 
-    testDataForDataset.forEach(({ recipientEmail, reason }) => {
-        test(`Can upload CSV and recieve Email: ${recipientEmail}`, async ({ page }) => {
-            await navigateToReIdentifySinglePatient(page);
-            await fillReIdentifyForm(page, recipientEmail, reason);
+testDataForDataset.forEach(({ invalidRecipientEmail }) => {
+    test(`User doesn't exist in Users Table: ${invalidRecipientEmail}`, async ({ page }) => {
+        await navigateToReIdentifySinglePatient(page);
+        const emailAddressInput = page.getByPlaceholder('Enter user email address');
+        await emailAddressInput.fill(invalidRecipientEmail);
+        const selectEmailButton = page.getByRole('button', { name: 'Select' });
 
-            const sendFileButton = page.getByRole('button', { name: 'Send File' });
-            await sendFileButton.click();
-
-            const successMessage = page.getByText('CSV Sent');
-            await expect(successMessage).toBeVisible();
-        });
+        // Assert that the Select button is not visible or not in the DOM
+        await expect(selectEmailButton).toBeHidden();
     });
-
-    testDataForDataset.forEach(({ invalidRecipientEmail }) => {
-        test(`User doesn't exist in Users Table: ${invalidRecipientEmail}`, async ({ page }) => {
-            await navigateToReIdentifySinglePatient(page);
-            const emailAddressInput = page.getByPlaceholder('Enter user email address');
-            await emailAddressInput.fill(invalidRecipientEmail);
-            const selectEmailButton = page.getByRole('button', { name: 'Select' });
-    
-            // Assert that the Select button is not visible or not in the DOM
-            await expect(selectEmailButton).toBeHidden();
-        });
-    });
-
 });
