@@ -1,19 +1,20 @@
 import React from 'react';
 import { AuthenticatedTemplate, UnauthenticatedTemplate, useMsal } from "@azure/msal-react";
 import { Button, NavDropdown } from "react-bootstrap";
-import { loginRequest } from '../../authConfig';
 import { UserProfile } from '../securitys/userProfile';
+import { MsalConfig } from '../../authConfig';
 
-const Login: React.FC = () => {
+const Login: React.FC =  () => {
     const { instance } = useMsal();
     const activeAccount = instance.getActiveAccount();
 
     const handleLogoutRedirect = () => {
-        instance.logoutPopup().catch((error) => console.log(error));
+        instance.logout().catch((error) => console.log(error));
     };
 
-    const handleLoginRedirect = () => {
-        instance.loginPopup(loginRequest).catch((error) => console.log(error));
+    const handleLoginRedirect = async () => {
+        const loginRequest = MsalConfig.loginRequest;
+        instance.loginRedirect(loginRequest).catch((error) => console.log(error));
     };
 
     return (

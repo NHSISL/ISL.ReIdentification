@@ -17,10 +17,8 @@ const LookupRowNew: FunctionComponent<LookupRowNewProps> = (props) => {
     return (
         <SecuredComponent>
             <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td colSpan={5}></td>
+
                 <td>
                     <SecuredComponent allowedRoles={securityPoints.configuration.add}>
                         <Button id="lookupAdd" onClick={() => onAdd(true)} variant="success">

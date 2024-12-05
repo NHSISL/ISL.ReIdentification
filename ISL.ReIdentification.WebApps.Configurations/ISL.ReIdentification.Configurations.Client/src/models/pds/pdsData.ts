@@ -1,18 +1,18 @@
 
 export class PdsData {
-    public rowId: string;
+    public id: string;
     public pseudoNhsNumber: string;
-    public OrgCode: string;
-    public OrganisationName: string;
-    public RelationshipWithOrganisationEffectiveFromDate?: Date | undefined;
-    public RelationshipWithOrganisationEffectiveToDate?: Date | undefined;
+    public orgCode: string;
+    public organisationName: string;
+    public relationshipWithOrganisationEffectiveFromDate?: Date | undefined;
+    public relationshipWithOrganisationEffectiveToDate?: Date | undefined;
 
     constructor(pds: PdsData) {
-            this.rowId = pds.rowId;
+            this.id = pds.id;
             this.pseudoNhsNumber = pds.pseudoNhsNumber;
-            this.OrgCode = pds.OrgCode;
-            this.OrganisationName = pds.OrganisationName
-            this.RelationshipWithOrganisationEffectiveFromDate = pds.RelationshipWithOrganisationEffectiveFromDate
-            this.RelationshipWithOrganisationEffectiveToDate = pds.RelationshipWithOrganisationEffectiveToDate;
+            this.orgCode = pds.orgCode;
+            this.organisationName = pds.organisationName
+            this.relationshipWithOrganisationEffectiveFromDate = pds.relationshipWithOrganisationEffectiveFromDate
+            this.relationshipWithOrganisationEffectiveToDate = pds.relationshipWithOrganisationEffectiveToDate;
     }
 }

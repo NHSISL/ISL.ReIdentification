@@ -59,9 +59,11 @@ const UserAccessTable: FunctionComponent<UserAccessTableProps> = () => {
                         </Table>
                     </Card.Body>
                     <CardFooter>
-                        <Link to="/userAccess/newUser">
-                            <Button>Add New User</Button>
-                        </Link>
+                        <SecuredComponent allowedRoles={securityPoints.userAccess.add}>
+                            <Link to="/userAccess/newUser">
+                                <Button>Add New User</Button>
+                            </Link>
+                        </SecuredComponent>
                     </CardFooter>
                 </Card>
             </Container>

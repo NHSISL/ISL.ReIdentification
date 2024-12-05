@@ -1,11 +1,20 @@
 import { FunctionComponent } from "react";
 import OdsRowView from "./odsRowView";
+import { OdsDataView } from "../../models/views/components/odsData/odsDataView";
 
-type OdsRowProps = object;
+type OdsRowProps = {
+    ods: OdsDataView;
+};
 
-const OdsRow: FunctionComponent<OdsRowProps> = () => {
+const OdsRow: FunctionComponent<OdsRowProps> = (props) => {
+    const {
+        ods
+    } = props;
+
     return (
-        <OdsRowView />
+        <OdsRowView
+            key={ods.id}
+            ods={ods} />
     );
 };
 

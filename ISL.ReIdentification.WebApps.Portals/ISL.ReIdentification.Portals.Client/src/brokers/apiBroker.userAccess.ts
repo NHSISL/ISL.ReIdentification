@@ -16,7 +16,10 @@ class UserAccessBroker {
         return await this.apiBroker.GetAsync(url)
             .then(result => {
                 if (result.data && result.data.value) {
-                    return result.data.value as UserAccess[];
+                    const userAccesses = result.data.value as UserAccess[];
+                    const deduplicatedAddress = [... new Set(userAccesses.map(x => x.email))]
+                    const deduplicatedRecords = deduplicatedAddress.map(i => userAccesses.find(y => y.email === i));
+                    return deduplicatedRecords;
                 }
             })
     }
@@ -29,6 +32,7 @@ class UserAccessBroker {
         return await this.apiBroker.GetAsync(url)
             .then(result => {
                 if (result.data && result.data.value) {
+                   
                     return result.data.value as UserAccess[];
                 }
             });

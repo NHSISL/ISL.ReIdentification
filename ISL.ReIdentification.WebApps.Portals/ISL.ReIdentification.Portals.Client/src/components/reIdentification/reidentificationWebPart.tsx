@@ -102,12 +102,11 @@ const ReidentificationWebPart: FunctionComponent<ReidentificationWebPartProps> =
                 <>
                     <p>You have selected '{reidReason}' as the reason for reidentification. </p>
                     {rememberChecked && <>
-                        <p><a href="#" onClick={forgetReason}>Click here to forget this reason and be prompted for a reason the next time you request a reidentification.</a></p>
+                        <p><a href="#" onClick={forgetReason}>Click here to forget this reason and be prompted for a reason the next time you request a re-identification.</a></p>
                     </>
                     }
-
                     {!rememberChecked && <>
-                        <p><a href="#" onClick={rememberReason}>Click here to use this reason for future reidentification requests.</a></p>
+                        <p><a href="#" onClick={rememberReason}>Click here to use this reason for future re-identification requests.</a></p>
                     </>
                     }
                 </>

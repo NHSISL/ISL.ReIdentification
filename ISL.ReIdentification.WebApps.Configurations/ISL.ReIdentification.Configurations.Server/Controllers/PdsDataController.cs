@@ -15,7 +15,7 @@ using RESTFulSense.Controllers;
 
 namespace ISL.ReIdentification.Configurations.Server.Controllers
 {
-    [Authorize(Roles = "Administrators")]
+    [Authorize(Roles = "ISL.Reidentification.Configuration.Administrators")]
     [ApiController]
     [Route("api/[controller]")]
     public class PdsDataController : RESTFulController
@@ -25,6 +25,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
         public PdsDataController(IPdsDataService pdsDataService) =>
             this.pdsDataService = pdsDataService;
 
+        [Authorize(Roles = "ISL.Reidentification.Configuration.Administrators")]
         [HttpPost]
         public async ValueTask<ActionResult<PdsData>> PostPdsDataAsync([FromBody] PdsData pdsData)
         {
@@ -110,6 +111,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.Reidentification.Configuration.Administrators")]
         [HttpPut]
         public async ValueTask<ActionResult<PdsData>> PutPdsDataAsync([FromBody] PdsData pdsData)
         {
@@ -148,6 +150,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.Reidentification.Configuration.Administrators")]
         [HttpDelete("{pdsDataId}")]
         public async ValueTask<ActionResult<PdsData>> DeletePdsDataByIdAsync(Guid pdsDataId)
         {

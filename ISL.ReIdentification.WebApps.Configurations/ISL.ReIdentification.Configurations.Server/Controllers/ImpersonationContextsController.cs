@@ -5,6 +5,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Attrify.Attributes;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts.Exceptions;
 using ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts;
@@ -15,7 +16,7 @@ using RESTFulSense.Controllers;
 
 namespace ISL.ReIdentification.Configurations.Server.Controllers
 {
-    [Authorize(Roles = "Administrators")]
+    [Authorize(Roles = "ISL.Reidentification.Configuration.Administrators")]
     [ApiController]
     [Route("api/[controller]")]
     public class ImpersonationContextsController : RESTFulController
@@ -25,6 +26,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
         public ImpersonationContextsController(IImpersonationContextService impersonationContextService) =>
             this.impersonationContextService = impersonationContextService;
 
+        [InvisibleApi]
         [HttpPost]
         public async ValueTask<ActionResult<ImpersonationContext>> PostImpersonationContextAsync(
             [FromBody] ImpersonationContext impersonationContext)
@@ -59,6 +61,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             }
         }
 
+        [InvisibleApi]
         [HttpGet]
         [EnableQuery(PageSize = 25)]
         public async ValueTask<ActionResult<IQueryable<ImpersonationContext>>> Get()
@@ -80,6 +83,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             }
         }
 
+        [InvisibleApi]
         [HttpGet("{impersonationContextId}")]
         public async ValueTask<ActionResult<ImpersonationContext>> GetImpersonationContextByIdAsync(Guid impersonationContextId)
         {
@@ -113,6 +117,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             }
         }
 
+        [InvisibleApi]
         [HttpPut]
         public async ValueTask<ActionResult<ImpersonationContext>> PutImpersonationContextAsync(
             [FromBody] ImpersonationContext impersonationContext)
@@ -154,6 +159,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             }
         }
 
+        [InvisibleApi]
         [HttpDelete("{impersonationContextId}")]
         public async ValueTask<ActionResult<ImpersonationContext>> DeleteImpersonationContextByIdAsync(Guid impersonationContextId)
         {

@@ -1,60 +1,27 @@
 import { FunctionComponent } from "react";
-import { Button } from "react-bootstrap";
+import { PdsDataView } from "../../models/views/components/pdsData/pdsDataView";
+import moment from "moment";
 
-type PdsRowProps = object
+type PdsRowProps = {
+    pds: PdsDataView;
+};
 
-const PdsRow: FunctionComponent<PdsRowProps> = () => {
-
+const PdsRow: FunctionComponent<PdsRowProps> = (props) => {
+    const {
+        pds
+    } = props
     return (
         <>
-        <tr>
-            <td>
-                <span className="p-2 rounded al text-center">
-                    Col 1
-                </span>
-            </td>
-            <td>
-                <span className="p-2 rounded al text-center">
-                    Col 2
-                </span>
-            </td>
-            <td>
-                <span className="p-2 rounded al text-center">
-                    Col 3
-                </span>
-            </td>
-
-            <td>
-                <Button onClick={() => { }}>
-                    Details
-                </Button>
-            </td>
-        </tr>
-
-
-         <tr>
-            <td>
-                <span className="p-2 rounded al text-center">
-                    Col 1
-                </span>
-            </td>
-            <td>
-                <span className="p-2 rounded al text-center">
-                    Col 2
-                </span>
-            </td>
-            <td>
-                <span className="p-2 rounded al text-center">
-                    Col 3
-                </span>
-            </td>
-
-            <td>
-                <Button onClick={() => { }}>
-                    Details
-                </Button>
-            </td>
+            <tr>
+                <td>{pds.pseudoNhsNumber}</td>
+                <td>{pds.orgCode}</td>
+                <td>{pds.organisationName}</td>
+                <td>{moment(pds.relationshipWithOrganisationEffectiveFromDate?.toString()).format("Do-MMM-yyyy HH:mm")}</td>
+                <td>{moment(pds.relationshipWithOrganisationEffectiveToDate?.toString()).format("Do-MMM-yyyy HH:mm")}</td>
             </tr>
+
+
+
         </>
     );
 }

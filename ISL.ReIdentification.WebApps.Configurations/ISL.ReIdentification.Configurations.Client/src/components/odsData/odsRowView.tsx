@@ -1,59 +1,29 @@
 import { FunctionComponent } from "react";
-import { Button } from "react-bootstrap";
+import { OdsDataView } from "../../models/views/components/odsData/odsDataView";
+import moment from "moment";
+import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-type OdsRowProps = object
+type OdsRowProps = {
+    ods: OdsDataView;
+};
 
-const OdsRow: FunctionComponent<OdsRowProps> = () => {
-
+const OdsRow: FunctionComponent<OdsRowProps> = (props) => {
+    const {
+        ods
+    } = props
     return (
         <>
-        <tr>
-            <td>
-                <span className="p-2 rounded al text-center">
-                    Col 1
-                </span>
-            </td>
-            <td>
-                <span className="p-2 rounded al text-center">
-                    Col 2
-                </span>
-            </td>
-            <td>
-                <span className="p-2 rounded al text-center">
-                    Col 3
-                </span>
-            </td>
-
-            <td>
-                <Button onClick={() => { }}>
-                    Details
-                </Button>
-            </td>
-        </tr>
-
-
-         <tr>
-            <td>
-                <span className="p-2 rounded al text-center">
-                    Col 1
-                </span>
-            </td>
-            <td>
-                <span className="p-2 rounded al text-center">
-                    Col 2
-                </span>
-            </td>
-            <td>
-                <span className="p-2 rounded al text-center">
-                    Col 3
-                </span>
-            </td>
-
-            <td>
-                <Button onClick={() => { }}>
-                    Details
-                </Button>
-            </td>
+            <tr>
+                <td>{ods.organisationName}</td>
+                <td>{ods.organisationCode}</td>
+                <td>
+                    {ods.hasChildren ?
+                        <FontAwesomeIcon icon={faCheck} className="text-success" /> :
+                        <FontAwesomeIcon icon={faTimes} className="text-danger" />}
+                </td>
+                <td>{moment(ods.relationshipWithParentStartDate?.toString()).format("Do-MMM-yyyy HH:mm")}</td>
+                <td>{moment(ods.relationshipWithParentEndDate?.toString()).format("Do-MMM-yyyy HH:mm")}</td>
             </tr>
         </>
     );

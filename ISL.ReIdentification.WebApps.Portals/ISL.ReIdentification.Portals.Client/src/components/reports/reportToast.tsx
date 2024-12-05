@@ -90,7 +90,7 @@ const ReportToast: FunctionComponent<ReportToastProps> = (props) => {
     return <ToastContainer position={position || "bottom-end"} hidden={hidden || reidentifications.length === 0}>
         <Toast onClose={() => hide(true)}>
             <Toast.Header>
-                <strong className="me-auto">Reidentifications</strong>
+                <strong className="me-auto">Re-identifications</strong>
                 {lastPseudos.length > 1 &&
                     <CopyIcon iconText="CopyAll" content={getNhsNumbers(lastPseudos, reidentifications)} resetTime={2000} />
                 }
@@ -161,8 +161,8 @@ const ReportToast: FunctionComponent<ReportToastProps> = (props) => {
             <Modal.Body>
                 <p>You have tried to reidentify a patient's that our records indicate that you do not have access to.</p>
                 <p>Check that the patient is registered to an GP practice that you have access to.</p>
-                <p>To view your ODS organisations configured in the reidentification tool click <a href="about:blank">here</a> and contact your local ICB should you need further access.</p>
-                <p>Any changes to the patient record regisistration will take 24 hours to apply to the reidentification service </p>
+                <p>To view your ODS organisations configured in the re-identification tool click <a href="about:blank">here</a> and contact your local ICB should you need further access.</p>
+                <p>Any changes to the patient record regisistration will take 24 hours to apply to the re-identification service </p>
             </Modal.Body>
         </Modal>
     </ToastContainer>

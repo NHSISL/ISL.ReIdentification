@@ -26,6 +26,7 @@ const LookupRowView: FunctionComponent<LookupRowViewProps> = (props) => {
         <tr>
             <td>{lookup.name}</td>
             <td>{lookup.value}</td>
+            <td>{lookup.groupName}</td>
             <td>{lookup.createdBy}</td>
             <td>{moment(lookup.createdDate?.toString()).format("Do-MMM-yyyy HH:mm")}</td>
             <td>

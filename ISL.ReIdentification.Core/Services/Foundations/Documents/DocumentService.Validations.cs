@@ -32,6 +32,16 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
                 (Rule: IsInvalid(container), Parameter: nameof(container)));
         }
 
+        private static void ValidateStorageArgumentsOnRetrieveAccessPolicies(string container)
+        {
+            Validate((Rule: IsInvalid(container), Parameter: "Container"));
+        }
+
+        private static void ValidateStorageArgumentsOnRemoveAccessPolicies(string container)
+        {
+            Validate((Rule: IsInvalid(container), Parameter: "Container"));
+        }
+
         private static dynamic IsInvalid(string value) => new
         {
             Condition = string.IsNullOrWhiteSpace(value),

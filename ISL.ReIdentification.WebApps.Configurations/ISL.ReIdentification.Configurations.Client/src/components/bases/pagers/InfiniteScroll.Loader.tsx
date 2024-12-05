@@ -10,7 +10,7 @@ interface InfiniteScrollLoaderProps {
 }
 
 const InfiniteScrollLoader: FunctionComponent<InfiniteScrollLoaderProps> = (props) => {
-    const showNoMorePagesMessage = props.noMorePages && props.totalPages && props.totalPages > 1;
+    const showNoMorePagesMessage = props.noMorePages ;
 
     return (
         <>
