@@ -19,10 +19,10 @@ export const pdsDataViewService = {
     },
 
     useGetAllPdsData: (searchTerm?: string): PdsDataViewServiceResponse => {
-        let query = `?$orderby=createdDate desc`;
+        let query = `?$orderby=orgCode desc`;
 
         if (searchTerm) {
-            query = query + `&$filter=contains(UserEmail,'${searchTerm}')`;
+            query = query + `&$filter=contains(pseudoNhsNumber,'${searchTerm}') or contains(orgCode,'${searchTerm}') or contains(organisationName,'${searchTerm}')`;
         }
 
         const response = pdsDataService.useRetrieveAllPdsDataPages(query);
@@ -30,22 +30,9 @@ export const pdsDataViewService = {
         const [pages, setPages] = useState<Array<{ data: PdsDataView[] }>>([]);
 
         useEffect(() => {
-            if (response.data && response.data.pages) {
-                const pdsDataes: Array<PdsDataView> = [];
-                response.data.pages.forEach((x: { data: PdsDataView[] }) => {
-                    x.data.forEach((pdsData: PdsDataView) => {
-                        pdsDataes.push(new PdsDataView(
-                            pdsData.rowId,
-                            pdsData.pseudoNhsNumber,
-                            pdsData.OrgCode,
-                            pdsData.OrganisationName,
-                            pdsData.RelationshipWithOrganisationEffectiveFromDate,
-                            pdsData.RelationshipWithOrganisationEffectiveToDate
-                        ));
-                    });
-                });
-
-                setMappedPdsData(pdsDataes);
+            if (response.data && Array.isArray(response.data.pages)) {
+                const allData = response.data.pages.flatMap(page => page.data as PdsDataView[]);
+                setMappedPdsData(allData);
                 setPages(response.data.pages);
             }
         }, [response.data]);
@@ -60,40 +47,5 @@ export const pdsDataViewService = {
             data: response.data,
             refetch: response.refetch
         };
-    },
-
-    useGetPdsDataById: (id: string) => {
-        const query = `?$filter=id eq ${id}`;
-        const response = pdsDataService.useRetrieveAllPdsDataPages(query);
-        const [mappedPdsData, setMappedPdsData] = useState<PdsDataView>();
-
-        useEffect(() => {
-            if (response.data && response.data.pages && response.data.pages[0].data[0]) {
-                const pdsData = response.data.pages[0].data[0];
-                const pdsDataView = new PdsDataView(
-                    pdsData.rowId,
-                    pdsData.pseudoNhsNumber,
-                    pdsData.OrgCode,
-                    pdsData.OrganisationName,
-                    pdsData.RelationshipWithOrganisationEffectiveFromDate,
-                    pdsData.RelationshipWithOrganisationEffectiveToDate
-                );
-
-                setMappedPdsData(pdsDataView);
-            }
-        }, [response.data]);
-
-        return {
-            mappedPdsData,
-            ...response
-        };
-    },
-
-    useUpdateLookup: () => {
-        return pdsDataService.useModifyPdsData();
-    },
-
-    useRemoveLookup: () => {
-        return pdsDataService.useRemovePdsData();
-    },
+    }
 };

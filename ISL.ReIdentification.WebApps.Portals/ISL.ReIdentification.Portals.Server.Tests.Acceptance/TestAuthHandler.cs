@@ -13,36 +13,43 @@ using Microsoft.Extensions.Options;
 
 namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance
 {
-    public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
+    public class TestAuthHandler : AuthenticationHandler<CustomAuthenticationSchemeOptions>
     {
         public static Guid SecurityOid = Guid.Parse("65b5ccfb-b501-4ad5-8dd7-2a33ff64eaa3");
-        public static string GivenName = "TestGivenName";
-        public static string Surname = "TesSurname";
-        public static string DisplayName = "TestDisplayName";
-        public static string Email = "TestEmail@test.com";
-        public static string JobTitle = "TestJobTitle";
+        private static string givenName = "TestGivenName";
+        private static string surname = "TesSurname";
+        private static string displayName = "TestDisplayName";
+        private static string email = "TestEmail@test.com";
+        private static string jobTitle = "TestJobTitle";
 
-        public static List<Claim> Claims = new List<Claim>
+        private static List<Claim> claims = new List<Claim>
         {
             new Claim("oid", SecurityOid.ToString()),
-            new Claim(ClaimTypes.GivenName, GivenName),
-            new Claim(ClaimTypes.Surname, Surname),
-            new Claim("displayName", DisplayName),
-            new Claim(ClaimTypes.Email, Email),
-            new Claim("jobTitle", JobTitle),
+            new Claim(ClaimTypes.GivenName, givenName),
+            new Claim(ClaimTypes.Surname, surname),
+            new Claim("displayName", displayName),
+            new Claim(ClaimTypes.Email, email),
+            new Claim("jobTitle", jobTitle),
             new Claim(ClaimTypes.Name, "TestUser"),
-            new Claim(ClaimTypes.Role, "Administrators")
+            new Claim(ClaimTypes.Role, "ISL.Reidentification.Portal.Administrators"),
+            new Claim(ClaimTypes.Role, "ISL.Reidentification.Portal.DataEngineers")
         };
 
         public TestAuthHandler(
-            IOptionsMonitor<AuthenticationSchemeOptions> options,
+            IOptionsMonitor<CustomAuthenticationSchemeOptions> options,
             ILoggerFactory logger,
             UrlEncoder encoder)
             : base(options, logger, encoder) { }
 
         protected override Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            var identity = new ClaimsIdentity(Claims, "TestScheme");
+            var invisibleApiKey = Options.InvisibleApiKey;
+            if (invisibleApiKey != null && !string.IsNullOrWhiteSpace(invisibleApiKey.Key))
+            {
+                claims.Add(new Claim(ClaimTypes.Role, invisibleApiKey.Key));
+            }
+
+            var identity = new ClaimsIdentity(claims, "TestScheme");
             var principal = new ClaimsPrincipal(identity);
             var ticket = new AuthenticationTicket(principal, "TestScheme");
 

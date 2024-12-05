@@ -5,6 +5,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Attrify.Attributes;
 using ISL.ReIdentification.Core.Models.Foundations.Lookups;
 using ISL.ReIdentification.Core.Models.Foundations.Lookups.Exceptions;
 using ISL.ReIdentification.Core.Services.Foundations.Lookups;
@@ -25,6 +26,8 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
         public LookupsController(ILookupService lookupService) =>
             this.lookupService = lookupService;
 
+        [Authorize(Roles = "ISL.Reidentification.Portal.Administrators")]
+        [InvisibleApi]
         [HttpPost]
         public async ValueTask<ActionResult<Lookup>> PostLookupAsync([FromBody] Lookup lookup)
         {
@@ -111,6 +114,8 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.Reidentification.Portal.Administrators")]
+        [InvisibleApi]
         [HttpPut]
         public async ValueTask<ActionResult<Lookup>> PutLookupAsync([FromBody] Lookup lookup)
         {
@@ -149,6 +154,8 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.Reidentification.Portal.Administrators")]
+        [InvisibleApi]
         [HttpDelete("{lookupId}")]
         public async ValueTask<ActionResult<Lookup>> DeleteLookupByIdAsync(Guid lookupId)
         {

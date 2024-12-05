@@ -18,9 +18,8 @@ jobs:
     - name: Apply Label
       uses: actions/github-script@v6
       with:
-        github-token: ${{ secrets.PAT_FOR_TAGGING }}
-        script: >2
-
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: >-
           const prefixes = [
             'INFRA:',
             'PROVISIONS:',
@@ -84,6 +83,9 @@ jobs:
               break;
             }
           }
+    permissions:
+      contents: read
+      pull-requests: write
   build:
     name: Build
     runs-on: windows-latest
@@ -93,7 +95,7 @@ jobs:
     - name: Setup .Net
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 8.0.302
+        dotnet-version: 9.0.100
     - name: Restore
       run: dotnet restore
     - name: Build

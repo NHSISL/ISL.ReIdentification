@@ -4,6 +4,7 @@ import NavbarComponent from "./layouts/navbar";
 import { useState, useEffect } from "react";
 import SideBarComponent from "./layouts/sidebar";
 import FooterComponent from "./layouts/footer";
+import LoginUnAuthorisedComponent from "./layouts/loginUnauth";
 
 export default function Root() {
     const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -31,29 +32,30 @@ export default function Root() {
     }, []);
 
     return (
-        <div className="layout-container">
-            <div className={`sidebar bg-light ${sidebarOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
-                <AuthenticatedTemplate>
-                    <SideBarComponent />
-                    <div className="footerContent">
-                        <FooterComponent />
-                    </div>
-                </AuthenticatedTemplate>
-            </div>
-
-            <div className={`content ${sidebarOpen ? 'content-shift-right' : 'content-shift-left'}`}>
-                <NavbarComponent toggleSidebar={toggleSidebar} showMenuButton={true} />
-                <div className="content-inner">
-                    <AuthenticatedTemplate>
-                        <Outlet />
-                    </AuthenticatedTemplate>
-                    <UnauthenticatedTemplate>
-                        <div style={{ marginTop: '-20%' }}>
-                            <h2>Please Login</h2>
+        <>
+            <AuthenticatedTemplate>
+                <div className="layout-container">
+                    <div className={`sidebar bg-light ${sidebarOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
+                        <SideBarComponent />
+                        <div className="footerContent">
+                            <FooterComponent />
                         </div>
-                    </UnauthenticatedTemplate>
+                    </div>
+
+                    <div className={`content ${sidebarOpen ? 'content-shift-right' : 'content-shift-left'}`}>
+                        <NavbarComponent toggleSidebar={toggleSidebar} showMenuButton={true} />
+                        <div className="content-inner">
+                            <AuthenticatedTemplate>
+                                <Outlet />
+                            </AuthenticatedTemplate>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
+            </AuthenticatedTemplate>
+
+            <UnauthenticatedTemplate>
+                <LoginUnAuthorisedComponent />
+            </UnauthenticatedTemplate>
+        </>
     );
 }

@@ -12,7 +12,6 @@ export const ImpersonationContext = () => {
                     currentLink="Impersonation Context">
                 </BreadCrumbBase>
                 <div className="mt-3">
-                    <p>Role Needs to be in Security Matrix and Azure AD against user.</p>
                     <ImpersonationContextTable />
                 </div>
             </section>

@@ -8,6 +8,7 @@ import { useParams } from "react-router-dom";
 import { PBIEvent, PBIIdentity, PBIValues } from "../../types/PBIEvent";
 import { useReidentification } from "../../hooks/useReidentification";
 import { Button, ButtonGroup, Modal } from "react-bootstrap";
+import FakeReportPage from "./fakeReportPage";
 
 type ReportLaunchPageProps = {
     reportConfig: IReportEmbedConfiguration
@@ -22,7 +23,7 @@ type ReportLaunchPageProps = {
 const ReportsLaunchPage: FunctionComponent<ReportLaunchPageProps> = (props) => {
     const { reportConfig, addDeveloperEvent, toastPostion, activePage, toastHidden, hideToast, reidReason } = props;
     const { pseudoColumn } = useParams();
-    const [heldPseudosToReid, setHeldPseudosToReid ] = useState<string[]>([]);
+    const [heldPseudosToReid, setHeldPseudosToReid] = useState<string[]>([]);
     const [lastSetOfPseudos, setLastSetOfPseudos] = useState<string[]>([]);
     const [promptForReid, setPromptForReid] = useState(false);
     const { reidentify, reidentifications, lastPseudo, clearList, isLoading } = useReidentification(reidReason);
@@ -117,16 +118,19 @@ const ReportsLaunchPage: FunctionComponent<ReportLaunchPageProps> = (props) => {
 
     return <>
         <div className="flex-grow-1" style={{ position: "absolute", width: "100%", height: (visualViewport ? visualViewport.height : 500) - 40, inset: "33px 0 0 0" }}>
-            <PowerBIEmbed
-                embedConfig={reportConfig as IReportEmbedConfiguration}
-                cssClassName="report-container"
-                getEmbeddedComponent={bindEvents}
-            />
+            {reportConfig.type === 'fake' && <FakeReportPage getEmbeddedComponent={bindEvents} />}
+            {reportConfig.type !== 'fake' &&
+                <PowerBIEmbed
+                    embedConfig={reportConfig as IReportEmbedConfiguration}
+                    cssClassName="report-container"
+                    getEmbeddedComponent={bindEvents}
+                />
+            }
             <Modal show={promptForReid}>
                 <Modal.Header>Large Numbers of reid requests Detected</Modal.Header>
                 <Modal.Body>
                     <p>You have requested {heldPseudosToReid.length} records to be re-identified.</p>
-                    <p>This is likly to cause a breach to be reported.</p>
+                    <p>This is likely to cause a breach to be reported.</p>
                     <ButtonGroup>
                         <Button onClick={reIdBulk}>Confirm</Button><Button variant="secondary" onClick={() => { setHeldPseudosToReid([]); setPromptForReid(false); setLastSetOfPseudos([]); }}>Cancel</Button>
                     </ButtonGroup>

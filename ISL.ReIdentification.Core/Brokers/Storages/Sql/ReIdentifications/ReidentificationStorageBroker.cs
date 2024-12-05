@@ -4,7 +4,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using EFxceptions;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
@@ -30,17 +29,7 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications
         public ReIdentificationStorageBroker(IConfiguration configuration)
         {
             this.configuration = configuration;
-
-            try
-            {
-                Database.Migrate();
-            }
-            catch (SqlException sqlException)
-            {
-                Thread.Sleep(millisecondsTimeout: 10000);
-                Database.Migrate();
-            }
-
+            Database.Migrate();
             efCoreClient = new EFCoreClient(this);
         }
 

@@ -3,14 +3,19 @@ import { ReactElement, useState } from "react"
 import { Button, Card, ListGroup, Modal, NavDropdown } from "react-bootstrap";
 import MyOdsAssigned from "../ods/myOdsAssigned";
 
-export const UserProfile = (): ReactElement => {
+interface UserProfileProps {
+    modalTitle?: string;
+    className?: string;
+}
+
+export const UserProfile = ({ modalTitle = "My Profile", className }: UserProfileProps): ReactElement => {
     const { accounts } = useMsal();
     const [showModal, setShowModal] = useState(false);
     const closeModal = () => setShowModal(false);
     const openModal = () => setShowModal(true);
 
     return (
-        <div>
+        <div className={className}>
             <Modal show={showModal} onHide={closeModal} size="lg" centered>
                 <Modal.Header closeButton>
                     <Modal.Title>My Profile</Modal.Title>
@@ -57,7 +62,7 @@ export const UserProfile = (): ReactElement => {
                 </Modal.Footer>
             </Modal>
 
-            <NavDropdown.Item onClick={openModal}>My Profile</NavDropdown.Item>
+            <NavDropdown.Item onClick={openModal}>{modalTitle}</NavDropdown.Item>
         </div>
     );
 };

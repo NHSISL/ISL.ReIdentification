@@ -49,7 +49,7 @@ const CsvIdentificationRequestTable: FunctionComponent<CsvIdentificationRequestT
 
     return (
         <>
-            <SearchBase id="search" label="Search lookups" value={searchTerm} placeholder="Search Csv Identitfation Requests"
+            <SearchBase id="search" label="Search CSV Requests" value={searchTerm} placeholder="Search Csv Identitfation Requests"
                 onChange={(e) => { handleSearchChange(e.currentTarget.value) }} />
             <br />
 
@@ -68,7 +68,6 @@ const CsvIdentificationRequestTable: FunctionComponent<CsvIdentificationRequestT
                                         <th>Recipient FirstName</th>
                                         <th>Recipient LastName</th>
                                         <th>Reason</th>
-                                        <th>Action(s)</th>
                                     </tr>
                                 </thead>
                                 <tbody>

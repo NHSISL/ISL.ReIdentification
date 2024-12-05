@@ -86,3 +86,10 @@
     height: 100%;
     border: 0;
 }
+
+.customAnchor {
+    display: inline-block !important;
+    text-decoration: underline;
+    color: rgba(var(--bs-link-color-rgb),var(--bs-link-opacity,1));
+    font-weight:500;
+}

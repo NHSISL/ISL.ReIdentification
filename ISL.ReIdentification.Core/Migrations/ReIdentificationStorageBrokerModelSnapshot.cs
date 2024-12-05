@@ -74,6 +74,9 @@ namespace ISL.ReIdentification.Core.Migrations
                     b.Property<string>("Surname")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("TransactionId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
                         .HasMaxLength(255)

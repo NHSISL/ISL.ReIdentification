@@ -17,6 +17,7 @@ interface TextInputBaseProps {
     error?: string;
     type?: string;
     disabled?: boolean;
+    maxLength?: number; // Added maxLength prop
 }
 
 const TextInputBase: FunctionComponent<TextInputBaseProps> = (props) => {
@@ -39,7 +40,8 @@ const TextInputBase: FunctionComponent<TextInputBaseProps> = (props) => {
                         type={props.type || "text"}
                         placeholder={props.placeholder || ""}
                         disabled={props.disabled}
-                        //error={props.error}
+                        maxLength={props.maxLength} // Pass maxLength to Form.Control
+                    //error={props.error}
                     />
                     {
                         props.appendLabel !== undefined
@@ -56,8 +58,6 @@ const TextInputBase: FunctionComponent<TextInputBaseProps> = (props) => {
                 </InputGroup>
                 {props.description && (<><br /><small>{props.description}</small></>)}
             </div>
-
-
         </Form.Group>
     );
 }

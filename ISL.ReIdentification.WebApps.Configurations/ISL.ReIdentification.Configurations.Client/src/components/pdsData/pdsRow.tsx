@@ -1,11 +1,20 @@
 import { FunctionComponent } from "react";
 import PdsRowView from "./pdsRowView";
+import { PdsDataView } from "../../models/views/components/pdsData/pdsDataView";
 
-type PdsRowProps = object;
+type PdsRowProps = {
+    pds: PdsDataView;
+};
 
-const PdsRow: FunctionComponent<PdsRowProps> = () => {
+const PdsRow: FunctionComponent<PdsRowProps> = (props) => {
+    const {
+        pds
+    } = props;
+
     return (
-        <PdsRowView />
+        <PdsRowView
+            key={pds.id}
+            pds={pds} />
     );
 };
 

@@ -7,13 +7,7 @@ import { AccessRequest } from "../../models/accessRequest/accessRequest";
 import { useMsal } from "@azure/msal-react";
 import UserAccessSearch from "../userAccessSearch/userAccessSearch";
 import { UserAccessView } from "../../models/views/components/userAccess/userAccessView";
-import { lookupViewService } from "../../services/views/lookups/lookupViewService";
 import { OverlayInjectedProps } from "react-bootstrap/esm/Overlay";
-
-interface Option {
-    value: string;
-    name: string;
-}
 
 const CsvReIdentificationDetailCardView: FunctionComponent = () => {
 
@@ -29,9 +23,7 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
     const [fileName, setFileName] = useState<string>("");
     const [hasHeaderRecord, setHasHeaderRecord] = useState<boolean>(false);
     const [showHelpModal, setShowHelpModal] = useState<boolean>(false);
-
-    const { mappedLookups, isLoading } = lookupViewService.useGetAllLookups("", "Reasons");
-    const [selectedLookupId, setSelectedLookupId] = useState<string>("");
+    const [reason, setReason] = useState<string>("");
     const account = useMsal();
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -57,7 +49,7 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                 recipientEmail: selectedUser?.email || "",
                 recipientJobTitle: selectedUser?.jobTitle || "",
                 data: csvData || "",
-                reason: selectedLookupId,
+                reason: reason,
                 organisation: selectedUser?.orgCode,
                 createdBy: acc.username,
                 updatedBy: acc.username,
@@ -153,40 +145,27 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
         </Tooltip>
     );
 
-    const handleLookupChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setSelectedLookupId(e.target.value);
-    };
-
-    const lookupOptions: Array<Option> = [
-        { value: "", name: "Select Reason..." },
-        ...mappedLookups.map((lookup) => ({
-            value: lookup.value.toString() || "0",
-            name: lookup.value || "",
-        })),
-    ];
-
     return (
         <>
             {!savedSuccessfull ? (
                 <>
 
-                    
 
-                        <Card.Header>
-                            <Card.Title className="text-start">
-                                <OverlayTrigger placement="right" overlay={renderTooltip}>
-                                    <FontAwesomeIcon icon={faCircleInfo} className="text-primary" size="lg" />
-                                </OverlayTrigger>&nbsp;Dataset Upload
-                            </Card.Title>
-                        </Card.Header>
 
-                       <Card.Body>
+                    <Card.Header>
+                        <Card.Title className="text-start">
+                            <OverlayTrigger placement="right" overlay={renderTooltip}>
+                                <FontAwesomeIcon icon={faCircleInfo} className="text-primary" size="lg" />
+                            </OverlayTrigger>&nbsp;Dataset Upload
+                        </Card.Title>
+                    </Card.Header>
+
+                    <Card.Body>
 
                         <Card.Subtitle className="text-start text-muted mb-3">
                             <small>
-                                Please upload your csv below,
-                                provide a reason why you are identifying this patient
-                                and select the column that the identifier is in.
+                                Please upload your CSV file below, specify the reason for identifying these patients
+                                from the drop-down menu, and select the column containing the identifier.
                             </small>
                         </Card.Subtitle>
                         <Form onSubmit={handleSubmit}>
@@ -240,24 +219,22 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                                     <br />
                                 </>
                             )}
-                            {isLoading ? <Spinner /> : <>
                                 <Form.Group className="text-start">
-                                    <Form.Label><strong>Reidentification Reason:</strong></Form.Label>
-                                    <Form.Select
-                                        value={selectedLookupId}
-                                        onChange={handleLookupChange}
-                                        required >
-                                        {lookupOptions.map((option) => (
-                                            <option key={option.value} value={option.value}>
-                                                {option.name}
-                                            </option>
-                                        ))}
-                                    </Form.Select>
+                                    <Form.Label><strong>Re-identification Reason:</strong></Form.Label>
+
+                                    <Form.Control
+                                        as="textarea"
+                                        value={reason}
+                                        onChange={(e) => setReason(e.target.value)}
+                                        placeholder="Enter a reason"
+                                        rows={3}
+                                        required
+                                    />
+
                                     <Form.Text className="text-muted">
-                                        Please supply a reason why you are requesting to Reidentify this csv of patients.
+                                        Please supply a reason why you are requesting to Reidentify, this will be visable in the email to the recipient.
                                     </Form.Text>
                                 </Form.Group>
-                            </>}
                             <br />
 
                             {error && <Alert variant="danger">
@@ -274,7 +251,14 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                 </>
             ) : (
                 <>
-                    SENT - Need Some Copy here
+                    <Alert variant="success" className="mb-0">
+                        <h4>CSV Sent</h4>
+                        <p>The recipient should receive an email with a link to download the re-identified file.</p>
+                        <p>Please ensure the recipient checks their inbox and follows the instructions provided in the email to access the file.</p>
+                        <p>Alternatively, the recipient can launch their worklist in the portal and re-identify from there.</p>
+                        <p><strong>Note:</strong> Files will last for 7 days and then be removed from the system.</p>
+                    </Alert>
+
                 </>
             )}
 
@@ -294,7 +278,7 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                             <li>Right-click on the selected column and choose Format Cells.</li>
                             <li>In the Format Cells dialog box, go to the Number tab and choose Custom from the list on the left.</li>
                             <li>
-                                In the Type field, enter the following format code:This will ensure that all numbers in the column
+                                In the Type field, enter the following format code 0000000000. This will ensure that all numbers in the column
                                 are displayed with 10 digits, padding with leading zeroes if necessary. Click OK.
                             </li>
                         </ol>

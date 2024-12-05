@@ -18,7 +18,7 @@ namespace ISL.ReIdentification.Infrastructure.Services
         public ScriptGenerationService() =>
             adotNetClient = new ADotNetClient();
 
-        public void GenerateBuildScript(string branchName, string projectName)
+        public void GenerateBuildScript(string branchName, string projectName, string dotNetVersion)
         {
             var githubPipeline = new GithubPipeline
             {
@@ -39,9 +39,7 @@ namespace ISL.ReIdentification.Infrastructure.Services
                 {
                     {
                         "label",
-                        new LabelJob(
-                            runsOn: BuildMachines.UbuntuLatest,
-                            githubToken: "${{ secrets.PAT_FOR_TAGGING }}")
+                        new LabelJobV2(runsOn: BuildMachines.UbuntuLatest)
                     },
                     {
                         "build",
@@ -68,7 +66,7 @@ namespace ISL.ReIdentification.Infrastructure.Services
 
                                     With = new TargetDotNetVersionV3
                                     {
-                                        DotNetVersion = "8.0.302"
+                                        DotNetVersion = dotNetVersion
                                     }
                                 },
 

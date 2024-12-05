@@ -17,6 +17,13 @@ import { UserAccessNew } from './components/userAccess/userAccessNew';
 import "react-toastify/dist/ReactToastify.css";
 import ToastBroker from './brokers/toastBroker';
 import { UserAccessEdit } from './components/userAccess/userAccessEdit';
+import { CsvIdentificationRequestPage } from './pages/csvIdentificationRequest';
+import { CsvIdentificationRequestDetailPage } from './pages/csvIdentificationRequestDetail';
+import { ImpersonationContext } from './pages/impersonationContext';
+import { ImpersonationContextDetailPage } from './pages/impersonationContextDetail';
+import { OdsData } from './pages/odsData';
+import { PdsData } from './pages/pdsData';
+import { AccessAuditPage } from './pages/accesssAuditPage';
 
 function App({ instance }: any) {
 
@@ -50,30 +57,34 @@ function App({ instance }: any) {
                     path: "userAccess/:entraUserId",
                     element: <SecuredRoute allowedRoles={securityPoints.userAccess.add}><UserAccessEdit/></SecuredRoute>
                 },
-                //{
-                //    path: "impersonationContext",
-                //    element: <ImpersonationContext />
-                //},
-                //{
-                //    path: "impersonationContextDetail/:ImpersonationContextId",
-                //    element: <ImpersonationContextDetailPage />
-                //},
-                //{
-                //    path: "csvIdentificationRequest",
-                //    element: <CsvIdentificationRequestPage />
-                //},
-                //{
-                //    path: "csvIdentificationRequestDetail/:CsvIdentificationRequestId",
-                //    element: <CsvIdentificationRequestDetailPage />
-                //},
-                //{
-                //    path: "odsData",
-                //    element: <OdsData />
-                //},
-                //{
-                //    path: "pdsData",
-                //    element: <PdsData />
-                //},
+                {
+                    path: "impersonationContext",
+                    element: <ImpersonationContext />
+                },
+                {
+                    path: "impersonationContextDetail/:ImpersonationContextId",
+                    element: <ImpersonationContextDetailPage />
+                },
+                {
+                    path: "csvIdentificationRequest",
+                    element: <CsvIdentificationRequestPage />
+                },
+                {
+                    path: "csvIdentificationRequestDetail/:CsvIdentificationRequestId",
+                    element: <CsvIdentificationRequestDetailPage />
+                },
+                {
+                    path: "odsData",
+                    element: <OdsData />
+                },
+                {
+                    path: "pdsData",
+                    element: <PdsData />
+                },
+                {
+                    path: "accessAudit",
+                    element: <AccessAuditPage />
+                },
                 {
                     index: true,
                     element: <Navigate to="/home" />

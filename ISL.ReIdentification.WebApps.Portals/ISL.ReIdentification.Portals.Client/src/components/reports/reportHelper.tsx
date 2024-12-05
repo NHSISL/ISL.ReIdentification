@@ -27,9 +27,9 @@ const ReportHelper: FunctionComponent = () => {
 
     return (<>
         <Card>
-            <Card.Header>Report Url Generator</Card.Header>
+            <Card.Header>Report URL Generator</Card.Header>
             <Card.Body>
-                <Alert variant="success">Use this tool to help you construct the url for the reidentification server.</Alert>
+                <Alert variant="success">Use this tool to help you construct the URL for the re-identification server.</Alert>
                 <Form>
                     <Form.Group>
                         <Form.Label>Report Group Id:</Form.Label>
@@ -56,7 +56,7 @@ const ReportHelper: FunctionComponent = () => {
                     <br />
                     <Button onClick={generateUrl}>Generate</Button>
                     <br/>
-                    {url && <div>Url: {url} <FontAwesomeIcon icon={hasCopied ? faCheck : faCopy} onClick={copyUrl} /></div>}
+                    {url && <div>URL: {url} <FontAwesomeIcon icon={hasCopied ? faCheck : faCopy} onClick={copyUrl} /></div>}
                 </Form>
             </Card.Body>
         </Card>

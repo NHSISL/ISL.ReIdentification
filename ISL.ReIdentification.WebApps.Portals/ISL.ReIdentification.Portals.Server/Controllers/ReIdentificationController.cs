@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Services.Coordinations.Identifications;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
 
 namespace ISL.ReIdentification.Portals.Server.Controllers
 {
-    // [Authorize]
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class ReIdentificationController : RESTFulController
@@ -25,8 +26,8 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
         }
 
         [HttpPost]
-        public async ValueTask<ActionResult<AccessRequest>>
-                    PostIdentificationRequestsAsync([FromBody] AccessRequest accessRequest)
+        public async ValueTask<ActionResult<AccessRequest>> PostIdentificationRequestsAsync(
+            [FromBody] AccessRequest accessRequest)
         {
             try
             {
@@ -55,8 +56,8 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
         }
 
         [HttpPost("submitcsv")]
-        public async ValueTask<ActionResult<AccessRequest>>
-        PostCsvIdentificationRequestAsync([FromBody] AccessRequest accessRequest)
+        public async ValueTask<ActionResult<AccessRequest>> PostCsvIdentificationRequestAsync(
+            [FromBody] AccessRequest accessRequest)
         {
             try
             {
@@ -85,8 +86,8 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
         }
 
         [HttpPost("impersonation")]
-        public async ValueTask<ActionResult<AccessRequest>>
-            PostImpersonationContextRequestAsync([FromBody] AccessRequest accessRequest)
+        public async ValueTask<ActionResult<AccessRequest>> PostImpersonationContextRequestAsync(
+            [FromBody] AccessRequest accessRequest)
         {
             try
             {

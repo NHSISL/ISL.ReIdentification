@@ -13,7 +13,7 @@ export const pdsDataService = {
             },
             onSuccess: (variables: PdsData) => {
                 queryClient.invalidateQueries({ queryKey: ["PdsDataGetAll"] });
-                queryClient.invalidateQueries({ queryKey: ["PdsDataGetById", { id: variables.rowId }] });
+                queryClient.invalidateQueries({ queryKey: ["PdsDataGetById", { id: variables.id }] });
             }
         });
     },
@@ -55,7 +55,7 @@ export const pdsDataService = {
             },
             onSuccess: (data: PdsData) => {
                 queryClient.invalidateQueries({ queryKey: ["PdsDataGetAll"] });
-                queryClient.invalidateQueries({ queryKey: ["PdsDataGetById", { id: data.rowId }] });
+                queryClient.invalidateQueries({ queryKey: ["PdsDataGetById", { id: data.id }] });
             }
         });
     },
@@ -70,7 +70,7 @@ export const pdsDataService = {
             },
             onSuccess: (data: PdsData) => {
                 queryClient.invalidateQueries({ queryKey: ["PdsDataGetAll"] });
-                queryClient.invalidateQueries({ queryKey: ["PdsDataGetById", { id: data.rowId }] });
+                queryClient.invalidateQueries({ queryKey: ["PdsDataGetById", { id: data.id }] });
             }
         });
     },
