@@ -44,7 +44,6 @@ async function fillReIdentifyForm(page: Page, recipientEmail: string, reason: st
 }
 
 test.describe('Re-Identify dataset Patient Tests', () => {
-
     test.beforeEach(async ({ page }) => {
         await page.goto('https://localhost:5173/home');
     });
@@ -73,5 +72,4 @@ test.describe('Re-Identify dataset Patient Tests', () => {
             await expect(selectEmailButton).toBeHidden();
         });
     });
-
 });
