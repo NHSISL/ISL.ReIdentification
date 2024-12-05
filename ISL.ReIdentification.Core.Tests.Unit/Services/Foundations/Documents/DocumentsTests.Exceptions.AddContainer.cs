@@ -58,30 +58,27 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
-        [Fact]
-        public async Task ShouldThrowDependencyExceptionOnAddContainerAsync()
+        [Theory]
+        [MemberData(nameof(DependencyExceptions))]
+        public async Task ShouldThrowDocumentDependencyExceptionOnAddContainerAsync(Xeption dependencyException)
         {
             // given
             string someContainer = GetRandomString();
 
-            var storageProviderDependencyException = new StorageProviderDependencyException(
-                message: "Storage provider dependency errors occurred, please try again.",
-                innerException: new Xeption());
-
             var expectedDocumentDependencyException = new DocumentDependencyException(
                 message: "Document dependency error occurred, please fix errors and try again.",
-                innerException: storageProviderDependencyException);
+                innerException: dependencyException);
 
             this.blobStorageBrokerMock.Setup(broker =>
                 broker.CreateContainerAsync(someContainer))
-                    .ThrowsAsync(storageProviderDependencyException);
+                    .ThrowsAsync(dependencyException);
 
             // when
-            ValueTask addContainerTask =
+            ValueTask createContainerTask =
                 this.documentService.AddContainerAsync(someContainer);
 
             DocumentDependencyException actualDocumentDependencyException =
-                await Assert.ThrowsAsync<DocumentDependencyException>(addContainerTask.AsTask);
+                await Assert.ThrowsAsync<DocumentDependencyException>(createContainerTask.AsTask);
 
             // then
             actualDocumentDependencyException.Should().BeEquivalentTo(expectedDocumentDependencyException);
@@ -100,7 +97,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
         }
 
         [Fact]
-        public async Task ShouldThrowDependencyValidationExceptionOnCreateContainerAsync()
+        public async Task ShouldThrowDependencyValidationExceptionOnAddContainerAsync()
         {
             // given
             string someContainer = GetRandomString();
