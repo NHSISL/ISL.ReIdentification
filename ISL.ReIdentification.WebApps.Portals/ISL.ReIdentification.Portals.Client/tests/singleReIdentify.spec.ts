@@ -1,4 +1,4 @@
-/* eslint-disable */
+/* eslint-disable no-restricted-syntax */
 import { test, expect, Page } from '@playwright/test';
 import testData from './testData/testDataForSingle.json' assert { type: 'json' };
 

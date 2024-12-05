@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 import { test as setup, expect } from '@playwright/test';
 import path from 'path';
 import { fileURLToPath } from 'url';

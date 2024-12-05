@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 import { test, expect } from '@playwright/test';
 
 test.describe('Navigation Tests', () => {
