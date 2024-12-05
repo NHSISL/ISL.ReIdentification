@@ -30,6 +30,10 @@ steps:
     projects: "**/*.csproj"
     includeNuGetOrg: true
 
+steps:
+- script: |
+    npx eslint . --ignore-path .eslintignore
+    displayName: 'Run ESLint'
 
 - task: DotNetCoreCLI@2
   displayName: "Dotnet Publish Portal"
