@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { test, expect, Page } from '@playwright/test';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -49,7 +48,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 testDataForDataset.forEach(({ recipientEmail, reason }) => {
-    test(`Can upload CSV and recieve Email: ${recipientEmail}`, async ({ page }) => {
+    test(`Can upload CSV and receive Email: ${recipientEmail}`, async ({ page }) => {
         await navigateToReIdentifySinglePatient(page);
         await fillReIdentifyForm(page, recipientEmail, reason);
 
