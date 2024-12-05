@@ -97,6 +97,14 @@ test.describe('Re-Identify Single Patient Tests', () => {
         // fill out all and make sure button isnt active
     });
 
+    test('verifies No Access to Non-NHS Length Number123', async ({ page }) => {
+        await navigateToReIdentifySinglePatient(page);
+        await fillReIdentifyForm(page, '11111', 'Direct patient care');
+
+        //No popup to say why??
+        // fill out all and make sure button isnt active
+    });
+
     testData.forEach(({ validHexNumber, reason, expectedText}) => {
         test(`Has Access - to valid Hex Numbers: ${validHexNumber}`, async ({ page }) => {
             await navigateToReIdentifySinglePatient(page);
