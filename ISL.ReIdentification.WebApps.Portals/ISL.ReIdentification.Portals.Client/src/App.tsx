@@ -77,6 +77,14 @@ function App({ instance }: any) {
             element: <ReportsHome />
         },
         {
+            path: "report/g/:reportGroupId/r/:reportId/col/:pseudoColumn/:reportPage?",
+            element: <ReportsHome />
+        },
+        {
+            path: "report/t/:tenantId/g/:reportGroupId/r/:reportId/col/:pseudoColumn/:reportPage?",
+            element: <ReportsHome />
+        },
+        {
             path: "webpart/:pseudoId",
             element: <WebPart />
         },  
