@@ -11,9 +11,9 @@ setup('authenticate', async ({ page }) => {
   // Perform authentication steps. Replace these actions with your own.
   await page.goto('https://localhost:5173/');
   await page.getByRole('button', { name: 'Sign in' }).click();
-    await page.getByLabel('yourusername@nelcsu.nhs.uk').fill('david.hayes17@nelcsu.nhs.uk'); //username
+  await page.getByLabel('yourusername@nelcsu.nhs.uk').fill('david.hayes17@nelcsu.nhs.uk'); //username
   await page.getByRole('button', { name: 'Next' }).click();
-    await page.getByLabel('Password').fill(''); // password
+  await page.getByLabel('Password').fill(''); // password
   await page.getByRole('button', { name: 'Sign in' }).click();
   await page.getByRole('button', { name: 'Yes' }).click();
   await page.waitForURL('https://localhost:5173/');

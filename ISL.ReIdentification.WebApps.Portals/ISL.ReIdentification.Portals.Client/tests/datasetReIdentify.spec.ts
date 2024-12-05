@@ -1,5 +1,5 @@
 import { test, expect, Page } from '@playwright/test';
-import path from 'path';
+import * as path from 'path';
 import { fileURLToPath } from 'url';
 import testDataForDataset from './testData/testDataForDataset.json' assert { type: 'json' };
 
