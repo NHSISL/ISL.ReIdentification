@@ -23,7 +23,10 @@
     /* Paths */
     "paths": {
       "@playwright/test": [ "node_modules/@playwright/test" ]
-    }
+    },
+
+    /* JSON Modules */
+    "resolveJsonModule": true
   },
   "include": [ "src", "tests/**/*.ts" ]
 }
