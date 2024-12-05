@@ -5,10 +5,11 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Attrify.Attributes;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses.Exceptions;
 using ISL.ReIdentification.Core.Models.Processings.UserAccesses.Exceptions;
-using ISL.ReIdentification.Core.Services.Foundations.UserAccesses;
+using ISL.ReIdentification.Core.Services.Processings.UserAccesses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
@@ -26,6 +27,8 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
         public UserAccessesController(IUserAccessProcessingService userAccessProcessingService) =>
             this.userAccessProcessingService = userAccessProcessingService;
 
+        [Authorize(Roles = "ISL.Reidentification.Portal.Administrators")]
+        [InvisibleApi]
         [HttpPost]
         public async ValueTask<ActionResult<UserAccess>> PostUserAccessAsync(UserAccess userAccess)
         {
@@ -59,6 +62,8 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.Reidentification.Portal.Administrators")]
+        [InvisibleApi]
         [HttpPost("bulk")]
         public async ValueTask<ActionResult>
             PostBulkUserAccessAsync([FromBody] BulkUserAccess bulkUserAccess)
@@ -108,6 +113,8 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.Reidentification.Portal.Administrators")]
+        [InvisibleApi]
         [HttpGet("{userAccessId}")]
         public async ValueTask<ActionResult<UserAccess>> GetUserAccessByIdAsync(Guid userAccessId)
         {
@@ -145,6 +152,8 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.Reidentification.Portal.Administrators")]
+        [InvisibleApi]
         [HttpPut]
         public async ValueTask<ActionResult<UserAccess>> PutUserAccessAsync(UserAccess userAccess)
         {
@@ -185,6 +194,8 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.Reidentification.Portal.Administrators")]
+        [InvisibleApi]
         [HttpDelete("{userAccessId}")]
         public async ValueTask<ActionResult<UserAccess>> DeleteUserAccessByIdAsync(Guid userAccessId)
         {

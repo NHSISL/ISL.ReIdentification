@@ -30,7 +30,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.PdsD
                 new ActionResult<PdsData>(expectedObjectResult);
 
             pdsDataServiceMock
-                .Setup(service => service.RetrievePdsDataByIdAsync(It.IsAny<Guid>()))
+                .Setup(service => service.RetrievePdsDataByIdAsync(inputId))
                     .ReturnsAsync(storagePdsData);
 
             // when
@@ -40,7 +40,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.PdsD
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
             pdsDataServiceMock
-                .Verify(service => service.RetrievePdsDataByIdAsync(It.IsAny<Guid>()),
+                .Verify(service => service.RetrievePdsDataByIdAsync(inputId),
                     Times.Once);
 
             pdsDataServiceMock.VerifyNoOtherCalls();

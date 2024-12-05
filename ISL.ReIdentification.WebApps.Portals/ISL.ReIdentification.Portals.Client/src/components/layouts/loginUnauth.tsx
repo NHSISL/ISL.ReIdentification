@@ -1,12 +1,16 @@
 import { useMsal } from "@azure/msal-react";
 import { Button, Container, Row, Col, Card } from "react-bootstrap";
-import { loginRequest } from '../../authConfig';
+import { MsalConfig } from "../../authConfig";
+import { useLocation } from "react-router-dom";
 
 export const LoginUnAuthorisedComponent = () => {
 
     const { instance } = useMsal();
+    const location = useLocation();
 
-    const handleLoginRedirect = () => {
+    const handleLoginRedirect = async () => {
+        const loginRequest = MsalConfig.loginRequest;
+        loginRequest.redirectUri = location.pathname;
         instance.loginRedirect(loginRequest).catch((error) => console.log(error));
     };
 

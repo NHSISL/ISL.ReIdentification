@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Attrify.Attributes;
 using ISL.ReIdentification.Core.Models.Foundations.OdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.OdsDatas.Exceptions;
 using ISL.ReIdentification.Core.Services.Foundations.OdsDatas;
@@ -16,7 +17,7 @@ using RESTFulSense.Controllers;
 
 namespace ISL.ReIdentification.Portals.Server.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "ISL.Reidentification.Portal.Administrators")]
     [ApiController]
     [Route("api/[controller]")]
     public class OdsDataController : RESTFulController
@@ -26,6 +27,8 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
         public OdsDataController(IOdsDataService odsDataService) =>
             this.odsDataService = odsDataService;
 
+        [Authorize(Roles = "ISL.Reidentification.Portal.Administrators")]
+        [InvisibleApi]
         [HttpPost]
         public async ValueTask<ActionResult<OdsData>> PostOdsDataAsync([FromBody] OdsData odsData)
         {
@@ -59,6 +62,7 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             }
         }
 
+        [InvisibleApi]
         [HttpGet]
         [EnableQuery(PageSize = 25)]
         public async ValueTask<ActionResult<IQueryable<OdsData>>> Get()
@@ -79,6 +83,7 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             }
         }
 
+        [InvisibleApi]
         [HttpGet("GetChildren/{id}")]
         public async ValueTask<ActionResult<List<OdsData>>> GetAllChildren(Guid id)
         {
@@ -98,6 +103,7 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             }
         }
 
+        [InvisibleApi]
         [HttpGet("GetDescendants/{id}")]
         public async ValueTask<ActionResult<List<OdsData>>> GetAllDescendants(Guid id)
         {
@@ -117,6 +123,7 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             }
         }
 
+        [InvisibleApi]
         [HttpGet("GetAncestors/{id}")]
         public async ValueTask<ActionResult<List<OdsData>>> GetAllAncestors(Guid id)
         {
@@ -136,6 +143,7 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             }
         }
 
+        [InvisibleApi]
         [HttpGet("{odsDataId}")]
         public async ValueTask<ActionResult<OdsData>> GetOdsDataByIdAsync(Guid odsDataId)
         {
@@ -168,6 +176,8 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.Reidentification.Portal.Administrators")]
+        [InvisibleApi]
         [HttpPut]
         public async ValueTask<ActionResult<OdsData>> PutOdsDataAsync([FromBody] OdsData odsData)
         {
@@ -206,6 +216,8 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.Reidentification.Portal.Administrators")]
+        [InvisibleApi]
         [HttpDelete("{odsDataId}")]
         public async ValueTask<ActionResult<OdsData>> DeleteOdsDataByIdAsync(Guid odsDataId)
         {

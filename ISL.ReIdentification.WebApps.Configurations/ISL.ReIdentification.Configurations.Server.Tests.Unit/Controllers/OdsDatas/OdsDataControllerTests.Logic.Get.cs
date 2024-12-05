@@ -30,7 +30,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.OdsD
                 new ActionResult<OdsData>(expectedObjectResult);
 
             odsDataServiceMock
-                .Setup(service => service.RetrieveOdsDataByIdAsync(It.IsAny<Guid>()))
+                .Setup(service => service.RetrieveOdsDataByIdAsync(inputId))
                     .ReturnsAsync(storageOdsData);
 
             // when
@@ -40,7 +40,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.OdsD
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
             odsDataServiceMock
-                .Verify(service => service.RetrieveOdsDataByIdAsync(It.IsAny<Guid>()),
+                .Verify(service => service.RetrieveOdsDataByIdAsync(inputId),
                     Times.Once);
 
             odsDataServiceMock.VerifyNoOtherCalls();

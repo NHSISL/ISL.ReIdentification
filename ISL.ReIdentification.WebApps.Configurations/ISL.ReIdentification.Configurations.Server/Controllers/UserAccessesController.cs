@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses.Exceptions;
 using ISL.ReIdentification.Core.Models.Processings.UserAccesses.Exceptions;
-using ISL.ReIdentification.Core.Services.Foundations.UserAccesses;
+using ISL.ReIdentification.Core.Services.Processings.UserAccesses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
@@ -16,7 +16,7 @@ using RESTFulSense.Controllers;
 
 namespace ISL.ReIdentification.Configurations.Server.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "ISL.Reidentification.Configuration.Administrators,ISL.Reidentification.Configuration.Users")]
     [ApiController]
     [Route("api/[controller]")]
     public class UserAccessesController : RESTFulController
@@ -60,8 +60,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
         }
 
         [HttpPost("bulk")]
-        public async ValueTask<ActionResult>
-            PostBulkUserAccessAsync([FromBody] BulkUserAccess bulkUserAccess)
+        public async ValueTask<ActionResult> PostBulkUserAccessAsync([FromBody] BulkUserAccess bulkUserAccess)
         {
             try
             {

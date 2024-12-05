@@ -6,7 +6,7 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
-using ISL.ReIdentification.Core.Services.Orchestrations.Identifications;
+using ISL.ReIdentification.Core.Services.Coordinations.Identifications;
 using Moq;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifications

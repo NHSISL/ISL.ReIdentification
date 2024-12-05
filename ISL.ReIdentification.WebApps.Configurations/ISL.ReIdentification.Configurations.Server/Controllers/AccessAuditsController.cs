@@ -5,9 +5,9 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Attrify.Attributes;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits.Exceptions;
-using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Services.Foundations.AccessAudits;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +16,7 @@ using RESTFulSense.Controllers;
 
 namespace ISL.ReIdentification.Configurations.Server.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "ISL.Reidentification.Configuration.Administrators")]
     [ApiController]
     [Route("api/[controller]")]
     public class AccessAuditsController : RESTFulController
@@ -26,6 +26,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
         public AccessAuditsController(IAccessAuditService accessAuditService) =>
             this.accessAuditService = accessAuditService;
 
+        [InvisibleApi]
         [HttpPost]
         public async ValueTask<ActionResult<AccessAudit>> PostAccessAuditAsync([FromBody] AccessAudit accessAudit)
         {
@@ -80,6 +81,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             }
         }
 
+        [InvisibleApi]
         [HttpGet("{accessAuditId}")]
         public async ValueTask<ActionResult<AccessAudit>> GetAccessAuditByIdAsync(Guid accessAuditId)
         {
@@ -112,6 +114,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             }
         }
 
+        [InvisibleApi]
         [HttpPut]
         public async ValueTask<ActionResult<AccessAudit>> PutAccessAuditAsync([FromBody] AccessAudit accessAudit)
         {
@@ -150,6 +153,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             }
         }
 
+        [InvisibleApi]
         [HttpDelete("{accessAuditId}")]
         public async ValueTask<ActionResult<AccessAudit>> DeleteAccessAuditByIdAsync(Guid accessAuditId)
         {
