@@ -27,8 +27,6 @@ const ReportsHome: FunctionComponent = () => {
 
     const aquireAccessToken = async () => {
         await instance.initialize();
-       // const accounts = instance.getAllAccounts();
-        console.log(tenantId);
 
         let request: SilentRequest = {
             scopes: ["https://analysis.windows.net/powerbi/api/Report.Read.All"],
