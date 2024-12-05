@@ -125,7 +125,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
 
             DateTimeOffset dateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
             string timestamp = dateTimeOffset.ToString("yyyyMMddHHmms");
-            string fileName = $"data_{timestamp}.csv";
+            string fileName = $"{reIdentifiedAccessRequest.CsvIdentificationRequest.Filepath}_{timestamp}.csv";
             reIdentifiedAccessRequest.CsvIdentificationRequest.Filepath = fileName;
 
             return reIdentifiedAccessRequest;
