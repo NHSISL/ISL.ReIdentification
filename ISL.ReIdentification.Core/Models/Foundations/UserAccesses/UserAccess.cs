@@ -6,7 +6,7 @@ using System;
 
 namespace ISL.ReIdentification.Core.Models.Foundations.UserAccesses
 {
-    public class UserAccess
+    public class UserAccess : IKey, IAudit
     {
         public Guid Id { get; set; }
         public Guid EntraUserId { get; set; }

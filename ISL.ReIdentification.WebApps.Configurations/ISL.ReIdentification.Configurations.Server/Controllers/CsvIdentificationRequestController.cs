@@ -5,6 +5,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Attrify.Attributes;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests.Exceptions;
 using ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationRequests;
@@ -15,7 +16,7 @@ using RESTFulSense.Controllers;
 
 namespace ISL.ReIdentification.Configurations.Server.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "ISL.Reidentification.Configuration.Administrators")]
     [ApiController]
     [Route("api/[controller]")]
     public class CsvIdentificationRequestsController : RESTFulController
@@ -25,6 +26,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
         public CsvIdentificationRequestsController(ICsvIdentificationRequestService csvIdentificationRequestService) =>
             this.csvIdentificationRequestService = csvIdentificationRequestService;
 
+        [InvisibleApi]
         [HttpPost]
         public async ValueTask<ActionResult<CsvIdentificationRequest>> PostCsvIdentificationRequestAsync(
             [FromBody] CsvIdentificationRequest csvIdentificationRequest)
@@ -61,6 +63,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             }
         }
 
+        [InvisibleApi]
         [HttpGet]
         [EnableQuery(PageSize = 25)]
         public async ValueTask<ActionResult<IQueryable<CsvIdentificationRequest>>> Get()
@@ -82,6 +85,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             }
         }
 
+        [InvisibleApi]
         [HttpGet("{csvIdentificationRequestId}")]
         public async ValueTask<ActionResult<CsvIdentificationRequest>> GetCsvIdentificationRequestByIdAsync(
             Guid csvIdentificationRequestId)
@@ -119,6 +123,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             }
         }
 
+        [InvisibleApi]
         [HttpPut]
         public async ValueTask<ActionResult<CsvIdentificationRequest>> PutCsvIdentificationRequestAsync(
             [FromBody] CsvIdentificationRequest csvIdentificationRequest)
@@ -163,6 +168,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             }
         }
 
+        [InvisibleApi]
         [HttpDelete("{csvIdentificationRequestId}")]
         public async ValueTask<ActionResult<CsvIdentificationRequest>> DeleteCsvIdentificationRequestByIdAsync(
             Guid csvIdentificationRequestId)

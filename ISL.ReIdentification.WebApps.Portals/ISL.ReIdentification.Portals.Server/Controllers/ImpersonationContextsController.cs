@@ -15,7 +15,7 @@ using RESTFulSense.Controllers;
 
 namespace ISL.ReIdentification.Portals.Server.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "ISL.Reidentification.Portal.Administrators,ISL.Reidentification.Portal.DataEngineers")]
     [ApiController]
     [Route("api/[controller]")]
     public class ImpersonationContextsController : RESTFulController

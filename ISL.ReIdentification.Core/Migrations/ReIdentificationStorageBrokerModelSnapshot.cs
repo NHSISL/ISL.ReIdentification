@@ -481,6 +481,38 @@ namespace ISL.ReIdentification.Core.Migrations
                                     .HasColumnName("PeriodEnd");
                             }));
                 });
+
+            modelBuilder.Entity("ISL.ReIdentification.Core.Models.Foundations.UserAgreements.UserAgreement", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("AgreementDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("AgreementType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("EntraUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("UpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserAgreements");
+                });
 #pragma warning restore 612, 618
         }
     }
