@@ -24,7 +24,10 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.AccessAudit
             Type attributeType = typeof(AuthorizeAttribute);
             string attributeProperty = "Roles";
 
-            List<string> expectedAttributeValues = new List<string>();
+            List<string> expectedAttributeValues = new List<string>
+            {
+                "ISL.Reidentification.Portal.Administrators"
+            };
 
             // When
             var methodAttribute = methodInfo?
@@ -54,7 +57,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.AccessAudit
         }
 
         [Fact]
-        public void PostShouldNotHaveInvisibleApiAttribute()
+        public void PostShouldHaveInvisibleApiAttribute()
         {
             // Given
 
@@ -74,7 +77,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.AccessAudit
             var attribute = methodAttribute ?? controllerAttribute;
 
             // Then
-            attribute.Should().BeNull();
+            attribute.Should().NotBeNull();
         }
     }
 }
