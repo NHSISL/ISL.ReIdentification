@@ -98,5 +98,46 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationExceptionOnCreateContainerAsync()
+        {
+            // given
+            string someContainer = GetRandomString();
+
+            var storageProviderValidationException = new StorageProviderValidationException(
+                message: "Storage provider validation errors occurred, please try again.",
+                innerException: new Xeption());
+
+            var expectedDocumentServiceException = new DocumentDependencyValidationException(
+                message: "Document dependency validation error occurred, please fix errors and try again.",
+                innerException: storageProviderValidationException);
+
+            this.blobStorageBrokerMock.Setup(broker =>
+                broker.CreateContainerAsync(someContainer))
+                    .ThrowsAsync(storageProviderValidationException);
+
+            // when
+            ValueTask addContainerTask =
+                this.documentService.AddContainerAsync(someContainer);
+
+            DocumentDependencyValidationException actualDocumentServiceException =
+                await Assert.ThrowsAsync<DocumentDependencyValidationException>(addContainerTask.AsTask);
+
+            // then
+            actualDocumentServiceException.Should().BeEquivalentTo(expectedDocumentServiceException);
+
+            this.blobStorageBrokerMock.Verify(broker =>
+                broker.CreateContainerAsync(someContainer),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedDocumentServiceException))),
+                        Times.Once);
+
+            this.blobStorageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
