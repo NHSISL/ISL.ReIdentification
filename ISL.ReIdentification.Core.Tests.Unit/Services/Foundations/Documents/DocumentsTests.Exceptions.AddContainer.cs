@@ -3,11 +3,14 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
+using ISL.Providers.Storages.Abstractions.Models.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.Documents.Exceptions;
 using Moq;
+using Xeptions;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
 {
@@ -49,6 +52,47 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDocumentServiceException))),
+                        Times.Once);
+
+            this.blobStorageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnAddContainerAsync()
+        {
+            // given
+            string someContainer = GetRandomString();
+
+            var storageProviderDependencyException = new StorageProviderDependencyException(
+                message: "Storage provider dependency errors occurred, please try again.",
+                innerException: new Xeption());
+
+            var expectedDocumentDependencyException = new DocumentDependencyException(
+                message: "Document dependency error occurred, please fix errors and try again.",
+                innerException: storageProviderDependencyException);
+
+            this.blobStorageBrokerMock.Setup(broker =>
+                broker.CreateContainerAsync(someContainer))
+                    .ThrowsAsync(storageProviderDependencyException);
+
+            // when
+            ValueTask addContainerTask =
+                this.documentService.AddContainerAsync(someContainer);
+
+            DocumentDependencyException actualDocumentDependencyException =
+                await Assert.ThrowsAsync<DocumentDependencyException>(addContainerTask.AsTask);
+
+            // then
+            actualDocumentDependencyException.Should().BeEquivalentTo(expectedDocumentDependencyException);
+
+            this.blobStorageBrokerMock.Verify(broker =>
+                broker.CreateContainerAsync(someContainer),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedDocumentDependencyException))),
                         Times.Once);
 
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
