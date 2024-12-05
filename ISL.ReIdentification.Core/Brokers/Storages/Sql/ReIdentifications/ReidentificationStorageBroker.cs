@@ -13,6 +13,8 @@ using ISL.ReIdentification.Core.Models.Foundations.Lookups;
 using ISL.ReIdentification.Core.Models.Foundations.OdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.PdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
+using ISL.ReIdentification.Core.Models.Foundations.UserAgreements;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using STX.EFCore.Client.Clients;
@@ -50,6 +52,7 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications
             AddCsvIdentificationRequestConfigurations(modelBuilder.Entity<CsvIdentificationRequest>());
             AddOdsDataConfigurations(modelBuilder.Entity<OdsData>());
             AddPdsDataConfigurations(modelBuilder.Entity<PdsData>());
+            AddUserAgreementConfigurations(modelBuilder.Entity<UserAgreement>());
         }
 
         private async ValueTask<T> InsertAsync<T>(T @object) where T : class =>
