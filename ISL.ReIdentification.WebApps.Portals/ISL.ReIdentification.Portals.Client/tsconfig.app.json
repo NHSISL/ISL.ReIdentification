@@ -6,9 +6,6 @@
     "module": "ESNext",
     "skipLibCheck": true,
     "moduleResolution": "node",
-    "paths": {
-      "@playwright/test": [ "node_modules/@playwright/tests" ]
-    },
 
     /* Bundler mode */
     "moduleResolution": "bundler",
