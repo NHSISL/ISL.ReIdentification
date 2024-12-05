@@ -1,5 +1,6 @@
 /* eslint-disable no-restricted-syntax */
-import { test, expect } from '@playwright/test';
+import test from '@playwright/test';
+import expect  from '@playwright/test';
 
 test.describe('Navigation Tests', () => {
     test.beforeEach(async ({ page }) => {

@@ -1,5 +1,5 @@
-/* eslint-disable no-restricted-syntax */
-import { test, expect, Page } from '@playwright/test';
+import test from '@playwright/test';
+import expect from '@playwright/test';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
 import testDataForDataset from './testData/testDataForDataset.json' assert { type: 'json' };
@@ -44,13 +44,14 @@ async function fillReIdentifyForm(page: Page, recipientEmail: string, reason: st
     await colSelectDropdown.selectOption({ label: "Col-4 - PseudoID" });
 }
 
-test.describe('Dataset Re-Identify Tests', () => {
+test.describe('Re-Identify dataset Patient Tests', () => {
+
     test.beforeEach(async ({ page }) => {
         await page.goto('https://localhost:5173/home');
     });
 
     testDataForDataset.forEach(({ recipientEmail, reason }) => {
-        test(`Can upload CSV and receive Email: ${recipientEmail}`, async ({ page }) => {
+        test(`Can upload CSV and recieve Email: ${recipientEmail}`, async ({ page }) => {
             await navigateToReIdentifySinglePatient(page);
             await fillReIdentifyForm(page, recipientEmail, reason);
 
@@ -68,9 +69,10 @@ test.describe('Dataset Re-Identify Tests', () => {
             const emailAddressInput = page.getByPlaceholder('Enter user email address');
             await emailAddressInput.fill(invalidRecipientEmail);
             const selectEmailButton = page.getByRole('button', { name: 'Select' });
-
+    
             // Assert that the Select button is not visible or not in the DOM
             await expect(selectEmailButton).toBeHidden();
         });
     });
+
 });

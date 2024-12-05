@@ -1,5 +1,4 @@
-/* eslint-disable no-restricted-syntax */
-import { test, expect, Page } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import testData from './testData/testDataForSingle.json' assert { type: 'json' };
 
 async function navigateToReIdentifySinglePatient(page: Page) {
