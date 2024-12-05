@@ -34,10 +34,9 @@ try {
     console.log("\x1b[31m");
     console.log("TEST_PASSWORD is not base64 encoded. Please encode the password with btoa() before setting the environment variable.");
     console.log("\x1b[0m");
+    console.log(ex);
     exit(1);
 }
-
-
 
 /**
  * See https://playwright.dev/docs/test-configuration.
