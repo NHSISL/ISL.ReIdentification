@@ -64,6 +64,17 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
+        private static UserAgreement CreateRandomModifyUserAgreement(DateTimeOffset dateTimeOffset)
+        {
+            int randomDaysInPast = GetRandomNegativeNumber();
+            UserAgreement randomUserAgreement = CreateRandomUserAgreement(dateTimeOffset);
+
+            randomUserAgreement.CreatedDate =
+                randomUserAgreement.CreatedDate.AddDays(randomDaysInPast);
+
+            return randomUserAgreement;
+        }
+
         private static IQueryable<UserAgreement> CreateRandomUserAgreements()
         {
             return CreateUserAgreementFiller(dateTimeOffset: GetRandomDateTimeOffset())

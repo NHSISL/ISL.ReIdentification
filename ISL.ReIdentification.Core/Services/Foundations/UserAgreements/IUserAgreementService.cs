@@ -10,5 +10,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
         ValueTask<UserAgreement> AddUserAgreementAsync(UserAgreement userAgreement);
         IQueryable<UserAgreement> RetrieveAllUserAgreements();
         ValueTask<UserAgreement> RetrieveUserAgreementByIdAsync(Guid userAgreementId);
+        ValueTask<UserAgreement> ModifyUserAgreementAsync(UserAgreement userAgreement);
     }
 }
