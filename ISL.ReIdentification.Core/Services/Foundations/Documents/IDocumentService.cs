@@ -16,5 +16,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
         ValueTask<string> GetDownloadLinkAsync(string fileName, string container);
         ValueTask<List<string>> RetrieveAllAccessPoliciesFromContainerAsync(string container);
         ValueTask RemoveAllAccessPoliciesFromContainerAsync(string container);
+        ValueTask AddContainerAsync (string container);
     }
 }

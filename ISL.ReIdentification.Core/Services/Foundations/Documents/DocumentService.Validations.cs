@@ -42,6 +42,11 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             Validate((Rule: IsInvalid(container), Parameter: "Container"));
         }
 
+        private static void ValidateOnAddContainer(string container)
+        {
+            Validate((Rule: IsInvalid(container), Parameter: nameof(container)));
+        }
+
         private static dynamic IsInvalid(string value) => new
         {
             Condition = string.IsNullOrWhiteSpace(value),
