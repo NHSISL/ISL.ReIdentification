@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Brokers.Loggings;
@@ -61,6 +62,13 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
         {
             ValidateStorageArgumentsOnRemoveAccessPolicies(container);
             await this.blobStorageBroker.RemoveAccessPoliciesFromContainerAsync(container);
+        });
+
+        public ValueTask AddContainerAsync(string container) =>
+        TryCatch(async () =>
+        {
+            ValidateOnAddContainer(container);
+            await this.blobStorageBroker.CreateContainerAsync(container);
         });
     }
 }
