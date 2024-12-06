@@ -57,5 +57,52 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRetrieveByIdIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+            var serviceException = new Exception();
+
+            var failedUserAgreementServiceException =
+                new FailedUserAgreementServiceException(
+                    message: "Failed userAgreement service occurred, please contact support", 
+                    innerException: serviceException);
+
+            var expectedUserAgreementServiceException =
+                new UserAgreementServiceException(
+                    message: "UserAgreement service error occurred, contact support.",
+                    innerException: failedUserAgreementServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectUserAgreementByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask<UserAgreement> retrieveUserAgreementByIdTask =
+                this.userAgreementService.RetrieveUserAgreementByIdAsync(someId);
+
+            UserAgreementServiceException actualUserAgreementServiceException =
+                await Assert.ThrowsAsync<UserAgreementServiceException>(
+                    retrieveUserAgreementByIdTask.AsTask);
+
+            // then
+            actualUserAgreementServiceException.Should()
+                .BeEquivalentTo(expectedUserAgreementServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectUserAgreementByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedUserAgreementServiceException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
