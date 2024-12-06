@@ -1,6 +1,8 @@
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using ISL.ReIdentification.Core.Models.Foundations.UserAgreements;
 using ISL.ReIdentification.Core.Models.Foundations.UserAgreements.Exceptions;
@@ -58,6 +60,59 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
+                    Times.Never);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationOnRemoveIfDatabaseUpdateConcurrencyErrorOccursAndLogItAsync()
+        {
+            // given
+            Guid someUserAgreementId = Guid.NewGuid();
+
+            var databaseUpdateConcurrencyException =
+                new DbUpdateConcurrencyException();
+
+            var lockedUserAgreementException =
+                new LockedUserAgreementException(
+                    message: "Locked userAgreement record exception, please try again later",
+                    innerException: databaseUpdateConcurrencyException);
+
+            var expectedUserAgreementDependencyValidationException =
+                new UserAgreementDependencyValidationException(
+                    message: "UserAgreement dependency validation occurred, please try again.",
+                    innerException: lockedUserAgreementException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectUserAgreementByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(databaseUpdateConcurrencyException);
+
+            // when
+            ValueTask<UserAgreement> removeUserAgreementByIdTask =
+                this.userAgreementService.RemoveUserAgreementByIdAsync(someUserAgreementId);
+
+            UserAgreementDependencyValidationException actualUserAgreementDependencyValidationException =
+                await Assert.ThrowsAsync<UserAgreementDependencyValidationException>(
+                    removeUserAgreementByIdTask.AsTask);
+
+            // then
+            actualUserAgreementDependencyValidationException.Should()
+                .BeEquivalentTo(expectedUserAgreementDependencyValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectUserAgreementByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedUserAgreementDependencyValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.DeleteUserAgreementAsync(It.IsAny<UserAgreement>()),
                     Times.Never);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
