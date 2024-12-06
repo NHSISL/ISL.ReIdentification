@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
 using ISL.ReIdentification.Core.Models.Foundations.UserAgreements;
 using ISL.ReIdentification.Core.Models.Foundations.UserAgreements.Exceptions;
@@ -33,6 +34,15 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
 
                 throw CreateAndLogCriticalDependencyException(failedUserAgreementStorageException);
             }
+            catch (DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistsUserAgreementException =
+                    new AlreadyExistsUserAgreementException(
+                        message: "UserAgreement with the same Id already exists.",
+                        innerException: duplicateKeyException);
+
+                throw CreateAndLogDependencyValidationException(alreadyExistsUserAgreementException);
+            }
         }
 
         private UserAgreementValidationException CreateAndLogValidationException(Xeption exception)
@@ -57,6 +67,18 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
             this.loggingBroker.LogCritical(userAgreementDependencyException);
 
             return userAgreementDependencyException;
+        }
+
+        private UserAgreementDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        {
+            var userAgreementDependencyValidationException =
+                new UserAgreementDependencyValidationException(
+                    message: "UserAgreement dependency validation occurred, please try again.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(userAgreementDependencyValidationException);
+
+            return userAgreementDependencyValidationException;
         }
     }
 }
