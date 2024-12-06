@@ -84,7 +84,13 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
                     firstDate: inputUserAgreement.CreatedDate,
                     secondDate: storageUserAgreement.CreatedDate,
                     secondDateName: nameof(UserAgreement.CreatedDate)),
-                Parameter: nameof(UserAgreement.CreatedDate)));
+                Parameter: nameof(UserAgreement.CreatedDate)),
+
+                (Rule: IsNotSame(
+                    first: inputUserAgreement.CreatedBy,
+                    second: storageUserAgreement.CreatedBy,
+                    secondName: nameof(UserAgreement.CreatedBy)),
+                Parameter: nameof(UserAgreement.CreatedBy)));
         }
 
         private static dynamic IsInvalid(Guid id) => new
