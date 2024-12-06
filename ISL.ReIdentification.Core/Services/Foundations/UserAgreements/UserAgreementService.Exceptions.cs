@@ -60,6 +60,15 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
 
                 throw CreateAndLogDependencyValidationException(invalidUserAgreementReferenceException);
             }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedUserAgreementException = 
+                    new LockedUserAgreementException(
+                        message: "Locked userAgreement record exception, please try again later",
+                        innerException: dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedUserAgreementException);
+            }
             catch (DbUpdateException databaseUpdateException)
             {
                 var failedUserAgreementStorageException =
@@ -123,7 +132,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
             var userAgreementDependencyException = 
                 new UserAgreementDependencyException(
                     message: "UserAgreement dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogCritical(userAgreementDependencyException);
 
@@ -148,7 +157,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
             var userAgreementDependencyException = 
                 new UserAgreementDependencyException(
                     message: "UserAgreement dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogError(userAgreementDependencyException);
 
