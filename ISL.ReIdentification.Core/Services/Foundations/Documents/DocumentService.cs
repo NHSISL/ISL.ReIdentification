@@ -70,5 +70,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             ValidateOnAddContainer(container);
             await this.blobStorageBroker.CreateContainerAsync(container);
         });
+
+        public ValueTask AddFolderAsync(string folder) =>
+        throw new NotImplementedException();
     }
 }

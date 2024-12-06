@@ -17,5 +17,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
         ValueTask<List<string>> RetrieveAllAccessPoliciesFromContainerAsync(string container);
         ValueTask RemoveAllAccessPoliciesFromContainerAsync(string container);
         ValueTask AddContainerAsync (string container);
+        ValueTask AddFolderAsync(string folder);
     }
 }
