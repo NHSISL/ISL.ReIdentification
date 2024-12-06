@@ -19,6 +19,10 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
             {
                 throw CreateAndLogValidationException(nullUserAgreementException);
             }
+            catch (InvalidUserAgreementException invalidUserAgreementException)
+            {
+                throw CreateAndLogValidationException(invalidUserAgreementException);
+            }
         }
 
         private UserAgreementValidationException CreateAndLogValidationException(Xeption exception)
