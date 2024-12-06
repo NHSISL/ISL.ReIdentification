@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
@@ -33,5 +34,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
 
         public IQueryable<UserAgreement> RetrieveAllUserAgreements() =>
             TryCatch(() => this.storageBroker.SelectAllUserAgreements());
+
+        public ValueTask<UserAgreement> RetrieveUserAgreementByIdAsync(Guid userAgreementId) =>
+            throw new NotImplementedException();
     }
 }
