@@ -9,6 +9,7 @@ using System.IO;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Storages.Blob;
+using Tynamix.ObjectFiller;
 
 namespace ISL.ReIdentification.Core.Services.Foundations.Documents
 {
@@ -78,7 +79,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             await this.blobStorageBroker.CreateFolderInContainerAsync(container, folder);
         });
 
-        public ValueTask<string> GetDownloadLinkAsync(string fileName, string container, DateTimeOffset expiresOn) =>
-        throw new NotImplementedException();
+        public async ValueTask<string> GetDownloadLinkAsync(string fileName, string container, DateTimeOffset expiresOn) =>
+        await this.blobStorageBroker.GetDownloadLinkAsync(fileName, container, expiresOn);
     }
 }
