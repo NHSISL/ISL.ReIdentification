@@ -32,6 +32,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
             });
 
         public IQueryable<UserAgreement> RetrieveAllUserAgreements() =>
-            this.storageBroker.SelectAllUserAgreements();
+            TryCatch(() => this.storageBroker.SelectAllUserAgreements());
     }
 }

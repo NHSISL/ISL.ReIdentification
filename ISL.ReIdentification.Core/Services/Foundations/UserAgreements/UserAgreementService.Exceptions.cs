@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -12,6 +13,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
     public partial class UserAgreementService
     {
         private delegate ValueTask<UserAgreement> ReturningUserAgreementFunction();
+        private delegate IQueryable<UserAgreement> ReturningUserAgreementsFunction();
 
         private async ValueTask<UserAgreement> TryCatch(ReturningUserAgreementFunction returningUserAgreementFunction)
         {
@@ -74,6 +76,23 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
             }
         }
 
+        private IQueryable<UserAgreement> TryCatch(ReturningUserAgreementsFunction returningUserAgreementsFunction)
+        {
+            try
+            {
+                return returningUserAgreementsFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedUserAgreementStorageException =
+                    new FailedUserAgreementStorageException(
+                        message: "Failed userAgreement storage error occurred, contact support.",
+                        innerException: sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedUserAgreementStorageException);
+            }
+        }
+
         private UserAgreementValidationException CreateAndLogValidationException(Xeption exception)
         {
             var userAgreementValidationException =
@@ -91,7 +110,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
             var userAgreementDependencyException = 
                 new UserAgreementDependencyException(
                     message: "UserAgreement dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogCritical(userAgreementDependencyException);
 
@@ -116,7 +135,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
             var userAgreementDependencyException = 
                 new UserAgreementDependencyException(
                     message: "UserAgreement dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogError(userAgreementDependencyException);
 
