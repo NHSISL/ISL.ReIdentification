@@ -38,6 +38,16 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
         private void ValidateUserAgreementOnModify(UserAgreement userAgreement)
         {
             ValidateUserAgreementIsNotNull(userAgreement);
+
+            Validate(
+                (Rule: IsInvalid(userAgreement.Id), Parameter: nameof(UserAgreement.Id)),
+
+                // TODO: Add any other required validation rules
+
+                (Rule: IsInvalid(userAgreement.CreatedDate), Parameter: nameof(UserAgreement.CreatedDate)),
+                (Rule: IsInvalid(userAgreement.CreatedBy), Parameter: nameof(UserAgreement.CreatedBy)),
+                (Rule: IsInvalid(userAgreement.UpdatedDate), Parameter: nameof(UserAgreement.UpdatedDate)),
+                (Rule: IsInvalid(userAgreement.UpdatedBy), Parameter: nameof(UserAgreement.UpdatedBy)));
         }
 
         public void ValidateUserAgreementId(Guid userAgreementId) =>
@@ -94,7 +104,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
                 Condition = firstId != secondId,
                 Message = $"Id is not the same as {secondIdName}"
             };
-        
+
         private static dynamic IsNotSame(
            string first,
            string second,
