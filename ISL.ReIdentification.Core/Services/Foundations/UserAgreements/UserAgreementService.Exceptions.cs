@@ -43,6 +43,15 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsUserAgreementException);
             }
+            catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
+            {
+                var invalidUserAgreementReferenceException =
+                    new InvalidUserAgreementReferenceException(
+                        message: "Invalid userAgreement reference error occurred.", 
+                        innerException: foreignKeyConstraintConflictException);
+
+                throw CreateAndLogDependencyValidationException(invalidUserAgreementReferenceException);
+            }
         }
 
         private UserAgreementValidationException CreateAndLogValidationException(Xeption exception)
@@ -62,7 +71,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
             var userAgreementDependencyException = 
                 new UserAgreementDependencyException(
                     message: "UserAgreement dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogCritical(userAgreementDependencyException);
 
