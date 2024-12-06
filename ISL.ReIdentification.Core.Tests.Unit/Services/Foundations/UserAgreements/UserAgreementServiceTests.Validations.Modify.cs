@@ -223,7 +223,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
                     modifyUserAgreementTask.AsTask);
 
             // then
-            actualUserAgreementValidationException.Should().BeEquivalentTo(expectedUserAgreementValidatonException);
+            actualUserAgreementValidationException.Should()
+                .BeEquivalentTo(expectedUserAgreementValidatonException);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
@@ -241,6 +242,61 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfUserAgreementDoesNotExistAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            UserAgreement randomUserAgreement = CreateRandomModifyUserAgreement(randomDateTimeOffset);
+            UserAgreement nonExistUserAgreement = randomUserAgreement;
+            UserAgreement nullUserAgreement = null;
+
+            var notFoundUserAgreementException =
+                new NotFoundUserAgreementException(nonExistUserAgreement.Id);
+
+            var expectedUserAgreementValidationException =
+                new UserAgreementValidationException(
+                    message: "UserAgreement validation errors occurred, please try again.",
+                    innerException: notFoundUserAgreementException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectUserAgreementByIdAsync(nonExistUserAgreement.Id))
+                .ReturnsAsync(nullUserAgreement);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when 
+            ValueTask<UserAgreement> modifyUserAgreementTask =
+                this.userAgreementService.ModifyUserAgreementAsync(nonExistUserAgreement);
+
+            UserAgreementValidationException actualUserAgreementValidationException =
+                await Assert.ThrowsAsync<UserAgreementValidationException>(
+                    modifyUserAgreementTask.AsTask);
+
+            // then
+            actualUserAgreementValidationException.Should()
+                .BeEquivalentTo(expectedUserAgreementValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectUserAgreementByIdAsync(nonExistUserAgreement.Id),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedUserAgreementValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }
