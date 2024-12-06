@@ -54,5 +54,49 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowNotFoundExceptionOnRetrieveByIdIfUserAgreementIsNotFoundAndLogItAsync()
+        {
+            //given
+            Guid someUserAgreementId = Guid.NewGuid();
+            UserAgreement noUserAgreement = null;
+
+            var notFoundUserAgreementException =
+                new NotFoundUserAgreementException(someUserAgreementId);
+
+            var expectedUserAgreementValidationException =
+                new UserAgreementValidationException(
+                    message: "UserAgreement validation errors occurred, please try again.",
+                    innerException: notFoundUserAgreementException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectUserAgreementByIdAsync(It.IsAny<Guid>()))
+                    .ReturnsAsync(noUserAgreement);
+
+            //when
+            ValueTask<UserAgreement> retrieveUserAgreementByIdTask =
+                this.userAgreementService.RetrieveUserAgreementByIdAsync(someUserAgreementId);
+
+            UserAgreementValidationException actualUserAgreementValidationException =
+                await Assert.ThrowsAsync<UserAgreementValidationException>(
+                    retrieveUserAgreementByIdTask.AsTask);
+
+            //then
+            actualUserAgreementValidationException.Should().BeEquivalentTo(expectedUserAgreementValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectUserAgreementByIdAsync(It.IsAny<Guid>()),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedUserAgreementValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
