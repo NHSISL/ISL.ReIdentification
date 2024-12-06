@@ -38,6 +38,10 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
 
                 throw CreateAndLogCriticalDependencyException(failedUserAgreementStorageException);
             }
+            catch (NotFoundUserAgreementException notFoundUserAgreementException)
+            {
+                throw CreateAndLogValidationException(notFoundUserAgreementException);
+            }
             catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsUserAgreementException =

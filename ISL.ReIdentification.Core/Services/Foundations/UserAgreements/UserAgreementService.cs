@@ -43,6 +43,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
                 UserAgreement maybeUserAgreement = await this.storageBroker
                     .SelectUserAgreementByIdAsync(userAgreementId);
 
+                ValidateStorageUserAgreement(maybeUserAgreement, userAgreementId);
+
                 return maybeUserAgreement;
             });
     }

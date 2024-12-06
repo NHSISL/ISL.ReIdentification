@@ -38,6 +38,14 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
         public void ValidateUserAgreementId(Guid userAgreementId) =>
             Validate((Rule: IsInvalid(userAgreementId), Parameter: nameof(UserAgreement.Id)));
 
+        private static void ValidateStorageUserAgreement(UserAgreement maybeUserAgreement, Guid userAgreementId)
+        {
+            if (maybeUserAgreement is null)
+            {
+                throw new NotFoundUserAgreementException(userAgreementId);
+            }
+        }
+
         private static void ValidateUserAgreementIsNotNull(UserAgreement userAgreement)
         {
             if (userAgreement is null)
