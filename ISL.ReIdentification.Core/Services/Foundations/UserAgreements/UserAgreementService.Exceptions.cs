@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using ISL.ReIdentification.Core.Models.Foundations.UserAgreements;
 using ISL.ReIdentification.Core.Models.Foundations.UserAgreements.Exceptions;
 using Xeptions;
@@ -52,6 +53,15 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
 
                 throw CreateAndLogDependencyValidationException(invalidUserAgreementReferenceException);
             }
+            catch (DbUpdateException databaseUpdateException)
+            {
+                var failedUserAgreementStorageException =
+                    new FailedUserAgreementStorageException(
+                    message: "Failed userAgreement storage error occurred, contact support.",
+                    innerException: databaseUpdateException);
+
+                throw CreateAndLogDependencyException(failedUserAgreementStorageException);
+            }
         }
 
         private UserAgreementValidationException CreateAndLogValidationException(Xeption exception)
@@ -88,6 +98,19 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
             this.loggingBroker.LogError(userAgreementDependencyValidationException);
 
             return userAgreementDependencyValidationException;
+        }
+
+        private UserAgreementDependencyException CreateAndLogDependencyException(
+            Xeption exception)
+        {
+            var userAgreementDependencyException = 
+                new UserAgreementDependencyException(
+                    message: "UserAgreement dependency error occurred, contact support.",
+                    innerException: exception); 
+
+            this.loggingBroker.LogError(userAgreementDependencyException);
+
+            return userAgreementDependencyException;
         }
     }
 }
