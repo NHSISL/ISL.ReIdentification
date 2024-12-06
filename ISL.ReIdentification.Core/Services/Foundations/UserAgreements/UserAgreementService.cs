@@ -32,6 +32,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
             });
 
         public IQueryable<UserAgreement> RetrieveAllUserAgreements() =>
-            throw new System.NotImplementedException();
+            this.storageBroker.SelectAllUserAgreements();
     }
 }
