@@ -36,6 +36,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);
 
+        private static string GetRandomString() =>
+            new MnemonicString(wordCount: GetRandomNumber()).GetValue();
+
         public static TheoryData MinutesBeforeOrAfter()
         {
             int randomNumber = GetRandomNumber();

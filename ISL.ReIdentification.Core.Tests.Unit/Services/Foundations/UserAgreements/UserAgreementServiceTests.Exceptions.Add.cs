@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
 using Moq;
@@ -25,7 +26,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
             var expectedUserAgreementDependencyException =
                 new UserAgreementDependencyException(
                     message: "UserAgreement dependency error occurred, contact support.",
-                    innerException: failedUserAgreementStorageException);
+                    innerException: failedUserAgreementStorageException);             
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -54,6 +55,61 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogCritical(It.Is(SameExceptionAs(
                     expectedUserAgreementDependencyException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationExceptionOnAddIfUserAgreementAlreadyExsitsAndLogItAsync()
+        {
+            // given
+            UserAgreement randomUserAgreement = CreateRandomUserAgreement();
+            UserAgreement alreadyExistsUserAgreement = randomUserAgreement;
+            string randomMessage = GetRandomString();
+
+            var duplicateKeyException =
+                new DuplicateKeyException(randomMessage);
+
+            var alreadyExistsUserAgreementException =
+                new AlreadyExistsUserAgreementException(
+                    message: "UserAgreement with the same Id already exists.",
+                    innerException: duplicateKeyException);
+
+            var expectedUserAgreementDependencyValidationException =
+                new UserAgreementDependencyValidationException(
+                    message: "UserAgreement dependency validation occurred, please try again.",
+                    innerException: alreadyExistsUserAgreementException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(duplicateKeyException);
+
+            // when
+            ValueTask<UserAgreement> addUserAgreementTask =
+                this.userAgreementService.AddUserAgreementAsync(alreadyExistsUserAgreement);
+
+            // then
+            UserAgreementDependencyValidationException actualUserAgreementDependencyValidationException =
+                await Assert.ThrowsAsync<UserAgreementDependencyValidationException>(
+                    addUserAgreementTask.AsTask);
+
+            actualUserAgreementDependencyValidationException.Should()
+                .BeEquivalentTo(expectedUserAgreementDependencyValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertUserAgreementAsync(It.IsAny<UserAgreement>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedUserAgreementDependencyValidationException))),
                         Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
