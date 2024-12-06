@@ -48,7 +48,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
                 return maybeUserAgreement;
             });
 
-        public ValueTask<UserAgreement> ModifyUserAgreementAsync(UserAgreement userAgreement) =>
-            throw new NotImplementedException();
+        public async ValueTask<UserAgreement> ModifyUserAgreementAsync(UserAgreement userAgreement) =>
+            await this.storageBroker.UpdateUserAgreementAsync(userAgreement);
     }
 }
