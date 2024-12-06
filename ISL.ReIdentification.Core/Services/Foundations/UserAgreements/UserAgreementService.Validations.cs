@@ -77,6 +77,16 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
             }
         }
 
+        private static void ValidateAgainstStorageUserAgreementOnModify(UserAgreement inputUserAgreement, UserAgreement storageUserAgreement)
+        {
+            Validate(
+                (Rule: IsNotSame(
+                    firstDate: inputUserAgreement.CreatedDate,
+                    secondDate: storageUserAgreement.CreatedDate,
+                    secondDateName: nameof(UserAgreement.CreatedDate)),
+                Parameter: nameof(UserAgreement.CreatedDate)));
+        }
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,
