@@ -61,5 +61,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
 
                 return await this.storageBroker.UpdateUserAgreementAsync(userAgreement);
             });
+
+        public ValueTask<UserAgreement> RemoveUserAgreementByIdAsync(Guid userAgreementId) =>
+            throw new NotImplementedException();
     }
 }
