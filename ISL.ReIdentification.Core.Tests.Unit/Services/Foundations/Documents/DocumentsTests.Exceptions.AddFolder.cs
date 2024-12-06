@@ -53,5 +53,43 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
+        [Theory]
+        [MemberData(nameof(DependencyExceptions))]
+        public async Task ShouldThrowDocumentDependencyExceptionOnAddFolderAsync(Xeption dependencyException)
+        {
+            // given
+            string someContainer = GetRandomString();
+            string someFolderName = GetRandomString();
+
+            var expectedDocumentDependencyException = new DocumentDependencyException(
+                message: "Document dependency error occurred, please fix errors and try again.",
+                innerException: dependencyException);
+
+            this.blobStorageBrokerMock.Setup(broker =>
+                broker.CreateFolderInContainerAsync(someContainer, someFolderName))
+                    .ThrowsAsync(dependencyException);
+
+            // when
+            ValueTask addFolderTask =
+                this.documentService.AddFolderAsync(someContainer, someFolderName);
+
+            DocumentDependencyException actualDocumentDependencyException =
+                await Assert.ThrowsAsync<DocumentDependencyException>(addFolderTask.AsTask);
+
+            // then
+            actualDocumentDependencyException.Should().BeEquivalentTo(expectedDocumentDependencyException);
+
+            this.blobStorageBrokerMock.Verify(broker =>
+                broker.CreateFolderInContainerAsync(someContainer, someFolderName),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedDocumentDependencyException))),
+                        Times.Once);
+
+            this.blobStorageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
