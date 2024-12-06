@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -65,7 +66,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
 
             var invalidUserAgreementException = 
                 new InvalidUserAgreementException(
-                        message: "Invalid userAgreement. Please correct the errors and try again.");
+                    message: "Invalid userAgreement. Please correct the errors and try again.");
 
             invalidUserAgreementException.AddData(
                 key: nameof(UserAgreement.Id),
@@ -116,6 +117,51 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateUserAgreementAsync(It.IsAny<UserAgreement>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfUpdatedDateIsSameAsCreatedDateAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            UserAgreement randomUserAgreement = CreateRandomUserAgreement(randomDateTimeOffset);
+            UserAgreement invalidUserAgreement = randomUserAgreement;
+            var invalidUserAgreementException = 
+                new InvalidUserAgreementException(
+                    message: "Invalid userAgreement. Please correct the errors and try again.");
+
+            invalidUserAgreementException.AddData(
+                key: nameof(UserAgreement.UpdatedDate),
+                values: $"Date is the same as {nameof(UserAgreement.CreatedDate)}");
+
+            var expectedUserAgreementValidationException =
+                new UserAgreementValidationException(
+                    message: "UserAgreement validation errors occurred, please try again.",
+                    innerException: invalidUserAgreementException);
+
+            // when
+            ValueTask<UserAgreement> modifyUserAgreementTask =
+                this.userAgreementService.ModifyUserAgreementAsync(invalidUserAgreement);
+
+            UserAgreementValidationException actualUserAgreementValidationException =
+                await Assert.ThrowsAsync<UserAgreementValidationException>(
+                    modifyUserAgreementTask.AsTask);
+
+            // then
+            actualUserAgreementValidationException.Should().BeEquivalentTo(expectedUserAgreementValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedUserAgreementValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectUserAgreementByIdAsync(invalidUserAgreement.Id),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
