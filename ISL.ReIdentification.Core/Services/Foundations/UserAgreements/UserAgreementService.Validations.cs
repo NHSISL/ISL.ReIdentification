@@ -35,6 +35,9 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
                 (Rule: IsNotRecent(userAgreement.CreatedDate), Parameter: nameof(UserAgreement.CreatedDate)));
         }
 
+        public void ValidateUserAgreementId(Guid userAgreementId) =>
+            Validate((Rule: IsInvalid(userAgreementId), Parameter: nameof(UserAgreement.Id)));
+
         private static void ValidateUserAgreementIsNotNull(UserAgreement userAgreement)
         {
             if (userAgreement is null)

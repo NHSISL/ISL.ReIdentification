@@ -35,7 +35,15 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
         public IQueryable<UserAgreement> RetrieveAllUserAgreements() =>
             TryCatch(() => this.storageBroker.SelectAllUserAgreements());
 
-        public async ValueTask<UserAgreement> RetrieveUserAgreementByIdAsync(Guid userAgreementId) =>
-            await this.storageBroker.SelectUserAgreementByIdAsync(userAgreementId);
+        public ValueTask<UserAgreement> RetrieveUserAgreementByIdAsync(Guid userAgreementId) =>
+            TryCatch(async () =>
+            {
+                ValidateUserAgreementId(userAgreementId);
+
+                UserAgreement maybeUserAgreement = await this.storageBroker
+                    .SelectUserAgreementByIdAsync(userAgreementId);
+
+                return maybeUserAgreement;
+            });
     }
 }
