@@ -88,7 +88,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
 
             invalidUserAgreementException.AddData(
                 key: nameof(UserAgreement.UpdatedDate),
-                values: "Date is required");
+                values:
+                new[] {
+                    "Date is required",
+                    $"Date is the same as {nameof(UserAgreement.CreatedDate)}"
+                });
 
             invalidUserAgreementException.AddData(
                 key: nameof(UserAgreement.UpdatedBy),
@@ -131,6 +135,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             UserAgreement randomUserAgreement = CreateRandomUserAgreement(randomDateTimeOffset);
             UserAgreement invalidUserAgreement = randomUserAgreement;
+            
             var invalidUserAgreementException = 
                 new InvalidUserAgreementException(
                     message: "Invalid userAgreement. Please correct the errors and try again.");
