@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
@@ -224,6 +225,61 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedUserAgreementDependencyValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateUserAgreementAsync(randomUserAgreement),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnModifyIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            UserAgreement randomUserAgreement = CreateRandomUserAgreement();
+            var serviceException = new Exception();
+
+            var failedUserAgreementServiceException =
+                new FailedUserAgreementServiceException(
+                    message: "Failed userAgreement service occurred, please contact support", 
+                    innerException: serviceException);
+
+            var expectedUserAgreementServiceException =
+                new UserAgreementServiceException(
+                    message: "UserAgreement service error occurred, contact support.",
+                    innerException: failedUserAgreementServiceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<UserAgreement> modifyUserAgreementTask =
+                this.userAgreementService.ModifyUserAgreementAsync(randomUserAgreement);
+
+            UserAgreementServiceException actualUserAgreementServiceException =
+                await Assert.ThrowsAsync<UserAgreementServiceException>(
+                    modifyUserAgreementTask.AsTask);
+
+            // then
+            actualUserAgreementServiceException.Should()
+                .BeEquivalentTo(expectedUserAgreementServiceException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectUserAgreementByIdAsync(randomUserAgreement.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedUserAgreementServiceException))),
                         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
