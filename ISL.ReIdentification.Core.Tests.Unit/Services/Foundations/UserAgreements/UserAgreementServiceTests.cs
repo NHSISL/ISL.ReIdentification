@@ -1,4 +1,5 @@
 using System;
+using System.Linq.Expressions;
 using Moq;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Loggings;
@@ -6,6 +7,7 @@ using ISL.ReIdentification.Core.Brokers.Storages.Sql;
 using ISL.ReIdentification.Core.Models.Foundations.UserAgreements;
 using ISL.ReIdentification.Core.Services.Foundations.UserAgreements;
 using Tynamix.ObjectFiller;
+using Xeptions;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreements
 {
@@ -27,6 +29,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
         }
+
+        private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
+            actualException => actualException.SameExceptionAs(expectedException);
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
