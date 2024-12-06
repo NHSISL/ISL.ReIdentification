@@ -91,6 +91,15 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
 
                 throw CreateAndLogCriticalDependencyException(failedUserAgreementStorageException);
             }
+            catch (Exception exception)
+            {
+                var failedUserAgreementServiceException =
+                    new FailedUserAgreementServiceException(
+                        message: "Failed userAgreement service occurred, please contact support", 
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedUserAgreementServiceException);
+            }
         }
 
         private UserAgreementValidationException CreateAndLogValidationException(Xeption exception)
