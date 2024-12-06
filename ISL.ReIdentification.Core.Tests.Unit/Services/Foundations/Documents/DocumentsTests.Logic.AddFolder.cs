@@ -15,13 +15,14 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
         {
             // given
             string randomFolderName = GetRandomString();
+            string randomContainer = GetRandomString();
 
             // when
-            await this.documentService.AddFolderAsync(randomFolderName);
+            await this.documentService.AddFolderAsync(randomContainer, randomFolderName);
 
             // then
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.CreateContainerAsync(randomFolderName),
+                broker.CreateFolderInContainerAsync(randomContainer, randomFolderName),
                     Times.Once);
 
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
