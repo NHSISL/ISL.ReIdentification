@@ -27,7 +27,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                 message: "Invalid document. Please correct the errors and try again.");
 
             invalidDocumentException.AddData(
-                key: "fileName",
+                key: "folderName",
                 values: "Text is invalid");
 
             invalidDocumentException.AddData(
