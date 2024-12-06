@@ -18,7 +18,13 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
                 (Rule: IsInvalid(userAgreement.CreatedDate), Parameter: nameof(UserAgreement.CreatedDate)),
                 (Rule: IsInvalid(userAgreement.CreatedBy), Parameter: nameof(UserAgreement.CreatedBy)),
                 (Rule: IsInvalid(userAgreement.UpdatedDate), Parameter: nameof(UserAgreement.UpdatedDate)),
-                (Rule: IsInvalid(userAgreement.UpdatedBy), Parameter: nameof(UserAgreement.UpdatedBy)));
+                (Rule: IsInvalid(userAgreement.UpdatedBy), Parameter: nameof(UserAgreement.UpdatedBy)),
+
+                (Rule: IsNotSame(
+                    firstDate: userAgreement.UpdatedDate,
+                    secondDate: userAgreement.CreatedDate,
+                    secondDateName: nameof(UserAgreement.CreatedDate)),
+                Parameter: nameof(UserAgreement.UpdatedDate)));
         }
 
         private static void ValidateUserAgreementIsNotNull(UserAgreement userAgreement)
@@ -46,6 +52,15 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
             Condition = date == default,
             Message = "Date is required"
         };
+
+        private static dynamic IsNotSame(
+            DateTimeOffset firstDate,
+            DateTimeOffset secondDate,
+            string secondDateName) => new
+            {
+                Condition = firstDate != secondDate,
+                Message = $"Date is not the same as {secondDateName}"
+            };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
