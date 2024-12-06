@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -57,10 +58,19 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
             {
                 var failedUserAgreementStorageException =
                     new FailedUserAgreementStorageException(
-                    message: "Failed userAgreement storage error occurred, contact support.",
-                    innerException: databaseUpdateException);
+                        message: "Failed userAgreement storage error occurred, contact support.",
+                        innerException: databaseUpdateException);
 
                 throw CreateAndLogDependencyException(failedUserAgreementStorageException);
+            }
+            catch (Exception exception)
+            {
+                var failedUserAgreementServiceException =
+                    new FailedUserAgreementServiceException(
+                        message: "Failed userAgreement service occurred, please contact support", 
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedUserAgreementServiceException);
             }
         }
 
@@ -111,6 +121,19 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
             this.loggingBroker.LogError(userAgreementDependencyException);
 
             return userAgreementDependencyException;
+        }
+
+        private UserAgreementServiceException CreateAndLogServiceException(
+            Xeption exception)
+        {
+            var userAgreementServiceException = 
+                new UserAgreementServiceException(
+                    message: "UserAgreement service error occurred, contact support.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(userAgreementServiceException);
+
+            return userAgreementServiceException;
         }
     }
 }
