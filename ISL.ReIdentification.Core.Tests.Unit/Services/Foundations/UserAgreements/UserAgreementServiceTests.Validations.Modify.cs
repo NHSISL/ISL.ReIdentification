@@ -115,6 +115,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
             actualUserAgreementValidationException.Should()
                 .BeEquivalentTo(expectedUserAgreementValidationException);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedUserAgreementValidationException))),
@@ -124,9 +128,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
                 broker.UpdateUserAgreementAsync(It.IsAny<UserAgreement>()),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -136,7 +140,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             UserAgreement randomUserAgreement = CreateRandomUserAgreement(randomDateTimeOffset);
             UserAgreement invalidUserAgreement = randomUserAgreement;
-            
+
             var invalidUserAgreementException = 
                 new InvalidUserAgreementException(
                     message: "Invalid userAgreement. Please correct the errors and try again.");
@@ -150,6 +154,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
                     message: "UserAgreement validation errors occurred, please try again.",
                     innerException: invalidUserAgreementException);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             // when
             ValueTask<UserAgreement> modifyUserAgreementTask =
                 this.userAgreementService.ModifyUserAgreementAsync(invalidUserAgreement);
@@ -162,6 +170,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
             actualUserAgreementValidationException.Should()
                 .BeEquivalentTo(expectedUserAgreementValidationException);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedUserAgreementValidationException))),
@@ -171,9 +183,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
                 broker.SelectUserAgreementByIdAsync(invalidUserAgreement.Id),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]

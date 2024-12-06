@@ -23,6 +23,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
             UserAgreement expectedUserAgreement = updatedUserAgreement.DeepClone();
             Guid userAgreementId = inputUserAgreement.Id;
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             this.storageBrokerMock.Setup(broker =>
                 broker.UpdateUserAgreementAsync(inputUserAgreement))
                     .ReturnsAsync(updatedUserAgreement);
@@ -34,13 +38,17 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
             // then
             actualUserAgreement.Should().BeEquivalentTo(expectedUserAgreement);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateUserAgreementAsync(inputUserAgreement),
                     Times.Once);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

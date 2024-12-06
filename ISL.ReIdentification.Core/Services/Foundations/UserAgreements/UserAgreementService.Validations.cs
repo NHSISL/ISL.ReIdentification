@@ -53,7 +53,9 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
                     firstDate: userAgreement.UpdatedDate,
                     secondDate: userAgreement.CreatedDate,
                     secondDateName: nameof(UserAgreement.CreatedDate)),
-                Parameter: nameof(UserAgreement.UpdatedDate)));
+                Parameter: nameof(UserAgreement.UpdatedDate)),
+
+                (Rule: IsNotRecent(userAgreement.UpdatedDate), Parameter: nameof(userAgreement.UpdatedDate)));
         }
 
         public void ValidateUserAgreementId(Guid userAgreementId) =>
