@@ -77,5 +77,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             ValidateOnAddFolder(container, folder);
             await this.blobStorageBroker.CreateFolderInContainerAsync(container, folder);
         });
+
+        public ValueTask<string> GetDownloadLinkAsync(string fileName, string container, DateTimeOffset expiresOn) =>
+        throw new NotImplementedException();
     }
 }
