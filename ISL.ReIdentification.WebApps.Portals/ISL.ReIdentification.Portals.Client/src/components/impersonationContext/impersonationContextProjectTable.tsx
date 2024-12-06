@@ -2,9 +2,9 @@ import { debounce } from "lodash";
 import { FunctionComponent, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { SpinnerBase } from "../bases/spinner/SpinnerBase";
-import { Button, Container, Table } from "react-bootstrap";
+import { Button, Container, Table, InputGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faRefresh } from "@fortawesome/free-solid-svg-icons";
 import { ImpersonationContextView } from "../../models/views/components/impersonationContext/ImpersonationContextView";
 import InfiniteScroll from "../bases/pagers/InfiniteScroll";
 import InfiniteScrollLoader from "../bases/pagers/InfiniteScroll.Loader";
@@ -17,7 +17,7 @@ type ImpersonationContextProjectTableProps = object;
 const ImpersonationContextProjectTable: FunctionComponent<ImpersonationContextProjectTableProps> = () => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [debouncedTerm, setDebouncedTerm] = useState<string>("");
-    const [showSpinner] = useState(false);
+    const [showSpinner, setShowSpinner] = useState(false);
     const navigate = useNavigate();
 
     const {
@@ -26,6 +26,7 @@ const ImpersonationContextProjectTable: FunctionComponent<ImpersonationContextPr
         fetchNextPage,
         isFetchingNextPage,
         hasNextPage,
+        refetch
     } = impersonationContextViewService.useGetAllImpersonationContexts(
         debouncedTerm
     );
@@ -51,58 +52,73 @@ const ImpersonationContextProjectTable: FunctionComponent<ImpersonationContextPr
         navigate("/addProject");
     };
 
+    const handleRefresh = async () => {
+        setShowSpinner(true);
+        await refetch();
+        setShowSpinner(false);
+    };
+
     return (
         <div className="projectTableView">
-            <Container className=" mt-4">
-                <SearchBase id="search" label="Search lookups" value={searchTerm} placeholder="Search Projects"
-                    onChange={(e) => { handleSearchChange(e.currentTarget.value) }} />
-                <br />
+            <Container className="mt-4">
+                <InputGroup className="mb-3">
+                    <SearchBase id="search" label="Search lookups" value={searchTerm} placeholder="Search Projects"
+                        onChange={(e) => { handleSearchChange(e.currentTarget.value) }} />
+
+                    <Button variant="outline-secondary" onClick={handleRefresh}>
+                        <FontAwesomeIcon icon={faRefresh} />
+                    </Button>
+                </InputGroup>
                 <Button variant="primary" className="mb-3" onClick={handleAddProjectClick}>
                     <FontAwesomeIcon icon={faPlus} /> Add Project
                 </Button>
             </Container>
             <Container className="infiniteScrollContainer">
-                <InfiniteScroll loading={isLoading || showSpinner} hasNextPage={hasNextPage || false} loadMore={fetchNextPage}>
-                    <Table striped bordered hover variant="light">
-                        <thead>
-                            <tr>
-                                <th>Project</th>
-                                <th>Approval Status</th>
-                                <th>Action(s)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {isLoading || showSpinner ? (
+                {showSpinner ? (
+                    <SpinnerBase />
+                ) : (
+                    <InfiniteScroll loading={isLoading || showSpinner} hasNextPage={hasNextPage || false} loadMore={fetchNextPage}>
+                        <Table striped bordered hover variant="light">
+                            <thead>
                                 <tr>
-                                    <td colSpan={6} className="text-center">
-                                        <SpinnerBase />
-                                    </td>
+                                    <th>Project</th>
+                                    <th>Approval Status</th>
+                                    <th>Action(s)</th>
                                 </tr>
-                            ) : (
-                                <>
-                                    {impersonationContextRetrieved?.map(
-                                        (impersonationContextView: ImpersonationContextView) => (
-                                            <ImpersonationContextProjectRow
-                                                key={impersonationContextView.id.toString()}
-                                                impersonationContext={impersonationContextView}
-                                            />
-                                        )
-                                    )}
+                            </thead>
+                            <tbody>
+                                {isLoading || showSpinner ? (
                                     <tr>
-                                        <td colSpan={7} className="text-center">
-                                            <InfiniteScrollLoader
-                                                loading={isLoading || isFetchingNextPage}
-                                                spinner={<SpinnerBase />}
-                                                noMorePages={hasNoMorePages()}
-                                                noMorePagesMessage={<>-- No more pages --</>}
-                                            />
+                                        <td colSpan={6} className="text-center">
+                                            <SpinnerBase />
                                         </td>
                                     </tr>
-                                </>
-                            )}
-                        </tbody>
-                    </Table>
-                </InfiniteScroll>
+                                ) : (
+                                    <>
+                                        {impersonationContextRetrieved?.map(
+                                            (impersonationContextView: ImpersonationContextView) => (
+                                                <ImpersonationContextProjectRow
+                                                    key={impersonationContextView.id.toString()}
+                                                    impersonationContext={impersonationContextView}
+                                                />
+                                            )
+                                        )}
+                                        <tr>
+                                            <td colSpan={7} className="text-center">
+                                                <InfiniteScrollLoader
+                                                    loading={isLoading || isFetchingNextPage}
+                                                    spinner={<SpinnerBase />}
+                                                    noMorePages={hasNoMorePages()}
+                                                    noMorePagesMessage={<>-- No more pages --</>}
+                                                />
+                                            </td>
+                                        </tr>
+                                    </>
+                                )}
+                            </tbody>
+                        </Table>
+                    </InfiniteScroll>
+                )}
             </Container>
         </div>
     );
