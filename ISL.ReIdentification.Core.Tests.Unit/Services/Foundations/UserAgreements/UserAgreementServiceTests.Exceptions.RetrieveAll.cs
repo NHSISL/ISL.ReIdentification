@@ -1,16 +1,22 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
+using ISL.ReIdentification.Core.Models.Foundations.UserAgreements;
+using ISL.ReIdentification.Core.Models.Foundations.UserAgreements.Exceptions;
 using Microsoft.Data.SqlClient;
 using Moq;
-using ISL.ReIdentification.Core.Models.Foundations.UserAgreements.Exceptions;
-using Xunit;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreements
 {
     public partial class UserAgreementServiceTests
     {
         [Fact]
-        public void ShouldThrowCriticalDependencyExceptionOnRetrieveAllWhenSqlExceptionOccursAndLogIt()
+        public async Task ShouldThrowCriticalDependencyExceptionOnRetrieveAllWhenSqlExceptionOccursAndLogIt()
         {
             // given
             SqlException sqlException = GetSqlException();
@@ -25,37 +31,37 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
                     message: "UserAgreement dependency error occurred, contact support.",
                     innerException: failedUserAgreementStorageException);
 
-            this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllUserAgreements())
-                    .Throws(sqlException);
+            this.reIdentificationStorageBrokerMock.Setup(broker =>
+                broker.SelectAllUserAgreementsAsync())
+                    .ThrowsAsync(sqlException);
 
             // when
-            Action retrieveAllUserAgreementsAction = () =>
-                this.userAgreementService.RetrieveAllUserAgreements();
+            ValueTask<IQueryable<UserAgreement>> retrieveAllUserAgreementsTask =
+                this.userAgreementService.RetrieveAllUserAgreementsAsync();
 
             UserAgreementDependencyException actualUserAgreementDependencyException =
-                Assert.Throws<UserAgreementDependencyException>(retrieveAllUserAgreementsAction);
+                await Assert.ThrowsAsync<UserAgreementDependencyException>(retrieveAllUserAgreementsTask.AsTask);
 
             // then
             actualUserAgreementDependencyException.Should()
                 .BeEquivalentTo(expectedUserAgreementDependencyException);
 
-            this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllUserAgreements(),
+            this.reIdentificationStorageBrokerMock.Verify(broker =>
+                broker.SelectAllUserAgreementsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogCritical(It.Is(SameExceptionAs(
+                broker.LogCriticalAsync(It.Is(SameExceptionAs(
                     expectedUserAgreementDependencyException))),
                         Times.Once);
 
-            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.reIdentificationStorageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
-        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
         {
             // given
             string exceptionMessage = GetRandomString();
@@ -63,7 +69,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
 
             var failedUserAgreementServiceException =
                 new FailedUserAgreementServiceException(
-                    message: "Failed userAgreement service occurred, please contact support", 
+                    message: "Failed userAgreement service occurred, please contact support",
                     innerException: serviceException);
 
             var expectedUserAgreementServiceException =
@@ -71,31 +77,31 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
                     message: "UserAgreement service error occurred, contact support.",
                     innerException: failedUserAgreementServiceException);
 
-            this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllUserAgreements())
-                    .Throws(serviceException);
+            this.reIdentificationStorageBrokerMock.Setup(broker =>
+                broker.SelectAllUserAgreementsAsync())
+                    .ThrowsAsync(serviceException);
 
             // when
-            Action retrieveAllUserAgreementsAction = () =>
-                this.userAgreementService.RetrieveAllUserAgreements();
+            ValueTask<IQueryable<UserAgreement>> retrieveAllUserAgreementsTask =
+                this.userAgreementService.RetrieveAllUserAgreementsAsync();
 
             UserAgreementServiceException actualUserAgreementServiceException =
-                Assert.Throws<UserAgreementServiceException>(retrieveAllUserAgreementsAction);
+                await Assert.ThrowsAsync<UserAgreementServiceException>(retrieveAllUserAgreementsTask.AsTask);
 
             // then
             actualUserAgreementServiceException.Should()
                 .BeEquivalentTo(expectedUserAgreementServiceException);
 
-            this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllUserAgreements(),
+            this.reIdentificationStorageBrokerMock.Verify(broker =>
+                broker.SelectAllUserAgreementsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedUserAgreementServiceException))),
                         Times.Once);
 
-            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.reIdentificationStorageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

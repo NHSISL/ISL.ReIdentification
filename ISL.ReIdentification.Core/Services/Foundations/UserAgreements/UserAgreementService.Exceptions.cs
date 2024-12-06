@@ -1,11 +1,15 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
 using ISL.ReIdentification.Core.Models.Foundations.UserAgreements;
 using ISL.ReIdentification.Core.Models.Foundations.UserAgreements.Exceptions;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Xeptions;
 
 namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
@@ -13,7 +17,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
     public partial class UserAgreementService
     {
         private delegate ValueTask<UserAgreement> ReturningUserAgreementFunction();
-        private delegate IQueryable<UserAgreement> ReturningUserAgreementsFunction();
+        private delegate ValueTask<IQueryable<UserAgreement>> ReturningUserAgreementsFunction();
 
         private async ValueTask<UserAgreement> TryCatch(ReturningUserAgreementFunction returningUserAgreementFunction)
         {
@@ -23,11 +27,11 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
             }
             catch (NullUserAgreementException nullUserAgreementException)
             {
-                throw CreateAndLogValidationException(nullUserAgreementException);
+                throw await CreateAndLogValidationExceptionAsync(nullUserAgreementException);
             }
             catch (InvalidUserAgreementException invalidUserAgreementException)
             {
-                throw CreateAndLogValidationException(invalidUserAgreementException);
+                throw await CreateAndLogValidationExceptionAsync(invalidUserAgreementException);
             }
             catch (SqlException sqlException)
             {
@@ -36,11 +40,11 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
                         message: "Failed userAgreement storage error occurred, contact support.",
                         innerException: sqlException);
 
-                throw CreateAndLogCriticalDependencyException(failedUserAgreementStorageException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedUserAgreementStorageException);
             }
             catch (NotFoundUserAgreementException notFoundUserAgreementException)
             {
-                throw CreateAndLogValidationException(notFoundUserAgreementException);
+                throw await CreateAndLogValidationExceptionAsync(notFoundUserAgreementException);
             }
             catch (DuplicateKeyException duplicateKeyException)
             {
@@ -49,25 +53,25 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
                         message: "UserAgreement with the same Id already exists.",
                         innerException: duplicateKeyException);
 
-                throw CreateAndLogDependencyValidationException(alreadyExistsUserAgreementException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(alreadyExistsUserAgreementException);
             }
             catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
             {
                 var invalidUserAgreementReferenceException =
                     new InvalidUserAgreementReferenceException(
-                        message: "Invalid userAgreement reference error occurred.", 
+                        message: "Invalid userAgreement reference error occurred.",
                         innerException: foreignKeyConstraintConflictException);
 
-                throw CreateAndLogDependencyValidationException(invalidUserAgreementReferenceException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(invalidUserAgreementReferenceException);
             }
             catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
-                var lockedUserAgreementException = 
+                var lockedUserAgreementException =
                     new LockedUserAgreementException(
                         message: "Locked userAgreement record exception, please try again later",
                         innerException: dbUpdateConcurrencyException);
 
-                throw CreateAndLogDependencyValidationException(lockedUserAgreementException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(lockedUserAgreementException);
             }
             catch (DbUpdateException databaseUpdateException)
             {
@@ -76,24 +80,25 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
                         message: "Failed userAgreement storage error occurred, contact support.",
                         innerException: databaseUpdateException);
 
-                throw CreateAndLogDependencyException(failedUserAgreementStorageException);
+                throw await CreateAndLogDependencyExceptionAsync(failedUserAgreementStorageException);
             }
             catch (Exception exception)
             {
                 var failedUserAgreementServiceException =
                     new FailedUserAgreementServiceException(
-                        message: "Failed userAgreement service occurred, please contact support", 
+                        message: "Failed userAgreement service occurred, please contact support",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedUserAgreementServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedUserAgreementServiceException);
             }
         }
 
-        private IQueryable<UserAgreement> TryCatch(ReturningUserAgreementsFunction returningUserAgreementsFunction)
+        private async ValueTask<IQueryable<UserAgreement>> TryCatch(
+            ReturningUserAgreementsFunction returningUserAgreementsFunction)
         {
             try
             {
-                return returningUserAgreementsFunction();
+                return await returningUserAgreementsFunction();
             }
             catch (SqlException sqlException)
             {
@@ -102,77 +107,80 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
                         message: "Failed userAgreement storage error occurred, contact support.",
                         innerException: sqlException);
 
-                throw CreateAndLogCriticalDependencyException(failedUserAgreementStorageException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedUserAgreementStorageException);
             }
             catch (Exception exception)
             {
                 var failedUserAgreementServiceException =
                     new FailedUserAgreementServiceException(
-                        message: "Failed userAgreement service occurred, please contact support", 
+                        message: "Failed userAgreement service occurred, please contact support",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedUserAgreementServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedUserAgreementServiceException);
             }
         }
 
-        private UserAgreementValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<UserAgreementValidationException> CreateAndLogValidationExceptionAsync(
+            Xeption exception)
         {
             var userAgreementValidationException =
                 new UserAgreementValidationException(
                     message: "UserAgreement validation errors occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(userAgreementValidationException);
+            await this.loggingBroker.LogErrorAsync(userAgreementValidationException);
 
             return userAgreementValidationException;
         }
 
-        private UserAgreementDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
+        private async ValueTask<UserAgreementDependencyException> CreateAndLogCriticalDependencyExceptionAsync(
+            Xeption exception)
         {
-            var userAgreementDependencyException = 
+            var userAgreementDependencyException =
                 new UserAgreementDependencyException(
                     message: "UserAgreement dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
-            this.loggingBroker.LogCritical(userAgreementDependencyException);
+            await this.loggingBroker.LogCriticalAsync(userAgreementDependencyException);
 
             return userAgreementDependencyException;
         }
 
-        private UserAgreementDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        private async ValueTask<UserAgreementDependencyValidationException>
+            CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var userAgreementDependencyValidationException =
                 new UserAgreementDependencyValidationException(
                     message: "UserAgreement dependency validation occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(userAgreementDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(userAgreementDependencyValidationException);
 
             return userAgreementDependencyValidationException;
         }
 
-        private UserAgreementDependencyException CreateAndLogDependencyException(
+        private async ValueTask<UserAgreementDependencyException> CreateAndLogDependencyExceptionAsync(
             Xeption exception)
         {
-            var userAgreementDependencyException = 
+            var userAgreementDependencyException =
                 new UserAgreementDependencyException(
                     message: "UserAgreement dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
-            this.loggingBroker.LogError(userAgreementDependencyException);
+            await this.loggingBroker.LogErrorAsync(userAgreementDependencyException);
 
             return userAgreementDependencyException;
         }
 
-        private UserAgreementServiceException CreateAndLogServiceException(
+        private async ValueTask<UserAgreementServiceException> CreateAndLogServiceExceptionAsync(
             Xeption exception)
         {
-            var userAgreementServiceException = 
+            var userAgreementServiceException =
                 new UserAgreementServiceException(
                     message: "UserAgreement service error occurred, contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(userAgreementServiceException);
+            await this.loggingBroker.LogErrorAsync(userAgreementServiceException);
 
             return userAgreementServiceException;
         }

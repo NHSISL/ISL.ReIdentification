@@ -18,7 +18,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
             UserAgreement storageUserAgreement = randomUserAgreement;
             UserAgreement expectedUserAgreement = storageUserAgreement.DeepClone();
 
-            this.storageBrokerMock.Setup(broker =>
+            this.reIdentificationStorageBrokerMock.Setup(broker =>
                 broker.SelectUserAgreementByIdAsync(inputUserAgreement.Id))
                     .ReturnsAsync(storageUserAgreement);
 
@@ -29,11 +29,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
             // then
             actualUserAgreement.Should().BeEquivalentTo(expectedUserAgreement);
 
-            this.storageBrokerMock.Verify(broker =>
+            this.reIdentificationStorageBrokerMock.Verify(broker =>
                 broker.SelectUserAgreementByIdAsync(inputUserAgreement.Id),
                     Times.Once);
 
-            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.reIdentificationStorageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

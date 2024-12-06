@@ -22,11 +22,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
             UserAgreement deletedUserAgreement = expectedInputUserAgreement;
             UserAgreement expectedUserAgreement = deletedUserAgreement.DeepClone();
 
-            this.storageBrokerMock.Setup(broker =>
+            this.reIdentificationStorageBrokerMock.Setup(broker =>
                 broker.SelectUserAgreementByIdAsync(inputUserAgreementId))
                     .ReturnsAsync(storageUserAgreement);
 
-            this.storageBrokerMock.Setup(broker =>
+            this.reIdentificationStorageBrokerMock.Setup(broker =>
                 broker.DeleteUserAgreementAsync(expectedInputUserAgreement))
                     .ReturnsAsync(deletedUserAgreement);
 
@@ -37,15 +37,15 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
             // then
             actualUserAgreement.Should().BeEquivalentTo(expectedUserAgreement);
 
-            this.storageBrokerMock.Verify(broker =>
+            this.reIdentificationStorageBrokerMock.Verify(broker =>
                 broker.SelectUserAgreementByIdAsync(inputUserAgreementId),
                     Times.Once);
 
-            this.storageBrokerMock.Verify(broker =>
+            this.reIdentificationStorageBrokerMock.Verify(broker =>
                 broker.DeleteUserAgreementAsync(expectedInputUserAgreement),
                     Times.Once);
 
-            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.reIdentificationStorageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }

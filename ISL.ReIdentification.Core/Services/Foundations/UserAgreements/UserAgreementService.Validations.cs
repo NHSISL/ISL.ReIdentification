@@ -1,4 +1,9 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
+using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Foundations.UserAgreements;
 using ISL.ReIdentification.Core.Models.Foundations.UserAgreements.Exceptions;
 
@@ -6,15 +11,15 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
 {
     public partial class UserAgreementService
     {
-        private void ValidateUserAgreementOnAdd(UserAgreement userAgreement)
+        private async ValueTask ValidateUserAgreementOnAddAsync(UserAgreement userAgreement)
         {
             ValidateUserAgreementIsNotNull(userAgreement);
 
             Validate(
                 (Rule: IsInvalid(userAgreement.Id), Parameter: nameof(UserAgreement.Id)),
-
-                // TODO: Add any other required validation rules
-
+                (Rule: IsInvalid(userAgreement.EntraUserId), Parameter: nameof(UserAgreement.EntraUserId)),
+                (Rule: IsInvalid(userAgreement.AgreementType), Parameter: nameof(UserAgreement.AgreementType)),
+                (Rule: IsInvalid(userAgreement.AgreementDate), Parameter: nameof(UserAgreement.AgreementDate)),
                 (Rule: IsInvalid(userAgreement.CreatedDate), Parameter: nameof(UserAgreement.CreatedDate)),
                 (Rule: IsInvalid(userAgreement.CreatedBy), Parameter: nameof(UserAgreement.CreatedBy)),
                 (Rule: IsInvalid(userAgreement.UpdatedDate), Parameter: nameof(UserAgreement.UpdatedDate)),
@@ -32,18 +37,18 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
                     secondName: nameof(UserAgreement.CreatedBy)),
                 Parameter: nameof(UserAgreement.UpdatedBy)),
 
-                (Rule: IsNotRecent(userAgreement.CreatedDate), Parameter: nameof(UserAgreement.CreatedDate)));
+                (Rule: await IsNotRecentAsync(userAgreement.CreatedDate), Parameter: nameof(UserAgreement.CreatedDate)));
         }
 
-        private void ValidateUserAgreementOnModify(UserAgreement userAgreement)
+        private async ValueTask ValidateUserAgreementOnModifyAsync(UserAgreement userAgreement)
         {
             ValidateUserAgreementIsNotNull(userAgreement);
 
             Validate(
                 (Rule: IsInvalid(userAgreement.Id), Parameter: nameof(UserAgreement.Id)),
-
-                // TODO: Add any other required validation rules
-
+                (Rule: IsInvalid(userAgreement.EntraUserId), Parameter: nameof(UserAgreement.EntraUserId)),
+                (Rule: IsInvalid(userAgreement.AgreementType), Parameter: nameof(UserAgreement.AgreementType)),
+                (Rule: IsInvalid(userAgreement.AgreementDate), Parameter: nameof(UserAgreement.AgreementDate)),
                 (Rule: IsInvalid(userAgreement.CreatedDate), Parameter: nameof(UserAgreement.CreatedDate)),
                 (Rule: IsInvalid(userAgreement.CreatedBy), Parameter: nameof(UserAgreement.CreatedBy)),
                 (Rule: IsInvalid(userAgreement.UpdatedDate), Parameter: nameof(UserAgreement.UpdatedDate)),
@@ -55,7 +60,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
                     secondDateName: nameof(UserAgreement.CreatedDate)),
                 Parameter: nameof(UserAgreement.UpdatedDate)),
 
-                (Rule: IsNotRecent(userAgreement.UpdatedDate), Parameter: nameof(userAgreement.UpdatedDate)));
+                (Rule: await IsNotRecentAsync(userAgreement.UpdatedDate), Parameter: nameof(userAgreement.UpdatedDate)));
         }
 
         public void ValidateUserAgreementId(Guid userAgreementId) =>
@@ -153,26 +158,39 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
                Message = $"Text is not the same as {secondName}"
            };
 
-        private dynamic IsNotRecent(DateTimeOffset date) => new
+        private async ValueTask<dynamic> IsNotRecentAsync(DateTimeOffset date)
         {
-            Condition = IsDateNotRecent(date),
-            Message = "Date is not recent"
-        };
+            var (isNotRecent, startDate, endDate) = await IsDateNotRecentAsync(date);
 
-        private bool IsDateNotRecent(DateTimeOffset date)
+            return new
+            {
+                Condition = isNotRecent,
+                Message = $"Date is not recent. Expected a value between {startDate} and {endDate} but found {date}"
+            };
+        }
+
+        private async ValueTask<(bool IsNotRecent, DateTimeOffset StartDate, DateTimeOffset EndDate)>
+            IsDateNotRecentAsync(DateTimeOffset date)
         {
-            DateTimeOffset currentDateTime =
-                this.dateTimeBroker.GetCurrentDateTimeOffset();
+            int pastThreshold = 90;
+            int futureThreshold = 0;
+            DateTimeOffset currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
-            TimeSpan timeDifference = currentDateTime.Subtract(date);
-            TimeSpan oneMinute = TimeSpan.FromMinutes(1);
+            if (currentDateTime == default)
+            {
+                return (false, default, default);
+            }
 
-            return timeDifference.Duration() > oneMinute;
+            DateTimeOffset startDate = currentDateTime.AddSeconds(-pastThreshold);
+            DateTimeOffset endDate = currentDateTime.AddSeconds(futureThreshold);
+            bool isNotRecent = date < startDate || date > endDate;
+
+            return (isNotRecent, startDate, endDate);
         }
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidUserAgreementException = 
+            var invalidUserAgreementException =
                 new InvalidUserAgreementException(
                     message: "Invalid userAgreement. Please correct the errors and try again.");
 

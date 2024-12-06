@@ -1,37 +1,41 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
-using Moq;
 using ISL.ReIdentification.Core.Models.Foundations.UserAgreements;
-using Xunit;
+using Moq;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreements
 {
     public partial class UserAgreementServiceTests
     {
         [Fact]
-        public void ShouldReturnUserAgreements()
+        public async Task ShouldReturnUserAgreements()
         {
             // given
             IQueryable<UserAgreement> randomUserAgreements = CreateRandomUserAgreements();
             IQueryable<UserAgreement> storageUserAgreements = randomUserAgreements;
             IQueryable<UserAgreement> expectedUserAgreements = storageUserAgreements;
 
-            this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllUserAgreements())
-                    .Returns(storageUserAgreements);
+            this.reIdentificationStorageBrokerMock.Setup(broker =>
+                broker.SelectAllUserAgreementsAsync())
+                    .ReturnsAsync(storageUserAgreements);
 
             // when
             IQueryable<UserAgreement> actualUserAgreements =
-                this.userAgreementService.RetrieveAllUserAgreements();
+                await this.userAgreementService.RetrieveAllUserAgreementsAsync();
 
             // then
             actualUserAgreements.Should().BeEquivalentTo(expectedUserAgreements);
 
-            this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllUserAgreements(),
+            this.reIdentificationStorageBrokerMock.Verify(broker =>
+                broker.SelectAllUserAgreementsAsync(),
                     Times.Once);
 
-            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.reIdentificationStorageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

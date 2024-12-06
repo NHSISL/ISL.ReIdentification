@@ -1,35 +1,38 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
-using Microsoft.Data.SqlClient;
-using Moq;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Loggings;
-using ISL.ReIdentification.Core.Brokers.Storages.Sql;
+using ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Foundations.UserAgreements;
 using ISL.ReIdentification.Core.Services.Foundations.UserAgreements;
+using Microsoft.Data.SqlClient;
+using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
-using Xunit;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreements
 {
     public partial class UserAgreementServiceTests
     {
-        private readonly Mock<IStorageBroker> storageBrokerMock;
+        private readonly Mock<IReIdentificationStorageBroker> reIdentificationStorageBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly IUserAgreementService userAgreementService;
 
         public UserAgreementServiceTests()
         {
-            this.storageBrokerMock = new Mock<IStorageBroker>();
+            this.reIdentificationStorageBrokerMock = new Mock<IReIdentificationStorageBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
             this.userAgreementService = new UserAgreementService(
-                storageBroker: this.storageBrokerMock.Object,
+                reIdentificationStorageBroker: this.reIdentificationStorageBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
         }

@@ -1,25 +1,29 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Loggings;
-using ISL.ReIdentification.Core.Brokers.Storages.Sql;
+using ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Foundations.UserAgreements;
 
 namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
 {
     public partial class UserAgreementService : IUserAgreementService
     {
-        private readonly IStorageBroker storageBroker;
+        private readonly IReIdentificationStorageBroker reIdentificationStorageBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly ILoggingBroker loggingBroker;
 
         public UserAgreementService(
-            IStorageBroker storageBroker,
+            IReIdentificationStorageBroker reIdentificationStorageBroker,
             IDateTimeBroker dateTimeBroker,
             ILoggingBroker loggingBroker)
         {
-            this.storageBroker = storageBroker;
+            this.reIdentificationStorageBroker = reIdentificationStorageBroker;
             this.dateTimeBroker = dateTimeBroker;
             this.loggingBroker = loggingBroker;
         }
@@ -27,20 +31,20 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
         public ValueTask<UserAgreement> AddUserAgreementAsync(UserAgreement userAgreement) =>
             TryCatch(async () =>
             {
-                ValidateUserAgreementOnAdd(userAgreement);
+                await ValidateUserAgreementOnAddAsync(userAgreement);
 
-                return await this.storageBroker.InsertUserAgreementAsync(userAgreement);
+                return await this.reIdentificationStorageBroker.InsertUserAgreementAsync(userAgreement);
             });
 
-        public IQueryable<UserAgreement> RetrieveAllUserAgreements() =>
-            TryCatch(() => this.storageBroker.SelectAllUserAgreements());
+        public ValueTask<IQueryable<UserAgreement>> RetrieveAllUserAgreementsAsync() =>
+            TryCatch(async () => await this.reIdentificationStorageBroker.SelectAllUserAgreementsAsync());
 
         public ValueTask<UserAgreement> RetrieveUserAgreementByIdAsync(Guid userAgreementId) =>
             TryCatch(async () =>
             {
                 ValidateUserAgreementId(userAgreementId);
 
-                UserAgreement maybeUserAgreement = await this.storageBroker
+                UserAgreement maybeUserAgreement = await this.reIdentificationStorageBroker
                     .SelectUserAgreementByIdAsync(userAgreementId);
 
                 ValidateStorageUserAgreement(maybeUserAgreement, userAgreementId);
@@ -51,15 +55,15 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
         public ValueTask<UserAgreement> ModifyUserAgreementAsync(UserAgreement userAgreement) =>
             TryCatch(async () =>
             {
-                ValidateUserAgreementOnModify(userAgreement);
+                await ValidateUserAgreementOnModifyAsync(userAgreement);
 
                 UserAgreement maybeUserAgreement =
-                    await this.storageBroker.SelectUserAgreementByIdAsync(userAgreement.Id);
+                    await this.reIdentificationStorageBroker.SelectUserAgreementByIdAsync(userAgreement.Id);
 
                 ValidateStorageUserAgreement(maybeUserAgreement, userAgreement.Id);
                 ValidateAgainstStorageUserAgreementOnModify(inputUserAgreement: userAgreement, storageUserAgreement: maybeUserAgreement);
 
-                return await this.storageBroker.UpdateUserAgreementAsync(userAgreement);
+                return await this.reIdentificationStorageBroker.UpdateUserAgreementAsync(userAgreement);
             });
 
         public ValueTask<UserAgreement> RemoveUserAgreementByIdAsync(Guid userAgreementId) =>
@@ -67,12 +71,12 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
             {
                 ValidateUserAgreementId(userAgreementId);
 
-                UserAgreement maybeUserAgreement = await this.storageBroker
+                UserAgreement maybeUserAgreement = await this.reIdentificationStorageBroker
                     .SelectUserAgreementByIdAsync(userAgreementId);
 
                 ValidateStorageUserAgreement(maybeUserAgreement, userAgreementId);
 
-                return await this.storageBroker.DeleteUserAgreementAsync(maybeUserAgreement);
+                return await this.reIdentificationStorageBroker.DeleteUserAgreementAsync(maybeUserAgreement);
             });
     }
 }
