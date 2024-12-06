@@ -22,7 +22,12 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<UserAgreement> AddUserAgreementAsync(UserAgreement userAgreement) =>
-            await this.storageBroker.InsertUserAgreementAsync(userAgreement);
+        public ValueTask<UserAgreement> AddUserAgreementAsync(UserAgreement userAgreement) =>
+            TryCatch(async () =>
+            {
+                ValidateUserAgreementOnAdd(userAgreement);
+
+                return await this.storageBroker.InsertUserAgreementAsync(userAgreement);
+            });
     }
 }
