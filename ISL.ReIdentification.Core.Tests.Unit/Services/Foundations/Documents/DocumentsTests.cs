@@ -137,5 +137,19 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                     innerException),
             };
         }
+
+        public static TheoryData<Xeption> DependencyValidationExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new StorageProviderValidationException(
+                    message: "Storage provider validation error occurred.",
+                    innerException)
+            };
+        }
     }
 }
