@@ -13,12 +13,11 @@ const CsvIdentificationRequestRow: FunctionComponent<CsvIdentificationRequestRow
 
     return (
         <tr>
-            <td>{csvIdentificationRequest.requesterFirstName}</td>
-            <td>{csvIdentificationRequest.requesterLastName}</td>
+            <td>{csvIdentificationRequest.requesterFirstName} {csvIdentificationRequest.requesterLastName}</td>
             <td>{csvIdentificationRequest.requesterEmail}</td>
-            <td>{csvIdentificationRequest.recipientFirstName}</td>
-            <td>{csvIdentificationRequest.recipientLastName}</td>
+            <td>{csvIdentificationRequest.recipientFirstName} {csvIdentificationRequest.recipientLastName}</td>
             <td>{csvIdentificationRequest.reason}</td>
+            <td>{csvIdentificationRequest.filepath}</td>
         </tr>
     );
 }
