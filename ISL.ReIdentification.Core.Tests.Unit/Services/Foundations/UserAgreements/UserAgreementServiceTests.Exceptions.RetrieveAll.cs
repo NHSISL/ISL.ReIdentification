@@ -23,7 +23,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
             var expectedUserAgreementDependencyException =
                 new UserAgreementDependencyException(
                     message: "UserAgreement dependency error occurred, contact support.",
-                    innerException: failedUserAgreementStorageException); 
+                    innerException: failedUserAgreementStorageException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAllUserAgreements())
@@ -52,6 +52,51 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            string exceptionMessage = GetRandomString();
+            var serviceException = new Exception(exceptionMessage);
+
+            var failedUserAgreementServiceException =
+                new FailedUserAgreementServiceException(
+                    message: "Failed userAgreement service occurred, please contact support", 
+                    innerException: serviceException);
+
+            var expectedUserAgreementServiceException =
+                new UserAgreementServiceException(
+                    message: "UserAgreement service error occurred, contact support.",
+                    innerException: failedUserAgreementServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAllUserAgreements())
+                    .Throws(serviceException);
+
+            // when
+            Action retrieveAllUserAgreementsAction = () =>
+                this.userAgreementService.RetrieveAllUserAgreements();
+
+            UserAgreementServiceException actualUserAgreementServiceException =
+                Assert.Throws<UserAgreementServiceException>(retrieveAllUserAgreementsAction);
+
+            // then
+            actualUserAgreementServiceException.Should()
+                .BeEquivalentTo(expectedUserAgreementServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAllUserAgreements(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedUserAgreementServiceException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }
