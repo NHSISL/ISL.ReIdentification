@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
 using Moq;
@@ -58,6 +59,64 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateUserAgreementAsync(randomUserAgreement),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async void ShouldThrowValidationExceptionOnModifyIfReferenceErrorOccursAndLogItAsync()
+        {
+            // given
+            UserAgreement someUserAgreement = CreateRandomUserAgreement();
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+
+            var foreignKeyConstraintConflictException =
+                new ForeignKeyConstraintConflictException(exceptionMessage);
+
+            var invalidUserAgreementReferenceException =
+                new InvalidUserAgreementReferenceException(
+                    message: "Invalid userAgreement reference error occurred.", 
+                    innerException: foreignKeyConstraintConflictException);
+
+            UserAgreementDependencyValidationException expectedUserAgreementDependencyValidationException =
+                new UserAgreementDependencyValidationException(
+                    message: "UserAgreement dependency validation occurred, please try again.",
+                    innerException: invalidUserAgreementReferenceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(foreignKeyConstraintConflictException);
+
+            // when
+            ValueTask<UserAgreement> modifyUserAgreementTask =
+                this.userAgreementService.ModifyUserAgreementAsync(someUserAgreement);
+
+            UserAgreementDependencyValidationException actualUserAgreementDependencyValidationException =
+                await Assert.ThrowsAsync<UserAgreementDependencyValidationException>(
+                    modifyUserAgreementTask.AsTask);
+
+            // then
+            actualUserAgreementDependencyValidationException.Should()
+                .BeEquivalentTo(expectedUserAgreementDependencyValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectUserAgreementByIdAsync(someUserAgreement.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(expectedUserAgreementDependencyValidationException))),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateUserAgreementAsync(someUserAgreement),
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
