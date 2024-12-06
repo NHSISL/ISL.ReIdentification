@@ -57,3 +57,24 @@ steps:
 - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_configuration
   displayName: 'Publish Artifact - Configuration'
   artifact: drop-frontend-management
+
+- task: DotNetCoreCLI@2
+  displayName: "Dotnet Build (REID Management Function)"
+  inputs:
+    command: 'build'
+    projects: '**/ISL.ReIdentification.Functions.csproj'
+    arguments: --output $(System.DefaultWorkingDirectory)/publish_output_reid_func --configuration Release
+
+
+- task: ArchiveFiles@2
+  displayName: 'Archive files - Re-id Function'
+  inputs:
+    rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output_reid_func'
+    includeRootFolder: false
+    archiveType: zip
+    archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_reid_func.zip
+    replaceExistingArchive: true
+
+- publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_reid_func.zip
+  displayName: 'Publish Artifact - Re-id Function'
+  artifact: drop-reid-func

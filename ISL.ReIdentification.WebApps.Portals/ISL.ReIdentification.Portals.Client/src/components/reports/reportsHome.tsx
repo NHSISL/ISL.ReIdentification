@@ -4,7 +4,7 @@ import { AuthenticatedTemplate, UnauthenticatedTemplate, useMsal } from "@azure/
 import ReportsReasonPage from "./ReportsReasonPage";
 import ReportsLaunchPage from "./reportsLaunchPage";
 import axios, { AxiosError } from "axios";
-import { AuthenticationResult, InteractionRequiredAuthError } from "@azure/msal-browser";
+import { AuthenticationResult, InteractionRequiredAuthError, SilentRequest } from "@azure/msal-browser";
 import { IReportEmbedConfiguration } from "embed";
 import ReportDeveloperTools from "./reportDeveloperTools";
 import { DeveloperEvents } from "../../types/DeveloperEvents";
@@ -14,7 +14,7 @@ import LoginUnAuthorisedComponent from "../layouts/loginUnauth";
 
 const ReportsHome: FunctionComponent = () => {
     const { accounts, instance } = useMsal();
-    const { reportGroupId, reportId, reportPage } = useParams();
+    const { reportGroupId, reportId, reportPage, tenantId } = useParams();
     const [toastPostion, setToastPosition] = useState<ToastPosition>("bottom-end")
     const [showDeveloperTools, setShowDeveloperTools] = useState("");
     const [reidReason, setReidReason] = useState("");
@@ -27,13 +27,18 @@ const ReportsHome: FunctionComponent = () => {
 
     const aquireAccessToken = async () => {
         await instance.initialize();
-        const activeAccount = instance.getActiveAccount();
-        const accounts = instance.getAllAccounts();
 
-        const request = {
+        let request: SilentRequest = {
             scopes: ["https://analysis.windows.net/powerbi/api/Report.Read.All"],
-            account: activeAccount || accounts[0]
         };
+
+        if (tenantId) {
+            request = {
+                ...request,
+                authority: "https://login.microsoftonline.com/" + tenantId
+            }
+        }
+
         try {
             const token = await instance.acquireTokenSilent(request);
             return token;
@@ -120,7 +125,7 @@ const ReportsHome: FunctionComponent = () => {
                 <Navbar style={{ padding: 1 }}>
                     <Container fluid>
                         <Navbar.Brand style={{ fontSize: "1em", padding: 0 }}>
-                            <Card.Link href="/" style={{ color: "black", textDecoration: "none" }}>ISL Reidentification Portal</Card.Link>
+                            <Card.Link href="/" style={{ color: "black", textDecoration: "none" }}>ISL Re-Identification Portal</Card.Link>
                         </Navbar.Brand>
                         {toastHidden && <Button onClick={() => setToastHidden(false)}>Show reidentification window</Button>}
                         {accounts.length > 0 &&
