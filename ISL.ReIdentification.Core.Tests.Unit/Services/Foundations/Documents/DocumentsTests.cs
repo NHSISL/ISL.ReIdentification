@@ -145,10 +145,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             var innerException = new Xeption(exceptionMessage);
 
             return new TheoryData<Xeption>
-        {
-            new StorageProviderValidationException(
-                message: "Storage provider validation error occurred.",
-                innerException)
+            {
+                new StorageProviderValidationException(
+                    message: "Storage provider validation error occurred.",
+                    innerException)
             };
         }
     }
