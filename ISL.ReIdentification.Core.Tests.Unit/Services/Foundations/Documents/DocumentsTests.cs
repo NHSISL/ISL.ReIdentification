@@ -141,7 +141,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
         public static TheoryData<Xeption> DependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
-            var innerException = new Xeption(randomMessage);
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
 
             return new TheoryData<Xeption>
         {
