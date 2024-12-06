@@ -62,7 +62,12 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
                 return await this.storageBroker.UpdateUserAgreementAsync(userAgreement);
             });
 
-        public ValueTask<UserAgreement> RemoveUserAgreementByIdAsync(Guid userAgreementId) =>
-            throw new NotImplementedException();
+        public async ValueTask<UserAgreement> RemoveUserAgreementByIdAsync(Guid userAgreementId)
+        {
+            UserAgreement maybeUserAgreement = await this.storageBroker
+                    .SelectUserAgreementByIdAsync(userAgreementId);
+
+            return await this.storageBroker.DeleteUserAgreementAsync(maybeUserAgreement);
+        }
     }
 }
