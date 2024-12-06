@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Loggings;
@@ -29,5 +30,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
 
                 return await this.storageBroker.InsertUserAgreementAsync(userAgreement);
             });
+
+        public IQueryable<UserAgreement> RetrieveAllUserAgreements() =>
+            throw new System.NotImplementedException();
     }
 }
