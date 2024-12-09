@@ -15,6 +15,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
     {
         private delegate ValueTask ReturningNothingFunction();
         private delegate ValueTask<List<string>> ReturnStringListFunction();
+        private delegate ValueTask<string> ReturnStringFunction();
 
         private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
         {
@@ -70,6 +71,27 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             catch (StorageProviderServiceException storageProviderServiceException)
             {
                 throw await CreateAndLogDependencyExceptionAsync(storageProviderServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedServiceDocumentException =
+                    new FailedServiceDocumentException(
+                        message: "Failed service document error occurred, contact support.",
+                        innerException: exception);
+
+                throw await CreateAndLogServiceExceptionAsync(failedServiceDocumentException);
+            }
+        }
+
+        private async ValueTask<string> TryCatch(ReturnStringFunction returnStringFunction)
+        {
+            try
+            {
+                return await returnStringFunction();
+            }
+            catch (InvalidDocumentException invalidDocumentException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(invalidDocumentException);
             }
             catch (Exception exception)
             {

@@ -9,7 +9,6 @@ using System.IO;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Storages.Blob;
-using Tynamix.ObjectFiller;
 
 namespace ISL.ReIdentification.Core.Services.Foundations.Documents
 {

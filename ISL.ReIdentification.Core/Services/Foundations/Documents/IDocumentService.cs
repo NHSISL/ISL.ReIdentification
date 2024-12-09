@@ -14,7 +14,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
         ValueTask AddDocumentAsync(Stream input, string fileName, string container);
         ValueTask RetrieveDocumentByFileNameAsync(Stream output, string fileName, string container);
         ValueTask RemoveDocumentByFileNameAsync(string filename, string container);
-        ValueTask<string> GetDownloadLinkAsync(string fileName, string container);
         ValueTask<List<string>> RetrieveAllAccessPoliciesFromContainerAsync(string container);
         ValueTask RemoveAllAccessPoliciesFromContainerAsync(string container);
         ValueTask AddContainerAsync (string container);
