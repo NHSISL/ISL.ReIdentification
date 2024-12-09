@@ -30,7 +30,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
 
             this.userAccessServiceMock.Setup(service =>
                 service.ModifyUserAccessAsync(inputUserAccess))
-                    .Throws(dependencyValidationException);
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask<UserAccess> userAccessAddTask =
@@ -71,7 +71,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
 
             this.userAccessServiceMock.Setup(service =>
                 service.ModifyUserAccessAsync(inputUserAccess))
-                    .Throws(dependencyException);
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<UserAccess> userAccessAddTask =
@@ -115,7 +115,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
 
             this.userAccessServiceMock.Setup(service =>
                 service.ModifyUserAccessAsync(inputUserAccess))
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<UserAccess> addUserAccessTask =
