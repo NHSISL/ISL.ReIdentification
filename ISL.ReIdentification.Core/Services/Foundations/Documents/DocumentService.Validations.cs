@@ -47,6 +47,13 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             Validate((Rule: IsInvalid(container), Parameter: nameof(container)));
         }
 
+        private static void ValidateOnAddFolder(string folderName, string container)
+        {
+            Validate(
+                (Rule: IsInvalid(folderName), Parameter: nameof(folderName)),
+                (Rule: IsInvalid(container), Parameter: nameof(container)));
+        }
+
         private static dynamic IsInvalid(string value) => new
         {
             Condition = string.IsNullOrWhiteSpace(value),
