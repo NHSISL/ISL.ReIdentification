@@ -17,7 +17,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
     {
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
-        public async Task ShouldThrowDependencyValidationExceptionOnGetDownloadAsync(Xeption dependencyValidationException)
+        public async Task ShouldThrowDependencyValidationExceptionOnGetDownloadAsync(Xeption 
+            dependencyValidationException)
         {
             // given
             string someContainer = GetRandomString();
