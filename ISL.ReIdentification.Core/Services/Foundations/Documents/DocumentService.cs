@@ -82,6 +82,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
         TryCatch(async () =>
         {
             ValidateOnGetDownloadLink(fileName, container, expiresOn);
+            
             return await this.blobStorageBroker.GetDownloadLinkAsync(fileName, container, expiresOn);
         });
     }
