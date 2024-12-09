@@ -81,7 +81,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
             var alreadyExistsUserAgreementException =
                 new AlreadyExistsUserAgreementException(
                     message: "UserAgreement with the same Id already exists.",
-                    innerException: duplicateKeyException);
+                    innerException: duplicateKeyException,
+                    data: duplicateKeyException.Data);
 
             var expectedUserAgreementDependencyValidationException =
                 new UserAgreementDependencyValidationException(
