@@ -55,7 +55,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
                 (Rule: IsInvalid(container), Parameter: nameof(container)));
         }
 
-        private static void ValidateOnGetDownloadLink(string folderName, string container, DateTimeOffset dateTimeOffset)
+        private static void ValidateOnGetDownloadLink(
+            string folderName, string container, DateTimeOffset dateTimeOffset)
         {
             Validate(
                 (Rule: IsInvalid(folderName), Parameter: nameof(folderName)),
