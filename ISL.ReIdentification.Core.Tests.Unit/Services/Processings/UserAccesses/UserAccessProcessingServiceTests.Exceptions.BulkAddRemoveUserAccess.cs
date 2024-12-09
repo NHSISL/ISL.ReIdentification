@@ -29,7 +29,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
 
             this.userAccessServiceMock.Setup(service =>
                 service.RetrieveAllUserAccessesAsync())
-                    .Throws(dependencyValidationException);
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask bulkUserAccessAddTask =
@@ -72,7 +72,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
 
             this.userAccessServiceMock.Setup(service =>
                 service.RetrieveAllUserAccessesAsync())
-                    .Throws(dependencyException);
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask bulkUserAccessAddTask =
@@ -118,7 +118,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
 
             this.userAccessServiceMock.Setup(service =>
                 service.RetrieveAllUserAccessesAsync())
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask bulkUserAccessAddTask =

@@ -29,7 +29,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
 
             this.userAccessServiceMock.Setup(service =>
                 service.RetrieveAllActiveOrganisationsUserHasAccessToAsync(It.IsAny<Guid>()))
-                    .Throws(dependencyValidationException);
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask<List<string>> userAccessAddTask =
@@ -69,7 +69,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
 
             this.userAccessServiceMock.Setup(service =>
                 service.RetrieveAllActiveOrganisationsUserHasAccessToAsync(It.IsAny<Guid>()))
-                    .Throws(dependencyException);
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<List<string>> userAccessAddTask =
@@ -112,7 +112,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
 
             this.userAccessServiceMock.Setup(service =>
                 service.RetrieveAllActiveOrganisationsUserHasAccessToAsync(It.IsAny<Guid>()))
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<List<string>> addUserAccessTask =
