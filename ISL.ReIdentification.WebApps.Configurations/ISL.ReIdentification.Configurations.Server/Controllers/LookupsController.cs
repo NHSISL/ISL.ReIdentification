@@ -15,7 +15,7 @@ using RESTFulSense.Controllers;
 
 namespace ISL.ReIdentification.Configurations.Server.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "ISL.Reidentification.Configuration.Administrators")]
     [ApiController]
     [Route("api/[controller]")]
     public class LookupsController : RESTFulController

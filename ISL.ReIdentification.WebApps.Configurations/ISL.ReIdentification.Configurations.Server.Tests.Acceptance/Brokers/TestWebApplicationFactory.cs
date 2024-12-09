@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System.Linq;
+using Attrify.InvisibleApi.Models;
 using ISL.Providers.ReIdentification.Abstractions;
 using ISL.Providers.ReIdentification.OfflineFileSources.Models;
 using ISL.Providers.ReIdentification.OfflineFileSources.Providers.OfflineFileSources;
@@ -38,6 +39,19 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Brokers
 
         private static void OverrideSecurityForTesting(IServiceCollection services)
         {
+            var invisibleApiKeyDescriptor = services
+                .FirstOrDefault(d => d.ServiceType == typeof(InvisibleApiKey));
+
+            InvisibleApiKey invisibleApiKey = null;
+
+            if (invisibleApiKeyDescriptor != null)
+            {
+                using (var serviceProvider = services.BuildServiceProvider())
+                {
+                    invisibleApiKey = serviceProvider.GetService<InvisibleApiKey>();
+                }
+            }
+
             // Remove existing authentication and authorization
             var authenticationDescriptor = services
                 .FirstOrDefault(d => d.ServiceType == typeof(IAuthenticationSchemeProvider));
@@ -53,7 +67,10 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Brokers
                 options.DefaultAuthenticateScheme = "TestScheme";
                 options.DefaultChallengeScheme = "TestScheme";
             })
-            .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("TestScheme", options => { });
+            .AddScheme<CustomAuthenticationSchemeOptions, TestAuthHandler>("TestScheme", options =>
+            {
+                options.InvisibleApiKey = invisibleApiKey;
+            });
 
             services.AddAuthorization(options =>
             {

@@ -1,13 +1,17 @@
 import { useMsal } from "@azure/msal-react";
 import { Button, Container, Row, Col, Card } from "react-bootstrap";
-import { loginRequest } from '../../authConfig';
+import { MsalConfig } from "../../authConfig";
+import { useLocation } from "react-router-dom";
 
 export const LoginUnAuthorisedComponent = () => {
 
     const { instance } = useMsal();
+    const location = useLocation();
 
-    const handleLoginRedirect = () => {
-        instance.loginPopup(loginRequest).catch((error) => console.log(error));
+    const handleLoginRedirect = async () => {
+        const loginRequest = MsalConfig.loginRequest;
+        loginRequest.redirectUri = location.pathname;
+        instance.loginRedirect(loginRequest).catch((error) => console.log(error));
     };
 
     return (
@@ -26,7 +30,7 @@ export const LoginUnAuthorisedComponent = () => {
 
                             </Card.Title>
                             <Card.Text className="mb-4 align-items-left" >
-                                <p>Welcome to the Lodon Data Service Reidentification Portal.</p>
+                                <p>Welcome to the London Data Service Re-Identification Portal.</p>
                                 <p>Please sign in to continue.</p>
                             </Card.Text>
                             <Button onClick={handleLoginRedirect} className="me-3">Sign in</Button>

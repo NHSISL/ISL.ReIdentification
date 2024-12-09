@@ -4,7 +4,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using EFxceptions;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
@@ -14,6 +13,7 @@ using ISL.ReIdentification.Core.Models.Foundations.Lookups;
 using ISL.ReIdentification.Core.Models.Foundations.OdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.PdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
+using ISL.ReIdentification.Core.Models.Foundations.UserAgreements;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -29,17 +29,7 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications
         public ReIdentificationStorageBroker(IConfiguration configuration)
         {
             this.configuration = configuration;
-
-            try
-            {
-                Database.Migrate();
-            }
-            catch (SqlException sqlException)
-            {
-                Thread.Sleep(millisecondsTimeout: 10000);
-                Database.Migrate();
-            }
-
+            Database.Migrate();
             efCoreClient = new EFCoreClient(this);
         }
 
@@ -62,6 +52,7 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications
             AddCsvIdentificationRequestConfigurations(modelBuilder.Entity<CsvIdentificationRequest>());
             AddOdsDataConfigurations(modelBuilder.Entity<OdsData>());
             AddPdsDataConfigurations(modelBuilder.Entity<PdsData>());
+            AddUserAgreementConfigurations(modelBuilder.Entity<UserAgreement>());
         }
 
         private async ValueTask<T> InsertAsync<T>(T @object) where T : class =>

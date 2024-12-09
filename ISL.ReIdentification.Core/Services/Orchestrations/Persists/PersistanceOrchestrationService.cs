@@ -3,14 +3,20 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Hashing;
+using ISL.ReIdentification.Core.Brokers.Identifiers;
 using ISL.ReIdentification.Core.Brokers.Loggings;
+using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
+using ISL.ReIdentification.Core.Models.Orchestrations.Persists;
+using ISL.ReIdentification.Core.Services.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Services.Foundations.Notifications;
@@ -22,21 +28,33 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
         private readonly IImpersonationContextService impersonationContextService;
         private readonly ICsvIdentificationRequestService csvIdentificationRequestService;
         private readonly INotificationService notificationService;
+        private readonly IAccessAuditService accessAuditService;
         private readonly ILoggingBroker loggingBroker;
         private readonly IHashBroker hashBroker;
+        private readonly IDateTimeBroker dateTimeBroker;
+        private readonly IIdentifierBroker identifierBroker;
+        private readonly CsvReIdentificationConfigurations csvReIdentificationConfigurations;
 
         public PersistanceOrchestrationService(
             IImpersonationContextService impersonationContextService,
             ICsvIdentificationRequestService csvIdentificationRequestService,
             INotificationService notificationService,
+            IAccessAuditService accessAuditService,
             ILoggingBroker loggingBroker,
-            IHashBroker hashBroker)
+            IHashBroker hashBroker,
+            IDateTimeBroker dateTimeBroker,
+            IIdentifierBroker identifierBroker,
+            CsvReIdentificationConfigurations csvReIdentificationConfigurations)
         {
             this.impersonationContextService = impersonationContextService;
             this.csvIdentificationRequestService = csvIdentificationRequestService;
             this.notificationService = notificationService;
+            this.accessAuditService = accessAuditService;
             this.loggingBroker = loggingBroker;
             this.hashBroker = hashBroker;
+            this.dateTimeBroker = dateTimeBroker;
+            this.identifierBroker = identifierBroker;
+            this.csvReIdentificationConfigurations = csvReIdentificationConfigurations;
         }
 
         public ValueTask<AccessRequest> PersistImpersonationContextAsync(AccessRequest accessRequest) =>
@@ -136,6 +154,55 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
                 .RetrieveCsvIdentificationRequestByIdAsync(csvIdentificationRequestId);
 
             return new AccessRequest { CsvIdentificationRequest = csvIdentificationRequest };
+        });
+
+        public ValueTask PurgeCsvReIdentificationRecordsThatExpired() =>
+        TryCatch(async () =>
+        {
+            ValidateOnPurgeCsvIdentificationRecordsThatExpiredAsync(this.csvReIdentificationConfigurations);
+
+            DateTimeOffset dateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+
+            DateTimeOffset expiryDate =
+                dateTimeOffset.AddMinutes(this.csvReIdentificationConfigurations.ExpireAfterMinutes * -1);
+
+            IQueryable<CsvIdentificationRequest> csvIdentificationRequests = await this.csvIdentificationRequestService
+                .RetrieveAllCsvIdentificationRequestsAsync();
+
+            List<CsvIdentificationRequest> expiredCsvIdentificationRequests = csvIdentificationRequests.Where(request =>
+                request.Data != null && request.CreatedDate < expiryDate).ToList();
+
+            foreach (CsvIdentificationRequest csvIdentificationRequest in expiredCsvIdentificationRequests)
+            {
+                var accessAuditId = await this.identifierBroker.GetIdentifierAsync();
+                csvIdentificationRequest.Data = null;
+                csvIdentificationRequest.UpdatedDate = dateTimeOffset;
+
+                await this.csvIdentificationRequestService.ModifyCsvIdentificationRequestAsync(csvIdentificationRequest);
+
+                AccessAudit accessAudit = new AccessAudit
+                {
+                    Id = accessAuditId,
+                    RequestId = csvIdentificationRequest.Id,
+                    PseudoIdentifier = "PURGED",
+                    EntraUserId = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+                    TransactionId = Guid.Empty,
+                    GivenName = "PURGED",
+                    Surname = "PURGED",
+                    Email = "PURGED",
+                    Purpose = "PURGED",
+                    Reason = "PURGED",
+                    Organisation = "PURGED",
+                    HasAccess = false,
+                    Message = $"Purged on {dateTimeOffset}",
+                    CreatedBy = "System",
+                    CreatedDate = dateTimeOffset,
+                    UpdatedBy = "System",
+                    UpdatedDate = dateTimeOffset
+                };
+
+                await this.accessAuditService.AddAccessAuditAsync(accessAudit);
+            }
         });
     }
 }

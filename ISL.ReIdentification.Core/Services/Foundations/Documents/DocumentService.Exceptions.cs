@@ -3,7 +3,9 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using ISL.Providers.Storages.Abstractions.Models.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.Documents.Exceptions;
 using Xeptions;
 
@@ -12,6 +14,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
     public partial class DocumentService : IDocumentService
     {
         private delegate ValueTask ReturningNothingFunction();
+        private delegate ValueTask<List<string>> ReturnStringListFunction();
 
         private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
         {
@@ -22,6 +25,51 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             catch (InvalidDocumentException invalidDocumentException)
             {
                 throw await CreateAndLogValidationExceptionAsync(invalidDocumentException);
+            }
+            catch (StorageProviderValidationException storageProviderValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(storageProviderValidationException);
+            }
+            catch (StorageProviderDependencyException storageProviderDependencyException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(storageProviderDependencyException);
+            }
+            catch (StorageProviderServiceException storageProviderServiceException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(storageProviderServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedServiceDocumentException =
+                    new FailedServiceDocumentException(
+                        message: "Failed service document error occurred, contact support.",
+                        innerException: exception);
+
+                throw await CreateAndLogServiceExceptionAsync(failedServiceDocumentException);
+            }
+        }
+
+        private async ValueTask<List<string>> TryCatch(ReturnStringListFunction returnStringListFunction)
+        {
+            try
+            {
+                return await returnStringListFunction();
+            }
+            catch (InvalidDocumentException invalidDocumentException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(invalidDocumentException);
+            }
+            catch (StorageProviderValidationException storageProviderValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(storageProviderValidationException);
+            }
+            catch (StorageProviderDependencyException storageProviderDependencyException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(storageProviderDependencyException);
+            }
+            catch (StorageProviderServiceException storageProviderServiceException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(storageProviderServiceException);
             }
             catch (Exception exception)
             {
@@ -44,6 +92,30 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             await this.loggingBroker.LogErrorAsync(documentValidationException);
 
             return documentValidationException;
+        }
+
+        private async ValueTask<DocumentDependencyValidationException> CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
+        {
+            var documentDependencyValidationException =
+                new DocumentDependencyValidationException(
+                    message: "Document dependency validation error occurred, please fix errors and try again.",
+                    innerException: exception);
+
+            await this.loggingBroker.LogErrorAsync(documentDependencyValidationException);
+
+            return documentDependencyValidationException;
+        }
+
+        private async ValueTask<DocumentDependencyException> CreateAndLogDependencyExceptionAsync(Xeption exception)
+        {
+            var documentDependencyException =
+                new DocumentDependencyException(
+                    message: "Document dependency error occurred, please fix errors and try again.",
+                    innerException: exception);
+
+            await this.loggingBroker.LogErrorAsync(documentDependencyException);
+
+            return documentDependencyException;
         }
 
         private async ValueTask<DocumentServiceException> CreateAndLogServiceExceptionAsync(Xeption exception)

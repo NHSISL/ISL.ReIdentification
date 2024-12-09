@@ -1,23 +1,22 @@
 import { FunctionComponent, useMemo, useState } from "react";
-import { Card, Container, Table } from "react-bootstrap";
+import { Button, Container, InputGroup, Table } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PdsRow from "./pdsRow";
 import { pdsDataViewService } from "../../services/views/pdsData/pdsDataViewService";
 import debounce from "lodash/debounce";
 import SearchBase from "../bases/search/SearchBase";
-import { faDatabase } from "@fortawesome/free-solid-svg-icons/faDatabase";
 import InfiniteScroll from "../bases/pagers/InfiniteScroll";
 import { SpinnerBase } from "../bases/spinner/SpinnerBase";
 import { PdsDataView } from "../../models/views/components/pdsData/pdsDataView";
 import InfiniteScrollLoader from "../bases/pagers/InfiniteScroll.Loader";
+import { faRefresh } from "@fortawesome/free-solid-svg-icons";
 
 type PdsTableProps = object;
 
 const PdsTable: FunctionComponent<PdsTableProps> = () => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [debouncedTerm, setDebouncedTerm] = useState<string>("");
-    const [showSpinner] = useState(false);
-
+    const [showSpinner, setShowSpinner] = useState(false);
 
     const {
         mappedPdsData: pdsRetrieved,
@@ -25,6 +24,7 @@ const PdsTable: FunctionComponent<PdsTableProps> = () => {
         fetchNextPage,
         isFetchingNextPage,
         hasNextPage,
+        refetch
     } = pdsDataViewService.useGetAllPdsData(
         debouncedTerm
     );
@@ -46,24 +46,31 @@ const PdsTable: FunctionComponent<PdsTableProps> = () => {
         return hasNextPage;
     };
 
+    const handleRefresh = async () => {
+        setShowSpinner(true);
+        await refetch();
+        setShowSpinner(false);
+    };
+
     return (
         <>
+            <InputGroup className="mb-3">
             <SearchBase id="search" label="Search pds" value={searchTerm} placeholder="Search PDS Table"
                 onChange={(e) => { handleSearchChange(e.currentTarget.value) }} />
-            <br />
+                <Button variant="outline-secondary" onClick={handleRefresh}>
+                    <FontAwesomeIcon icon={faRefresh} />
+                </Button>
+            </InputGroup>
 
             <Container fluid className="infiniteScrollContainer">
-                <Card>
-                    <Card.Header> <FontAwesomeIcon icon={faDatabase} className="me-2" /> PDS Table</Card.Header>
-                    <Card.Body>
+               
                         <InfiniteScroll loading={isLoading || showSpinner} hasNextPage={hasNextPage || false} loadMore={fetchNextPage}>
 
                             <Table striped bordered hover variant="light" responsive>
                                 <thead>
                                     <tr>
-                                        <th>Pseudo Nhs Number</th>
-                                        <th>Org Code</th>
-                                        <th>Organisation Name</th>
+                                        <th>Pseudo Identifier</th>
+                                        <th>Organisation Code</th>
                                         <th>Relationship With Organisation Effective FromDate</th>
                                         <th>Relationship With Organisation Effective ToDate</th>
                                     </tr>
@@ -100,8 +107,6 @@ const PdsTable: FunctionComponent<PdsTableProps> = () => {
                                 </tbody>
                             </Table>
                         </InfiniteScroll>
-                    </Card.Body>
-                </Card>
             </Container>
         </>
     );

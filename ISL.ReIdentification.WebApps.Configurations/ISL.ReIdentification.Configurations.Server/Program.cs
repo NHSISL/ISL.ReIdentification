@@ -2,8 +2,12 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
+using Attrify.Extensions;
+using Attrify.InvisibleApi.Models;
 using ISL.Providers.Notifications.Abstractions;
 using ISL.Providers.Notifications.GovukNotify.Models;
 using ISL.Providers.Notifications.GovukNotify.Providers.Notifications;
@@ -12,6 +16,7 @@ using ISL.Providers.ReIdentification.Necs.Models.Brokers.NECS;
 using ISL.Providers.ReIdentification.Necs.Providers.NecsReIdentifications;
 using ISL.Providers.ReIdentification.OfflineFileSources.Models;
 using ISL.Providers.ReIdentification.OfflineFileSources.Providers.OfflineFileSources;
+using ISL.Providers.Storages.Abstractions;
 using ISL.ReIdentification.Core.Brokers.CsvHelpers;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Hashing;
@@ -31,6 +36,8 @@ using ISL.ReIdentification.Core.Models.Foundations.Lookups;
 using ISL.ReIdentification.Core.Models.Foundations.OdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.PdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
+using ISL.ReIdentification.Core.Models.Orchestrations.Persists;
+using ISL.ReIdentification.Core.Providers.Storage;
 using ISL.ReIdentification.Core.Services.Coordinations.Identifications;
 using ISL.ReIdentification.Core.Services.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationRequests;
@@ -45,6 +52,7 @@ using ISL.ReIdentification.Core.Services.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Services.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Services.Orchestrations.Identifications;
 using ISL.ReIdentification.Core.Services.Orchestrations.Persists;
+using ISL.ReIdentification.Core.Services.Processings.UserAccesses;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.OData;
@@ -54,6 +62,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web;
 using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
+using Microsoft.OpenApi.Models;
 
 namespace ISL.ReIdentification.Configurations.Server
 {
@@ -62,13 +71,17 @@ namespace ISL.ReIdentification.Configurations.Server
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            ConfigureServices(builder, builder.Configuration);
+            var invisibleApiKey = new InvisibleApiKey();
+            ConfigureServices(builder, builder.Configuration, invisibleApiKey);
             var app = builder.Build();
-            ConfigurePipeline(app);
+            ConfigurePipeline(app, invisibleApiKey);
             app.Run();
         }
 
-        public static void ConfigureServices(WebApplicationBuilder builder, IConfiguration configuration)
+        public static void ConfigureServices(
+            WebApplicationBuilder builder,
+            IConfiguration configuration,
+            InvisibleApiKey invisibleApiKey)
         {
             // Load settings from launchSettings.json (for testing)
             var projectDir = Directory.GetCurrentDirectory();
@@ -79,12 +92,60 @@ namespace ISL.ReIdentification.Configurations.Server
                 builder.Configuration.AddJsonFile(launchSettingsPath);
             }
 
+            builder.Configuration
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables();
+
             // Add services to the container.
             var azureAdOptions = builder.Configuration.GetSection("AzureAd");
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApi(azureAdOptions);
 
+
+            var instance = builder.Configuration["AzureAd:Instance"];
+            var tenantId = builder.Configuration["AzureAd:TenantId"];
+            var scopes = builder.Configuration["AzureAd:Scopes"];
+
+            if (string.IsNullOrEmpty(instance) || string.IsNullOrEmpty(tenantId) || string.IsNullOrEmpty(scopes))
+            {
+                throw new InvalidOperationException("AzureAd configuration is incomplete. Please check appsettings.json.");
+            }
+
+            builder.Services.AddSwaggerGen(configuration =>
+            {
+                configuration.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+                {
+                    Type = SecuritySchemeType.OAuth2,
+                    Flows = new OpenApiOAuthFlows
+                    {
+                        AuthorizationCode = new OpenApiOAuthFlow
+                        {
+                            AuthorizationUrl = new Uri($"{instance}{tenantId}/oauth2/v2.0/authorize"),
+                            TokenUrl = new Uri($"{instance}{tenantId}/oauth2/v2.0/token"),
+                            Scopes = scopes.Split(' ').ToDictionary(scope => scope, scope => "Access API as user")
+                        }
+                    }
+                });
+
+                configuration.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "oauth2"
+                            }
+                        },
+                        scopes.Split(' ')
+                    }
+                });
+            });
+
+            builder.Services.AddSingleton(invisibleApiKey);
             builder.Services.AddAuthorization();
             builder.Services.AddDbContext<ReIdentificationStorageBroker>();
             builder.Services.AddHttpContextAccessor();
@@ -97,7 +158,7 @@ namespace ISL.ReIdentification.Configurations.Server
             AddBrokers(builder.Services, builder.Configuration);
             AddFoundationServices(builder.Services);
             AddProcessingServices(builder.Services);
-            AddOrchestrationServices(builder.Services);
+            AddOrchestrationServices(builder.Services, builder.Configuration);
             AddCoordinationServices(builder.Services, builder.Configuration);
 
             // Register IConfiguration to be available for dependency injection
@@ -119,7 +180,7 @@ namespace ISL.ReIdentification.Configurations.Server
                });
         }
 
-        public static void ConfigurePipeline(WebApplication app)
+        public static void ConfigurePipeline(WebApplication app, InvisibleApiKey invisibleApiKey)
         {
             app.UseDefaultFiles();
             app.UseStaticFiles();
@@ -128,12 +189,22 @@ namespace ISL.ReIdentification.Configurations.Server
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerUI(configuration =>
+                {
+                    configuration.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+
+                    // Configure OAuth2 for Swagger UI
+                    configuration.OAuthClientId(app.Configuration["AzureAd:ClientId"]); // Use the application ClientId
+                    configuration.OAuthClientSecret(""); // For PKCE, client secret can be empty
+                    configuration.OAuthUsePkce(); // Enable PKCE (Proof Key for Code Exchange)
+                    configuration.OAuthScopes(app.Configuration["AzureAd:Scopes"]); // Add required scopes
+                });
             }
 
             app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseInvisibleApiMiddleware(invisibleApiKey);
             app.MapControllers().WithOpenApi();
             app.MapFallbackToFile("/index.html");
         }
@@ -158,7 +229,7 @@ namespace ISL.ReIdentification.Configurations.Server
         private static void AddProviders(IServiceCollection services, IConfiguration configuration)
         {
             NotificationConfigurations notificationConfigurations = configuration
-                .GetSection("notificationConfigurations")
+                .GetSection("NotificationConfigurations")
                     .Get<NotificationConfigurations>();
 
             NotifyConfigurations notifyConfigurations = new NotifyConfigurations
@@ -169,15 +240,17 @@ namespace ISL.ReIdentification.Configurations.Server
             services.AddSingleton(notificationConfigurations);
             services.AddSingleton(notifyConfigurations);
             services.AddTransient<INotificationAbstractionProvider, NotificationAbstractionProvider>();
+            services.AddTransient<IStorageAbstractionProvider, StorageAbstractionProvider>();
             services.AddTransient<INotificationProvider, GovukNotifyProvider>();
+            services.AddTransient<IStorageProvider, FakeStorageProvider>();
 
             bool reIdentificationProviderOfflineMode = configuration
-                .GetSection("reIdentificationProviderOfflineMode").Get<bool>();
+                .GetSection("ReIdentificationProviderOfflineMode").Get<bool>();
 
             if (reIdentificationProviderOfflineMode == true)
             {
                 OfflineSourceReIdentificationConfigurations offlineSourceReIdentificationConfigurations = configuration
-                    .GetSection("offlineSourceReIdentificationConfigurations")
+                    .GetSection("OfflineSourceReIdentificationConfigurations")
                         .Get<OfflineSourceReIdentificationConfigurations>();
 
                 services.AddSingleton(offlineSourceReIdentificationConfigurations);
@@ -186,7 +259,7 @@ namespace ISL.ReIdentification.Configurations.Server
             else
             {
                 NecsReIdentificationConfigurations necsReIdentificationConfigurations = configuration
-                    .GetSection("necsReIdentificationConfigurations")
+                    .GetSection("NecsReIdentificationConfigurations")
                         .Get<NecsReIdentificationConfigurations>();
 
                 services.AddSingleton(necsReIdentificationConfigurations);
@@ -230,8 +303,14 @@ namespace ISL.ReIdentification.Configurations.Server
             services.AddTransient<IUserAccessProcessingService, UserAccessProcessingService>();
         }
 
-        private static void AddOrchestrationServices(IServiceCollection services)
+        private static void AddOrchestrationServices(IServiceCollection services, IConfiguration configuration)
         {
+            CsvReIdentificationConfigurations csvReIdentificationConfigurations = configuration
+                .GetSection("csvReIdentificationConfigurations")
+                    .Get<CsvReIdentificationConfigurations>() ??
+                        new CsvReIdentificationConfigurations();
+
+            services.AddSingleton(csvReIdentificationConfigurations);
             services.AddTransient<IAccessOrchestrationService, AccessOrchestrationService>();
             services.AddTransient<IPersistanceOrchestrationService, PersistanceOrchestrationService>();
             services.AddTransient<IAccessOrchestrationService, AccessOrchestrationService>();
@@ -242,7 +321,7 @@ namespace ISL.ReIdentification.Configurations.Server
         private static void AddCoordinationServices(IServiceCollection services, IConfiguration configuration)
         {
             ProjectStorageConfiguration projectStorageConfiguration = configuration
-                .GetSection("projectStorageConfiguration")
+                .GetSection("ProjectStorageConfiguration")
                     .Get<ProjectStorageConfiguration>();
 
             services.AddSingleton(projectStorageConfiguration);

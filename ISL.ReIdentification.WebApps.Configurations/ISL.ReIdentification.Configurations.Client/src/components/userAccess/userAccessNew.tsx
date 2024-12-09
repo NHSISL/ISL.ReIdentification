@@ -66,7 +66,7 @@ export const UserAccessNew = () => {
                                 <div style={{paddingTop:"10px"}}>
                                 <Card>
                                     <CardHeader>
-                                        Select Organsisations {selectedUser.displayName} has access to:
+                                        Select Organisations {selectedUser.displayName} has access to:
                                     </CardHeader>
                                     <CardBody>
                                         <OdsTree rootName="Root" selectedRecords={selectedOdsRecords} setSelectedRecords={setSelectedOdsRecords}/>
