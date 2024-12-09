@@ -53,5 +53,45 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(DependencyExceptions))]
+        public async Task ShouldThrowDocumentDependencyExceptionOnGetDownloadAsync(Xeption dependencyException)
+        {
+            // given
+            string someContainer = GetRandomString();
+            string someFileName = GetRandomString();
+            DateTimeOffset someDate = GetRandomFutureDateTimeOffset();
+
+            var expectedDocumentDependencyException = new DocumentDependencyException(
+                message: "Document dependency error occurred, please fix errors and try again.",
+                innerException: dependencyException);
+
+            this.blobStorageBrokerMock.Setup(broker =>
+                broker.GetDownloadLinkAsync(someContainer, someFileName, someDate))
+                    .ThrowsAsync(dependencyException);
+
+            // when
+            ValueTask<string> getDownloadLinkTask =
+                this.documentService.GetDownloadLinkAsync(someContainer, someFileName, someDate);
+
+            DocumentDependencyException actualDocumentDependencyException =
+                await Assert.ThrowsAsync<DocumentDependencyException>(getDownloadLinkTask.AsTask);
+
+            // then
+            actualDocumentDependencyException.Should().BeEquivalentTo(expectedDocumentDependencyException);
+
+            this.blobStorageBrokerMock.Verify(broker =>
+                broker.GetDownloadLinkAsync(someContainer, someFileName, someDate),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedDocumentDependencyException))),
+                        Times.Once);
+
+            this.blobStorageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
