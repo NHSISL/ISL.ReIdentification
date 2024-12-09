@@ -52,7 +52,6 @@ export const impersonationContextService = {
             getNextPageParam: (lastPage: { nextPage?: string }) => lastPage.nextPage ?? null,
         });
     },
-
     useModifyImpersonationContext: () => {
         const broker = new ImpersonationContextBroker();
         const queryClient = useQueryClient();
@@ -69,11 +68,11 @@ export const impersonationContextService = {
 
             onSuccess: (data: ImpersonationContext) => {
                 queryClient.invalidateQueries({ queryKey: ["ImpersonationContextGetAll"] });
-                queryClient.invalidateQueries({ queryKey: ["ImpersonationContextGetById", { id: data.id }] });
+                queryClient.invalidateQueries({ queryKey: ["ImpersonationContext", { id: data.id }] });
+                queryClient.invalidateQueries({ queryKey: ["GetAllImpersonationById", { impersonationId: data.id }] });
             }
         });
     },
-
     useRemoveImpersonationContext: () => {
         const broker = new ImpersonationContextBroker();
         const queryClient = useQueryClient();

@@ -6,6 +6,8 @@ import { impersonationContextService } from "../../services/foundations/imperson
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { useMsal } from "@azure/msal-react";
+import { impersonationContextViewService } from "../../services/views/impersonationContext/impersonationContextViewService";
+import { ImpersonationContext } from "../../models/impersonationContext/impersonationContext";
 
 interface ImpersonationContextDetailManageProps {
     impersonationIdentificationRequestId: string | undefined;
@@ -21,6 +23,16 @@ const ImpersonationContextDetailManage: FunctionComponent<ImpersonationContextDe
     } = impersonationContextService
         .useRetrieveAllImpersonationById(
             impersonationIdentificationRequestId!);
+
+
+    const updateImpersonation = impersonationContextViewService.useUpdateImpersonationContext();
+    const handleUpdate = (isApproved: boolean) => {
+        const updatedImpersonationContext: ImpersonationContext = {
+            ...data,
+            isApproved: isApproved,
+        };
+        return updateImpersonation.mutateAsync(updatedImpersonationContext);
+    };
 
     return (
         <>
@@ -76,15 +88,19 @@ const ImpersonationContextDetailManage: FunctionComponent<ImpersonationContextDe
                         {account.accounts[0].idTokenClaims?.oid === data?.responsiblePersonEntraUserId && (
                             <>
                                 <p>You have been selected as the responsible owner for this project, in order for the service to process files dropped to this service please accept that this is correct.</p>
-                                {data?.isApproved ? <Button variant="danger">Deny</Button> : <Button variant="success">Approve</Button>}
+                                {data?.isApproved ?
+                                    <Button variant="danger" onClick={() => handleUpdate(false)}>Deny</Button>
+                                    :
+                                    <Button variant="success" onClick={() => handleUpdate(true)}>Approve</Button>
+                                }
                             </>
                         )}
 
                         <br /><br />
                         {account.accounts[0].idTokenClaims?.oid === data?.requesterEntraUserId && (
                             <>
-                                <p>As the Owner of this project you have the ability to regenrate the SAS Tokens for your container, once clicked the old token will be invalid and you will have to setup the new tokens to ensure files are processed.</p>
-                                <Button variant="dark">Regenerate Tokens</Button>&nbsp;
+                                <p>As the Owner of this project you have the ability to genrate the SAS Tokens for your container, once clicked the old token will be invalid and you will have to setup the new tokens to ensure files are processed.</p>
+                                <Button variant="dark">Generate Tokens</Button>&nbsp;
                             </>
                         )} &nbsp;
 
