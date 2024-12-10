@@ -89,5 +89,47 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnListFilesInContainerAsync()
+        {
+            // given
+            string someContainer = GetRandomString();
+            Exception someException = new Exception();
+
+            var failedServiceDocumentException = new FailedServiceDocumentException(
+                message: "Failed service document error occurred, contact support.",
+                innerException: someException);
+
+            var expectedDocumentServiceException = new DocumentServiceException(
+                message: "Document service error occurred, contact support.",
+                innerException: failedServiceDocumentException);
+
+            this.blobStorageBrokerMock.Setup(broker =>
+                broker.ListFilesInContainerAsync(someContainer))
+                    .ThrowsAsync(someException);
+
+            // when
+            ValueTask<List<string>> addFolderTask =
+                this.documentService.ListFilesInContainerAsync(someContainer);
+
+            DocumentServiceException actualDocumentServiceException =
+                await Assert.ThrowsAsync<DocumentServiceException>(addFolderTask.AsTask);
+
+            // then
+            actualDocumentServiceException.Should().BeEquivalentTo(expectedDocumentServiceException);
+
+            this.blobStorageBrokerMock.Verify(broker =>
+                broker.ListFilesInContainerAsync(someContainer),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedDocumentServiceException))),
+                        Times.Once);
+
+            this.blobStorageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
