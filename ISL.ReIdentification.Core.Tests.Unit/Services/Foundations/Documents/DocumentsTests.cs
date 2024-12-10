@@ -151,5 +151,14 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                     innerException)
             };
         }
+
+        private static DateTimeOffset GetRandomFutureDateTimeOffset()
+        {
+            DateTime futureStartDate = DateTimeOffset.UtcNow.AddDays(1).Date;
+            int randomDaysInFuture = GetRandomNumber();
+            DateTime futureEndDate = futureStartDate.AddDays(randomDaysInFuture).Date;
+
+            return new DateTimeRange(earliestDate: futureStartDate, latestDate: futureEndDate).GetValue();
+        }
     }
 }
