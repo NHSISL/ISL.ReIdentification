@@ -34,11 +34,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                 innerException: invalidDocumentException);
 
             // when
-            ValueTask<List<string>> listFilesTask =
+            ValueTask<List<string>> listFilesInContainerTask =
                 this.documentService.ListFilesInContainerAsync(invalidContainer);
 
             DocumentValidationException actualDocumentValidationException =
-                await Assert.ThrowsAsync<DocumentValidationException>(listFilesTask.AsTask);
+                await Assert.ThrowsAsync<DocumentValidationException>(listFilesInContainerTask.AsTask);
 
             // then
             actualDocumentValidationException.Should().BeEquivalentTo(expectedDocumentValidationException);

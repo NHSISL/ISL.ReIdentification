@@ -32,11 +32,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                     .ThrowsAsync(dependencyValidationException);
 
             // when
-            ValueTask<List<string>> addFolderTask =
+            ValueTask<List<string>> listFilesInContainerTask =
                 this.documentService.ListFilesInContainerAsync(someContainer);
 
             DocumentDependencyValidationException actualDependencyValidationException =
-                await Assert.ThrowsAsync<DocumentDependencyValidationException>(addFolderTask.AsTask);
+                await Assert.ThrowsAsync<DocumentDependencyValidationException>(listFilesInContainerTask.AsTask);
 
             // then
             actualDependencyValidationException.Should().BeEquivalentTo(expectedDependencyValidationException);
@@ -69,11 +69,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                     .ThrowsAsync(dependencyException);
 
             // when
-            ValueTask<List<string>> addFolderTask =
+            ValueTask<List<string>> listFilesInContainerTask =
                 this.documentService.ListFilesInContainerAsync(someContainer);
 
             DocumentDependencyException actualDocumentDependencyException =
-                await Assert.ThrowsAsync<DocumentDependencyException>(addFolderTask.AsTask);
+                await Assert.ThrowsAsync<DocumentDependencyException>(listFilesInContainerTask.AsTask);
 
             // then
             actualDocumentDependencyException.Should().BeEquivalentTo(expectedDocumentDependencyException);
@@ -111,11 +111,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                     .ThrowsAsync(someException);
 
             // when
-            ValueTask<List<string>> addFolderTask =
+            ValueTask<List<string>> listFilesInContainerTask =
                 this.documentService.ListFilesInContainerAsync(someContainer);
 
             DocumentServiceException actualDocumentServiceException =
-                await Assert.ThrowsAsync<DocumentServiceException>(addFolderTask.AsTask);
+                await Assert.ThrowsAsync<DocumentServiceException>(listFilesInContainerTask.AsTask);
 
             // then
             actualDocumentServiceException.Should().BeEquivalentTo(expectedDocumentServiceException);

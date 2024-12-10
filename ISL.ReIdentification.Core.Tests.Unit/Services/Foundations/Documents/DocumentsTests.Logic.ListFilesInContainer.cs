@@ -2,8 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System.IO;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Moq;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
@@ -15,11 +16,21 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
         {
             // given
             string randomContainer = GetRandomString();
+            List<string> randomFileList = GetRandomStringList();
+            List<string> outputFileList = randomFileList;
+            List<string> expectedFileList = outputFileList;
+
+            this.blobStorageBrokerMock.Setup(broker =>
+                broker.ListFilesInContainerAsync(randomContainer))
+                    .ReturnsAsync(outputFileList);
 
             // when
-            await this.documentService.ListFilesInContainerAsync(randomContainer);
+            List<string> actualFileList =
+                await this.documentService.ListFilesInContainerAsync(randomContainer);
 
             // then
+            actualFileList.Should().BeEquivalentTo(expectedFileList);
+
             this.blobStorageBrokerMock.Verify(broker =>
                 broker.ListFilesInContainerAsync(randomContainer),
                     Times.Once);
