@@ -11,6 +11,7 @@ import { DeveloperEvents } from "../../types/DeveloperEvents";
 import { ToastPosition } from "react-bootstrap/esm/ToastContainer";
 import { useParams } from "react-router-dom";
 import LoginUnAuthorisedComponent from "../layouts/loginUnauth";
+import { useFrontendConfiguration } from "../../hooks/useFrontendConfiguration";
 
 const ReportsHome: FunctionComponent = () => {
     const { accounts, instance } = useMsal();
@@ -24,6 +25,7 @@ const ReportsHome: FunctionComponent = () => {
     const [lastEvent, setLastEvent] = useState<DeveloperEvents>();
     const [noAccess, setNoAccess] = useState(false);
     const [toastHidden, setToastHidden] = useState(false);
+    const {configuration} = useFrontendConfiguration();
 
     const aquireAccessToken = async () => {
         await instance.initialize();
@@ -122,10 +124,13 @@ const ReportsHome: FunctionComponent = () => {
     return (
         <Container className="min-vh-100 d-flex flex-column p-0 m-0" fluid>
             <Row className="m-0">
-                <Navbar style={{ padding: 1 }}>
+                <Navbar style={{ padding: 1, backgroundColor: configuration?.bannerColour || "#f8f9fa" }} >
                     <Container fluid>
                         <Navbar.Brand style={{ fontSize: "1em", padding: 0 }}>
-                            <Card.Link href="/" style={{ color: "black", textDecoration: "none" }}>ISL Re-Identification Portal</Card.Link>
+                            <Card.Link href="/" style={{ color: "black", textDecoration: "none" }}>
+                                LDS Re-Identification Portal
+                                {configuration?.environment !== "Live" && <>&nbsp;({configuration?.environment})</>}    
+                            </Card.Link>
                         </Navbar.Brand>
                         {toastHidden && <Button onClick={() => setToastHidden(false)}>Show reidentification window</Button>}
                         {accounts.length > 0 &&
