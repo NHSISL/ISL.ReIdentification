@@ -56,7 +56,9 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
         }
 
         private static void ValidateOnGetDownloadLink(
-            string folderName, string container, DateTimeOffset dateTimeOffset)
+            string folderName, 
+            string container, 
+            DateTimeOffset dateTimeOffset)
         {
             Validate(
                 (Rule: IsInvalid(folderName), Parameter: nameof(folderName)),
