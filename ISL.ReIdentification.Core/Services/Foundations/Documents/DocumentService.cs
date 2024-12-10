@@ -53,8 +53,16 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
         TryCatch(async () =>
         {
             ValidateStorageArgumentsOnRetrieveAccessPolicies(container);
-            
+
             return await this.blobStorageBroker.RetrieveAllAccessPoliciesFromContainerAsync(container);
+        });
+
+        public ValueTask<List<string>> ListFilesInContainerAsync(string container) =>
+        TryCatch(async () => 
+        {
+            ValidateOnListFilesInContainer(container);
+
+            return await this.blobStorageBroker.ListFilesInContainerAsync(container);
         });
 
         public ValueTask RemoveAllAccessPoliciesFromContainerAsync(string container) =>
@@ -76,6 +84,14 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
         {
             ValidateOnAddFolder(container, folder);
             await this.blobStorageBroker.CreateFolderInContainerAsync(container, folder);
+        });
+
+        public ValueTask<string> GetDownloadLinkAsync(string fileName, string container, DateTimeOffset expiresOn) =>
+        TryCatch(async () =>
+        {
+            ValidateOnGetDownloadLink(fileName, container, expiresOn);
+            
+            return await this.blobStorageBroker.GetDownloadLinkAsync(fileName, container, expiresOn);
         });
     }
 }

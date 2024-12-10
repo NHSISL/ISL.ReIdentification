@@ -17,7 +17,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
     {
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
-        public async Task ShouldThrowDependencyValidationExceptionOnRetrieveAllAccessPoliciesFromContainerAsync(
+        public async Task ShouldThrowDependencyValidationExceptionOnListFilesInContainerAsync(
             Xeption dependencyValidationException)
         {
             // given
@@ -28,21 +28,21 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                 innerException: dependencyValidationException);
 
             this.blobStorageBrokerMock.Setup(broker =>
-                broker.RetrieveAllAccessPoliciesFromContainerAsync(someContainer))
+                broker.ListFilesInContainerAsync(someContainer))
                     .ThrowsAsync(dependencyValidationException);
 
             // when
-            ValueTask<List<string>> retrieveAccessPolicyTask =
-                this.documentService.RetrieveAllAccessPoliciesFromContainerAsync(someContainer);
+            ValueTask<List<string>> listFilesInContainerTask =
+                this.documentService.ListFilesInContainerAsync(someContainer);
 
-            DocumentDependencyValidationException actualDocumentServiceException =
-                await Assert.ThrowsAsync<DocumentDependencyValidationException>(retrieveAccessPolicyTask.AsTask);
+            DocumentDependencyValidationException actualDependencyValidationException =
+                await Assert.ThrowsAsync<DocumentDependencyValidationException>(listFilesInContainerTask.AsTask);
 
             // then
-            actualDocumentServiceException.Should().BeEquivalentTo(expectedDependencyValidationException);
+            actualDependencyValidationException.Should().BeEquivalentTo(expectedDependencyValidationException);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.RetrieveAllAccessPoliciesFromContainerAsync(someContainer),
+                broker.ListFilesInContainerAsync(someContainer),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -55,8 +55,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
 
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
-        public async Task ShouldThrowDocumentDependencyExceptionOnRetrieveAllAccessPoliciesFromContainerAsync(
-            Xeption dependencyException)
+        public async Task ShouldThrowDocumentDependencyExceptionOnListFilesInContainerAsync(Xeption dependencyException)
         {
             // given
             string someContainer = GetRandomString();
@@ -66,21 +65,21 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                 innerException: dependencyException);
 
             this.blobStorageBrokerMock.Setup(broker =>
-                broker.RetrieveAllAccessPoliciesFromContainerAsync(someContainer))
+                broker.ListFilesInContainerAsync(someContainer))
                     .ThrowsAsync(dependencyException);
 
             // when
-            ValueTask<List<string>> retrieveAccessPolicyTask =
-                this.documentService.RetrieveAllAccessPoliciesFromContainerAsync(someContainer);
+            ValueTask<List<string>> listFilesInContainerTask =
+                this.documentService.ListFilesInContainerAsync(someContainer);
 
             DocumentDependencyException actualDocumentDependencyException =
-                await Assert.ThrowsAsync<DocumentDependencyException>(retrieveAccessPolicyTask.AsTask);
+                await Assert.ThrowsAsync<DocumentDependencyException>(listFilesInContainerTask.AsTask);
 
             // then
             actualDocumentDependencyException.Should().BeEquivalentTo(expectedDocumentDependencyException);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.RetrieveAllAccessPoliciesFromContainerAsync(someContainer),
+                broker.ListFilesInContainerAsync(someContainer),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -93,7 +92,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
         }
 
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnRetrieveAllAccessPoliciesFromContainerAsync()
+        public async Task ShouldThrowServiceExceptionOnListFilesInContainerAsync()
         {
             // given
             string someContainer = GetRandomString();
@@ -106,23 +105,23 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             var expectedDocumentServiceException = new DocumentServiceException(
                 message: "Document service error occurred, contact support.",
                 innerException: failedServiceDocumentException);
-                    
+
             this.blobStorageBrokerMock.Setup(broker =>
-                broker.RetrieveAllAccessPoliciesFromContainerAsync(someContainer))
+                broker.ListFilesInContainerAsync(someContainer))
                     .ThrowsAsync(someException);
 
             // when
-            ValueTask<List<string>> retrieveAccessPolicyTask =
-                this.documentService.RetrieveAllAccessPoliciesFromContainerAsync(someContainer);
+            ValueTask<List<string>> listFilesInContainerTask =
+                this.documentService.ListFilesInContainerAsync(someContainer);
 
             DocumentServiceException actualDocumentServiceException =
-                await Assert.ThrowsAsync<DocumentServiceException>(retrieveAccessPolicyTask.AsTask);
+                await Assert.ThrowsAsync<DocumentServiceException>(listFilesInContainerTask.AsTask);
 
             // then
             actualDocumentServiceException.Should().BeEquivalentTo(expectedDocumentServiceException);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.RetrieveAllAccessPoliciesFromContainerAsync(someContainer),
+                broker.ListFilesInContainerAsync(someContainer),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
