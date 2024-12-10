@@ -45,7 +45,7 @@ const CsvIdentificationWorklistTable: FunctionComponent<CsvIdentificationWorklis
     );
 
     const hasNoMorePages = () => {
-        return true;
+        return !isLoading && !hasNextPage;
     };
 
     const handleRefresh = async () => {

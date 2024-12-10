@@ -114,7 +114,7 @@ const AccessAuditTable: FunctionComponent<AccessAuditTableProps> = ({ requestId 
     );
 
     const hasNoMorePages = (): boolean => {
-        return hasNextPage;
+        return !isLoading && !hasNextPage;
     };
 
     return (
