@@ -15,23 +15,20 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
 {
     public partial class DocumentsTests
     {
-        [Fact]
-        public async Task ShouldThrowDependencyValidationExceptionOnRetrieveAllAccessPoliciesFromContainerAsync()
+        [Theory]
+        [MemberData(nameof(DependencyValidationExceptions))]
+        public async Task ShouldThrowDependencyValidationExceptionOnRetrieveAllAccessPoliciesFromContainerAsync(Xeption dependencyValidationException)
         {
             // given
             string someContainer = GetRandomString();
 
-            var storageProviderValidationException = new StorageProviderValidationException(
-                message: "Storage provider validation errors occurred, please try again.",
-                innerException: new Xeption() );
-                
-            var expectedDocumentServiceException = new DocumentDependencyValidationException(
+            var expectedDependencyValidationException = new DocumentDependencyValidationException(
                 message: "Document dependency validation error occurred, please fix errors and try again.",
-                innerException: storageProviderValidationException);
+                innerException: dependencyValidationException);
 
             this.blobStorageBrokerMock.Setup(broker =>
                 broker.RetrieveAllAccessPoliciesFromContainerAsync(someContainer))
-                    .ThrowsAsync(storageProviderValidationException);
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask<List<string>> retrieveAccessPolicyTask =
@@ -41,16 +38,15 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                 await Assert.ThrowsAsync<DocumentDependencyValidationException>(retrieveAccessPolicyTask.AsTask);
 
             // then
-            actualDocumentServiceException.Should().BeEquivalentTo(expectedDocumentServiceException);
+            actualDocumentServiceException.Should().BeEquivalentTo(expectedDependencyValidationException);
 
             this.blobStorageBrokerMock.Verify(broker =>
                 broker.RetrieveAllAccessPoliciesFromContainerAsync(someContainer),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogErrorAsync(It.Is(SameExceptionAs(
-                    expectedDocumentServiceException))),
-                        Times.Once);
+                broker.LogErrorAsync(It.Is(SameExceptionAs(expectedDependencyValidationException))),
+                    Times.Once);
 
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
