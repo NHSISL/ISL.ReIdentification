@@ -51,7 +51,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
                 var alreadyExistsUserAgreementException =
                     new AlreadyExistsUserAgreementException(
                         message: "UserAgreement with the same Id already exists.",
-                        innerException: duplicateKeyException);
+                        innerException: duplicateKeyException,
+                        data: duplicateKeyException.Data);
 
                 throw await CreateAndLogDependencyValidationExceptionAsync(alreadyExistsUserAgreementException);
             }
