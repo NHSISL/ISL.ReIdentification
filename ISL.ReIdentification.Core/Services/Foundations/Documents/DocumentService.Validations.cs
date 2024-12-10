@@ -48,6 +48,11 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             Validate((Rule: IsInvalid(container), Parameter: nameof(container)));
         }
 
+        private static void ValidateOnListFilesInContainer(string container)
+        {
+            Validate((Rule: IsInvalid(container), Parameter: "Container"));
+        }
+
         private static void ValidateOnAddFolder(string folderName, string container)
         {
             Validate(
