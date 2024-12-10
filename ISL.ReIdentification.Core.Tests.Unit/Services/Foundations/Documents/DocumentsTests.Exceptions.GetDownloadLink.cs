@@ -17,32 +17,34 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
     {
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
-        public async Task ShouldThrowDependencyValidationExceptionOnRetrieveAllAccessPoliciesFromContainerAsync(
+        public async Task ShouldThrowDependencyValidationExceptionOnGetDownloadAsync(
             Xeption dependencyValidationException)
         {
             // given
             string someContainer = GetRandomString();
+            string someFileName = GetRandomString();
+            DateTimeOffset someDate = GetRandomFutureDateTimeOffset();
 
             var expectedDependencyValidationException = new DocumentDependencyValidationException(
                 message: "Document dependency validation error occurred, please fix errors and try again.",
                 innerException: dependencyValidationException);
 
             this.blobStorageBrokerMock.Setup(broker =>
-                broker.RetrieveAllAccessPoliciesFromContainerAsync(someContainer))
+                broker.GetDownloadLinkAsync(someContainer, someFileName, someDate))
                     .ThrowsAsync(dependencyValidationException);
 
             // when
-            ValueTask<List<string>> retrieveAccessPolicyTask =
-                this.documentService.RetrieveAllAccessPoliciesFromContainerAsync(someContainer);
+            ValueTask<string> getDownloadLinkTask =
+                this.documentService.GetDownloadLinkAsync(someContainer, someFileName, someDate);
 
-            DocumentDependencyValidationException actualDocumentServiceException =
-                await Assert.ThrowsAsync<DocumentDependencyValidationException>(retrieveAccessPolicyTask.AsTask);
+            DocumentDependencyValidationException actualDependencyValidationException =
+                await Assert.ThrowsAsync<DocumentDependencyValidationException>(getDownloadLinkTask.AsTask);
 
             // then
-            actualDocumentServiceException.Should().BeEquivalentTo(expectedDependencyValidationException);
+            actualDependencyValidationException.Should().BeEquivalentTo(expectedDependencyValidationException);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.RetrieveAllAccessPoliciesFromContainerAsync(someContainer),
+                broker.GetDownloadLinkAsync(someContainer, someFileName, someDate),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -55,32 +57,33 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
 
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
-        public async Task ShouldThrowDocumentDependencyExceptionOnRetrieveAllAccessPoliciesFromContainerAsync(
-            Xeption dependencyException)
+        public async Task ShouldThrowDocumentDependencyExceptionOnGetDownloadAsync(Xeption dependencyException)
         {
             // given
             string someContainer = GetRandomString();
+            string someFileName = GetRandomString();
+            DateTimeOffset someDate = GetRandomFutureDateTimeOffset();
 
             var expectedDocumentDependencyException = new DocumentDependencyException(
                 message: "Document dependency error occurred, please fix errors and try again.",
                 innerException: dependencyException);
 
             this.blobStorageBrokerMock.Setup(broker =>
-                broker.RetrieveAllAccessPoliciesFromContainerAsync(someContainer))
+                broker.GetDownloadLinkAsync(someContainer, someFileName, someDate))
                     .ThrowsAsync(dependencyException);
 
             // when
-            ValueTask<List<string>> retrieveAccessPolicyTask =
-                this.documentService.RetrieveAllAccessPoliciesFromContainerAsync(someContainer);
+            ValueTask<string> getDownloadLinkTask =
+                this.documentService.GetDownloadLinkAsync(someContainer, someFileName, someDate);
 
             DocumentDependencyException actualDocumentDependencyException =
-                await Assert.ThrowsAsync<DocumentDependencyException>(retrieveAccessPolicyTask.AsTask);
+                await Assert.ThrowsAsync<DocumentDependencyException>(getDownloadLinkTask.AsTask);
 
             // then
             actualDocumentDependencyException.Should().BeEquivalentTo(expectedDocumentDependencyException);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.RetrieveAllAccessPoliciesFromContainerAsync(someContainer),
+                broker.GetDownloadLinkAsync(someContainer, someFileName, someDate),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -93,10 +96,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
         }
 
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnRetrieveAllAccessPoliciesFromContainerAsync()
+        public async Task ShouldThrowServiceExceptionOnGetDownloadLinkAsync()
         {
             // given
             string someContainer = GetRandomString();
+            string someFileName = GetRandomString();
+            DateTimeOffset someDate = GetRandomFutureDateTimeOffset();
             Exception someException = new Exception();
 
             var failedServiceDocumentException = new FailedServiceDocumentException(
@@ -106,23 +111,23 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             var expectedDocumentServiceException = new DocumentServiceException(
                 message: "Document service error occurred, contact support.",
                 innerException: failedServiceDocumentException);
-                    
+
             this.blobStorageBrokerMock.Setup(broker =>
-                broker.RetrieveAllAccessPoliciesFromContainerAsync(someContainer))
+                broker.GetDownloadLinkAsync(someContainer, someFileName, someDate))
                     .ThrowsAsync(someException);
 
             // when
-            ValueTask<List<string>> retrieveAccessPolicyTask =
-                this.documentService.RetrieveAllAccessPoliciesFromContainerAsync(someContainer);
+            ValueTask<string> getDownloadLinkTask =
+                this.documentService.GetDownloadLinkAsync(someContainer, someFileName, someDate);
 
             DocumentServiceException actualDocumentServiceException =
-                await Assert.ThrowsAsync<DocumentServiceException>(retrieveAccessPolicyTask.AsTask);
+                await Assert.ThrowsAsync<DocumentServiceException>(getDownloadLinkTask.AsTask);
 
             // then
             actualDocumentServiceException.Should().BeEquivalentTo(expectedDocumentServiceException);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.RetrieveAllAccessPoliciesFromContainerAsync(someContainer),
+                broker.GetDownloadLinkAsync(someContainer, someFileName,someDate),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
