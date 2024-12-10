@@ -17,7 +17,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
     {
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
-        public async Task ShouldThrowDependencyValidationExceptionOnRetrieveAllAccessPoliciesFromContainerAsync(Xeption dependencyValidationException)
+        public async Task ShouldThrowDependencyValidationExceptionOnRetrieveAllAccessPoliciesFromContainerAsync(
+            Xeption dependencyValidationException)
         {
             // given
             string someContainer = GetRandomString();
@@ -54,7 +55,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
 
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
-        public async Task ShouldThrowDocumentDependencyExceptionOnRetrieveAllAccessPoliciesFromContainerAsync(Xeption dependencyException)
+        public async Task ShouldThrowDocumentDependencyExceptionOnRetrieveAllAccessPoliciesFromContainerAsync(
+            Xeption dependencyException)
         {
             // given
             string someContainer = GetRandomString();
