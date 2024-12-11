@@ -62,7 +62,7 @@ const MenuComponent: React.FC = () => {
                     className={`bg-dark text-white ${activePath === '/csvReIdentification' ? 'active' : ''}`}
                     onClick={() => handleItemClick('/csvReIdentification')}>
                     <FontAwesomeIcon icon={faListAlt} className="me-2 fa-icon" />
-                    <SecuredLink to="/csvReIdentification">ReIdentify Dataset</SecuredLink>
+                    <SecuredLink to="/csvReIdentification">Re-Identify Dataset</SecuredLink>
                 </ListGroup.Item>
             </FeatureSwitch>
 
