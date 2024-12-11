@@ -63,7 +63,6 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             }
         }
 
-        [InvisibleApi]
         [HttpGet]
         [EnableQuery(PageSize = 25)]
         public async ValueTask<ActionResult<IQueryable<CsvIdentificationRequest>>> Get()

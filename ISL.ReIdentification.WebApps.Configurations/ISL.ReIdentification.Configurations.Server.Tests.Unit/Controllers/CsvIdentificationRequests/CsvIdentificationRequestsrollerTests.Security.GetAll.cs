@@ -56,7 +56,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.CsvI
         }
 
         [Fact]
-        public void GetAllShouldHaveInvisibleApiAttribute()
+        public void GetAllShouldNotHaveInvisibleApiAttribute()
         {
             // Given
             var controllerType = typeof(CsvIdentificationRequestsController);
@@ -75,7 +75,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.CsvI
             var attribute = methodAttribute ?? controllerAttribute;
 
             // Then
-            attribute.Should().NotBeNull();
+            attribute.Should().BeNull();
         }
     }
 }

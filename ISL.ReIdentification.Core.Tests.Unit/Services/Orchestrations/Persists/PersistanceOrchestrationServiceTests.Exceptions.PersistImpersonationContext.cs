@@ -24,7 +24,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
 
             this.impersonationContextServiceMock.Setup(service =>
                 service.RetrieveAllImpersonationContextsAsync())
-                    .Throws(dependencyValidationException);
+                    .ThrowsAsync(dependencyValidationException);
 
             var expectedPersistanceOrchestrationDependencyValidationException =
                 new PersistanceOrchestrationDependencyValidationException(
@@ -75,7 +75,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
 
             this.impersonationContextServiceMock.Setup(service =>
                 service.RetrieveAllImpersonationContextsAsync())
-                    .Throws(dependencyException);
+                    .ThrowsAsync(dependencyException);
 
             var expectedPersistanceOrchestrationDependencyException =
                 new PersistanceOrchestrationDependencyException(
@@ -136,7 +136,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
 
             this.impersonationContextServiceMock.Setup(service =>
                 service.RetrieveAllImpersonationContextsAsync())
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<AccessRequest> persistImpersonationContextAsyncTask =

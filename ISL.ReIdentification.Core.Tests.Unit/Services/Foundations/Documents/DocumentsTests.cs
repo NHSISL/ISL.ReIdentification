@@ -137,5 +137,28 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                     innerException),
             };
         }
+
+        public static TheoryData<Xeption> DependencyValidationExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new StorageProviderValidationException(
+                    message: "Storage provider validation error occurred.",
+                    innerException)
+            };
+        }
+
+        private static DateTimeOffset GetRandomFutureDateTimeOffset()
+        {
+            DateTime futureStartDate = DateTimeOffset.UtcNow.AddDays(1).Date;
+            int randomDaysInFuture = GetRandomNumber();
+            DateTime futureEndDate = futureStartDate.AddDays(randomDaysInFuture).Date;
+
+            return new DateTimeRange(earliestDate: futureStartDate, latestDate: futureEndDate).GetValue();
+        }
     }
 }

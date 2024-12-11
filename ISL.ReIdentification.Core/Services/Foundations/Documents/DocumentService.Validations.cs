@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.IO;
 using ISL.ReIdentification.Core.Models.Foundations.Documents.Exceptions;
 
@@ -41,6 +42,40 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
         {
             Validate((Rule: IsInvalid(container), Parameter: "Container"));
         }
+
+        private static void ValidateOnAddContainer(string container)
+        {
+            Validate((Rule: IsInvalid(container), Parameter: nameof(container)));
+        }
+
+        private static void ValidateOnListFilesInContainer(string container)
+        {
+            Validate((Rule: IsInvalid(container), Parameter: "Container"));
+        }
+
+        private static void ValidateOnAddFolder(string folderName, string container)
+        {
+            Validate(
+                (Rule: IsInvalid(folderName), Parameter: nameof(folderName)),
+                (Rule: IsInvalid(container), Parameter: nameof(container)));
+        }
+
+        private static void ValidateOnGetDownloadLink(
+            string folderName, 
+            string container, 
+            DateTimeOffset dateTimeOffset)
+        {
+            Validate(
+                (Rule: IsInvalid(folderName), Parameter: nameof(folderName)),
+                (Rule: IsInvalid(container), Parameter: nameof(container)),
+                (Rule: IsInvalid(dateTimeOffset), Parameter: nameof(dateTimeOffset)));
+        }
+
+        private static dynamic IsInvalid(DateTimeOffset dateTimeOffset) => new
+        {
+            Condition = dateTimeOffset == default || dateTimeOffset <= DateTimeOffset.UtcNow,
+            Message = "Date is invalid"
+        };
 
         private static dynamic IsInvalid(string value) => new
         {
