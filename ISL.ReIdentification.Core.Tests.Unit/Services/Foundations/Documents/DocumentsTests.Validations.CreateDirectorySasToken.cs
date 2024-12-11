@@ -48,7 +48,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             // when
             ValueTask<string> createDirectorySasTokenTask =
                 this.documentService.CreateDirectorySasTokenAsync(
-                    invalidContainer, invalidDirectoryPath, invalidAccessPolicyIdentifier, invalidDateTimeOffset);
+                    invalidContainer, 
+                    invalidDirectoryPath, 
+                    invalidAccessPolicyIdentifier, 
+                    invalidDateTimeOffset);
 
             DocumentValidationException actualDocumentValidationException =
                 await Assert.ThrowsAsync<DocumentValidationException>(createDirectorySasTokenTask.AsTask);
@@ -57,9 +60,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             actualDocumentValidationException.Should().BeEquivalentTo(expectedDocumentValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogErrorAsync(It.Is(SameExceptionAs(
-                    expectedDocumentValidationException))),
-                        Times.Once);
+                broker.LogErrorAsync(It.Is(SameExceptionAs(expectedDocumentValidationException))),
+                    Times.Once);
 
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
