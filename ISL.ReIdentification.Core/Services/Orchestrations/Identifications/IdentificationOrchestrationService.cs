@@ -128,12 +128,15 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                 var now = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
                 var accessAuditId = await this.identifierBroker.GetIdentifierAsync();
 
+                var pseudoIdentifier = hasAccessIdentificationItems
+                    .FirstOrDefault(identificationItem => identificationItem.RowNumber == item.RowNumber).RowNumber;
+
                 AccessAudit accessAudit = new AccessAudit
                 {
                     Id = accessAuditId,
                     RequestId = identificationRequest.Id,
                     TransactionId = transactionId,
-                    PseudoIdentifier = record.Identifier,
+                    PseudoIdentifier = pseudoIdentifier,
                     EntraUserId = identificationRequest.EntraUserId,
                     GivenName = identificationRequest.GivenName,
                     Surname = identificationRequest.Surname,
