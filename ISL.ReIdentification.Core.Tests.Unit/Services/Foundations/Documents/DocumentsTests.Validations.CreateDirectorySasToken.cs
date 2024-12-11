@@ -47,7 +47,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
 
             // when
             ValueTask<string> createDirectorySasTokenTask =
-                this.documentService.CreateDirectorySasTokenAsync(invalidContainer, invalidDirectoryPath, invalidAccessPolicyIdentifier, invalidDateTimeOffset);
+                this.documentService.CreateDirectorySasTokenAsync(
+                    invalidContainer, invalidDirectoryPath, invalidAccessPolicyIdentifier, invalidDateTimeOffset);
 
             DocumentValidationException actualDocumentValidationException =
                 await Assert.ThrowsAsync<DocumentValidationException>(createDirectorySasTokenTask.AsTask);

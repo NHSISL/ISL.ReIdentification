@@ -28,7 +28,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                     directoryPath,
                     accessPolicyIdentifier,
                     futureDateTimeOffset))
-                .ReturnsAsync(expectedSasToken);
+                        .ReturnsAsync(expectedSasToken);
 
             // when
             string actualSasToken =
