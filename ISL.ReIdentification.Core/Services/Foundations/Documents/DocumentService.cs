@@ -93,5 +93,9 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             
             return await this.blobStorageBroker.GetDownloadLinkAsync(fileName, container, expiresOn);
         });
+
+        public ValueTask<string> CreateDirectorySasTokenAsync(
+            string container, string directoryPath, string accessPolicyIdentifier, DateTimeOffset expiresOn) => 
+            throw new NotImplementedException();
     }
 }
