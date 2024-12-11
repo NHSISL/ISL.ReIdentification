@@ -95,7 +95,10 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
         });
 
         public ValueTask<string> CreateDirectorySasTokenAsync(
-            string container, string directoryPath, string accessPolicyIdentifier, DateTimeOffset expiresOn) =>
+            string container, 
+            string directoryPath, 
+            string accessPolicyIdentifier, 
+            DateTimeOffset expiresOn) =>
         TryCatch(async () =>
         {
             ValidateOnCreateDirectorySasToken(container, directoryPath, accessPolicyIdentifier, expiresOn);
