@@ -58,5 +58,50 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(DependencyExceptions))]
+        public async Task ShouldThrowDocumentDependencyExceptionOnCreateDirectorySasTokenAsync(
+            Xeption dependencyException)
+        {
+            // given
+            string someContainer = GetRandomString();
+            string someDirectoryPath = GetRandomString();
+            string someAccessPolicyIdentifier = GetRandomString();
+            DateTimeOffset someDateTimeOffset = GetRandomFutureDateTimeOffset();
+
+            var expectedDocumentDependencyException = new DocumentDependencyException(
+                message: "Document dependency error occurred, please fix errors and try again.",
+                innerException: dependencyException);
+
+            this.blobStorageBrokerMock.Setup(broker =>
+                broker.CreateDirectorySasTokenAsync(
+                    someContainer, someDirectoryPath, someAccessPolicyIdentifier, someDateTimeOffset))
+                        .ThrowsAsync(dependencyException);
+
+            // when
+            ValueTask<string> createDirectorySasTokenTask =
+                this.documentService.CreateDirectorySasTokenAsync(
+                    someContainer, someDirectoryPath, someAccessPolicyIdentifier, someDateTimeOffset);
+
+            DocumentDependencyException actualDocumentDependencyException =
+                await Assert.ThrowsAsync<DocumentDependencyException>(createDirectorySasTokenTask.AsTask);
+
+            // then
+            actualDocumentDependencyException.Should().BeEquivalentTo(expectedDocumentDependencyException);
+
+            this.blobStorageBrokerMock.Verify(broker =>
+                broker.CreateDirectorySasTokenAsync(
+                    someContainer, someDirectoryPath, someAccessPolicyIdentifier, someDateTimeOffset),
+                        Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedDocumentDependencyException))),
+                        Times.Once);
+
+            this.blobStorageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
