@@ -25,13 +25,9 @@ jobs:
       includePreviewVersions: true # Required for preview versions
   - bash: dotnet dev-certs https --trust
     displayName: "Trust certs"
-  - task: DotNetCoreCLI@2
-    displayName: "Dotnet Run"
-    inputs:
-      command: "run"
-      feedsToUse: "select"
-      projects: "**/*Portals.Server.csproj"
-      includeNuGetOrg: true
+  - bash: dotnet run --project /home/vsts/work/1/s/ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Server/ISL.ReIdentification.Portals.Server.csproj > /dev/null 2>&1 &
+  - bash: curl https://localhost:5173/
+      
 
 #- job: Build
 #  steps:
