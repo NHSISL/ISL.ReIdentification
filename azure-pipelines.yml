@@ -14,73 +14,79 @@ variables:
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
-steps:
-- task: qetza.replacetokens.replacetokens-task.replacetokens@6
-  displayName: 'Replace tokens in **/appsettings.json'
-  inputs:
-    sources: '**/appsettings.json'
+jobs:
+- job: Frontend Tests
+  steps:
+  - bash: echo "Hello world"
+
+- job: Build
+  steps:
+  - task: qetza.replacetokens.replacetokens-task.replacetokens@6
+    displayName: 'Replace tokens in **/appsettings.json'
+    inputs:
+      sources: '**/appsettings.json'
 
 
-- task: UseDotNet@2
-  displayName: "Install .NET Core SDK"
-  inputs:
-    version: 9.x
-    performMultiLevelLookup: true
-    includePreviewVersions: true # Required for preview versions
+  - task: UseDotNet@2
+    displayName: "Install .NET Core SDK"
+    inputs:
+      version: 9.x
+      performMultiLevelLookup: true
+      includePreviewVersions: true # Required for preview versions
 
-- task: DotNetCoreCLI@2
-  displayName: "Dotnet Restore"
-  inputs:
-    command: "restore"
-    feedsToUse: "select"
-    projects: "**/*.csproj"
-    includeNuGetOrg: true
+  - task: DotNetCoreCLI@2
+    displayName: "Dotnet Restore"
+    inputs:
+      command: "restore"
+      feedsToUse: "select"
+      projects: "**/*.csproj"
+      includeNuGetOrg: true
 
-- task: DotNetCoreCLI@2
-  displayName: "Dotnet Publish Portal"
-  inputs:
-    command: "publish"
-    publishWebProjects: false
-    projects: "**/ISL.ReIdentification.Portals.Server.csproj"
-    arguments: "-o $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_frontend_portal"
-    zipAfterPublish: true
-    modifyOutputPath: false
+  - task: DotNetCoreCLI@2
+    displayName: "Dotnet Publish Portal"
+    inputs:
+      command: "publish"
+      publishWebProjects: false
+      projects: "**/ISL.ReIdentification.Portals.Server.csproj"
+      arguments: "-o $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_frontend_portal"
+      zipAfterPublish: true
+      modifyOutputPath: false
 
-- publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_frontend_portal
-  displayName: 'Publish Artifact - Portal'
-  artifact: drop-frontend-portal
+  - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_frontend_portal
+    displayName: 'Publish Artifact - Portal'
+    artifact: drop-frontend-portal
 
-- task: DotNetCoreCLI@2
-  displayName: "Dotnet Publish Configuration"
-  inputs:
-    command: "publish"
-    publishWebProjects: false
-    projects: "**/ISL.ReIdentification.Configurations.Server.csproj"
-    arguments: "-o $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_configuration"
-    zipAfterPublish: true
-    modifyOutputPath: false
-    
-- publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_configuration
-  displayName: 'Publish Artifact - Configuration'
-  artifact: drop-frontend-management
+  - task: DotNetCoreCLI@2
+    displayName: "Dotnet Publish Configuration"
+    inputs:
+      command: "publish"
+      publishWebProjects: false
+      projects: "**/ISL.ReIdentification.Configurations.Server.csproj"
+      arguments: "-o $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_configuration"
+      zipAfterPublish: true
+      modifyOutputPath: false
+      
+  - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_publish_output_website_configuration
+    displayName: 'Publish Artifact - Configuration'
+    artifact: drop-frontend-management
 
-- task: DotNetCoreCLI@2
-  displayName: "Dotnet Build (REID Management Function)"
-  inputs:
-    command: 'build'
-    projects: '**/ISL.ReIdentification.Functions.csproj'
-    arguments: --output $(System.DefaultWorkingDirectory)/publish_output_reid_func --configuration Release
+  - task: DotNetCoreCLI@2
+    displayName: "Dotnet Build (REID Management Function)"
+    inputs:
+      command: 'build'
+      projects: '**/ISL.ReIdentification.Functions.csproj'
+      arguments: --output $(System.DefaultWorkingDirectory)/publish_output_reid_func --configuration Release
 
 
-- task: ArchiveFiles@2
-  displayName: 'Archive files - Re-id Function'
-  inputs:
-    rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output_reid_func'
-    includeRootFolder: false
-    archiveType: zip
-    archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_reid_func.zip
-    replaceExistingArchive: true
+  - task: ArchiveFiles@2
+    displayName: 'Archive files - Re-id Function'
+    inputs:
+      rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output_reid_func'
+      includeRootFolder: false
+      archiveType: zip
+      archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_reid_func.zip
+      replaceExistingArchive: true
 
-- publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_reid_func.zip
-  displayName: 'Publish Artifact - Re-id Function'
-  artifact: drop-reid-func
+  - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_reid_func.zip
+    displayName: 'Publish Artifact - Re-id Function'
+    artifact: drop-reid-func
