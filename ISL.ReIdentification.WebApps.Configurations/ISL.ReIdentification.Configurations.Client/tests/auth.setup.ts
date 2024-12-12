@@ -19,7 +19,7 @@ setup('authenticate', async ({ page }) => {
     await page.getByLabel('Password').fill(atob(process.env.TEST_PASSWORD));
     await page.getByRole('button', { name: 'Sign in' }).click();
     await page.getByRole('button', { name: 'Yes' }).click();
-    await page.waitForURL('https://localhost:4242/');
+    await page.waitForURL('https://localhost:5173/');
     // Alternatively, you can wait until the page reaches a state where all cookies are set.
     await expect(page.getByRole('heading', { name: 'Welcome to Re-Identification' })).toBeVisible();
 
