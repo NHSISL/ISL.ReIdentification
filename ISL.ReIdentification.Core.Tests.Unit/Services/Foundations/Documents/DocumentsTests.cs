@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq.Expressions;
+using ISL.Providers.Storages.Abstractions.Models;
 using ISL.Providers.Storages.Abstractions.Models.Exceptions;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Storages.Blob;
@@ -62,6 +63,30 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
 
             return randomStringList;
         }
+
+        private static List<Policy> GetPolicies() =>
+        new List<Policy>
+        {
+            new Policy
+            {
+                PolicyName = "read",
+                Permissions = new List<string>
+                {
+                    "Read",
+                    "list"
+                }
+            },
+            new Policy
+            {
+                PolicyName = "write",
+                Permissions = new List<string>
+                {
+                    "write",
+                    "add",
+                    "Create"
+                }
+            },
+        };
 
         public class ZeroLengthStream : MemoryStream
         {

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Threading.Tasks;
+using ISL.Providers.Storages.Abstractions.Models;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Storages.Blob;
 
@@ -56,6 +57,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
 
             return await this.blobStorageBroker.RetrieveAllAccessPoliciesFromContainerAsync(container);
         });
+        public ValueTask<List<Policy>> RetrieveAllAccessPoliciesAsync(string container) =>
+        throw new NotImplementedException();
 
         public ValueTask<List<string>> ListFilesInContainerAsync(string container) =>
         TryCatch(async () => 
