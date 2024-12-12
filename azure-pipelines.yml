@@ -25,6 +25,13 @@ jobs:
       includePreviewVersions: true # Required for preview versions
   - bash: dotnet dev-certs https --trust
     displayName: "Trust certs"
+  - task: DotNetCoreCLI@2
+    displayName: "Dotnet Run"
+    inputs:
+      command: "run"
+      feedsToUse: "select"
+      projects: "**/*Portals.Server.csproj"
+      includeNuGetOrg: true
 
 #- job: Build
 #  steps:
