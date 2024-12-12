@@ -43,6 +43,13 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             Validate((Rule: IsInvalid(container), Parameter: "Container"));
         }
 
+        private static void ValidateStorageArgumentsOnRemoveAccessPolicyByName(string container, string policyName)
+        {
+            Validate(
+                (Rule: IsInvalid(container), Parameter: "Container"),
+                (Rule: IsInvalid(policyName), Parameter: "PolicyName"));
+        }
+
         private static void ValidateOnAddContainer(string container)
         {
             Validate((Rule: IsInvalid(container), Parameter: nameof(container)));
