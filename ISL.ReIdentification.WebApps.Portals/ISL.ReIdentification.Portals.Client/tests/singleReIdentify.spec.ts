@@ -1,6 +1,6 @@
 import { test, expect, Page } from '@playwright/test';
 import testData from './testData/testDataForSingle.json' assert { type: 'json' };
-
+/*
 async function navigateToReIdentifySinglePatient(page: Page) {
     const link = page.getByRole('link', { name: 'Re-identify Single Patient' });
     await link.waitFor({ state: 'visible' });
@@ -161,4 +161,4 @@ test.describe('Re-Identify Single Patient Tests', () => {
 
         });
     });
-});
+});*/

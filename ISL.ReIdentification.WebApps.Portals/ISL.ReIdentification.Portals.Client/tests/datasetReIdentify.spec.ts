@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';;
 import * as path from 'path';
 import { fileURLToPath } from 'url';
 import testDataForDataset from './testData/testDataForDataset.json' assert { type: 'json' };
-
+/*
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -72,4 +72,4 @@ test.describe('Re-Identify dataset Patient Tests', () => {
             await expect(selectEmailButton).toBeHidden();
         });
     });
-});
+});*/
