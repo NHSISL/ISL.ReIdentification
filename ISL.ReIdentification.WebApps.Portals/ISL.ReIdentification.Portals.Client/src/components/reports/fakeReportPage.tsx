@@ -60,7 +60,7 @@ const FakeReportPage: FunctionComponent<FakeReportPageProps> = ({ getEmbeddedCom
     }
 
     const testData: TestData[] = [
-        { testName: 'single identity column', type: 'identity', target: 'fake', values: ['1111146000'] },
+        { testName: 'single identity column', type: 'identity', target: 'fake', values: ['1111151000'] },
         { testName: 'identity column with multiple records', type: 'identity', target: 'fake', values: ['1111192000', '1111209000'] },
         { testName: 'single value columnm', type: 'value', target: 'fake', values: ['1111129000'] },
         { testName: 'value column with multiple records', type: 'value', target: 'fake', values: ['1111131000', '1111112000'] },
