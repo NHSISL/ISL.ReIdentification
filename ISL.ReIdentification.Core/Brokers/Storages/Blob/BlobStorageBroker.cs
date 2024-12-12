@@ -66,6 +66,9 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Blob
         public async ValueTask RemoveAccessPoliciesFromContainerAsync(string container) =>
             await this.storageAbstractionProvider.RemoveAccessPoliciesFromContainerAsync(container);
 
+        public async ValueTask RemoveAccessPolicyByNameAsync(string container, string policyName) =>
+            new NotImplementedException();
+
         public async ValueTask CreateFolderInContainerAsync(string container, string folder) =>
             await this.storageAbstractionProvider.CreateFolderInContainerAsync(container, folder);
     }
