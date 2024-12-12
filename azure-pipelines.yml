@@ -15,7 +15,7 @@ variables:
   buildConfiguration: 'Release'
 
 jobs:
-- job: Frontend Tests
+- job: Frontend_Tests
   steps:
   - bash: echo "Hello world"
 
