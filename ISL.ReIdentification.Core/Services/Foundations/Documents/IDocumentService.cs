@@ -20,5 +20,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
         ValueTask AddContainerAsync (string container);
         ValueTask AddFolderAsync(string container, string folder);
         ValueTask<string> GetDownloadLinkAsync(string fileName, string container, DateTimeOffset expiresOn);
+
+        ValueTask<string> CreateDirectorySasTokenAsync(
+            string container, string directoryPath, string accessPolicyIdentifier, DateTimeOffset expiresOn);
     }
 }
