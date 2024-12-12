@@ -78,6 +78,19 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
                 (Rule: IsInvalid(dateTimeOffset), Parameter: nameof(dateTimeOffset)));
         }
 
+        private static void ValidateOnCreateDirectorySasToken(
+            string container, 
+            string directoryPath, 
+            string accessPolicyIdentifier, 
+            DateTimeOffset expiresOn)
+        {
+            Validate(
+                (Rule: IsInvalid(container), Parameter: nameof(container)),
+                (Rule: IsInvalid(directoryPath), Parameter: nameof(directoryPath)),
+                (Rule: IsInvalid(accessPolicyIdentifier), Parameter: nameof(accessPolicyIdentifier)),
+                (Rule: IsInvalid(expiresOn), Parameter: nameof(expiresOn)));
+        }
+
         private static dynamic IsInvalid(DateTimeOffset dateTimeOffset) => new
         {
             Condition = dateTimeOffset == default || dateTimeOffset <= DateTimeOffset.UtcNow,
