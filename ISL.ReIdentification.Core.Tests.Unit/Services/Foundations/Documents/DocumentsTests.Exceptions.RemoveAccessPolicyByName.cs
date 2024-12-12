@@ -29,8 +29,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                 innerException: dependencyValidationException);
 
             this.blobStorageBrokerMock.Setup(broker =>
-                broker.RemoveAccessPolicyByNameAsync(someContainer, somePolicyName))
-                    .ThrowsAsync(dependencyValidationException);
+                broker.RemoveAccessPolicyByNameAsync(
+                    someContainer, 
+                    somePolicyName))
+                .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask removeAccessPolicyByNameTask =

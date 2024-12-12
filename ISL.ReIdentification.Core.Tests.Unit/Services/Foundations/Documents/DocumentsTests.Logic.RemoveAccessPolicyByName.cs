@@ -17,12 +17,16 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             string randomPolicyName = GetRandomString();
 
             // when
-            await this.documentService.RemoveAccessPolicyByNameAsync(randomContainer, randomPolicyName);
+            await this.documentService.RemoveAccessPolicyByNameAsync(
+                randomContainer, 
+                randomPolicyName);
 
             // then
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.RemoveAccessPolicyByNameAsync(randomContainer, randomPolicyName),
-                    Times.Once);
+                broker.RemoveAccessPolicyByNameAsync(
+                    randomContainer, 
+                    randomPolicyName),
+                Times.Once);
 
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

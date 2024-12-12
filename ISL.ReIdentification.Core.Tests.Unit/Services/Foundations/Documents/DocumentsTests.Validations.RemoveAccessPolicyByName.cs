@@ -40,7 +40,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
 
             // when
             ValueTask removedPoliciesTask =
-                this.documentService.RemoveAccessPolicyByNameAsync(invalidContainer, invalidPolicyName);
+                this.documentService.RemoveAccessPolicyByNameAsync(
+                    invalidContainer, 
+                    invalidPolicyName);
 
             DocumentValidationException actualDocumentValidationException =
                 await Assert.ThrowsAsync<DocumentValidationException>(removedPoliciesTask.AsTask);
