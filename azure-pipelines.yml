@@ -31,7 +31,7 @@ jobs:
       cd /home/vsts/work/1/s/ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Client
       npm ci
       npx playwright install --with-deps
-      npx playwright test
+      TEST_USERNAME=ReIdentificationAutomatedTester@nelcsu.nhs.uk TEST_PASSWORD=$(TEST_PASSWORD) npx playwright test
 
 #- job: Build
 #  steps:
