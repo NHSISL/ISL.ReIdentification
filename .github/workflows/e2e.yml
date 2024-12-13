@@ -21,11 +21,7 @@ jobs:
           uses: actions/setup-dotnet@v3
           with:
             dotnet-version: 9.0.100-rc.2.24474.11
-        - name: Restore
-          run: dotnet restore
-          working-directory: ./ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Server
-        - name: Build
-          run: dotnet build --no-restore
+
           working-directory: ./ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Server
         - name: Set up Docker
           uses: docker/setup-docker-action@v4
@@ -36,7 +32,15 @@ jobs:
               -d \
               mcr.microsoft.com/mssql/server:2022-latest
         - name: Wait for SQL Server to start
-          run: dockerize -wait tcp://localhost:1433 -timeout 1m
+          run: |
+            apt-get update
+            apt-get install netcat
+            nc -w 60 localhost 1433
+        - name: Restore
+          run: dotnet restore
+          working-directory: ./ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Server
+        - name: Build
+          run: dotnet build --no-restore
         - name: Install dotnet ef
           run: dotnet tool install --global dotnet-ef
         - name: apply migrations
