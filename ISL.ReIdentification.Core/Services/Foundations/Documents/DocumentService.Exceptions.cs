@@ -133,6 +133,14 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             {
                 throw await CreateAndLogDependencyValidationExceptionAsync(storageProviderValidationException);
             }
+            catch (StorageProviderDependencyException storageProviderDependencyException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(storageProviderDependencyException);
+            }
+            catch (StorageProviderServiceException storageProviderServiceException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(storageProviderServiceException);
+            }
             catch (Exception exception)
             {
                 var failedServiceDocumentException =
