@@ -71,6 +71,10 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
         {
             ValidateStorageArgumentsOnRetrieveAccessPolicyByName(container, policyName);
 
+            List<string> policyNames = await this.blobStorageBroker.RetrieveAllAccessPoliciesFromContainerAsync(container);
+
+            ValidateAccessPolicyNameExists(policyName, policyNames);
+
             return await this.blobStorageBroker.RetrieveAccessPolicyByNameAsync(container, policyName);
         });
 
