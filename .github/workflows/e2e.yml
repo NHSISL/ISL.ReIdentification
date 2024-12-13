@@ -35,6 +35,11 @@ jobs:
               -p 1433:1433 --name sql1 --hostname sql1 \
               -d \
               mcr.microsoft.com/mssql/server:2022-latest
+        - name: Install dotnet ef
+          run: dotnet tool install --global dotnet-ef
+        - name: apply migrations
+          run: dotnet ef database update --connection "Server=localhost;Database=ISLReIdentification;User Id=sa;Password=1Password;"
+          working-directory: ./ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Server
         - name: Install dependencies
           run: npm ci
           working-directory: ./ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Client
