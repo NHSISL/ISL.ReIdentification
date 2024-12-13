@@ -45,8 +45,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             actualDocumentServiceException.Should().BeEquivalentTo(expectedDependencyValidationException);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.RetrieveAccessPolicyByNameAsync(someContainer, somePolicyName),
-                    Times.Once);
+                broker.RetrieveAccessPolicyByNameAsync(
+                    someContainer, 
+                    somePolicyName),
+                Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(expectedDependencyValidationException))),
@@ -86,8 +88,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             actualDocumentDependencyException.Should().BeEquivalentTo(expectedDocumentDependencyException);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.RetrieveAccessPolicyByNameAsync(someContainer, somePolicyName),
-                    Times.Once);
+                broker.RetrieveAccessPolicyByNameAsync(
+                    someContainer, 
+                    somePolicyName),
+                Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -129,8 +133,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             actualDocumentServiceException.Should().BeEquivalentTo(expectedDocumentServiceException);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.RetrieveAccessPolicyByNameAsync(someContainer, somePolicyName),
-                    Times.Once);
+                broker.RetrieveAccessPolicyByNameAsync(
+                    someContainer, 
+                    somePolicyName),
+                Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(

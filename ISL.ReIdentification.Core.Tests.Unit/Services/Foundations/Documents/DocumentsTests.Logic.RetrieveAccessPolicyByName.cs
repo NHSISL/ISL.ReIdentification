@@ -23,8 +23,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             Policy expectedAccessPolicies = outputAccessPolicy;
 
             this.blobStorageBrokerMock.Setup(broker =>
-                broker.RetrieveAccessPolicyByNameAsync(randomContainer, randomPolicyName))
-                    .ReturnsAsync(outputAccessPolicy);
+                broker.RetrieveAccessPolicyByNameAsync(
+                    randomContainer, 
+                    randomPolicyName))
+                .ReturnsAsync(outputAccessPolicy);
 
             // when
             Policy actualAccessPolicy = 
@@ -34,8 +36,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             actualAccessPolicy.Should().BeEquivalentTo(expectedAccessPolicies);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.RetrieveAccessPolicyByNameAsync(randomContainer, randomPolicyName),
-                    Times.Once);
+                broker.RetrieveAccessPolicyByNameAsync(
+                    randomContainer, 
+                    randomPolicyName),
+                Times.Once);
 
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
