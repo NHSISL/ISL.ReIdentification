@@ -12,14 +12,14 @@ const authFile = path.join(__dirname, '../playwright/.auth/user.json');
 
 setup('authenticate', async ({ page }) => {
     // Perform authentication steps. Replace these actions with your own.
-    await page.goto('https://localhost:4242/');
+    await page.goto('https://localhost:6073/');
     await page.getByRole('button', { name: 'Sign in' }).click();
     await page.getByLabel('yourusername@nelcsu.nhs.uk').fill(process.env.TEST_USERNAME);
     await page.getByRole('button', { name: 'Next' }).click();
     await page.getByLabel('Password').fill(atob(process.env.TEST_PASSWORD));
     await page.getByRole('button', { name: 'Sign in' }).click();
     await page.getByRole('button', { name: 'Yes' }).click();
-    await page.waitForURL('https://localhost:5173/');
+    await page.waitForURL('https://localhost:6073/');
     // Alternatively, you can wait until the page reaches a state where all cookies are set.
     await expect(page.getByRole('heading', { name: 'Welcome to Re-Identification' })).toBeVisible();
 

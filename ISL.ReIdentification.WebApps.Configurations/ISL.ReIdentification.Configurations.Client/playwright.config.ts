@@ -79,7 +79,7 @@ export default defineConfig({
     /* Run your local dev server before starting the tests */
     webServer: {
         command: "dotnet run --project ../ISL.ReIdentification.Configurations.Server/",
-        url: 'https://localhost:5173/',
+        url: 'https://localhost:6073/',
         reuseExistingServer: true,
         ignoreHTTPSErrors: true,
     },

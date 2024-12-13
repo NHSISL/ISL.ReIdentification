@@ -1,5 +1,5 @@
 import { FunctionComponent, useEffect } from "react"
-import { Table } from "react-bootstrap"
+import { Button, Table } from "react-bootstrap"
 import { PBIEvent } from "../../types/PBIEvent"
 
 type FakeReportPageProps = {
@@ -102,7 +102,9 @@ const FakeReportPage: FunctionComponent<FakeReportPageProps> = ({ getEmbeddedCom
             <h4>{td.testName}</h4>
             <Table striped bordered hover>
                 <tbody>
-                    {td.values.map((val) => <tr onClick={() => test(td, val)}><td>Test single record click: {val}</td></tr>
+                    {td.values.map((val) => <tr onClick={() => test(td, val)}><td>Test single record click: {val}</td>
+                        <Button onClick={() => test(td, val)}> {val}</Button>
+                    </tr>
 
                     )}
 

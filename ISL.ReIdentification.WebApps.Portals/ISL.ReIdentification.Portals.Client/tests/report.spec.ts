@@ -12,14 +12,32 @@ test('has reasonForReIdentify', async ({ page }) => {
     const reasonDropdown = page.getByRole('combobox');
     await reasonDropdown.selectOption({ label: "Direct patient care" });
 
-    const getNhsNumberButton = page.getByRole('button', { name: 'Launch Report' });
-    await getNhsNumberButton.click();
+    const getLaunchReportButton = page.getByRole('button', { name: 'Launch Report' });
+    await getLaunchReportButton.click();
 });
 
 test('has singleIdentityPopup', async ({ page }) => {
     const reasonDropdown = page.getByRole('combobox');
     await reasonDropdown.selectOption({ label: "Direct patient care" });
 
-    const getNhsNumberButton = page.getByRole('button', { name: 'Launch Report' });
-    await getNhsNumberButton.click();
+    const getLaunchReportButton = page.getByRole('button', { name: 'Launch Report' });
+    await getLaunchReportButton.click();
+
+    const getSingleIdentityButton = 
+        page.getByRole('cell', { name: 'Test single record click: 1111151000' });
+
+    await getSingleIdentityButton.click();
+});
+
+test('has identityColoumnWithMultipleRecords', async ({ page }) => {
+    const reasonDropdown = page.getByRole('combobox');
+    await reasonDropdown.selectOption({ label: "Direct patient care" });
+
+    const getLaunchReportButton = page.getByRole('button', { name: 'Launch Report' });
+    await getLaunchReportButton.click();
+
+    const getSingleIdentityButton = 
+        page.getByRole('cell', { name: 'Test multiple record click: 1111192000,1111209000' });
+
+    await getSingleIdentityButton.click();
 });
