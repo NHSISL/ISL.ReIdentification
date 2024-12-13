@@ -45,10 +45,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
                 (Rule: IsInvalid(policyName), Parameter: "PolicyName"));
         }
 
-        private static void ValidateStorageArgumentsOnRemoveAccessPolicies(string container)
-        {
+        private static void ValidateStorageArgumentsOnRemoveAccessPolicies(string container) =>
             Validate((Rule: IsInvalid(container), Parameter: "Container"));
-        }
 
         private static void ValidateStorageArgumentsOnRemoveAccessPolicyByName(string container, string policyName)
         {
@@ -57,15 +55,11 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
                 (Rule: IsInvalid(policyName), Parameter: "PolicyName"));
         }
 
-        private static void ValidateOnAddContainer(string container)
-        {
+        private static void ValidateOnAddContainer(string container) =>
             Validate((Rule: IsInvalid(container), Parameter: nameof(container)));
-        }
 
-        private static void ValidateOnListFilesInContainer(string container)
-        {
+        private static void ValidateOnListFilesInContainer(string container) =>
             Validate((Rule: IsInvalid(container), Parameter: "Container"));
-        }
 
         private static void ValidateOnAddFolder(string folderName, string container)
         {
