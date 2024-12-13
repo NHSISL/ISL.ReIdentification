@@ -32,7 +32,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                 values: "Text is invalid");
 
             invalidDocumentException.AddData(
-                key: "policyName",
+                key: "PolicyName",
                 values: "Text is invalid");
 
             var expectedDocumentValidationException = new DocumentValidationException(

@@ -15,6 +15,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
     public partial class DocumentService : IDocumentService
     {
         private delegate ValueTask ReturningNothingFunction();
+        private delegate ValueTask <Policy> ReturningPolicyFunction();
         private delegate ValueTask<List<string>> ReturningStringListFunction();
         private delegate ValueTask<List<Policy>> ReturningPolicyListFunction();
         private delegate ValueTask<string> ReturningStringFunction();
@@ -85,11 +86,11 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             }
         }
 
-        private async ValueTask<List<Policy>> TryCatch(ReturningPolicyListFunction returningStringListFunction)
+        private async ValueTask<List<Policy>> TryCatch(ReturningPolicyListFunction returningPolicyListFunction)
         {
             try
             {
-                return await returningStringListFunction();
+                return await returningPolicyListFunction();
             }
             catch (InvalidDocumentException invalidDocumentException)
             {
@@ -106,6 +107,27 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             catch (StorageProviderServiceException storageProviderServiceException)
             {
                 throw await CreateAndLogDependencyExceptionAsync(storageProviderServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedServiceDocumentException =
+                    new FailedServiceDocumentException(
+                        message: "Failed service document error occurred, contact support.",
+                        innerException: exception);
+
+                throw await CreateAndLogServiceExceptionAsync(failedServiceDocumentException);
+            }
+        }
+
+        private async ValueTask<Policy> TryCatch(ReturningPolicyFunction returningPolicyFunction)
+        {
+            try
+            {
+                return await returningPolicyFunction();
+            }
+            catch (InvalidDocumentException invalidDocumentException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(invalidDocumentException);
             }
             catch (Exception exception)
             {

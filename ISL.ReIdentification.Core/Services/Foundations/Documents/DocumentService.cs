@@ -66,8 +66,13 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             return await this.blobStorageBroker.RetrieveAllAccessPoliciesAsync(container);
         });
 
-        public async ValueTask<Policy> RetrieveAccessPolicyByNameAsync(string container, string policyName) =>
-        await this.blobStorageBroker.RetrieveAccessPolicyByNameAsync(container, policyName);
+        public ValueTask<Policy> RetrieveAccessPolicyByNameAsync(string container, string policyName) =>
+        TryCatch(async () =>
+        {
+            ValidateStorageArgumentsOnRetrieveAccessPolicyByName(container, policyName);
+
+            return await this.blobStorageBroker.RetrieveAccessPolicyByNameAsync(container, policyName);
+        });
 
         public ValueTask<List<string>> ListFilesInContainerAsync(string container) =>
         TryCatch(async () => 
