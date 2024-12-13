@@ -27,11 +27,14 @@ jobs:
         - name: Build
           run: dotnet build --no-restore
           working-directory: ./ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Server
-        #- name: Run
-        #  run: dotnet run --no-restore 
-        #  working-directory: ./ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Server
-        #- name: curl
-        #  run: curl -k https://localhost:5173
+        - name: Set up Docker
+          uses: docker/setup-docker-action@v4
+        - name: Install sql
+          run: |
+            sudo docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=1Password" \
+              -p 1433:1433 --name sql1 --hostname sql1 \
+              -d \
+              mcr.microsoft.com/mssql/server:2022-latest
         - name: Install dependencies
           run: npm ci
           working-directory: ./ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Client
