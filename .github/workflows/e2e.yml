@@ -6,7 +6,7 @@ on:
       #- main
   push:
     branches:
-      - users/davidhayes03/code-rub-playwright
+      - users/dcunliffe/playwright-ci
 
 jobs:
     test:
@@ -21,10 +21,6 @@ jobs:
           uses: actions/setup-dotnet@v3
           with:
             dotnet-version: 9.0.100-rc.2.24474.11
-        - name: Install certificates
-          run: dotnet dev-certs https --trust --verbose
-        - name: Trust Certs
-          run: export SSL_CERT_DIR=$HOME/.aspnet/dev-certs/trust:/usr/lib/ssl/certs
         - name: Restore
           run: dotnet restore
           working-directory: ./ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Server
@@ -42,8 +38,6 @@ jobs:
         - name: Install Playwright Browsers
           run: npx playwright install --with-deps
           working-directory: ./ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Client
-        - name: ls
-          run: ls $HOME/.aspnet/dev-certs/trust
         - name: Run Playwright tests
           working-directory: ./ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Client
           run: >
