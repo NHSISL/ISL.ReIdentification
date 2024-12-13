@@ -222,7 +222,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             foreach (IdentificationItem item in randomIdentificationRequest.IdentificationItems)
             {
                 var pseudoIdentifier = randomIdentificationRequest.IdentificationItems
-                    .FirstOrDefault(identificationItem => identificationItem.RowNumber == item.RowNumber).RowNumber;
+                    .FirstOrDefault(identificationItem => identificationItem.RowNumber == item.RowNumber).Identifier;
 
                 AccessAudit successAccessAudit = new AccessAudit
                 {
