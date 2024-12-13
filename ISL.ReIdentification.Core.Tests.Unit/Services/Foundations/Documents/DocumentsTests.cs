@@ -94,12 +94,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             {
                 PolicyName = "default",
                 Permissions = new List<string>
-        {
-            "Read",
-            "Write",
-            "List",
-            "Create"
-        }
+                {
+                    "Read",
+                    "Write",
+                    "List",
+                    "Create"
+                }
             };
         }
 

@@ -3,9 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using ISL.ReIdentification.Core.Models.Foundations.Documents.Exceptions;
 
 namespace ISL.ReIdentification.Core.Services.Foundations.Documents
@@ -47,16 +45,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
                 (Rule: IsInvalid(policyName), Parameter: "PolicyName"));
         }
 
-        private static void ValidateAccessPolicyNameExists(string policyName, IEnumerable<string> policyNames)
-        {
-            Validate(
-                (Rule: IsInvalidPolicyName(policyName, policyNames), Parameter: nameof(policyName)));
-        }
-
-        private static void ValidateStorageArgumentsOnRemoveAccessPolicies(string container)
-        {
+        private static void ValidateStorageArgumentsOnRemoveAccessPolicies(string container) =>
             Validate((Rule: IsInvalid(container), Parameter: "Container"));
-        }
 
         private static void ValidateStorageArgumentsOnRemoveAccessPolicyByName(string container, string policyName)
         {
@@ -65,15 +55,11 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
                 (Rule: IsInvalid(policyName), Parameter: "PolicyName"));
         }
 
-        private static void ValidateOnAddContainer(string container)
-        {
+        private static void ValidateOnAddContainer(string container) =>
             Validate((Rule: IsInvalid(container), Parameter: nameof(container)));
-        }
 
-        private static void ValidateOnListFilesInContainer(string container)
-        {
+        private static void ValidateOnListFilesInContainer(string container) =>
             Validate((Rule: IsInvalid(container), Parameter: "Container"));
-        }
 
         private static void ValidateOnAddFolder(string folderName, string container)
         {
@@ -147,11 +133,5 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
 
             invalidDocumentException.ThrowIfContainsErrors();
         }
-
-        private static dynamic IsInvalidPolicyName(string policyName, IEnumerable<string> policyNames) => new
-        {
-            Condition = !policyNames.Any(name => string.Equals(name, policyName, StringComparison.OrdinalIgnoreCase)),
-            Message = $"Access policy with name '{policyName}' was not found."
-        };
     }
 }

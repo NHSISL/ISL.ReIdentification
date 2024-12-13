@@ -129,7 +129,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                 var accessAuditId = await this.identifierBroker.GetIdentifierAsync();
 
                 var pseudoIdentifier = hasAccessIdentificationItems
-                    .FirstOrDefault(identificationItem => identificationItem.RowNumber == item.RowNumber).RowNumber;
+                    .FirstOrDefault(identificationItem => identificationItem.RowNumber == item.RowNumber).Identifier;
 
                 AccessAudit accessAudit = new AccessAudit
                 {
