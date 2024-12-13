@@ -35,6 +35,8 @@ jobs:
               -p 1433:1433 --name sql1 --hostname sql1 \
               -d \
               mcr.microsoft.com/mssql/server:2022-latest
+        - name: Wait for SQL Server to start
+          run: dockerize -wait tcp://localhost:1433 -timeout 1m
         - name: Install dotnet ef
           run: dotnet tool install --global dotnet-ef
         - name: apply migrations
