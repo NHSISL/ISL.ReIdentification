@@ -97,5 +97,48 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRetrieveAccessPolicyAsync()
+        {
+            // given
+            string someContainer = GetRandomString();
+            var somePolicyName = GetRandomString();
+            Exception someException = new Exception();
+
+            var failedServiceDocumentException = new FailedServiceDocumentException(
+                message: "Failed service document error occurred, contact support.",
+                innerException: someException);
+
+            var expectedDocumentServiceException = new DocumentServiceException(
+                message: "Document service error occurred, contact support.",
+                innerException: failedServiceDocumentException);
+
+            this.blobStorageBrokerMock.Setup(broker =>
+                broker.RetrieveAccessPolicyByNameAsync(someContainer, somePolicyName))
+                    .ThrowsAsync(someException);
+
+            // when
+            ValueTask<Policy> retrieveAccessPolicyTask =
+                this.documentService.RetrieveAccessPolicyByNameAsync(someContainer, somePolicyName);
+
+            DocumentServiceException actualDocumentServiceException =
+                await Assert.ThrowsAsync<DocumentServiceException>(retrieveAccessPolicyTask.AsTask);
+
+            // then
+            actualDocumentServiceException.Should().BeEquivalentTo(expectedDocumentServiceException);
+
+            this.blobStorageBrokerMock.Verify(broker =>
+                broker.RetrieveAccessPolicyByNameAsync(someContainer, somePolicyName),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedDocumentServiceException))),
+                        Times.Once);
+
+            this.blobStorageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
