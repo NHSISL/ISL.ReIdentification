@@ -27,6 +27,7 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Blob
 
         ValueTask<List<string>> RetrieveAllAccessPoliciesFromContainerAsync(string container);
         ValueTask<List<Policy>> RetrieveAllAccessPoliciesAsync(string container);
+        ValueTask<Policy> RetrieveAccessPolicyByNameAsync(string container, string policyName);
         ValueTask CreateAndAssignAccessPoliciesToContainerAsync(string container, List<string> policyNames);
         ValueTask RemoveAccessPoliciesFromContainerAsync(string container);
         ValueTask RemoveAccessPolicyByNameAsync(string container, string policyName);

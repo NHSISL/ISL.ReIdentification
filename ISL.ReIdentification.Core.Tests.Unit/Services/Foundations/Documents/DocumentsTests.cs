@@ -88,6 +88,21 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             },
         };
 
+        private static Policy GetPolicy()
+        {
+            return new Policy
+            {
+                PolicyName = "default",
+                Permissions = new List<string>
+        {
+            "Read",
+            "Write",
+            "List",
+            "Create"
+        }
+            };
+        }
+
         public class ZeroLengthStream : MemoryStream
         {
             public override long Length => 0;
