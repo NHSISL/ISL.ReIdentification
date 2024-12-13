@@ -17,7 +17,8 @@ namespace ISL.ReIdentification.Core
             {
                 new KeyValuePair<string, string>(
                     key: "ConnectionStrings:ReIdentificationConnection",
-                    value: "Server=localhost;Database=ISLReIdentification;User Id=sa;Password=1Password;"),
+                    value: "Server=(localdb)\\MSSQLLocalDB;Database=ReIdentification;" +
+                        "Trusted_Connection=True;MultipleActiveResultSets=true"),
             };
 
             var configurationBuilder = new ConfigurationBuilder()

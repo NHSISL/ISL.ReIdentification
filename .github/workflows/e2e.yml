@@ -11,7 +11,7 @@ on:
 jobs:
     test:
         timeout-minutes: 60
-        runs-on: ubuntu-latest
+        runs-on: windows-latest
         steps:
         - uses: actions/checkout@v4
         - uses: actions/setup-node@v4
@@ -21,17 +21,19 @@ jobs:
           uses: actions/setup-dotnet@v3
           with:
             dotnet-version: 9.0.100-rc.2.24474.11
-        - name: Set up Docker
-          uses: docker/setup-docker-action@v4
-        - name: Install sql
-          run: |
-            sudo docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=1Password" \
-              -p 1433:1433 --name sql1 --hostname sql1 \
-              -d \
-              mcr.microsoft.com/mssql/server:2022-latest
-        - name: Wait for SQL Server to start
-          run: |
-            sleep 60
+      # - name: Set up Docker
+      #   uses: docker/setup-docker-action@v4
+      # - name: Install sql
+      #   run: |
+      #     sudo docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=1Password" \
+      #       -p 1433:1433 --name sql1 --hostname sql1 \
+      #       -d \
+      #       mcr.microsoft.com/mssql/server:2022-latest
+      # - name: Wait for SQL Server to start
+      #   run: |
+      #     sudo docker ps
+      #     sleep 60
+      #     sudo docker ps
         - name: Restore
           run: dotnet restore
           working-directory: ./ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Server
