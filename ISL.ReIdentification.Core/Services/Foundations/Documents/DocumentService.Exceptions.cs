@@ -95,6 +95,10 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             {
                 throw await CreateAndLogValidationExceptionAsync(invalidDocumentException);
             }
+            catch (StorageProviderValidationException storageProviderValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(storageProviderValidationException);
+            }
             catch (Exception exception)
             {
                 var failedServiceDocumentException =
