@@ -31,9 +31,7 @@ jobs:
               mcr.microsoft.com/mssql/server:2022-latest
         - name: Wait for SQL Server to start
           run: |
-            sudo apt-get update
-            sudo apt-get install netcat
-            sudo nc -w 60 localhost 1433
+            sleep 60
         - name: Restore
           run: dotnet restore
           working-directory: ./ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Server
