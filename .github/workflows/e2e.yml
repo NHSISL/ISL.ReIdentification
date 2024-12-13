@@ -21,8 +21,6 @@ jobs:
           uses: actions/setup-dotnet@v3
           with:
             dotnet-version: 9.0.100-rc.2.24474.11
-
-          working-directory: ./ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Server
         - name: Set up Docker
           uses: docker/setup-docker-action@v4
         - name: Install sql
@@ -41,6 +39,7 @@ jobs:
           working-directory: ./ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Server
         - name: Build
           run: dotnet build --no-restore
+          working-directory: ./ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Server
         - name: Install dotnet ef
           run: dotnet tool install --global dotnet-ef
         - name: apply migrations
