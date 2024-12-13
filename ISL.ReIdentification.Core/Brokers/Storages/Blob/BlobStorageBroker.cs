@@ -60,7 +60,7 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Blob
             await this.storageAbstractionProvider.RetrieveAllAccessPoliciesFromContainerAsync(container);
 
         public async ValueTask<List<Policy>> RetrieveAllAccessPoliciesAsync(string container) =>
-        throw new NotImplementedException();
+            throw new NotImplementedException();
 
         public async ValueTask<Policy> RetrieveAccessPolicyByNameAsync(string container, string policyName) =>
         throw new NotFiniteNumberException();
