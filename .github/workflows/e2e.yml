@@ -39,7 +39,7 @@ jobs:
           run: dotnet tool install --global dotnet-ef
         - name: apply migrations
           run: dotnet ef database update --connection "Server=localhost;Database=ISLReIdentification;User Id=sa;Password=1Password;"
-          working-directory: ./ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Core
+          working-directory: ./ISL.ReIdentification.Core
         - name: Install dependencies
           run: npm ci
           working-directory: ./ISL.ReIdentification.WebApps.Portals/ISL.ReIdentification.Portals.Client
