@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ISL.Providers.Storages.Abstractions.Models;
 using ISL.Providers.Storages.Abstractions.Models.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.Documents.Exceptions;
 using Xeptions;
@@ -15,6 +16,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
     {
         private delegate ValueTask ReturningNothingFunction();
         private delegate ValueTask<List<string>> ReturningStringListFunction();
+        private delegate ValueTask<List<Policy>> ReturningPolicyListFunction();
         private delegate ValueTask<string> ReturningStringFunction();
 
         private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
@@ -51,6 +53,39 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
         }
 
         private async ValueTask<List<string>> TryCatch(ReturningStringListFunction returningStringListFunction)
+        {
+            try
+            {
+                return await returningStringListFunction();
+            }
+            catch (InvalidDocumentException invalidDocumentException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(invalidDocumentException);
+            }
+            catch (StorageProviderValidationException storageProviderValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(storageProviderValidationException);
+            }
+            catch (StorageProviderDependencyException storageProviderDependencyException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(storageProviderDependencyException);
+            }
+            catch (StorageProviderServiceException storageProviderServiceException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(storageProviderServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedServiceDocumentException =
+                    new FailedServiceDocumentException(
+                        message: "Failed service document error occurred, contact support.",
+                        innerException: exception);
+
+                throw await CreateAndLogServiceExceptionAsync(failedServiceDocumentException);
+            }
+        }
+
+        private async ValueTask<List<Policy>> TryCatch(ReturningPolicyListFunction returningStringListFunction)
         {
             try
             {
