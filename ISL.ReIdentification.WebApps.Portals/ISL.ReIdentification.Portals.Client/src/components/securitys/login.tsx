@@ -25,7 +25,11 @@ const Login: React.FC =  () => {
                 </div>
             </UnauthenticatedTemplate>
             <AuthenticatedTemplate>
-                <NavDropdown title={activeAccount?.username} id="collasible-nav-dropdown" className="me-3">
+                <NavDropdown
+                    title={activeAccount?.username}
+                    id="collasible-nav-dropdown"
+                    className="me-3"
+                    style={{ fontSize: window.innerWidth >= 768 && window.innerWidth <= 1024 ? '12px' : 'inherit' }}>
                     <NavDropdown.Item onClick={handleLogoutRedirect}>Sign out</NavDropdown.Item>
                     <UserProfile />
                 </NavDropdown>

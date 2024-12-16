@@ -25,8 +25,11 @@ const NavbarComponent: React.FC<NavbarComponentProps> = ({ toggleSidebar, showMe
                 <Navbar.Brand href="/" className="me-auto ms-3 d-flex align-items-center">
                     <img src="/LHDLogoRound.png" alt="London Data Service logo" height="30" width="30" />
                     <span className="d-none d-md-inline" style={{ marginLeft: "10px" }}>
-                        LDS - Re-Identification Portal 
-                        {configuration?.environment !== "Live" && <>&nbsp;({configuration?.environment})</>}  
+                        LDS Portal
+                        <span className="d-none d-lg-inline">
+                            {window.innerWidth < 768 || window.innerWidth > 1024 ? " - Re-Identification Portal" : ""}
+                            {window.innerWidth < 768 || window.innerWidth > 1024 && configuration?.environment !== "Live" && <>&nbsp;({configuration?.environment})</>}
+                        </span>
                     </span>
                 </Navbar.Brand>
                 <Navbar.Text>
