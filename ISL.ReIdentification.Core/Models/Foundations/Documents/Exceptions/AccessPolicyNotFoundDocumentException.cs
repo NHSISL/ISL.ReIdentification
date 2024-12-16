@@ -6,10 +6,11 @@ using Xeptions;
 
 namespace ISL.ReIdentification.Core.Models.Foundations.Documents.Exceptions
 {
-    public class InvalidDocumentException : Xeption
+    public class AccessPolicyNotFoundDocumentException : Xeption
     {
-        public InvalidDocumentException(string message)
+        public AccessPolicyNotFoundDocumentException(string message)
             : base(message)
         { }
     }
+
 }

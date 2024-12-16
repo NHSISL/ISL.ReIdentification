@@ -3,7 +3,9 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using ISL.ReIdentification.Core.Models.Foundations.Documents.Exceptions;
 
 namespace ISL.ReIdentification.Core.Services.Foundations.Documents
@@ -69,8 +71,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
         }
 
         private static void ValidateOnGetDownloadLink(
-            string folderName, 
-            string container, 
+            string folderName,
+            string container,
             DateTimeOffset dateTimeOffset)
         {
             Validate(
@@ -80,9 +82,9 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
         }
 
         private static void ValidateOnCreateDirectorySasToken(
-            string container, 
-            string directoryPath, 
-            string accessPolicyIdentifier, 
+            string container,
+            string directoryPath,
+            string accessPolicyIdentifier,
             DateTimeOffset expiresOn)
         {
             Validate(
@@ -90,6 +92,15 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
                 (Rule: IsInvalid(directoryPath), Parameter: nameof(directoryPath)),
                 (Rule: IsInvalid(accessPolicyIdentifier), Parameter: nameof(accessPolicyIdentifier)),
                 (Rule: IsInvalid(expiresOn), Parameter: nameof(expiresOn)));
+        }
+
+        private static void ValidateAccessPolicyExists(string policyName, List<string> policyNames)
+        {
+            if (!(policyNames.Any(policy => policy == policyName)))
+            {
+                throw new AccessPolicyNotFoundDocumentException(
+                    message: "Access policy with the provided name was not found on this container.");
+            }
         }
 
         private static dynamic IsInvalid(DateTimeOffset dateTimeOffset) => new
@@ -118,7 +129,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidDocumentException = new InvalidDocumentException(
+            var invalidDocumentException = new InvalidArgumentDocumentException(
                 message: "Invalid document. Please correct the errors and try again.");
 
             foreach ((dynamic rule, string parameter) in validations)

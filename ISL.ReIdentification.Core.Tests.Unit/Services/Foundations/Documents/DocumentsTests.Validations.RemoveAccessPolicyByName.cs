@@ -23,7 +23,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             string invalidContainer = invalidString;
             string invalidPolicyName = invalidString;
 
-            var invalidDocumentException = new InvalidDocumentException(
+            var invalidDocumentException = new InvalidArgumentDocumentException(
                 message: "Invalid document. Please correct the errors and try again.");
 
             invalidDocumentException.AddData(

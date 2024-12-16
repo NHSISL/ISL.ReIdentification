@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Threading.Tasks;
 using ISL.Providers.Storages.Abstractions.Models;
@@ -62,7 +61,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
         TryCatch(async () =>
         {
             ValidateStorageArgumentsOnRetrieveAccessPolicies(container);
-            
+
             return await this.blobStorageBroker.RetrieveAllAccessPoliciesAsync(container);
         });
 
@@ -71,15 +70,16 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
         {
             ValidateStorageArgumentsOnRetrieveAccessPolicyByName(container, policyName);
 
-            List<string> policyNames = await this.blobStorageBroker.RetrieveAllAccessPoliciesFromContainerAsync(container);
+            List<string> policyNames = await this.blobStorageBroker
+                .RetrieveAllAccessPoliciesFromContainerAsync(container);
 
-            ValidateAccessPolicyNameExists(policyName, policyNames);
+            ValidateAccessPolicyExists(policyName, policyNames);
 
             return await this.blobStorageBroker.RetrieveAccessPolicyByNameAsync(container, policyName);
         });
 
         public ValueTask<List<string>> ListFilesInContainerAsync(string container) =>
-        TryCatch(async () => 
+        TryCatch(async () =>
         {
             ValidateOnListFilesInContainer(container);
 
@@ -118,14 +118,14 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
         TryCatch(async () =>
         {
             ValidateOnGetDownloadLink(fileName, container, expiresOn);
-            
+
             return await this.blobStorageBroker.GetDownloadLinkAsync(fileName, container, expiresOn);
         });
 
         public ValueTask<string> CreateDirectorySasTokenAsync(
-            string container, 
-            string directoryPath, 
-            string accessPolicyIdentifier, 
+            string container,
+            string directoryPath,
+            string accessPolicyIdentifier,
             DateTimeOffset expiresOn) =>
         TryCatch(async () =>
         {

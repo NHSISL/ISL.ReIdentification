@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.ReIdentification.Core.Models.Foundations.Documents.Exceptions;
@@ -22,7 +21,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             // given
             string invalidContainer = invalidString;
 
-            var invalidDocumentException = new InvalidDocumentException(
+            var invalidDocumentException = new InvalidArgumentDocumentException(
                 message: "Invalid document. Please correct the errors and try again.");
 
             invalidDocumentException.AddData(

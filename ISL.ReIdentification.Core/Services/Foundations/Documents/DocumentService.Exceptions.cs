@@ -15,7 +15,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
     public partial class DocumentService : IDocumentService
     {
         private delegate ValueTask ReturningNothingFunction();
-        private delegate ValueTask <Policy> ReturningPolicyFunction();
+        private delegate ValueTask<Policy> ReturningPolicyFunction();
         private delegate ValueTask<List<string>> ReturningStringListFunction();
         private delegate ValueTask<List<Policy>> ReturningPolicyListFunction();
         private delegate ValueTask<string> ReturningStringFunction();
@@ -26,7 +26,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             {
                 await returningNothingFunction();
             }
-            catch (InvalidDocumentException invalidDocumentException)
+            catch (InvalidArgumentDocumentException invalidDocumentException)
             {
                 throw await CreateAndLogValidationExceptionAsync(invalidDocumentException);
             }
@@ -59,7 +59,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             {
                 return await returningStringListFunction();
             }
-            catch (InvalidDocumentException invalidDocumentException)
+            catch (InvalidArgumentDocumentException invalidDocumentException)
             {
                 throw await CreateAndLogValidationExceptionAsync(invalidDocumentException);
             }
@@ -92,7 +92,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             {
                 return await returningPolicyListFunction();
             }
-            catch (InvalidDocumentException invalidDocumentException)
+            catch (InvalidArgumentDocumentException invalidDocumentException)
             {
                 throw await CreateAndLogValidationExceptionAsync(invalidDocumentException);
             }
@@ -125,9 +125,13 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             {
                 return await returningPolicyFunction();
             }
-            catch (InvalidDocumentException invalidDocumentException)
+            catch (InvalidArgumentDocumentException invalidDocumentException)
             {
                 throw await CreateAndLogValidationExceptionAsync(invalidDocumentException);
+            }
+            catch (AccessPolicyNotFoundDocumentException accessPolicyNotFoundDocumentException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(accessPolicyNotFoundDocumentException);
             }
             catch (StorageProviderValidationException storageProviderValidationException)
             {
@@ -158,7 +162,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             {
                 return await returningStringFunction();
             }
-            catch (InvalidDocumentException invalidDocumentException)
+            catch (InvalidArgumentDocumentException invalidDocumentException)
             {
                 throw await CreateAndLogValidationExceptionAsync(invalidDocumentException);
             }
