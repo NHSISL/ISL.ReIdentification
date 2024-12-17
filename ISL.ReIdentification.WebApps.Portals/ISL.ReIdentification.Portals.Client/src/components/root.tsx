@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import SideBarComponent from "./layouts/sidebar";
 import FooterComponent from "./layouts/footer";
 import LoginUnAuthorisedComponent from "./layouts/loginUnauth";
+import { UserAgreementModal } from "./userAgreements/userAgreements";
 
 export default function Root() {
     const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -51,6 +52,7 @@ export default function Root() {
                         </div>
                     </div>
                 </div>
+                <UserAgreementModal />
             </AuthenticatedTemplate>
 
             <UnauthenticatedTemplate>
