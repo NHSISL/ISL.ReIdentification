@@ -46,9 +46,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             await this.blobStorageBroker.DeleteFileAsync(fileName, container);
         });
 
-        public ValueTask<string> GetDownloadLinkAsync(string fileName, string container) =>
-           throw new NotImplementedException();
-
         public ValueTask CreateAndAssignAccessPoliciesAsync(string container, List<Policy> policies) =>
             throw new NotImplementedException();
 
