@@ -21,13 +21,19 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             string inputContainer = randomContainer;
             string randomPolicyName = GetRandomString();
             string inputPolicyName = randomPolicyName;
-            Policy randomPolicy = GetPolicy(inputPolicyName);
-            Policy outputPolicy = randomPolicy;
-            Policy expectedPolicy = outputPolicy;
+            dynamic randomPolicyProperties = CreateRandomPolicyProperties(inputPolicyName);
 
-            AccessPolicy randomAccessPolicy = GetAccessPolicy(inputPolicyName);
-            AccessPolicy outputAccessPolicy = randomAccessPolicy;
-            AccessPolicy expectedAccessPolicy = outputAccessPolicy;
+            Policy outputPolicy = new Policy
+            {
+                PolicyName = randomPolicyProperties.PolicyName,
+                Permissions = randomPolicyProperties.Permissions,
+            };
+
+            AccessPolicy expectedAccessPolicy = new AccessPolicy
+            {
+                PolicyName = randomPolicyProperties.PolicyName,
+                Permissions = randomPolicyProperties.Permissions,
+            };
 
             List<string> outputPolicyNames = new List<string>
             {

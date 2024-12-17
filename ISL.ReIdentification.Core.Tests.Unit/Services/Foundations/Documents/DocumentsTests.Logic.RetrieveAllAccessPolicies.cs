@@ -26,7 +26,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                     .ReturnsAsync(outputAccessPolicies);
 
             // when
-            List<Policy> actualAccessPolicies = 
+            List<Policy> actualAccessPolicies =
                 await this.documentService.RetrieveAllAccessPoliciesAsync(randomContainer);
 
             // then
