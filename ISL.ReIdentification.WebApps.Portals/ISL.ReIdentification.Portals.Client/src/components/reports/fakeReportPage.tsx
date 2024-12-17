@@ -66,8 +66,8 @@ const FakeReportPage: FunctionComponent<FakeReportPageProps> = ({ getEmbeddedCom
         { testName: 'identity column with multiple records', type: 'identity', target: 'fake', values: ['1111192000', '1111209000'] },
         { testName: 'single value columnm', type: 'value', target: 'fake', values: ['1111129000'] },
         { testName: 'value column with multiple records', type: 'value', target: 'fake', values: ['1111131000', '1111112000'] },
-        { testName: 'identity column without valid key', type: 'identity', target: 'fake', values: ['1111128000', '1111209000'] },
-        { testName: 'value column without valid column', type: 'value', target: 'fake', values: ['1111137000', '1111200000'] },
+        { testName: 'identity column without valid key', type: 'identity', target: 'notafake', values: ['1111128000', '1111209000'] },
+        { testName: 'value column without valid column', type: 'value', target: 'notafake', values: ['1111137000', '1111200000'] },
     ]
 
     const test = (testData: TestData, value: string) => {
