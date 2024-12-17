@@ -27,6 +27,8 @@ test('has singleIdentityPopup', async ({ page }) => {
         page.getByRole('cell', { name: 'Test single record click: 1111151000' });
 
     await getSingleIdentityButton.click();
+
+    await page.waitForTimeout(5000); // 5-second wait
 });
 
 test('has identityColoumnWithMultipleRecords', async ({ page }) => {
