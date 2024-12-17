@@ -38,6 +38,7 @@ using ISL.ReIdentification.Core.Models.Foundations.Lookups;
 using ISL.ReIdentification.Core.Models.Foundations.OdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.PdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
+using ISL.ReIdentification.Core.Models.Foundations.UserAgreements;
 using ISL.ReIdentification.Core.Models.Orchestrations.Persists;
 using ISL.ReIdentification.Core.Services.Coordinations.Identifications;
 using ISL.ReIdentification.Core.Services.Foundations.AccessAudits;
@@ -50,6 +51,7 @@ using ISL.ReIdentification.Core.Services.Foundations.OdsDatas;
 using ISL.ReIdentification.Core.Services.Foundations.PdsDatas;
 using ISL.ReIdentification.Core.Services.Foundations.ReIdentifications;
 using ISL.ReIdentification.Core.Services.Foundations.UserAccesses;
+using ISL.ReIdentification.Core.Services.Foundations.UserAgreements;
 using ISL.ReIdentification.Core.Services.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Services.Orchestrations.Identifications;
 using ISL.ReIdentification.Core.Services.Orchestrations.Persists;
@@ -224,6 +226,7 @@ namespace ISL.ReIdentification.Portals.Server
             builder.EntitySet<OdsData>("OdsData");
             builder.EntitySet<PdsData>("PdsData");
             builder.EntitySet<AccessAudit>("AccessAudits");
+            builder.EntitySet<UserAgreement>("UserAgreements");
             builder.EnableLowerCamelCase();
 
             return builder.GetEdmModel();
@@ -304,6 +307,7 @@ namespace ISL.ReIdentification.Portals.Server
             services.AddTransient<INotificationService, NotificationService>();
             services.AddTransient<IReIdentificationService, ReIdentificationService>();
             services.AddTransient<IDocumentService, DocumentService>();
+            services.AddTransient<IUserAgreementService, UserAgreementService>();
         }
 
         private static void AddProcessingServices(IServiceCollection services)
