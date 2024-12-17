@@ -24,6 +24,7 @@ using ISL.ReIdentification.Core.Brokers.Identifiers;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Notifications;
 using ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications;
+using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
 using ISL.ReIdentification.Core.Models.Orchestrations.Persists;
 using ISL.ReIdentification.Core.Services.Coordinations.Identifications;
 using ISL.ReIdentification.Core.Services.Foundations.AccessAudits;
@@ -100,9 +101,16 @@ internal class Program
             ApiKey = notificationConfigurations.ApiKey
         };
 
-        AzureBlobStoreConfigurations azureBlobStoreConfigurations = configuration
-            .GetSection("AzureBlobStoreConfigurations")
-                .Get<AzureBlobStoreConfigurations>();
+        ProjectStorageConfiguration projectStorageConfiguration = configuration
+            .GetSection("projectStorageConfiguration")
+                .Get<ProjectStorageConfiguration>();
+
+        AzureBlobStoreConfigurations azureBlobStoreConfigurations = new AzureBlobStoreConfigurations
+        {
+            ServiceUri = projectStorageConfiguration.ServiceUri,
+            StorageAccountName = projectStorageConfiguration.StorageAccountName,
+            StorageAccountAccessKey = projectStorageConfiguration.StorageAccountAccessKey
+        };
 
         services.AddSingleton(notificationConfigurations);
         services.AddSingleton(notifyConfigurations);
