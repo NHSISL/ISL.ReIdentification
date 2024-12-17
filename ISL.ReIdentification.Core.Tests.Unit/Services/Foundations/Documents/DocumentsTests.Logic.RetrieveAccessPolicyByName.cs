@@ -20,8 +20,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             string randomContainer = GetRandomString();
             string inputContainer = randomContainer;
             string randomPolicyName = GetRandomString();
-            string inputPolicyName = randomPolicyName;
-            dynamic randomPolicyProperties = CreateRandomPolicyProperties(inputPolicyName);
+            dynamic randomPolicyProperties = CreateRandomPolicyProperties();
+            string inputPolicyName = randomPolicyProperties.PolicyName;
 
             Policy outputPolicy = new Policy
             {

@@ -124,7 +124,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
         {
             try
             {
-                return await returningPolicyFunction();
+                return await returningAccessPolicyFunction();
             }
             catch (InvalidDocumentException invalidDocumentException)
             {

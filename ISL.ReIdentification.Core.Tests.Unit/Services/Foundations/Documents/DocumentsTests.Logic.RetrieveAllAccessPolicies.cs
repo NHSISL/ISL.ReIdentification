@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.Providers.Storages.Abstractions.Models;
+using ISL.ReIdentification.Core.Models.Foundations.Documents;
 using Moq;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
@@ -17,16 +18,34 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
         {
             // given
             string randomContainer = GetRandomString();
-            List<Policy> randomAccessPolicies = GetPolicies();
-            List<Policy> outputAccessPolicies = randomAccessPolicies;
-            List<Policy> expectedAccessPolicies = outputAccessPolicies;
+            List<dynamic> randomPolicyPropertiesList = CreateRandomPolicyPropertiesList();
+            List<Policy> outputPolicies = new List<Policy>();
+            List<AccessPolicy> expectedAccessPolicies = new List<AccessPolicy>();
+
+            foreach (dynamic policyProperties in randomPolicyPropertiesList)
+            {
+                Policy policy = new Policy
+                {
+                    PolicyName = policyProperties.PolicyName,
+                    Permissions = policyProperties.Permissions,
+                };
+
+                AccessPolicy accessPolicy = new AccessPolicy
+                {
+                    PolicyName = policyProperties.PolicyName,
+                    Permissions = policyProperties.Permissions,
+                };
+
+                outputPolicies.Add(policy);
+                expectedAccessPolicies.Add(accessPolicy);
+            }
 
             this.blobStorageBrokerMock.Setup(broker =>
                 broker.RetrieveAllAccessPoliciesAsync(randomContainer))
-                    .ReturnsAsync(outputAccessPolicies);
+                    .ReturnsAsync(outputPolicies);
 
             // when
-            List<Policy> actualAccessPolicies =
+            List<AccessPolicy> actualAccessPolicies =
                 await this.documentService.RetrieveAllAccessPoliciesAsync(randomContainer);
 
             // then

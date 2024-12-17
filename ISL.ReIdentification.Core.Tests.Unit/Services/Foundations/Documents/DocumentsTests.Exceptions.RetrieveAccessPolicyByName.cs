@@ -5,7 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using ISL.Providers.Storages.Abstractions.Models;
+using ISL.ReIdentification.Core.Models.Foundations.Documents;
 using ISL.ReIdentification.Core.Models.Foundations.Documents.Exceptions;
 using Moq;
 using Xeptions;
@@ -32,7 +32,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                     .ThrowsAsync(dependencyValidationException);
 
             // when
-            ValueTask<Policy> retrieveAccessPolicyTask =
+            ValueTask<AccessPolicy> retrieveAccessPolicyTask =
                 this.documentService.RetrieveAccessPolicyByNameAsync(someContainer, somePolicyName);
 
             DocumentDependencyValidationException actualDocumentServiceException =
@@ -71,7 +71,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                     .ThrowsAsync(dependencyException);
 
             // when
-            ValueTask<Policy> retrieveAccessPolicyTask =
+            ValueTask<AccessPolicy> retrieveAccessPolicyTask =
                 this.documentService.RetrieveAccessPolicyByNameAsync(someContainer, somePolicyName);
 
             DocumentDependencyException actualDocumentDependencyException =
@@ -113,7 +113,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                     .ThrowsAsync(someException);
 
             // when
-            ValueTask<Policy> retrieveAccessPolicyTask =
+            ValueTask<AccessPolicy> retrieveAccessPolicyTask =
                 this.documentService.RetrieveAccessPolicyByNameAsync(someContainer, somePolicyName);
 
             DocumentServiceException actualDocumentServiceException =

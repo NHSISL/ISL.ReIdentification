@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Linq.Expressions;
 using ISL.Providers.Storages.Abstractions.Models;
 using ISL.Providers.Storages.Abstractions.Models.Exceptions;
@@ -133,12 +134,17 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             };
         }
 
-        private static dynamic CreateRandomPolicyProperties(string policyName) =>
+        private static dynamic CreateRandomPolicyProperties() =>
             new
             {
-                PolicyName = policyName,
+                PolicyName = GetRandomString(),
                 Permissions = GetRandomPermissionsList(),
             };
+
+        private static List<dynamic> CreateRandomPolicyPropertiesList() =>
+            Enumerable.Range(1, GetRandomNumber())
+                .Select(item => CreateRandomPolicyProperties())
+                    .ToList();
 
         private static List<string> GetRandomPermissionsList()
         {
