@@ -3,7 +3,6 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.Providers.Storages.Abstractions.Models.Exceptions;
@@ -16,26 +15,26 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
     public partial class DocumentsTests
     {
         [Fact]
-        public async Task ShouldThrowDependencyValidationExceptionOnRemoveAllAccessPoliciesFromContainerAsync()
+        public async Task ShouldThrowDependencyValidationExceptionOnRemoveAllAccessPoliciesAsync()
         {
             // given
             string someContainer = GetRandomString();
 
             var storageProviderValidationException = new StorageProviderValidationException(
                 message: "Storage provider validation errors occurred, please try again.",
-                innerException: new Xeption() );
-                
+                innerException: new Xeption());
+
             var expectedDocumentServiceException = new DocumentDependencyValidationException(
                 message: "Document dependency validation error occurred, please fix errors and try again.",
                 innerException: storageProviderValidationException);
 
             this.blobStorageBrokerMock.Setup(broker =>
-                broker.RemoveAccessPoliciesFromContainerAsync(someContainer))
+                broker.RemoveAllAccessPoliciesAsync(someContainer))
                     .ThrowsAsync(storageProviderValidationException);
 
             // when
             ValueTask removeAccessPolicyTask =
-                this.documentService.RemoveAllAccessPoliciesFromContainerAsync(someContainer);
+                this.documentService.RemoveAllAccessPoliciesAsync(someContainer);
 
             DocumentDependencyValidationException actualDocumentServiceException =
                 await Assert.ThrowsAsync<DocumentDependencyValidationException>(removeAccessPolicyTask.AsTask);
@@ -44,7 +43,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             actualDocumentServiceException.Should().BeEquivalentTo(expectedDocumentServiceException);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.RemoveAccessPoliciesFromContainerAsync(someContainer),
+                broker.RemoveAllAccessPoliciesAsync(someContainer),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -58,7 +57,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
 
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
-        public async Task ShouldThrowDocumentDependencyExceptionOnRemoveAllAccessPoliciesFromContainerAsync(Xeption dependencyException)
+        public async Task ShouldThrowDocumentDependencyExceptionOnRemoveAllAccessPoliciesAsync(Xeption dependencyException)
         {
             // given
             string someContainer = GetRandomString();
@@ -68,12 +67,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                 innerException: dependencyException);
 
             this.blobStorageBrokerMock.Setup(broker =>
-                broker.RemoveAccessPoliciesFromContainerAsync(someContainer))
+                broker.RemoveAllAccessPoliciesAsync(someContainer))
                     .ThrowsAsync(dependencyException);
 
             // when
             ValueTask removeAccessPolicyTask =
-                this.documentService.RemoveAllAccessPoliciesFromContainerAsync(someContainer);
+                this.documentService.RemoveAllAccessPoliciesAsync(someContainer);
 
             DocumentDependencyException actualDocumentDependencyException =
                 await Assert.ThrowsAsync<DocumentDependencyException>(removeAccessPolicyTask.AsTask);
@@ -82,7 +81,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             actualDocumentDependencyException.Should().BeEquivalentTo(expectedDocumentDependencyException);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.RemoveAccessPoliciesFromContainerAsync(someContainer),
+                broker.RemoveAllAccessPoliciesAsync(someContainer),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -95,7 +94,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
         }
 
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnRemoveAllAccessPoliciesFromContainerAsync()
+        public async Task ShouldThrowServiceExceptionOnRemoveAllAccessPoliciesAsync()
         {
             // given
             string someContainer = GetRandomString();
@@ -110,12 +109,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                 innerException: failedServiceDocumentException);
 
             this.blobStorageBrokerMock.Setup(broker =>
-                broker.RemoveAccessPoliciesFromContainerAsync(someContainer))
+                broker.RemoveAllAccessPoliciesAsync(someContainer))
                     .ThrowsAsync(someException);
 
             // when
             ValueTask removeAccessPolicyTask =
-                this.documentService.RemoveAllAccessPoliciesFromContainerAsync(someContainer);
+                this.documentService.RemoveAllAccessPoliciesAsync(someContainer);
 
             DocumentServiceException actualDocumentServiceException =
                 await Assert.ThrowsAsync<DocumentServiceException>(removeAccessPolicyTask.AsTask);
@@ -124,7 +123,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             actualDocumentServiceException.Should().BeEquivalentTo(expectedDocumentServiceException);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.RemoveAccessPoliciesFromContainerAsync(someContainer),
+                broker.RemoveAllAccessPoliciesAsync(someContainer),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

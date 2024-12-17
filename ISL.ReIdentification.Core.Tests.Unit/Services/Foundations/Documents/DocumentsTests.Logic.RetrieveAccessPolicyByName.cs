@@ -17,29 +17,44 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
         {
             // given
             string randomContainer = GetRandomString();
+            string inputContainer = randomContainer;
             string randomPolicyName = GetRandomString();
-            Policy randomAccessPolicy = GetPolicy();
+            string inputPolicyName = randomPolicyName;
+            Policy randomAccessPolicy = GetPolicy(inputPolicyName);
             Policy outputAccessPolicy = randomAccessPolicy;
-            Policy expectedAccessPolicies = outputAccessPolicy;
+            Policy expectedAccessPolicy = outputAccessPolicy;
+
+            List<string> outputPolicyNames = new List<string>
+            {
+                inputPolicyName,
+            };
+
+            this.blobStorageBrokerMock.Setup(broker =>
+                broker.RetrieveListOfAllAccessPoliciesAsync(inputContainer))
+                    .ReturnsAsync(outputPolicyNames);
 
             this.blobStorageBrokerMock.Setup(broker =>
                 broker.RetrieveAccessPolicyByNameAsync(
-                    randomContainer, 
-                    randomPolicyName))
-                .ReturnsAsync(outputAccessPolicy);
+                    inputContainer,
+                    inputPolicyName))
+                        .ReturnsAsync(outputAccessPolicy);
 
             // when
-            Policy actualAccessPolicy = 
-                await this.documentService.RetrieveAccessPolicyByNameAsync(randomContainer, randomPolicyName);
+            Policy actualAccessPolicy =
+                await this.documentService.RetrieveAccessPolicyByNameAsync(inputContainer, inputPolicyName);
 
             // then
-            actualAccessPolicy.Should().BeEquivalentTo(expectedAccessPolicies);
+            actualAccessPolicy.Should().BeEquivalentTo(expectedAccessPolicy);
+
+            this.blobStorageBrokerMock.Verify(broker =>
+                broker.RetrieveListOfAllAccessPoliciesAsync(inputContainer),
+                    Times.Once);
 
             this.blobStorageBrokerMock.Verify(broker =>
                 broker.RetrieveAccessPolicyByNameAsync(
-                    randomContainer, 
-                    randomPolicyName),
-                Times.Once);
+                    inputContainer,
+                    inputPolicyName),
+                        Times.Once);
 
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

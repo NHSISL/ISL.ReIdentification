@@ -49,12 +49,15 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
         public ValueTask<string> GetDownloadLinkAsync(string fileName, string container) =>
            throw new NotImplementedException();
 
-        public ValueTask<List<string>> RetrieveAllAccessPoliciesFromContainerAsync(string container) =>
+        public ValueTask CreateAndAssignAccessPoliciesAsync(string container, List<Policy> policies) =>
+            throw new NotImplementedException();
+
+        public ValueTask<List<string>> RetrieveListOfAllAccessPoliciesAsync(string container) =>
         TryCatch(async () =>
         {
             ValidateStorageArgumentsOnRetrieveAccessPolicies(container);
 
-            return await this.blobStorageBroker.RetrieveAllAccessPoliciesFromContainerAsync(container);
+            return await this.blobStorageBroker.RetrieveListOfAllAccessPoliciesAsync(container);
         });
 
         public ValueTask<List<Policy>> RetrieveAllAccessPoliciesAsync(string container) =>
@@ -71,7 +74,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             ValidateStorageArgumentsOnRetrieveAccessPolicyByName(container, policyName);
 
             List<string> policyNames = await this.blobStorageBroker
-                .RetrieveAllAccessPoliciesFromContainerAsync(container);
+                .RetrieveListOfAllAccessPoliciesAsync(container);
 
             ValidateAccessPolicyExists(policyName, policyNames);
 
@@ -86,11 +89,11 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             return await this.blobStorageBroker.ListFilesInContainerAsync(container);
         });
 
-        public ValueTask RemoveAllAccessPoliciesFromContainerAsync(string container) =>
+        public ValueTask RemoveAllAccessPoliciesAsync(string container) =>
         TryCatch(async () =>
         {
             ValidateStorageArgumentsOnRemoveAccessPolicies(container);
-            await this.blobStorageBroker.RemoveAccessPoliciesFromContainerAsync(container);
+            await this.blobStorageBroker.RemoveAllAccessPoliciesAsync(container);
         });
 
         public ValueTask RemoveAccessPolicyByNameAsync(string container, string policyName) =>
@@ -122,17 +125,24 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             return await this.blobStorageBroker.GetDownloadLinkAsync(fileName, container, expiresOn);
         });
 
-        public ValueTask<string> CreateDirectorySasTokenAsync(
+        public ValueTask<string> CreateSasTokenAsync(
             string container,
-            string directoryPath,
+            string path,
             string accessPolicyIdentifier,
             DateTimeOffset expiresOn) =>
         TryCatch(async () =>
         {
-            ValidateOnCreateDirectorySasToken(container, directoryPath, accessPolicyIdentifier, expiresOn);
+            ValidateOnCreateDirectorySasToken(container, path, accessPolicyIdentifier, expiresOn);
 
             return await this.blobStorageBroker
-                .CreateDirectorySasTokenAsync(container, directoryPath, accessPolicyIdentifier, expiresOn);
+                .CreateSasTokenAsync(container, path, accessPolicyIdentifier, expiresOn);
         });
+
+        public ValueTask<string> CreateSasTokenAsync(
+            string container,
+            string path,
+            DateTimeOffset expiresOn,
+            List<string> permissions) =>
+            throw new NotImplementedException();
     }
 }

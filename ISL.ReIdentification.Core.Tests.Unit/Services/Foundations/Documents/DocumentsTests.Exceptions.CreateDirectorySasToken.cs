@@ -17,12 +17,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
     {
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
-        public async Task ShouldThrowDependencyValidationExceptionOnCreateDirectorySasTokenAsync(
+        public async Task ShouldThrowDependencyValidationExceptionOnCreateSasTokenAsync(
             Xeption dependencyValidationException)
         {
             // given
             string someContainer = GetRandomString();
-            string someDirectoryPath = GetRandomString();
+            string somepath = GetRandomString();
             string someAccessPolicyIdentifier = GetRandomString();
             DateTimeOffset someDateTimeOffset = GetRandomFutureDateTimeOffset();
 
@@ -31,18 +31,18 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                 innerException: dependencyValidationException);
 
             this.blobStorageBrokerMock.Setup(broker =>
-                broker.CreateDirectorySasTokenAsync(
+                broker.CreateSasTokenAsync(
                     someContainer,
-                    someDirectoryPath,
+                    somepath,
                     someAccessPolicyIdentifier,
                     someDateTimeOffset))
                 .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask<string> createDirectorySasTokenTask =
-                this.documentService.CreateDirectorySasTokenAsync(
+                this.documentService.CreateSasTokenAsync(
                     someContainer,
-                    someDirectoryPath,
+                    somepath,
                     someAccessPolicyIdentifier,
                     someDateTimeOffset);
 
@@ -53,9 +53,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             actualDocumentServiceException.Should().BeEquivalentTo(expectedDependencyValidationException);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.CreateDirectorySasTokenAsync(
+                broker.CreateSasTokenAsync(
                     someContainer, 
-                    someDirectoryPath, 
+                    somepath, 
                     someAccessPolicyIdentifier, 
                     someDateTimeOffset),
                 Times.Once);
@@ -70,12 +70,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
 
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
-        public async Task ShouldThrowDocumentDependencyExceptionOnCreateDirectorySasTokenAsync(
+        public async Task ShouldThrowDocumentDependencyExceptionOnCreateSasTokenAsync(
             Xeption dependencyException)
         {
             // given
             string someContainer = GetRandomString();
-            string someDirectoryPath = GetRandomString();
+            string somepath = GetRandomString();
             string someAccessPolicyIdentifier = GetRandomString();
             DateTimeOffset someDateTimeOffset = GetRandomFutureDateTimeOffset();
 
@@ -84,18 +84,18 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                 innerException: dependencyException);
 
             this.blobStorageBrokerMock.Setup(broker =>
-                broker.CreateDirectorySasTokenAsync(
+                broker.CreateSasTokenAsync(
                     someContainer,
-                    someDirectoryPath,
+                    somepath,
                     someAccessPolicyIdentifier,
                     someDateTimeOffset))
                 .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<string> createDirectorySasTokenTask =
-                this.documentService.CreateDirectorySasTokenAsync(
+                this.documentService.CreateSasTokenAsync(
                     someContainer, 
-                    someDirectoryPath, 
+                    somepath, 
                     someAccessPolicyIdentifier, 
                     someDateTimeOffset);
 
@@ -106,9 +106,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             actualDocumentDependencyException.Should().BeEquivalentTo(expectedDocumentDependencyException);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.CreateDirectorySasTokenAsync(
+                broker.CreateSasTokenAsync(
                     someContainer, 
-                    someDirectoryPath, 
+                    somepath, 
                     someAccessPolicyIdentifier, 
                     someDateTimeOffset),
                 Times.Once);
@@ -123,11 +123,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
         }
 
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnCreateDirectorySasTokenAsync()
+        public async Task ShouldThrowServiceExceptionOnCreateSasTokenAsync()
         {
             // given
             string someContainer = GetRandomString();
-            string someDirectoryPath = GetRandomString();
+            string somepath = GetRandomString();
             string someAccessPolicyIdentifier = GetRandomString();
             DateTimeOffset someDateTimeOffset = GetRandomFutureDateTimeOffset();
             Exception someException = new Exception();
@@ -141,18 +141,18 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                 innerException: failedServiceDocumentException);
 
             this.blobStorageBrokerMock.Setup(broker =>
-                broker.CreateDirectorySasTokenAsync(
+                broker.CreateSasTokenAsync(
                     someContainer, 
-                    someDirectoryPath, 
+                    somepath, 
                     someAccessPolicyIdentifier, 
                     someDateTimeOffset))
                 .ThrowsAsync(someException);
 
             // when
             ValueTask<string> createDirectorySasTokenTask =
-                this.documentService.CreateDirectorySasTokenAsync(
+                this.documentService.CreateSasTokenAsync(
                     someContainer, 
-                    someDirectoryPath, 
+                    somepath, 
                     someAccessPolicyIdentifier, 
                     someDateTimeOffset);
 
@@ -163,9 +163,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             actualDocumentServiceException.Should().BeEquivalentTo(expectedDocumentServiceException);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.CreateDirectorySasTokenAsync(
+                broker.CreateSasTokenAsync(
                     someContainer, 
-                    someDirectoryPath, 
+                    somepath, 
                     someAccessPolicyIdentifier, 
                     someDateTimeOffset),
                 Times.Once);

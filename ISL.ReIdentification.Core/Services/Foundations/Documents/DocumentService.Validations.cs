@@ -83,13 +83,13 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
 
         private static void ValidateOnCreateDirectorySasToken(
             string container,
-            string directoryPath,
+            string path,
             string accessPolicyIdentifier,
             DateTimeOffset expiresOn)
         {
             Validate(
                 (Rule: IsInvalid(container), Parameter: nameof(container)),
-                (Rule: IsInvalid(directoryPath), Parameter: nameof(directoryPath)),
+                (Rule: IsInvalid(path), Parameter: nameof(path)),
                 (Rule: IsInvalid(accessPolicyIdentifier), Parameter: nameof(accessPolicyIdentifier)),
                 (Rule: IsInvalid(expiresOn), Parameter: nameof(expiresOn)));
         }

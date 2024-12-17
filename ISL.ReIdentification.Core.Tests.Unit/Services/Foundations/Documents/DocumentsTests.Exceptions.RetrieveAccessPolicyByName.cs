@@ -3,7 +3,6 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.Providers.Storages.Abstractions.Models;
@@ -29,10 +28,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                 innerException: dependencyValidationException);
 
             this.blobStorageBrokerMock.Setup(broker =>
-                broker.RetrieveAccessPolicyByNameAsync(
-                    someContainer, 
-                    somePolicyName))
-                .ThrowsAsync(dependencyValidationException);
+                broker.RetrieveListOfAllAccessPoliciesAsync(someContainer))
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask<Policy> retrieveAccessPolicyTask =
@@ -45,10 +42,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             actualDocumentServiceException.Should().BeEquivalentTo(expectedDependencyValidationException);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.RetrieveAccessPolicyByNameAsync(
-                    someContainer, 
-                    somePolicyName),
-                Times.Once);
+                broker.RetrieveListOfAllAccessPoliciesAsync(someContainer),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(expectedDependencyValidationException))),
@@ -72,10 +67,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                 innerException: dependencyException);
 
             this.blobStorageBrokerMock.Setup(broker =>
-                broker.RetrieveAccessPolicyByNameAsync(
-                    someContainer, 
-                    somePolicyName))
-                .ThrowsAsync(dependencyException);
+                broker.RetrieveListOfAllAccessPoliciesAsync(someContainer))
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<Policy> retrieveAccessPolicyTask =
@@ -88,15 +81,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             actualDocumentDependencyException.Should().BeEquivalentTo(expectedDocumentDependencyException);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.RetrieveAccessPolicyByNameAsync(
-                    someContainer, 
-                    somePolicyName),
-                Times.Once);
+                broker.RetrieveListOfAllAccessPoliciesAsync(someContainer),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogErrorAsync(It.Is(SameExceptionAs(
-                    expectedDocumentDependencyException))),
-                        Times.Once);
+                broker.LogErrorAsync(It.Is(SameExceptionAs(expectedDocumentDependencyException))),
+                    Times.Once);
 
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -119,7 +109,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                 innerException: failedServiceDocumentException);
 
             this.blobStorageBrokerMock.Setup(broker =>
-                broker.RetrieveAccessPolicyByNameAsync(someContainer, somePolicyName))
+                broker.RetrieveListOfAllAccessPoliciesAsync(someContainer))
                     .ThrowsAsync(someException);
 
             // when
@@ -133,15 +123,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             actualDocumentServiceException.Should().BeEquivalentTo(expectedDocumentServiceException);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.RetrieveAccessPolicyByNameAsync(
-                    someContainer, 
-                    somePolicyName),
-                Times.Once);
+                broker.RetrieveListOfAllAccessPoliciesAsync(someContainer),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogErrorAsync(It.Is(SameExceptionAs(
-                    expectedDocumentServiceException))),
-                        Times.Once);
+                broker.LogErrorAsync(It.Is(SameExceptionAs(expectedDocumentServiceException))),
+                    Times.Once);
 
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

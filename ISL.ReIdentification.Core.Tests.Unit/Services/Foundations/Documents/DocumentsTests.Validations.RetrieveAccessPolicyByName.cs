@@ -74,7 +74,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                 innerException: accessPolicyNotFoundStorageException);
 
             this.blobStorageBrokerMock.Setup(broker =>
-                broker.RetrieveAllAccessPoliciesFromContainerAsync(someContainer))
+                broker.RetrieveListOfAllAccessPoliciesAsync(someContainer))
                     .ReturnsAsync(somePolicies);
 
             // when
@@ -89,7 +89,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             actualDocumentValidationException.Should().BeEquivalentTo(expectedDocumentValidationException);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.RetrieveAllAccessPoliciesFromContainerAsync(someContainer),
+                broker.RetrieveListOfAllAccessPoliciesAsync(someContainer),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

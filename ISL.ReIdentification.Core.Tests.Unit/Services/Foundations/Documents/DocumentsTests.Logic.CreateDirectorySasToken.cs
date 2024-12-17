@@ -13,28 +13,28 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
     public partial class DocumentsTests
     {
         [Fact]
-        public async Task ShouldCreateDirectorySasTokenAsync()
+        public async Task ShouldCreateSasTokenAsync()
         {
             // given
             string randomContainer = GetRandomString();
-            string directoryPath = GetRandomString();
+            string path = GetRandomString();
             string accessPolicyIdentifier = GetRandomString();
             DateTimeOffset futureDateTimeOffset = GetRandomFutureDateTimeOffset();
             string expectedSasToken = GetRandomString();
 
             this.blobStorageBrokerMock.Setup(broker =>
-                broker.CreateDirectorySasTokenAsync(
+                broker.CreateSasTokenAsync(
                     randomContainer,
-                    directoryPath,
+                    path,
                     accessPolicyIdentifier,
                     futureDateTimeOffset))
                         .ReturnsAsync(expectedSasToken);
 
             // when
             string actualSasToken =
-                await this.documentService.CreateDirectorySasTokenAsync(
+                await this.documentService.CreateSasTokenAsync(
                     randomContainer,
-                    directoryPath,
+                    path,
                     accessPolicyIdentifier,
                     futureDateTimeOffset);
 
@@ -42,9 +42,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             actualSasToken.Should().Be(expectedSasToken);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.CreateDirectorySasTokenAsync(
+                broker.CreateSasTokenAsync(
                     randomContainer,
-                    directoryPath,
+                    path,
                     accessPolicyIdentifier,
                     futureDateTimeOffset),
                         Times.Once);

@@ -17,6 +17,8 @@ using ISL.Providers.ReIdentification.Necs.Providers.NecsReIdentifications;
 using ISL.Providers.ReIdentification.OfflineFileSources.Models;
 using ISL.Providers.ReIdentification.OfflineFileSources.Providers.OfflineFileSources;
 using ISL.Providers.Storages.Abstractions;
+using ISL.Providers.Storages.AzureBlobStorage.Models;
+using ISL.Providers.Storages.AzureBlobStorage.Providers.AzureBlobStorage;
 using ISL.ReIdentification.Core.Brokers.CsvHelpers;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Hashing;
@@ -37,7 +39,6 @@ using ISL.ReIdentification.Core.Models.Foundations.OdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.PdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Models.Orchestrations.Persists;
-using ISL.ReIdentification.Core.Providers.Storage;
 using ISL.ReIdentification.Core.Services.Coordinations.Identifications;
 using ISL.ReIdentification.Core.Services.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationRequests;
@@ -239,12 +240,17 @@ namespace ISL.ReIdentification.Portals.Server
                 ApiKey = notificationConfigurations.ApiKey
             };
 
+            AzureBlobStoreConfigurations azureBlobStoreConfigurations = configuration
+                .GetSection("AzureBlobStoreConfigurations")
+                    .Get<AzureBlobStoreConfigurations>();
+
             services.AddSingleton(notificationConfigurations);
             services.AddSingleton(notifyConfigurations);
+            services.AddSingleton(azureBlobStoreConfigurations);
             services.AddTransient<INotificationAbstractionProvider, NotificationAbstractionProvider>();
             services.AddTransient<IStorageAbstractionProvider, StorageAbstractionProvider>();
             services.AddTransient<INotificationProvider, GovukNotifyProvider>();
-            services.AddTransient<IStorageProvider, FakeStorageProvider>();
+            services.AddTransient<IStorageProvider, AzureBlobStorageProvider>();
 
             bool reIdentificationProviderOfflineMode = configuration
                 .GetSection("ReIdentificationProviderOfflineMode").Get<bool>();
