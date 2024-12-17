@@ -31,11 +31,5 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             string path,
             string accessPolicyIdentifier,
             DateTimeOffset expiresOn);
-
-        ValueTask<string> CreateSasTokenAsync(
-            string container,
-            string path,
-            DateTimeOffset expiresOn,
-            List<string> permissions);
     }
 }

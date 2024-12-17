@@ -134,12 +134,5 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             return await this.blobStorageBroker
                 .CreateSasTokenAsync(container, path, accessPolicyIdentifier, expiresOn);
         });
-
-        public ValueTask<string> CreateSasTokenAsync(
-            string container,
-            string path,
-            DateTimeOffset expiresOn,
-            List<string> permissions) =>
-            throw new NotImplementedException();
     }
 }
