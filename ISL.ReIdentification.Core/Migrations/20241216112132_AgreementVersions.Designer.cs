@@ -4,6 +4,7 @@ using ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.SqlServer.Types;
 
@@ -12,9 +13,11 @@ using Microsoft.SqlServer.Types;
 namespace ISL.ReIdentification.Core.Migrations
 {
     [DbContext(typeof(ReIdentificationStorageBroker))]
-    partial class ReIdentificationStorageBrokerModelSnapshot : ModelSnapshot
+    [Migration("20241216112132_AgreementVersions")]
+    partial class AgreementVersions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -497,7 +500,7 @@ namespace ISL.ReIdentification.Core.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("AgreementVersion")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -520,9 +523,8 @@ namespace ISL.ReIdentification.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EntraUserId", "AgreementType", "AgreementVersion")
-                        .IsUnique()
-                        .HasFilter("[AgreementVersion] IS NOT NULL");
+                    b.HasIndex("EntraUserId", "AgreementType")
+                        .IsUnique();
 
                     b.ToTable("UserAgreements");
                 });
