@@ -1,5 +1,5 @@
 import { FunctionComponent, useEffect } from "react"
-import { Button, Table } from "react-bootstrap"
+import { Table } from "react-bootstrap"
 import { PBIEvent } from "../../types/PBIEvent"
 
 type FakeReportPageProps = {
