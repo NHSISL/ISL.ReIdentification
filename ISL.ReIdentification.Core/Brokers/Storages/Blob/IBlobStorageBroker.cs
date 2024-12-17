@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using ISL.Providers.Storages.Abstractions.Models;
 
 namespace ISL.ReIdentification.Core.Brokers.Storages.Blob
 {
@@ -25,8 +26,10 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Blob
             string path, string container, string accessLevel, DateTimeOffset expiresOn);
 
         ValueTask<List<string>> RetrieveAllAccessPoliciesFromContainerAsync(string container);
+        ValueTask<List<Policy>> RetrieveAllAccessPoliciesAsync(string container);
         ValueTask CreateAndAssignAccessPoliciesToContainerAsync(string container, List<string> policyNames);
         ValueTask RemoveAccessPoliciesFromContainerAsync(string container);
+        ValueTask RemoveAccessPolicyByNameAsync(string container, string policyName);
         ValueTask CreateFolderInContainerAsync(string container, string folder);
     }
 }

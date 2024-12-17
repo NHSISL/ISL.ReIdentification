@@ -7,7 +7,8 @@ export type FrontendConfigurationResponse = {
     environment: string,
     application: string,
     version: string,
-    bannerColour: string
+    bannerColour: string,
+    activeAgreement: string,
 }
 
 export type FrontendConfiguration = {
@@ -17,7 +18,8 @@ export type FrontendConfiguration = {
     environment: string,
     application: string,
     version: string,
-    bannerColour: string
+    bannerColour: string,
+    activeAgreement: string,
 }
 
 class FrontendConfigurationBroker {

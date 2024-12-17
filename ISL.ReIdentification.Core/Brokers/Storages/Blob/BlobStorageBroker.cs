@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using ISL.Providers.Storages.Abstractions;
+using ISL.Providers.Storages.Abstractions.Models;
 
 namespace ISL.ReIdentification.Core.Brokers.Storages.Blob
 {
@@ -58,6 +59,9 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Blob
         public async ValueTask<List<string>> RetrieveAllAccessPoliciesFromContainerAsync(string container) =>
             await this.storageAbstractionProvider.RetrieveAllAccessPoliciesFromContainerAsync(container);
 
+        public async ValueTask<List<Policy>> RetrieveAllAccessPoliciesAsync(string container) =>
+            throw new NotImplementedException();
+
         public async ValueTask CreateAndAssignAccessPoliciesToContainerAsync(
             string container, 
             List<string> policyNames) =>
@@ -65,6 +69,9 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Blob
 
         public async ValueTask RemoveAccessPoliciesFromContainerAsync(string container) =>
             await this.storageAbstractionProvider.RemoveAccessPoliciesFromContainerAsync(container);
+
+        public async ValueTask RemoveAccessPolicyByNameAsync(string container, string policyName) =>
+            new NotImplementedException();
 
         public async ValueTask CreateFolderInContainerAsync(string container, string folder) =>
             await this.storageAbstractionProvider.CreateFolderInContainerAsync(container, folder);

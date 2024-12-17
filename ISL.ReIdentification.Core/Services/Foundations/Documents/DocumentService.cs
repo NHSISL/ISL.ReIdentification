@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Threading.Tasks;
+using ISL.Providers.Storages.Abstractions.Models;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Storages.Blob;
 
@@ -57,6 +58,14 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             return await this.blobStorageBroker.RetrieveAllAccessPoliciesFromContainerAsync(container);
         });
 
+        public ValueTask<List<Policy>> RetrieveAllAccessPoliciesAsync(string container) =>
+        TryCatch(async () =>
+        {
+            ValidateStorageArgumentsOnRetrieveAccessPolicies(container);
+            
+            return await this.blobStorageBroker.RetrieveAllAccessPoliciesAsync(container);
+        });
+
         public ValueTask<List<string>> ListFilesInContainerAsync(string container) =>
         TryCatch(async () => 
         {
@@ -70,6 +79,13 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
         {
             ValidateStorageArgumentsOnRemoveAccessPolicies(container);
             await this.blobStorageBroker.RemoveAccessPoliciesFromContainerAsync(container);
+        });
+
+        public ValueTask RemoveAccessPolicyByNameAsync(string container, string policyName) =>
+        TryCatch(async () =>
+        {
+            ValidateStorageArgumentsOnRemoveAccessPolicyByName(container, policyName);
+            await this.blobStorageBroker.RemoveAccessPolicyByNameAsync(container, policyName);
         });
 
         public ValueTask AddContainerAsync(string container) =>
@@ -92,6 +108,19 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             ValidateOnGetDownloadLink(fileName, container, expiresOn);
             
             return await this.blobStorageBroker.GetDownloadLinkAsync(fileName, container, expiresOn);
+        });
+
+        public ValueTask<string> CreateDirectorySasTokenAsync(
+            string container, 
+            string directoryPath, 
+            string accessPolicyIdentifier, 
+            DateTimeOffset expiresOn) =>
+        TryCatch(async () =>
+        {
+            ValidateOnCreateDirectorySasToken(container, directoryPath, accessPolicyIdentifier, expiresOn);
+
+            return await this.blobStorageBroker
+                .CreateDirectorySasTokenAsync(container, directoryPath, accessPolicyIdentifier, expiresOn);
         });
     }
 }

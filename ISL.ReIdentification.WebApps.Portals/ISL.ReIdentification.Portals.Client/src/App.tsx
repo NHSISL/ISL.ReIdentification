@@ -17,6 +17,7 @@ import { CsvReIdentificationWorklistPage } from './pages/csvReIdentificationWork
 import { ImpersonationProjectAddPage } from './pages/impersonationProjectAddPage';
 import { ImpersonationProjectPage } from './pages/impersonationProjectPage';
 import { ImpersonationManagePage } from './pages/impersonationManagePage';
+import UnstyledRoot from './components/unstyledroot';
 
 function App({ instance }: any) {
 
@@ -45,7 +46,7 @@ function App({ instance }: any) {
                 {
                     path: "csvReIdentificationWorklist",
                     element: <CsvReIdentificationWorklistPage />
-},
+                },
                 {
                     path: "csvReIdentification/:csvIdentificationRequestId",
                     element: <CsvReIdentificationDownloadPage />
@@ -73,21 +74,35 @@ function App({ instance }: any) {
             ]
         },
         {
-            path: "report/:reportGroupId/:reportId/:pseudoColumn/:reportPage?",
-            element: <ReportsHome />
+            path: "report",
+            element: <UnstyledRoot />,
+            errorElement: <ErrorPage />,
+            children: [
+                {
+                    path: ":reportGroupId/:reportId/:pseudoColumn/:reportPage?",
+                    element: <ReportsHome />
+                },
+                {
+                    path: "g/:reportGroupId/r/:reportId/col/:pseudoColumn/:reportPage?",
+                    element: <ReportsHome />
+                },
+                {
+                    path: "t/:tenantId/g/:reportGroupId/r/:reportId/col/:pseudoColumn/:reportPage?",
+                    element: <ReportsHome />
+                },
+            ]
         },
         {
-            path: "report/g/:reportGroupId/r/:reportId/col/:pseudoColumn/:reportPage?",
-            element: <ReportsHome />
+            path: "webpart",
+            element: <UnstyledRoot />,
+            errorElement: <ErrorPage />,
+            children: [
+                {
+                    path: ":pseudoId",
+                    element: <WebPart />
+                }
+            ]
         },
-        {
-            path: "report/t/:tenantId/g/:reportGroupId/r/:reportId/col/:pseudoColumn/:reportPage?",
-            element: <ReportsHome />
-        },
-        {
-            path: "webpart/:pseudoId",
-            element: <WebPart />
-        },  
     ]);
 
     return (
@@ -95,6 +110,7 @@ function App({ instance }: any) {
             <MsalProvider instance={instance}>
                 <QueryClientProvider client={queryClientGlobalOptions}>
                     <RouterProvider router={router} />
+
                 </QueryClientProvider>
             </MsalProvider>
         </>

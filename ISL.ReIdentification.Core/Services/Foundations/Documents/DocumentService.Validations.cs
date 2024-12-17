@@ -43,6 +43,13 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             Validate((Rule: IsInvalid(container), Parameter: "Container"));
         }
 
+        private static void ValidateStorageArgumentsOnRemoveAccessPolicyByName(string container, string policyName)
+        {
+            Validate(
+                (Rule: IsInvalid(container), Parameter: "Container"),
+                (Rule: IsInvalid(policyName), Parameter: "PolicyName"));
+        }
+
         private static void ValidateOnAddContainer(string container)
         {
             Validate((Rule: IsInvalid(container), Parameter: nameof(container)));
@@ -69,6 +76,19 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
                 (Rule: IsInvalid(folderName), Parameter: nameof(folderName)),
                 (Rule: IsInvalid(container), Parameter: nameof(container)),
                 (Rule: IsInvalid(dateTimeOffset), Parameter: nameof(dateTimeOffset)));
+        }
+
+        private static void ValidateOnCreateDirectorySasToken(
+            string container, 
+            string directoryPath, 
+            string accessPolicyIdentifier, 
+            DateTimeOffset expiresOn)
+        {
+            Validate(
+                (Rule: IsInvalid(container), Parameter: nameof(container)),
+                (Rule: IsInvalid(directoryPath), Parameter: nameof(directoryPath)),
+                (Rule: IsInvalid(accessPolicyIdentifier), Parameter: nameof(accessPolicyIdentifier)),
+                (Rule: IsInvalid(expiresOn), Parameter: nameof(expiresOn)));
         }
 
         private static dynamic IsInvalid(DateTimeOffset dateTimeOffset) => new
