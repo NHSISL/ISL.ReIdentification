@@ -5,8 +5,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using ISL.Providers.Storages.Abstractions.Models;
 using ISL.Providers.Storages.Abstractions.Models.Exceptions;
+using ISL.ReIdentification.Core.Models.Foundations.Documents;
 using ISL.ReIdentification.Core.Models.Foundations.Documents.Exceptions;
 using Xeptions;
 
@@ -15,9 +15,9 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
     public partial class DocumentService : IDocumentService
     {
         private delegate ValueTask ReturningNothingFunction();
-        private delegate ValueTask<Policy> ReturningPolicyFunction();
+        private delegate ValueTask<AccessPolicy> ReturningAccessPolicyFunction();
         private delegate ValueTask<List<string>> ReturningStringListFunction();
-        private delegate ValueTask<List<Policy>> ReturningPolicyListFunction();
+        private delegate ValueTask<List<AccessPolicy>> ReturningAccessPolicyListFunction();
         private delegate ValueTask<string> ReturningStringFunction();
 
         private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
@@ -86,11 +86,12 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             }
         }
 
-        private async ValueTask<List<Policy>> TryCatch(ReturningPolicyListFunction returningPolicyListFunction)
+        private async ValueTask<List<AccessPolicy>>
+            TryCatch(ReturningAccessPolicyListFunction returningAccessPolicyListFunction)
         {
             try
             {
-                return await returningPolicyListFunction();
+                return await returningAccessPolicyListFunction();
             }
             catch (InvalidDocumentException invalidDocumentException)
             {
@@ -119,7 +120,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             }
         }
 
-        private async ValueTask<Policy> TryCatch(ReturningPolicyFunction returningPolicyFunction)
+        private async ValueTask<AccessPolicy> TryCatch(ReturningAccessPolicyFunction returningAccessPolicyFunction)
         {
             try
             {

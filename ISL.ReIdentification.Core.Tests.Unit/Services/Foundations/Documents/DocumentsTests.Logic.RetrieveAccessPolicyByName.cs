@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.Providers.Storages.Abstractions.Models;
+using ISL.ReIdentification.Core.Models.Foundations.Documents;
 using Moq;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
@@ -20,9 +21,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             string inputContainer = randomContainer;
             string randomPolicyName = GetRandomString();
             string inputPolicyName = randomPolicyName;
-            Policy randomAccessPolicy = GetPolicy(inputPolicyName);
-            Policy outputAccessPolicy = randomAccessPolicy;
-            Policy expectedAccessPolicy = outputAccessPolicy;
+            Policy randomPolicy = GetPolicy(inputPolicyName);
+            Policy outputPolicy = randomPolicy;
+            Policy expectedPolicy = outputPolicy;
+
+            AccessPolicy randomAccessPolicy = GetAccessPolicy(inputPolicyName);
+            AccessPolicy outputAccessPolicy = randomAccessPolicy;
+            AccessPolicy expectedAccessPolicy = outputAccessPolicy;
 
             List<string> outputPolicyNames = new List<string>
             {
@@ -37,10 +42,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                 broker.RetrieveAccessPolicyByNameAsync(
                     inputContainer,
                     inputPolicyName))
-                        .ReturnsAsync(outputAccessPolicy);
+                        .ReturnsAsync(outputPolicy);
 
             // when
-            Policy actualAccessPolicy =
+            AccessPolicy actualAccessPolicy =
                 await this.documentService.RetrieveAccessPolicyByNameAsync(inputContainer, inputPolicyName);
 
             // then

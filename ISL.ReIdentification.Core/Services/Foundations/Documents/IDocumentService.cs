@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using ISL.Providers.Storages.Abstractions.Models;
+using ISL.ReIdentification.Core.Models.Foundations.Documents;
 
 namespace ISL.ReIdentification.Core.Services.Foundations.Documents
 {
@@ -17,10 +17,10 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
         ValueTask RemoveDocumentByFileNameAsync(string filename, string container);
         ValueTask AddFolderAsync(string container, string folder);
         ValueTask AddContainerAsync(string container);
-        ValueTask CreateAndAssignAccessPoliciesAsync(string container, List<Policy> policies);
+        ValueTask CreateAndAssignAccessPoliciesAsync(string container, List<AccessPolicy> policies);
         ValueTask<List<string>> RetrieveListOfAllAccessPoliciesAsync(string container);
-        ValueTask<List<Policy>> RetrieveAllAccessPoliciesAsync(string container);
-        ValueTask<Policy> RetrieveAccessPolicyByNameAsync(string container, string policyName);
+        ValueTask<List<AccessPolicy>> RetrieveAllAccessPoliciesAsync(string container);
+        ValueTask<AccessPolicy> RetrieveAccessPolicyByNameAsync(string container, string policyName);
         ValueTask RemoveAllAccessPoliciesAsync(string container);
         ValueTask RemoveAccessPolicyByNameAsync(string container, string policyName);
         ValueTask<List<string>> ListFilesInContainerAsync(string container);

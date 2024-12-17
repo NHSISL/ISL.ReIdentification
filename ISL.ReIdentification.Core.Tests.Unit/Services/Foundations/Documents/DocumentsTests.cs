@@ -10,6 +10,7 @@ using ISL.Providers.Storages.Abstractions.Models;
 using ISL.Providers.Storages.Abstractions.Models.Exceptions;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Storages.Blob;
+using ISL.ReIdentification.Core.Models.Foundations.Documents;
 using ISL.ReIdentification.Core.Services.Foundations.Documents;
 using KellermanSoftware.CompareNetObjects;
 using Moq;
@@ -92,6 +93,21 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             return new Policy
             {
                 PolicyName = "default",
+                Permissions = new List<string>
+                {
+                    "Read",
+                    "Write",
+                    "List",
+                    "Create"
+                }
+            };
+        }
+
+        private static AccessPolicy GetAccessPolicy(string policyName)
+        {
+            return new AccessPolicy
+            {
+                PolicyName = policyName,
                 Permissions = new List<string>
                 {
                     "Read",
