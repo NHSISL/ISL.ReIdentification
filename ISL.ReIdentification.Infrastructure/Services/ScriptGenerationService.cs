@@ -121,11 +121,11 @@ namespace ISL.ReIdentification.Infrastructure.Services
             };
 
             string buildScriptPath = "../../../../.github/workflows/build.yml";
-            string path = Path.GetDirectoryName(buildScriptPath);
+            string directoryPath = Path.GetDirectoryName(buildScriptPath);
 
-            if (!Directory.Exists(path))
+            if (!Directory.Exists(directoryPath))
             {
-                Directory.CreateDirectory(path);
+                Directory.CreateDirectory(directoryPath);
             }
 
             adotNetClient.SerializeAndWriteToFile(
