@@ -12,5 +12,4 @@ namespace ISL.ReIdentification.Core.Models.Foundations.Documents.Exceptions
             : base(message)
         { }
     }
-
 }
