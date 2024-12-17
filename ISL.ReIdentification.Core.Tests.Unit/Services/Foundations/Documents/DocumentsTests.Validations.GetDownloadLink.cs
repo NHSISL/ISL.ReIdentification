@@ -25,7 +25,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             string invalidContainer = invalidString;
             DateTimeOffset invalidDateTimeOffset = GetRandomFutureDateTimeOffset();
 
-            var invalidDocumentException = new InvalidArgumentDocumentException(
+            var invalidDocumentException = new InvalidDocumentException(
                 message: "Invalid document. Please correct the errors and try again.");
 
             invalidDocumentException.AddData(

@@ -129,7 +129,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidDocumentException = new InvalidArgumentDocumentException(
+            var invalidDocumentException = new InvalidDocumentException(
                 message: "Invalid document. Please correct the errors and try again.");
 
             foreach ((dynamic rule, string parameter) in validations)

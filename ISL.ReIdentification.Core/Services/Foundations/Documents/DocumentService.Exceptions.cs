@@ -26,7 +26,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             {
                 await returningNothingFunction();
             }
-            catch (InvalidArgumentDocumentException invalidDocumentException)
+            catch (InvalidDocumentException invalidDocumentException)
             {
                 throw await CreateAndLogValidationExceptionAsync(invalidDocumentException);
             }
@@ -59,7 +59,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             {
                 return await returningStringListFunction();
             }
-            catch (InvalidArgumentDocumentException invalidDocumentException)
+            catch (InvalidDocumentException invalidDocumentException)
             {
                 throw await CreateAndLogValidationExceptionAsync(invalidDocumentException);
             }
@@ -92,7 +92,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             {
                 return await returningPolicyListFunction();
             }
-            catch (InvalidArgumentDocumentException invalidDocumentException)
+            catch (InvalidDocumentException invalidDocumentException)
             {
                 throw await CreateAndLogValidationExceptionAsync(invalidDocumentException);
             }
@@ -125,7 +125,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             {
                 return await returningPolicyFunction();
             }
-            catch (InvalidArgumentDocumentException invalidDocumentException)
+            catch (InvalidDocumentException invalidDocumentException)
             {
                 throw await CreateAndLogValidationExceptionAsync(invalidDocumentException);
             }
@@ -162,7 +162,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             {
                 return await returningStringFunction();
             }
-            catch (InvalidArgumentDocumentException invalidDocumentException)
+            catch (InvalidDocumentException invalidDocumentException)
             {
                 throw await CreateAndLogValidationExceptionAsync(invalidDocumentException);
             }

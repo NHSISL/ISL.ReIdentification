@@ -23,7 +23,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             string invalidFileName = invalidString;
             string invalidContainer = invalidString;
 
-            var invalidDocumentException = new InvalidArgumentDocumentException(
+            var invalidDocumentException = new InvalidDocumentException(
                 message: "Invalid document. Please correct the errors and try again.");
 
             invalidDocumentException.AddData(

@@ -6,9 +6,9 @@ using Xeptions;
 
 namespace ISL.ReIdentification.Core.Models.Foundations.Documents.Exceptions
 {
-    public class InvalidArgumentDocumentException : Xeption
+    public class InvalidDocumentException : Xeption
     {
-        public InvalidArgumentDocumentException(string message)
+        public InvalidDocumentException(string message)
             : base(message)
         { }
     }
