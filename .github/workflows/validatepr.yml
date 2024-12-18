@@ -20,31 +20,32 @@ jobs:
           if (!pr) {
             core.setFailed("This action can only run on pull requests.");
           }
-          core.setOutput("description", pr.body || "");
-          core.setOutput("author", pr.user.login);
+          core.setOutput("description", JSON.stringify(pr.body || ""));
+          core.setOutput("author", pr.user.login || "");
 
     - name: Skip validation if PR was created by Dependabot
-      id: skip-validation
-      run: |
-        AUTHOR="${{ steps.get-pr-info.outputs.author }}"
-        if [[ "$AUTHOR" == "dependabot[bot]" ]]; then
-          echo "PR was created by Dependabot. Skipping validation."
-          exit 0
-        fi
+      if: ${{ steps.get-pr-info.outputs.author == 'dependabot[bot]' }}
+      run: echo "PR was created by Dependabot. Skipping validation."
 
-    - name: Normalize PR description and validate
+    - name: Validate PR description
+      if: ${{ steps.get-pr-info.outputs.author != 'dependabot[bot]' }}
       id: validate
       shell: bash
       run: |
         # Capture the PR description
-        PR_BODY="${{ steps.get-pr-info.outputs.description }}"
-        
+        PR_BODY=$(echo "${{ steps.get-pr-info.outputs.description }}" | jq -r .)
+
         # Debug: Output the PR description
-        echo "::notice::Raw PR Body: $PR_BODY"
-        
+        echo "::notice::Raw PR Body: \"$PR_BODY\""
+
         # Normalize newlines (\n and \r\n) by replacing them with a double space
         PR_BODY=$(echo "$PR_BODY" | tr -s '\r\n' '  ' | tr '\n' '  ')
-        
+
         # Debug: Show PR body after normalization
-        echo "::notice::Normalized PR Body: $PR_BODY"
-        
+        echo "::notice::Normalized PR Body: \"$PR_BODY\""
+
+        # Use grep to check for the required patterns (with PCRE support)
+        echo "$PR_BODY" | grep -Piq "(closes\s*\[#\d+\]|closes\s*\[AB#\d+\]|closes\s*#\d+|closes\s*AB#\d+|CLOSES\s*\[#\d+\]|CLOSES\s*\[AB#\d+\]|CLOSES\s*#\d+|CLOSES\s*AB#\d+)" || {
+          echo "Error: PR description does not contain a closing issue/task link (e.g., 'closes #123' or 'closes AB#123')."
+          exit 1
+        }
