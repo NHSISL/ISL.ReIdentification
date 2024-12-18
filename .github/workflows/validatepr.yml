@@ -16,62 +16,49 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: Skip validation for dependabot
+      id: check-dependabot
+      run: |
+        if [[ "${{ github.actor }}" == "dependabot[bot]" ]]; then
+          echo "PR was created by Dependabot. Skipping validation."
+          exit 0
+        fi
+
     - name: Get PR description
+      if: ${{ github.actor != 'dependabot[bot]' }}
       id: get-pr
       uses: actions/github-script@v6
       with:
         script: |
           const pr = context.payload.pull_request;
-          const actor = context.actor;
-
-          // Debug: Log the actor and PR details
-          console.log(`Actor: ${actor}`);
-          console.log(`PR Body: ${pr ? pr.body : 'No PR found'}`);
-
-          // Check if the actor is 'dependabot[bot]'
-          if (actor.toLowerCase() === 'dependabot[bot]') {
-            console.log('Skipping PR description validation for dependabot.');
-            core.setOutput('description', '');  // Set an empty description to signal skip
-            return;
-          }
-          
           if (!pr) {
             core.setFailed("This action can only run on pull requests.");
           }
           core.setOutput("description", pr.body || "")
 
-
     - name: Normalize PR description and validate
+      if: ${{ github.actor != 'dependabot[bot]' && steps.get-pr.outputs.description != '' }}  # Only run if the description is not empty (i.e., not skipped)
       id: validate
       shell: bash
       run: |
-        # Capture the PR description
         PR_BODY="${{ steps.get-pr.outputs.description }}"
         
         # Debug: Output the PR description
         echo "::notice::Raw PR Body: $PR_BODY"
         
-        # Only proceed if PR body is non-empty (i.e., not skipped)
         if [[ -z "$PR_BODY" ]]; then
-          echo "Skipping PR validation due to empty description.";
+          echo "Skipping PR validation due to empty description."
           exit 0
         fi
         
-        # Normalize newlines (\n and \r\n) by replacing them with a double space
-        PR_BODY=$(echo "$PR_BODY" | tr -s '\r\n' '  ' | tr '\n' '  ')
+        # Normalize newlines and remove leading/trailing spaces
+        PR_BODY=$(echo "$PR_BODY" | tr -s '\r\n' ' ' | tr '\n' ' ' | xargs)
         
-        # Debug: Show PR body after normalization
+        # Debug: Show PR body after normalization and trimming
         echo "::notice::Normalized PR Body: $PR_BODY"
         
-        # Ensure no leading or trailing spaces are affecting matching
-        PR_BODY=$(echo "$PR_BODY" | xargs)  # Remove any leading/trailing whitespace
-        
-        # Debug: Show PR body after trimming whitespace
-        echo "::notice::Trimmed PR Body: $PR_BODY"
-        
-        # Use grep to check for the required patterns (with PCRE support)
+        # Ensure the PR description matches the expected pattern
         echo "$PR_BODY" | grep -Piq "(closes\s*\[#?\d+\]?|closes\s*\[?AB#\d+\]?|CLOSES\s*\[#?\d+\]?|CLOSES\s*\[?AB#\d+\]?)" || {
           echo "Error: PR description does not contain a closing issue/task link (e.g., 'closes #123' or 'closes AB#123')."
           exit 1
         }
-      if: ${{ steps.get-pr.outputs.description != '' }}  # Only run if the description is not empty (i.e., not skipped)
