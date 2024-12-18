@@ -11,6 +11,11 @@ jobs:
     - name: Check out the code
       uses: actions/checkout@v3
 
+    - name: Set up GitHub CLI
+      uses: cli/cli-action@v1
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Get PR description
       id: get-pr
       uses: actions/github-script@v6
@@ -34,10 +39,7 @@ jobs:
             core.setFailed("This action can only run on pull requests.");
           }
           core.setOutput("description", pr.body || "")
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        debug: true
+
 
     - name: Normalize PR description and validate
       id: validate
