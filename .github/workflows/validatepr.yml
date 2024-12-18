@@ -22,7 +22,7 @@ jobs:
           }
           core.setOutput("description", pr.body || "");
 
-    - name: Validate PR description
+    - name: Normalize PR description and validate
       id: validate
       shell: bash
       run: |
@@ -30,7 +30,13 @@ jobs:
         PR_BODY="${{ steps.get-pr.outputs.description }}"
         
         # Debug: Output the PR description
-        echo "PR Description: $PR_BODY"
+        echo "::notice::Raw PR Body: $PR_BODY"
+
+        # Normalize newlines (\n and \r\n) by replacing them with a double space
+        PR_BODY=$(echo "$PR_BODY" | tr -s '\r\n' '  ' | tr '\n' '  ')
+
+        # Debug: Show PR body after normalization
+        echo "::notice::Normalized PR Body: $PR_BODY"
         
         # Use grep to check for the required patterns
         echo "$PR_BODY" | grep -Eiq "closes\s*#\d+|closes\s*AB#\d+" || {
