@@ -11,11 +11,6 @@ jobs:
     - name: Check out the code
       uses: actions/checkout@v3
 
-    - name: Set up GitHub CLI
-      uses: github/cli-action@v1
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-
     - name: Skip validation for dependabot
       id: check-dependabot
       run: |
@@ -30,11 +25,13 @@ jobs:
       uses: actions/github-script@v6
       with:
         script: |
-          const pr = context.payload.pull_request;
-          if (!pr) {
-            core.setFailed("This action can only run on pull requests.");
-          }
-          core.setOutput("description", pr.body || "")
+          const pr = await github.rest.pulls.get({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: context.payload.pull_request.number
+          });
+          const prBody = pr.data.body || "";
+          core.setOutput("description", prBody);
 
     - name: Normalize PR description and validate
       if: ${{ github.actor != 'dependabot[bot]' && steps.get-pr.outputs.description != '' }}  # Only run if the description is not empty (i.e., not skipped)
