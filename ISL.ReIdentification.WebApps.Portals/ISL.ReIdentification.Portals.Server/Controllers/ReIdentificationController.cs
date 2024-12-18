@@ -115,6 +115,36 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             }
         }
 
+        [HttpPost("generatetokens")]
+        public async ValueTask<ActionResult<AccessRequest>> PostImpersonationContextGenerateTokensAsync(
+            [FromBody] Guid impersonationContextId)
+        {
+            try
+            {
+                AccessRequest addedAccessRequest = await identificationCoordinationService
+                    .GenerateImpersonationContextTokensAsync(impersonationContextId);
+
+                return Ok(addedAccessRequest);
+            }
+            catch (IdentificationCoordinationValidationException identificationCoordinationValidationException)
+            {
+                return BadRequest(identificationCoordinationValidationException.InnerException);
+            }
+            catch (IdentificationCoordinationDependencyValidationException
+                identificationCoordinationDependencyValidationException)
+            {
+                return BadRequest(identificationCoordinationDependencyValidationException.InnerException);
+            }
+            catch (IdentificationCoordinationDependencyException identificationCoordinationDependencyException)
+            {
+                return InternalServerError(identificationCoordinationDependencyException);
+            }
+            catch (IdentificationCoordinationServiceException identificationCoordinationServiceException)
+            {
+                return InternalServerError(identificationCoordinationServiceException);
+            }
+        }
+
         [HttpGet("csvreidentification/{csvIdentificationRequestId}/{reason}")]
         public async ValueTask<ActionResult> GetCsvIdentificationRequestByIdAsync(
             Guid csvIdentificationRequestId, string reason)
