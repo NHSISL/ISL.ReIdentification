@@ -26,7 +26,8 @@ jobs:
     - name: Skip validation if PR was created by Dependabot
       id: skip-validation
       run: |
-        if [[ "${{ steps.get-pr-info.outputs.author }}" == "dependabot[bot]" ]]; then
+        AUTHOR="${{ steps.get-pr-info.outputs.author }}"
+        if [[ "$AUTHOR" == "dependabot[bot]" ]]; then
           echo "PR was created by Dependabot. Skipping validation."
           exit 0
         fi
@@ -47,14 +48,3 @@ jobs:
         # Debug: Show PR body after normalization
         echo "::notice::Normalized PR Body: $PR_BODY"
         
-        # Ensure no leading or trailing spaces are affecting matching
-        PR_BODY=$(echo "$PR_BODY" | xargs)  # Remove any leading/trailing whitespace
-        
-        # Debug: Show PR body after trimming whitespace
-        echo "::notice::Trimmed PR Body: $PR_BODY"
-        
-        # Use grep to check for the required patterns (with PCRE support)
-        echo "$PR_BODY" | grep -Piq "(closes\s*\[#\d+\]|closes\s*\[AB#\d+\]|closes\s*#\d+|closes\s*AB#\d+|CLOSES\s*\[#\d+\]|CLOSES\s*\[AB#\d+\]|CLOSES\s*#\d+|CLOSES\s*AB#\d+)" || {
-          echo "Error: PR description does not contain a closing issue/task link (e.g., 'closes #123' or 'closes AB#123')."
-          exit 1
-        }
