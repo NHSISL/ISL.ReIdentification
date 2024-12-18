@@ -14,10 +14,18 @@ jobs:
     - name: Get PR description
       id: get-pr
       uses: actions/github-script@v6
-      if: ${{ github.actor != 'dependabot[bot]' }}
       with:
         script: |
           const pr = context.payload.pull_request;
+          const actor = context.actor;
+          
+          // Check if the actor is not dependabot
+          if (actor === 'dependabot[bot]') {
+            console.log('Skipping PR description validation for dependabot.');
+            core.setOutput('description', '');  // Set an empty description to signal skip
+            return;
+          }
+          
           if (!pr) {
             core.setFailed("This action can only run on pull requests.");
           }
@@ -25,6 +33,7 @@ jobs:
 
     - name: Normalize PR description and validate
       id: validate
+      if: ${{ steps.get-pr.outputs.description != '' }}  # Only run if the description is not empty (i.e., not skipped)
       shell: bash
       run: |
         # Capture the PR description
