@@ -24,9 +24,12 @@ jobs:
 
     - name: Validate PR description
       id: validate
+      shell: bash
       run: |
         PR_BODY="${{ steps.get-pr.outputs.result }}"
         echo "PR Body: $PR_BODY"
+        # Ensure proper handling of carriage returns and newlines
+        PR_BODY=$(echo "$PR_BODY" | tr -d '\r')
         if ! echo "$PR_BODY" | grep -E "(closes\s*#\d+|closes\s*AB#\d+)"; then
           echo "Error: PR description does not contain a closing issue/task link (e.g., 'closes #123' or 'closes AB#123')."
           exit 1
