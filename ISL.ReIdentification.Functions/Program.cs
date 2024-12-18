@@ -138,7 +138,7 @@ internal class Program
         services.AddTransient<IIdentifierBroker, IdentifierBroker>();
         services.AddTransient<IReIdentificationStorageBroker, ReIdentificationStorageBroker>();
         services.AddTransient<IHashBroker, HashBroker>();
-        services.AddTransient<INotificationBroker, INotificationBroker>();
+        services.AddTransient<INotificationBroker, NotificationBroker>();
         services.AddTransient<ICsvHelperBroker, CsvHelperBroker>();
     }
 
