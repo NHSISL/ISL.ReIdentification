@@ -14,39 +14,47 @@ jobs:
     - name: Get PR description
       id: get-pr
       uses: actions/github-script@v6
-      if: ${{ github.actor != 'dependabot[bot]' }}
       with:
         script: |
-          const pr = context.payload.pull_request;
-          if (!pr) {
-            core.setFailed("This action can only run on pull requests.");
-          }
-          core.setOutput("description", pr.body || "")
+          const pr = await github.rest.pulls.get({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: context.payload.pull_request.number
+          });
+
+          const prOwner = pr.data.user.login || "";
+          const prBody = pr.data.body || "";
+          core.setOutput("prOwner", prOwner);
+          core.setOutput("description", prBody);
+
+          console.log(`PR Owner: ${prOwner}`);
+          console.log(`PR Body: ${prBody}`);
 
     - name: Normalize PR description and validate
+      if: ${{ steps.get-pr.outputs.prOwner != 'dependabot[bot]' && steps.get-pr.outputs.description != '' }}  # Only run if the description is not empty (i.e., not skipped)
       id: validate
       shell: bash
       run: |
-        # Capture the PR description
         PR_BODY="${{ steps.get-pr.outputs.description }}"
-        
+    
         # Debug: Output the PR description
         echo "::notice::Raw PR Body: $PR_BODY"
-        
-        # Normalize newlines (\n and \r\n) by replacing them with a double space
-        PR_BODY=$(echo "$PR_BODY" | tr -s '\r\n' '  ' | tr '\n' '  ')
-        
-        # Debug: Show PR body after normalization
+    
+        if [[ -z "$PR_BODY" ]]; then
+          echo "Skipping PR validation due to empty description."
+          exit 0
+        fi
+    
+        # Normalize newlines and remove leading/trailing spaces
+        PR_BODY=$(echo "$PR_BODY" | tr -s '\r\n' ' ' | tr '\n' ' ' | xargs)
+    
+        # Debug: Show PR body after normalization and trimming
         echo "::notice::Normalized PR Body: $PR_BODY"
-        
-        # Ensure no leading or trailing spaces are affecting matching
-        PR_BODY=$(echo "$PR_BODY" | xargs)  # Remove any leading/trailing whitespace
-        
-        # Debug: Show PR body after trimming whitespace
-        echo "::notice::Trimmed PR Body: $PR_BODY"
-        
-        # Use grep to check for the required patterns (with PCRE support)
-        echo "$PR_BODY" | grep -Piq "(closes\s*\[#?\d+\]?|closes\s*\[?AB#\d+\]?|CLOSES\s*\[#?\d+\]?|CLOSES\s*\[?AB#\d+\]?)" || {
+    
+        # Ensure the PR description matches the expected pattern
+        if echo "$PR_BODY" | grep -Piq "(closes\s*\[#?\d+\]?|closes\s*\[?AB#\d+\]?|CLOSES\s*\[#?\d+\]?|CLOSES\s*\[?AB#\d+\]?)"; then
+          echo "Valid PR description."
+        else
           echo "Error: PR description does not contain a closing issue/task link (e.g., 'closes #123' or 'closes AB#123')."
           exit 1
-        }
+        fi
