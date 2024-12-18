@@ -21,19 +21,19 @@ jobs:
             core.setFailed("This action can only run on pull requests.");
           }
           core.setOutput("description", pr.body || "");
-    
+
     - name: Validate PR description
       id: validate
       shell: bash
       run: |
+        # Capture the PR description
         PR_BODY="${{ steps.get-pr.outputs.description }}"
-        echo "PR Description: $PR_BODY"
-
-        # Normalize newlines to handle multiline descriptions
-        PR_BODY=$(echo "$PR_BODY" | tr '\n' ' ')
         
-        # Check for required closing link patterns
-        if [[ ! "$PR_BODY" =~ (closes\s*#\d+|closes\s*AB#\d+) ]]; then
+        # Debug: Output the PR description
+        echo "PR Description: $PR_BODY"
+        
+        # Use grep to check for the required patterns
+        echo "$PR_BODY" | grep -Eiq "closes\s*#\d+|closes\s*AB#\d+" || {
           echo "Error: PR description does not contain a closing issue/task link (e.g., 'closes #123' or 'closes AB#123')."
           exit 1
-        fi
+        }
