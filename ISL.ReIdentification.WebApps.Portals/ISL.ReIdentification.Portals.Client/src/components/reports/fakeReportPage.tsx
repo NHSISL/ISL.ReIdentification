@@ -25,10 +25,13 @@ class FakeEmbedObject {
     events: EventCollection[] = []
 
     on(eventType: string, callback: (value?: PBIEvent) => void) {
-        this.events.push({ eventType, callback });
+        if (this.events.filter(x => x.eventType == eventType).length === 0) {
+            this.events.push({ eventType, callback });
+        }
     }
 
     processEvent(eventType: string, value?: PBIEvent) {
+        console.log(this.events);
         this.events.filter(x => x.eventType == eventType).forEach(i => {
             i.callback(value);
         })
@@ -39,12 +42,11 @@ const embedObject = new FakeEmbedObject();
 
 const FakeReportPage: FunctionComponent<FakeReportPageProps> = ({ getEmbeddedComponent }) => {
     useEffect(() => {
-        //console.log(getEmbeddedComponent);
         getEmbeddedComponent(embedObject);
         setTimeout(() => {
             embedObject.processEvent('loaded', undefined);
         }, 1000)
-    }, [getEmbeddedComponent]);
+    }, []);
 
     const testDataTemplate = {
         detail: {
@@ -60,14 +62,13 @@ const FakeReportPage: FunctionComponent<FakeReportPageProps> = ({ getEmbeddedCom
     }
 
     const testData: TestData[] = [
-        { testName: 'single identity column', type: 'identity', target: 'fake', values: ['1111146000'] },
+        { testName: 'single identity column', type: 'identity', target: 'fake', values: ['1111151000'] },
         { testName: 'identity column with multiple records', type: 'identity', target: 'fake', values: ['1111192000', '1111209000'] },
         { testName: 'single value columnm', type: 'value', target: 'fake', values: ['1111129000'] },
         { testName: 'value column with multiple records', type: 'value', target: 'fake', values: ['1111131000', '1111112000'] },
-        { testName: 'identity column without valid key', type: 'identity', target: 'fake', values: ['1111128000', '1111209000'] },
-        { testName: 'value column without valid column', type: 'value', target: 'fake', values: ['1111137000', '1111200000'] },
+        { testName: 'identity column without valid key', type: 'identity', target: 'notafake', values: ['1111128000', '1111209000'] },
+        { testName: 'value column without valid column', type: 'value', target: 'notafake', values: ['1111137000', '1111200000'] },
     ]
-
 
     const test = (testData: TestData, value: string) => {
         if (testData.type === 'identity') {
@@ -77,7 +78,6 @@ const FakeReportPage: FunctionComponent<FakeReportPageProps> = ({ getEmbeddedCom
                 target: { column: testData.target },
                 equals: value
             })
-
             embedObject.processEvent('dataSelected', event)
         }
 
@@ -102,11 +102,17 @@ const FakeReportPage: FunctionComponent<FakeReportPageProps> = ({ getEmbeddedCom
             <h4>{td.testName}</h4>
             <Table striped bordered hover>
                 <tbody>
-                    {td.values.map((val) => <tr onClick={() => test(td, val)}><td>Test single record click: {val}</td></tr>
+                    {td.values.map((val, index) => (
+                        <tr key={`single-${index}`} onClick={() => test(td, val)}>
+                            <td>Test single record click: {val}</td>
+                        </tr>
+                    ))}
 
+                    {td.values.length > 1 && (
+                        <tr key={`multiple-${i}`} onClick={() => test(td, td.values.join(','))}>
+                            <td>Test multiple record click: {td.values.join(',')}</td>
+                        </tr>
                     )}
-
-                    {td.values.length > 1 && <tr onClick={() => test(td, td.values.join(','))}><td>Test multiple record click: {td.values.join(',')}</td></tr>}
                 </tbody>
             </Table>
         </div>
