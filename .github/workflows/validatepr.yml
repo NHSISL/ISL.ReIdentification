@@ -1,0 +1,31 @@
+name: PR Description Validation
+
+on:
+  pull_request:
+    types: [opened, edited, reopened]
+
+jobs:
+  validate-pr-description:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out the code
+      uses: actions/checkout@v3
+
+    - name: Get PR description
+      id: get-pr
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const pr = context.payload.pull_request;
+          if (!pr) {
+            core.setFailed("This action can only run on pull requests.");
+          }
+          return pr.body;
+
+    - name: Validate PR description
+      id: validate
+      run: |
+        if [[ ! ${{ steps.get-pr.outputs.result }} =~ (closes\s*#\d+|closes\s*AB#\d+) ]]; then
+          echo "Error: PR description does not contain a closing issue/task link (e.g., 'closes #123' for GitHub issues or 'closes AB#123' for DevOps).";
+          exit 1;
+        fi
