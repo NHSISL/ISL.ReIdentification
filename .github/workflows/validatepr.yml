@@ -24,15 +24,11 @@ jobs:
           core.setOutput("author", pr.user.login || "");
 
     - name: Skip validation if PR was created by Dependabot
-      id: skip-validation
-      run: |
-        AUTHOR="${{ steps.get-pr-info.outputs.author }}"
-        if [[ "$AUTHOR" == "dependabot[bot]" ]]; then
-          echo "PR was created by Dependabot. Skipping validation."
-          exit 0
-        fi
+      if: ${{ steps.get-pr-info.outputs.author == 'dependabot[bot]' }}
+      run: echo "PR was created by Dependabot. Skipping validation."
 
     - name: Validate PR description
+      if: ${{ steps.get-pr-info.outputs.author != 'dependabot[bot]' }}
       id: validate
       shell: bash
       run: |
