@@ -85,6 +85,7 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.Reidentification.Portal.Administrators,ISL.Reidentification.Portal.DataEngineers")]
         [HttpPost("impersonation")]
         public async ValueTask<ActionResult<AccessRequest>> PostImpersonationContextRequestAsync(
             [FromBody] AccessRequest accessRequest)
@@ -115,6 +116,7 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.Reidentification.Portal.Administrators,ISL.Reidentification.Portal.DataEngineers")]
         [HttpPost("generatetokens")]
         public async ValueTask<ActionResult<AccessRequest>> PostImpersonationContextGenerateTokensAsync(
             [FromBody] Guid impersonationContextId)
