@@ -16,7 +16,7 @@ jobs:
       id: get-pr-info
       uses: actions-ecosystem/action-get-merged-pull-request@v1
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Debug PR details
       run: |
