@@ -1,64 +1,52 @@
-name: Validate PR Description
+name: PR Description Validation
 
 on:
   pull_request:
-    types: [opened, edited, reopened, synchronize]
+    types: [opened, edited, reopened]
 
 jobs:
-  validate-description:
+  validate-pr-description:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
+    - name: Check out the code
       uses: actions/checkout@v3
 
-    - name: Get PR information
-      id: get-pr-info
-      uses: actions-ecosystem/action-get-merged-pull-request@v1
+    - name: Get PR description
+      id: get-pr
+      uses: actions/github-script@v6
+      if: ${{ github.actor != 'dependabot[bot]' }}
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const pr = context.payload.pull_request;
+          if (!pr) {
+            core.setFailed("This action can only run on pull requests.");
+          }
+          core.setOutput("description", pr.body || "")
 
-    - name: Debug PR details
-      run: |
-        echo "PR Author: ${{ steps.get-pr-info.outputs.author }}"
-        echo "PR Description: ${{ steps.get-pr-info.outputs.description }}"
-    
-    - name: Skip validation for dependabot
-      id: check-dependabot
-      run: |
-        AUTHOR="${{ steps.get-pr-info.outputs.author }}"
-        echo "AUTHOR=\"$AUTHOR\""
-        if [[ "$AUTHOR" == "dependabot[bot]" ]]; then
-          echo "PR was created by Dependabot. Skipping validation."
-          exit 0
-        fi
-
-    - name: Validate PR description
-      if: ${{ steps.get-pr-info.outputs.author != 'dependabot[bot]' }}
+    - name: Normalize PR description and validate
       id: validate
       shell: bash
       run: |
-        # Ensure the description is properly fetched
-        PR_BODY="${{ steps.get-pr-info.outputs.description }}"
-        echo "::notice::Raw PR Body: \"$PR_BODY\""
-
-        # Check if PR_BODY is empty and stop further validation if so
-        if [ -z "$PR_BODY" ]; then
-          echo "Error: PR description is empty or not accessible."
-          exit 1
-        fi
-
+        # Capture the PR description
+        PR_BODY="${{ steps.get-pr.outputs.description }}"
+        
+        # Debug: Output the PR description
+        echo "::notice::Raw PR Body: $PR_BODY"
+        
         # Normalize newlines (\n and \r\n) by replacing them with a double space
         PR_BODY=$(echo "$PR_BODY" | tr -s '\r\n' '  ' | tr '\n' '  ')
-
+        
         # Debug: Show PR body after normalization
-        echo "::notice::Normalized PR Body: \"$PR_BODY\""
-
+        echo "::notice::Normalized PR Body: $PR_BODY"
+        
+        # Ensure no leading or trailing spaces are affecting matching
+        PR_BODY=$(echo "$PR_BODY" | xargs)  # Remove any leading/trailing whitespace
+        
+        # Debug: Show PR body after trimming whitespace
+        echo "::notice::Trimmed PR Body: $PR_BODY"
+        
         # Use grep to check for the required patterns (with PCRE support)
-        echo "$PR_BODY" | grep -Piq "(closes\s*\[#\d+\]|closes\s*\[AB#\d+\]|closes\s*#\d+|closes\s*AB#\d+|CLOSES\s*\[#\d+\]|CLOSES\s*\[AB#\d+\]|CLOSES\s*#\d+|CLOSES\s*AB#\d+)" || {
+        echo "$PR_BODY" | grep -Piq "(closes\s*\[#?\d+\]?|closes\s*\[?AB#\d+\]?|CLOSES\s*\[#?\d+\]?|CLOSES\s*\[?AB#\d+\]?)" || {
           echo "Error: PR description does not contain a closing issue/task link (e.g., 'closes #123' or 'closes AB#123')."
           exit 1
         }
-
-    - name: Success
-      run: echo "PR description validation passed."
