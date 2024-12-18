@@ -38,11 +38,15 @@ jobs:
       id: validate
       shell: bash
       run: |
-        # Capture the PR description and ensure safe handling of special characters
-        PR_BODY=$(echo "${{ steps.get-pr-info.outputs.description }}" | jq -Rr @sh)
-
-        # Debug: Output the PR description
+        # Ensure the description is properly fetched
+        PR_BODY="${{ steps.get-pr-info.outputs.description }}"
         echo "::notice::Raw PR Body: \"$PR_BODY\""
+
+        # Check if PR_BODY is empty and stop further validation if so
+        if [ -z "$PR_BODY" ]; then
+          echo "Error: PR description is empty or not accessible."
+          exit 1
+        fi
 
         # Normalize newlines (\n and \r\n) by replacing them with a double space
         PR_BODY=$(echo "$PR_BODY" | tr -s '\r\n' '  ' | tr '\n' '  ')
@@ -55,3 +59,6 @@ jobs:
           echo "Error: PR description does not contain a closing issue/task link (e.g., 'closes #123' or 'closes AB#123')."
           exit 1
         }
+
+    - name: Success
+      run: echo "PR description validation passed."
