@@ -11,8 +11,8 @@ jobs:
     - name: Check out the code
       uses: actions/checkout@v3
 
-    - name: Get PR description
-      id: get-pr
+    - name: Get PR information
+      id: get-pr-info
       uses: actions/github-script@v6
       with:
         script: |
@@ -21,13 +21,22 @@ jobs:
             core.setFailed("This action can only run on pull requests.");
           }
           core.setOutput("description", pr.body || "");
+          core.setOutput("author", pr.user.login);
+
+    - name: Skip validation if PR was created by Dependabot
+      id: skip-validation
+      run: |
+        if [[ "${{ steps.get-pr-info.outputs.author }}" == "dependabot[bot]" ]]; then
+          echo "PR was created by Dependabot. Skipping validation."
+          exit 0
+        fi
 
     - name: Normalize PR description and validate
       id: validate
       shell: bash
       run: |
         # Capture the PR description
-        PR_BODY="${{ steps.get-pr.outputs.description }}"
+        PR_BODY="${{ steps.get-pr-info.outputs.description }}"
         
         # Debug: Output the PR description
         echo "::notice::Raw PR Body: $PR_BODY"
