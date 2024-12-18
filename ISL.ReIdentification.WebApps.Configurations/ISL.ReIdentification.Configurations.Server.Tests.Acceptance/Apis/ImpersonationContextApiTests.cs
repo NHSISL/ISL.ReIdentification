@@ -2,12 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Brokers;
 using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.ImpersonationContexts;
-using Tynamix.ObjectFiller;
 
 namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
 {
@@ -91,6 +87,15 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
 
                 .OnProperty(impersonationContext => impersonationContext.IdentifierColumn)
                     .Use(() => GetRandomStringWithLengthOf(10))
+
+                .OnProperty(impersonationContext => impersonationContext.InboxSasToken)
+                    .Use("")
+
+                .OnProperty(impersonationContext => impersonationContext.OutboxSasToken)
+                    .Use("")
+
+                .OnProperty(impersonationContext => impersonationContext.ErrorsSasToken)
+                    .Use("")
 
                 .OnProperty(impersonationContext => impersonationContext.CreatedDate).Use(now)
                 .OnProperty(impersonationContext => impersonationContext.CreatedBy).Use(user)
