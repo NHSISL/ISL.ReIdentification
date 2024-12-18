@@ -1,39 +1,45 @@
-name: PR Description Validation
+name: Validate PR Description
 
 on:
   pull_request:
-    types: [opened, edited, reopened]
+    types: [opened, edited, reopened, synchronize]
 
 jobs:
-  validate-pr-description:
+  validate-description:
     runs-on: ubuntu-latest
+
     steps:
-    - name: Check out the code
+    - name: Checkout code
       uses: actions/checkout@v3
 
     - name: Get PR information
       id: get-pr-info
-      uses: actions/github-script@v6
+      uses: actions-ecosystem/action-get-merged-pull-request@v1
       with:
-        script: |
-          const pr = context.payload.pull_request;
-          if (!pr) {
-            core.setFailed("This action can only run on pull requests.");
-          }
-          core.setOutput("description", JSON.stringify(pr.body || ""));
-          core.setOutput("author", pr.user.login || "");
+        token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Skip validation if PR was created by Dependabot
-      if: ${{ steps.get-pr-info.outputs.author == 'dependabot[bot]' }}
-      run: echo "PR was created by Dependabot. Skipping validation."
+    - name: Debug PR details
+      run: |
+        echo "PR Author: ${{ steps.get-pr-info.outputs.author }}"
+        echo "PR Description: ${{ steps.get-pr-info.outputs.description }}"
+    
+    - name: Skip validation for dependabot
+      id: check-dependabot
+      run: |
+        AUTHOR="${{ steps.get-pr-info.outputs.author }}"
+        echo "AUTHOR=\"$AUTHOR\""
+        if [[ "$AUTHOR" == "dependabot[bot]" ]]; then
+          echo "PR was created by Dependabot. Skipping validation."
+          exit 0
+        fi
 
     - name: Validate PR description
       if: ${{ steps.get-pr-info.outputs.author != 'dependabot[bot]' }}
       id: validate
       shell: bash
       run: |
-        # Capture the PR description
-        PR_BODY=$(echo "${{ steps.get-pr-info.outputs.description }}" | jq -r .)
+        # Capture the PR description and ensure safe handling of special characters
+        PR_BODY=$(echo "${{ steps.get-pr-info.outputs.description }}" | jq -Rr @sh)
 
         # Debug: Output the PR description
         echo "::notice::Raw PR Body: \"$PR_BODY\""
