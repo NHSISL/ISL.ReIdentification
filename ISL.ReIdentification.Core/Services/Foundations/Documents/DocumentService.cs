@@ -146,7 +146,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
                 .CreateSasTokenAsync(container, path, accessPolicyIdentifier, expiresOn);
         });
 
-        virtual internal AccessPolicy ConvertToAccessPolicy(Policy policy) =>
+        private static AccessPolicy ConvertToAccessPolicy(Policy policy) =>
             new AccessPolicy
             {
                 PolicyName = policy.PolicyName,
@@ -155,7 +155,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
                 ExpiryTime = policy.ExpiryTime,
             };
 
-        virtual internal List<AccessPolicy> ConvertToAccessPolicyList(List<Policy> policies)
+        private static List<AccessPolicy> ConvertToAccessPolicyList(List<Policy> policies)
         {
             List<AccessPolicy> accessPolicyList = new List<AccessPolicy>();
 
