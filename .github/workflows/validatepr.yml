@@ -45,7 +45,7 @@ jobs:
         echo "::notice::Trimmed PR Body: $PR_BODY"
         
         # Use grep to check for the required patterns (with PCRE support)
-        echo "$PR_BODY" | grep -Piq "(closes\s*#\d+|closes\s*AB#\d+|CLOSES\s*#\d+|CLOSES\s*AB#\d+)" || {
+        echo "$PR_BODY" | grep -Piq "(closes\s*\[#?\d+\]?|closes\s*\[?AB#\d+\]?|CLOSES\s*\[#?\d+\]?|CLOSES\s*\[?AB#\d+\]?)" || {
           echo "Error: PR description does not contain a closing issue/task link (e.g., 'closes #123' or 'closes AB#123')."
           exit 1
         }
