@@ -238,20 +238,21 @@ namespace ISL.ReIdentification.Configurations.Server
                 ApiKey = notificationConfigurations.ApiKey
             };
 
+            services.AddSingleton(notificationConfigurations);
+            services.AddSingleton(notifyConfigurations);
+
             ProjectStorageConfiguration projectStorageConfiguration = configuration
             .GetSection("projectStorageConfiguration")
                 .Get<ProjectStorageConfiguration>();
 
-            AzureBlobStoreConfigurations azureBlobStoreConfigurations = new AzureBlobStoreConfigurations
+            AzureBlobStoreConfigurations projectsBlobStoreConfigurations = new AzureBlobStoreConfigurations
             {
                 ServiceUri = projectStorageConfiguration.ServiceUri,
                 StorageAccountName = projectStorageConfiguration.StorageAccountName,
                 StorageAccountAccessKey = projectStorageConfiguration.StorageAccountAccessKey
             };
 
-            services.AddSingleton(notificationConfigurations);
-            services.AddSingleton(notifyConfigurations);
-            services.AddSingleton(azureBlobStoreConfigurations);
+            services.AddSingleton(projectsBlobStoreConfigurations);
             services.AddTransient<INotificationAbstractionProvider, NotificationAbstractionProvider>();
             services.AddTransient<IStorageAbstractionProvider, StorageAbstractionProvider>();
             services.AddTransient<INotificationProvider, GovukNotifyProvider>();
