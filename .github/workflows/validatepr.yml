@@ -11,16 +11,7 @@ jobs:
     - name: Check out the code
       uses: actions/checkout@v3
 
-    - name: Skip validation for dependabot
-      id: check-dependabot
-      run: |
-        if [[ "${{ github.actor }}" == "dependabot[bot]" ]]; then
-          echo "PR was created by Dependabot. Skipping validation."
-          exit 0
-        fi
-
     - name: Get PR description
-      if: ${{ github.actor != 'dependabot[bot]' }}
       id: get-pr
       uses: actions/github-script@v6
       with:
@@ -30,11 +21,12 @@ jobs:
             repo: context.repo.repo,
             pull_number: context.payload.pull_request.number
           });
+          const prOwner = pr.data.user.login || "";
           const prBody = pr.data.body || "";
           core.setOutput("description", prBody);
 
     - name: Normalize PR description and validate
-      if: ${{ github.actor != 'dependabot[bot]' && steps.get-pr.outputs.description != '' }}  # Only run if the description is not empty (i.e., not skipped)
+      if: ${{ steps.get-pr.outputs.prOwner != 'dependabot[bot]' && steps.get-pr.outputs.description != '' }}  # Only run if the description is not empty (i.e., not skipped)
       id: validate
       shell: bash
       run: |
