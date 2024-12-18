@@ -18,9 +18,13 @@ jobs:
         script: |
           const pr = context.payload.pull_request;
           const actor = context.actor;
-          
-          // Check if the actor is not dependabot
-          if (actor === 'dependabot[bot]') {
+
+          // Debug: Log the actor and PR details
+          console.log(`Actor: ${actor}`);
+          console.log(`PR Body: ${pr ? pr.body : 'No PR found'}`);
+
+          // Check if the actor is 'dependabot[bot]'
+          if (actor.toLowerCase() === 'dependabot[bot]') {
             console.log('Skipping PR description validation for dependabot.');
             core.setOutput('description', '');  // Set an empty description to signal skip
             return;
@@ -30,10 +34,13 @@ jobs:
             core.setFailed("This action can only run on pull requests.");
           }
           core.setOutput("description", pr.body || "")
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        debug: true
 
     - name: Normalize PR description and validate
       id: validate
-      if: ${{ steps.get-pr.outputs.description != '' }}  # Only run if the description is not empty (i.e., not skipped)
       shell: bash
       run: |
         # Capture the PR description
@@ -41,6 +48,12 @@ jobs:
         
         # Debug: Output the PR description
         echo "::notice::Raw PR Body: $PR_BODY"
+        
+        # Only proceed if PR body is non-empty (i.e., not skipped)
+        if [[ -z "$PR_BODY" ]]; then
+          echo "Skipping PR validation due to empty description.";
+          exit 0
+        fi
         
         # Normalize newlines (\n and \r\n) by replacing them with a double space
         PR_BODY=$(echo "$PR_BODY" | tr -s '\r\n' '  ' | tr '\n' '  ')
@@ -59,3 +72,4 @@ jobs:
           echo "Error: PR description does not contain a closing issue/task link (e.g., 'closes #123' or 'closes AB#123')."
           exit 1
         }
+      if: ${{ steps.get-pr.outputs.description != '' }}  # Only run if the description is not empty (i.e., not skipped)
