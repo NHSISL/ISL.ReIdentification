@@ -214,7 +214,11 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
             }
         });
 
-        virtual internal async ValueTask<AccessRequest> CreateOrRenewTokens(AccessRequest accessRequest)
+        public ValueTask<AccessRequest> ExpireRenewImpersonationContextTokensAsync(Guid impersonationContextId) =>
+            throw new NotImplementedException();
+
+
+        virtual internal async ValueTask<AccessRequest> CreateOrRenewTokensAsync(AccessRequest accessRequest)
         {
             string container = accessRequest.ImpersonationContext.Id.ToString();
             string inboxPolicyname = container + "-InboxPolicy";

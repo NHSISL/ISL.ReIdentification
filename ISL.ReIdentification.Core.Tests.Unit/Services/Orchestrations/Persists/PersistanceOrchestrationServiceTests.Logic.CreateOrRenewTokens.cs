@@ -107,7 +107,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             PersistanceOrchestrationService service = persistanceOrchestrationServiceMock.Object;
 
             // when
-            AccessRequest actualAccessRequest = await service.CreateOrRenewTokens(inputAccessRequest);
+            AccessRequest actualAccessRequest = await service.CreateOrRenewTokensAsync(inputAccessRequest);
 
             // then
             actualAccessRequest.Should().BeEquivalentTo(expectedAccessRequest);
