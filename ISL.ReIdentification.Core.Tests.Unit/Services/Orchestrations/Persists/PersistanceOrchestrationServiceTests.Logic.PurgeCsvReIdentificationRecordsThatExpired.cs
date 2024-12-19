@@ -36,7 +36,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
 
             foreach (CsvIdentificationRequest csvIdentificationRequest in expiredCsvIdentificationRequests)
             {
-                csvIdentificationRequest.Data = null;
+                csvIdentificationRequest.Data = Array.Empty<byte>();
                 csvIdentificationRequest.UpdatedDate = now;
             }
 
