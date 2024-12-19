@@ -5,12 +5,13 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Linq.Expressions;
 using ISL.Providers.Storages.Abstractions.Models;
 using ISL.Providers.Storages.Abstractions.Models.Exceptions;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Storages.Blob;
-using ISL.ReIdentification.Core.Models.Foundations.UserAccesses.Exceptions;
+using ISL.ReIdentification.Core.Models.Foundations.Documents;
 using ISL.ReIdentification.Core.Services.Foundations.Documents;
 using KellermanSoftware.CompareNetObjects;
 using Moq;
@@ -87,6 +88,88 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                 }
             },
         };
+
+        private static Policy GetPolicy()
+        {
+            return new Policy
+            {
+                PolicyName = "default",
+                Permissions = new List<string>
+                {
+                    "Read",
+                    "Write",
+                    "List",
+                    "Create"
+                }
+            };
+        }
+
+        private static AccessPolicy GetAccessPolicy(string policyName)
+        {
+            return new AccessPolicy
+            {
+                PolicyName = policyName,
+                Permissions = new List<string>
+                {
+                    "Read",
+                    "Write",
+                    "List",
+                    "Create"
+                }
+            };
+        }
+
+        private static Policy GetPolicy(string policyName)
+        {
+            return new Policy
+            {
+                PolicyName = policyName,
+                Permissions = new List<string>
+                {
+                    "Read",
+                    "Write",
+                    "List",
+                    "Create"
+                }
+            };
+        }
+
+        private static dynamic CreateRandomPolicyProperties() =>
+            new
+            {
+                PolicyName = GetRandomString(),
+                Permissions = GetRandomPermissionsList(),
+            };
+
+        private static List<dynamic> CreateRandomPolicyPropertiesList() =>
+            Enumerable.Range(1, GetRandomNumber())
+                .Select(item => CreateRandomPolicyProperties())
+                    .ToList();
+
+        private static List<string> GetRandomPermissionsList()
+        {
+            List<string> returnedList = new List<string>();
+
+            List<string> permissionsList = new List<string>
+            {
+                "read",
+                "write",
+                "delete",
+                "list",
+                "add",
+                "create"
+            };
+
+            var rng = new Random();
+            int index = rng.Next(1, permissionsList.Count);
+
+            for (int i = 0; i < index; i++)
+            {
+                returnedList.Add(permissionsList[i]);
+            }
+
+            return returnedList;
+        }
 
         public class ZeroLengthStream : MemoryStream
         {
