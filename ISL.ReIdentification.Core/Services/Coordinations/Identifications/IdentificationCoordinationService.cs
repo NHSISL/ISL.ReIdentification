@@ -356,8 +356,5 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
 
             return (landingFilepath, pickFilepath, errorFilepath, impersonationContextId);
         }
-
-        public async ValueTask<AccessRequest> GenerateImpersonationContextTokensAsync(Guid impersonationContextId) =>
-            throw new NotImplementedException();
     }
 }

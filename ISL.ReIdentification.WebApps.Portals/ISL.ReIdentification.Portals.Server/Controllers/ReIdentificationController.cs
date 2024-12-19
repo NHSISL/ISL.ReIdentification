@@ -124,7 +124,7 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             try
             {
                 AccessRequest addedAccessRequest = await identificationCoordinationService
-                    .GenerateImpersonationContextTokensAsync(impersonationContextId);
+                    .ExpireRenewImpersonationContextTokensAsync(impersonationContextId);
 
                 return Ok(addedAccessRequest);
             }
