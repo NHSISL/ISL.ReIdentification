@@ -11,13 +11,16 @@ using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Hashing;
 using ISL.ReIdentification.Core.Brokers.Identifiers;
 using ISL.ReIdentification.Core.Brokers.Loggings;
+using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
+using ISL.ReIdentification.Core.Models.Foundations.Documents;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Models.Orchestrations.Persists;
 using ISL.ReIdentification.Core.Services.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationRequests;
+using ISL.ReIdentification.Core.Services.Foundations.Documents;
 using ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Services.Foundations.Notifications;
 
@@ -29,27 +32,32 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
         private readonly ICsvIdentificationRequestService csvIdentificationRequestService;
         private readonly INotificationService notificationService;
         private readonly IAccessAuditService accessAuditService;
+        private readonly IDocumentService documentService;
         private readonly ILoggingBroker loggingBroker;
         private readonly IHashBroker hashBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIdentifierBroker identifierBroker;
         private readonly CsvReIdentificationConfigurations csvReIdentificationConfigurations;
+        private readonly ProjectStorageConfiguration projectStorageConfiguration;
 
         public PersistanceOrchestrationService(
             IImpersonationContextService impersonationContextService,
             ICsvIdentificationRequestService csvIdentificationRequestService,
             INotificationService notificationService,
             IAccessAuditService accessAuditService,
+            IDocumentService documentService,
             ILoggingBroker loggingBroker,
             IHashBroker hashBroker,
             IDateTimeBroker dateTimeBroker,
             IIdentifierBroker identifierBroker,
-            CsvReIdentificationConfigurations csvReIdentificationConfigurations)
+            CsvReIdentificationConfigurations csvReIdentificationConfigurations,
+            ProjectStorageConfiguration projectStorageConfiguration)
         {
             this.impersonationContextService = impersonationContextService;
             this.csvIdentificationRequestService = csvIdentificationRequestService;
             this.notificationService = notificationService;
             this.accessAuditService = accessAuditService;
+            this.documentService = documentService;
             this.loggingBroker = loggingBroker;
             this.hashBroker = hashBroker;
             this.dateTimeBroker = dateTimeBroker;
@@ -204,5 +212,76 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
                 await this.accessAuditService.AddAccessAuditAsync(accessAudit);
             }
         });
+
+        virtual internal async ValueTask<AccessRequest> CreateOrRenewTokens(AccessRequest accessRequest)
+        {
+            // use the retrieve list all access policies to check the container
+            string container = accessRequest.ImpersonationContext.Id.ToString();
+            string inboxPolicyname = container + "-InboxPolicy";
+            string outboxPolicyname = container + "-OutboxPolicy";
+            string errorsPolicyname = container + "-ErrorsPolicy";
+            DateTimeOffset currentDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+
+            DateTimeOffset expiresOn = currentDateTimeOffset
+                .AddMinutes(this.projectStorageConfiguration.TokenLifetimeMinutes);
+
+            List<string> maybeAccessPolicies = await this.documentService
+                .RetrieveAllAccessPoliciesFromContainerAsync(container);
+
+            // if any are found, remove all access policies from container
+            if (maybeAccessPolicies.Any())
+            {
+                await this.documentService.RemoveAllAccessPoliciesFromContainerAsync(container);
+            }
+
+            // create the appropriate access policies - one for each folder
+
+            List<AccessPolicy> accessPolicies = new List<AccessPolicy>
+            {
+                new AccessPolicy
+                {
+                    PolicyName = inboxPolicyname,
+                    Permissions = new List<string>{ "read", "list"}
+                },
+                new AccessPolicy
+                {
+                    PolicyName = outboxPolicyname,
+                    Permissions = new List<string>{ "write", "add", "create"}
+                },
+                new AccessPolicy
+                {
+                    PolicyName = errorsPolicyname,
+                    Permissions = new List<string>{ "read", "list"}
+                },
+            };
+
+            await this.documentService.CreateAndAssignAccessPoliciesAsync(container, accessPolicies);
+
+            // create the access tokens for each one.
+            string inboxSasToken = await this.documentService.CreateDirectorySasTokenAsync(
+                container,
+                this.projectStorageConfiguration.PickupFolder,
+                inboxPolicyname,
+                expiresOn);
+
+            string outboxSasToken = await this.documentService.CreateDirectorySasTokenAsync(
+                container,
+                this.projectStorageConfiguration.PickupFolder,
+                outboxPolicyname,
+                expiresOn);
+
+            string errorsSasToken = await this.documentService.CreateDirectorySasTokenAsync(
+                container,
+                this.projectStorageConfiguration.PickupFolder,
+                errorsPolicyname,
+                expiresOn);
+
+            // add to the
+            //accessRequest.ImpersonationContext.InboxSasToken = inboxSasToken;
+            //accessRequest.ImpersonationContext.OutboxSasToken = outboxSasToken;
+            //accessRequest.ImpersonationContext.ErrorsSasToken = errorsSasToken;
+
+            return accessRequest;
+        }
     }
 }

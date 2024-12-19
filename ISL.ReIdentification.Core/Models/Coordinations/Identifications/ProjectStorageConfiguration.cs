@@ -10,5 +10,6 @@ namespace ISL.ReIdentification.Core.Models.Coordinations.Identifications
         public string LandingFolder { get; set; }
         public string PickupFolder { get; set; }
         public string ErrorFolder { get; set; }
+        public int TokenLifetimeMinutes { get; set; }
     }
 }

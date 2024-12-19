@@ -4,12 +4,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Threading.Tasks;
-using ISL.Providers.Storages.Abstractions.Models;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Storages.Blob;
+using ISL.ReIdentification.Core.Models.Foundations.Documents;
 
 namespace ISL.ReIdentification.Core.Services.Foundations.Documents
 {
@@ -47,8 +46,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             await this.blobStorageBroker.DeleteFileAsync(fileName, container);
         });
 
-        public ValueTask<string> GetDownloadLinkAsync(string fileName, string container) =>
-           throw new NotImplementedException();
+        public ValueTask CreateAndAssignAccessPoliciesAsync(string container, List<AccessPolicy> policies) =>
+            throw new NotImplementedException();
 
         public ValueTask<List<string>> RetrieveAllAccessPoliciesFromContainerAsync(string container) =>
         TryCatch(async () =>
@@ -58,16 +57,16 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             return await this.blobStorageBroker.RetrieveAllAccessPoliciesFromContainerAsync(container);
         });
 
-        public ValueTask<List<Policy>> RetrieveAllAccessPoliciesAsync(string container) =>
+        public ValueTask<List<AccessPolicy>> RetrieveAllAccessPoliciesAsync(string container) =>
         TryCatch(async () =>
         {
             ValidateStorageArgumentsOnRetrieveAccessPolicies(container);
-            
+
             return await this.blobStorageBroker.RetrieveAllAccessPoliciesAsync(container);
         });
 
         public ValueTask<List<string>> ListFilesInContainerAsync(string container) =>
-        TryCatch(async () => 
+        TryCatch(async () =>
         {
             ValidateOnListFilesInContainer(container);
 
@@ -106,14 +105,14 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
         TryCatch(async () =>
         {
             ValidateOnGetDownloadLink(fileName, container, expiresOn);
-            
+
             return await this.blobStorageBroker.GetDownloadLinkAsync(fileName, container, expiresOn);
         });
 
         public ValueTask<string> CreateDirectorySasTokenAsync(
-            string container, 
-            string directoryPath, 
-            string accessPolicyIdentifier, 
+            string container,
+            string directoryPath,
+            string accessPolicyIdentifier,
             DateTimeOffset expiresOn) =>
         TryCatch(async () =>
         {

@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using ISL.Providers.Storages.Abstractions;
-using ISL.Providers.Storages.Abstractions.Models;
 
 namespace ISL.ReIdentification.Core.Brokers.Storages.Blob
 {
@@ -40,9 +39,9 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Blob
             await this.storageAbstractionProvider.ListFilesInContainerAsync(container);
 
         public async ValueTask<string> CreateDirectorySasTokenAsync(
-            string container, 
-            string directoryPath, 
-            string accessPolicyIdentifier, 
+            string container,
+            string directoryPath,
+            string accessPolicyIdentifier,
             DateTimeOffset expiresOn)
         {
             return await this.storageAbstractionProvider.CreateDirectorySasTokenAsync(
@@ -50,20 +49,20 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Blob
         }
 
         public async ValueTask<string> GetAccessTokenAsync(
-            string path, 
-            string container, 
-            string accessLevel, 
+            string path,
+            string container,
+            string accessLevel,
             DateTimeOffset expiresOn) =>
                 await this.storageAbstractionProvider.GetAccessTokenAsync(path, container, accessLevel, expiresOn);
 
         public async ValueTask<List<string>> RetrieveAllAccessPoliciesFromContainerAsync(string container) =>
             await this.storageAbstractionProvider.RetrieveAllAccessPoliciesFromContainerAsync(container);
 
-        public async ValueTask<List<Policy>> RetrieveAllAccessPoliciesAsync(string container) =>
+        public async ValueTask<List<AccessPolicy>> RetrieveAllAccessPoliciesAsync(string container) =>
             throw new NotImplementedException();
 
         public async ValueTask CreateAndAssignAccessPoliciesToContainerAsync(
-            string container, 
+            string container,
             List<string> policyNames) =>
             await this.storageAbstractionProvider.CreateAndAssignAccessPoliciesToContainerAsync(container, policyNames);
 
