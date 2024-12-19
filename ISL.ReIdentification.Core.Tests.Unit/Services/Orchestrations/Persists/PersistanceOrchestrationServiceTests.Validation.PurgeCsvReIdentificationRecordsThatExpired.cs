@@ -24,11 +24,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                 csvIdentificationRequestService: this.csvIdentificationRequestServiceMock.Object,
                 notificationService: this.notificationServiceMock.Object,
                 accessAuditService: this.accessAuditServiceMock.Object,
+                documentService: this.documentServiceMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object,
                 hashBroker: this.hashBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
                 identifierBroker: this.identifierBrokerMock.Object,
-                csvReIdentificationConfigurations: null);
+                csvReIdentificationConfigurations: null,
+                projectStorageConfiguration: null);
 
             var nullCsvReIdentificationConfigurationPersistanceOrchestrationException =
                 new NullCsvReIdentificationConfigurationException(
@@ -78,14 +80,18 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                 csvIdentificationRequestService: this.csvIdentificationRequestServiceMock.Object,
                 notificationService: this.notificationServiceMock.Object,
                 accessAuditService: this.accessAuditServiceMock.Object,
+                documentService: this.documentServiceMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object,
                 hashBroker: this.hashBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
                 identifierBroker: this.identifierBrokerMock.Object,
+
                 csvReIdentificationConfigurations: new CsvReIdentificationConfigurations
                 {
                     ExpireAfterMinutes = invalidExpireAfterMinutes
-                });
+                },
+
+                projectStorageConfiguration: null);
 
             var invalidPersistanceOrchestrationException =
                 new InvalidArgumentPersistanceOrchestrationException(

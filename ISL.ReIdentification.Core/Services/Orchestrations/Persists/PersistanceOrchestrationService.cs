@@ -226,12 +226,12 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
                 .AddMinutes(this.projectStorageConfiguration.TokenLifetimeMinutes);
 
             List<string> maybeAccessPolicies = await this.documentService
-                .RetrieveAllAccessPoliciesFromContainerAsync(container);
+                .RetrieveListOfAllAccessPoliciesAsync(container);
 
             // if any are found, remove all access policies from container
             if (maybeAccessPolicies.Any())
             {
-                await this.documentService.RemoveAllAccessPoliciesFromContainerAsync(container);
+                await this.documentService.RemoveAllAccessPoliciesAsync(container);
             }
 
             // create the appropriate access policies - one for each folder
@@ -258,19 +258,19 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
             await this.documentService.CreateAndAssignAccessPoliciesAsync(container, accessPolicies);
 
             // create the access tokens for each one.
-            string inboxSasToken = await this.documentService.CreateDirectorySasTokenAsync(
+            string inboxSasToken = await this.documentService.CreateSasTokenAsync(
                 container,
                 this.projectStorageConfiguration.PickupFolder,
                 inboxPolicyname,
                 expiresOn);
 
-            string outboxSasToken = await this.documentService.CreateDirectorySasTokenAsync(
+            string outboxSasToken = await this.documentService.CreateSasTokenAsync(
                 container,
                 this.projectStorageConfiguration.PickupFolder,
                 outboxPolicyname,
                 expiresOn);
 
-            string errorsSasToken = await this.documentService.CreateDirectorySasTokenAsync(
+            string errorsSasToken = await this.documentService.CreateSasTokenAsync(
                 container,
                 this.projectStorageConfiguration.PickupFolder,
                 errorsPolicyname,

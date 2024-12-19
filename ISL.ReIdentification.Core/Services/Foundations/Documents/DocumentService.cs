@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using ISL.Providers.Storages.Abstractions.Models;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Storages.Blob;
 using ISL.ReIdentification.Core.Models.Foundations.Documents;

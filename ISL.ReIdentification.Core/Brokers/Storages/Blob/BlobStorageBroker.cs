@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using ISL.Providers.Storages.Abstractions;
+using ISL.Providers.Storages.Abstractions.Models;
 
 namespace ISL.ReIdentification.Core.Brokers.Storages.Blob
 {

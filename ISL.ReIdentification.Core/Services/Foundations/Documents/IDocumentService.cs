@@ -24,8 +24,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
         ValueTask RemoveAllAccessPoliciesAsync(string container);
         ValueTask RemoveAccessPolicyByNameAsync(string container, string policyName);
         ValueTask<List<string>> ListFilesInContainerAsync(string container);
-        ValueTask AddContainerAsync(string container);
-        ValueTask AddFolderAsync(string container, string folder);
         ValueTask<string> GetDownloadLinkAsync(string fileName, string container, DateTimeOffset expiresOn);
 
         ValueTask<string> CreateSasTokenAsync(
