@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using Attrify.Attributes;
 using FluentAssertions;
@@ -18,13 +19,16 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.ReIdentific
         public void PostImpersonationContextRequestShouldHaveRoleAttributeWithRoles()
         {
             // Given
-
             var controllerType = typeof(ReIdentificationController);
-            var methodInfo = controllerType.GetMethod("PostImpersonationContextRequest");
+            var methodInfo = controllerType.GetMethod("PostImpersonationContextRequestAsync");
             Type attributeType = typeof(AuthorizeAttribute);
             string attributeProperty = "Roles";
 
-            List<string> expectedAttributeValues = new List<string>();
+            List<string> expectedAttributeValues = new List<string>
+            {
+                "ISL.Reidentification.Portal.Administrators",
+                "ISL.Reidentification.Portal.DataEngineers"
+            };
 
             // When
             var methodAttribute = methodInfo?
@@ -57,9 +61,8 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.ReIdentific
         public void PostImpersonationContextRequestShouldNotHaveInvisibleApiAttribute()
         {
             // Given
-
             var controllerType = typeof(ReIdentificationController);
-            var methodInfo = controllerType.GetMethod("PostImpersonationContextRequest");
+            var methodInfo = controllerType.GetMethod("PostImpersonationContextRequestAsync");
             Type attributeType = typeof(InvisibleApiAttribute);
 
             // When

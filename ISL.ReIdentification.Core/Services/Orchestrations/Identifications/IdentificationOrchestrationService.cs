@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -48,6 +49,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
         {
             ValidateIdentificationRequestIsNotNull(identificationRequest);
 
+            var savedPseduoes = new Dictionary<string, string>();
             var noAccessItems = identificationRequest.IdentificationItems
                 .FindAll(x => x.HasAccess == false).ToList();
 
@@ -55,6 +57,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
 
             foreach (IdentificationItem item in identificationRequest.IdentificationItems)
             {
+                savedPseduoes.Add(item.RowNumber, item.Identifier);
                 var now = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
                 var accessAuditId = await this.identifierBroker.GetIdentifierAsync();
 
@@ -128,15 +131,12 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                 var now = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
                 var accessAuditId = await this.identifierBroker.GetIdentifierAsync();
 
-                var pseudoIdentifier = hasAccessIdentificationItems
-                    .FirstOrDefault(identificationItem => identificationItem.RowNumber == item.RowNumber).Identifier;
-
                 AccessAudit accessAudit = new AccessAudit
                 {
                     Id = accessAuditId,
                     RequestId = identificationRequest.Id,
                     TransactionId = transactionId,
-                    PseudoIdentifier = pseudoIdentifier,
+                    PseudoIdentifier = savedPseduoes[item.RowNumber],
                     EntraUserId = identificationRequest.EntraUserId,
                     GivenName = identificationRequest.GivenName,
                     Surname = identificationRequest.Surname,

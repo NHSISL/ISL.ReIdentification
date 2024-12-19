@@ -70,14 +70,13 @@ internal class Program
 
             CsvReIdentificationConfigurations csvReIdentificationConfigurations =
             configuration
-                .GetSection("csvReIdentificationConfigurations")
+                .GetSection("CsvReIdentificationConfigurations")
                     .Get<CsvReIdentificationConfigurations>();
 
             services.AddSingleton(csvReIdentificationConfigurations);
 
             AddProviders(services, configuration);
             AddBrokers(services);
-            AddServices(services);
             AddServices(services);
             AddProcessings(services);
             AddOrchestrations(services);
@@ -122,12 +121,12 @@ internal class Program
         services.AddTransient<IStorageProvider, AzureBlobStorageProvider>();
 
         bool reIdentificationProviderOfflineMode = configuration
-            .GetSection("reIdentificationProviderOfflineMode").Get<bool>();
+            .GetSection("ReIdentificationProviderOfflineMode").Get<bool>();
 
         if (reIdentificationProviderOfflineMode == true)
         {
             OfflineSourceReIdentificationConfigurations offlineSourceReIdentificationConfigurations = configuration
-                .GetSection("offlineSourceReIdentificationConfigurations")
+                .GetSection("OfflineSourceReIdentificationConfigurations")
                     .Get<OfflineSourceReIdentificationConfigurations>();
 
             services.AddSingleton(offlineSourceReIdentificationConfigurations);
@@ -136,7 +135,7 @@ internal class Program
         else
         {
             NecsReIdentificationConfigurations necsReIdentificationConfigurations = configuration
-                .GetSection("necsReIdentificationConfigurations")
+                .GetSection("NecsReIdentificationConfigurations")
                     .Get<NecsReIdentificationConfigurations>();
 
             services.AddSingleton(necsReIdentificationConfigurations);
@@ -153,7 +152,7 @@ internal class Program
         services.AddTransient<IIdentifierBroker, IdentifierBroker>();
         services.AddTransient<IReIdentificationStorageBroker, ReIdentificationStorageBroker>();
         services.AddTransient<IHashBroker, HashBroker>();
-        services.AddTransient<INotificationBroker, INotificationBroker>();
+        services.AddTransient<INotificationBroker, NotificationBroker>();
         services.AddTransient<ICsvHelperBroker, CsvHelperBroker>();
     }
 

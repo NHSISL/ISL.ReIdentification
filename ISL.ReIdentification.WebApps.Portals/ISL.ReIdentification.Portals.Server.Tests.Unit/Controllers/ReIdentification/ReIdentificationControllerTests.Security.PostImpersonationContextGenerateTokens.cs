@@ -15,15 +15,19 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.ReIdentific
     public partial class ReIdentificationControllerTests
     {
         [Fact]
-        public void PostCsvIdentificationRequestShouldHaveRoleAttributeWithRoles()
+        public void PostImpersonationContextGenerateTokensShouldHaveRoleAttributeWithRoles()
         {
             // Given
             var controllerType = typeof(ReIdentificationController);
-            var methodInfo = controllerType.GetMethod("PostCsvIdentificationRequestAsync");
+            var methodInfo = controllerType.GetMethod("PostImpersonationContextGenerateTokensAsync");
             Type attributeType = typeof(AuthorizeAttribute);
             string attributeProperty = "Roles";
 
-            List<string> expectedAttributeValues = new List<string>();
+            List<string> expectedAttributeValues = new List<string>
+            {
+                "ISL.Reidentification.Portal.Administrators",
+                "ISL.Reidentification.Portal.DataEngineers"
+            };
 
             // When
             var methodAttribute = methodInfo?
@@ -53,11 +57,11 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.ReIdentific
         }
 
         [Fact]
-        public void PostCsvIdentificationRequestShouldNotHaveInvisibleApiAttribute()
+        public void PostImpersonationContextGenerateTokensShouldNotHaveInvisibleApiAttribute()
         {
             // Given
             var controllerType = typeof(ReIdentificationController);
-            var methodInfo = controllerType.GetMethod("PostCsvIdentificationRequestAsync");
+            var methodInfo = controllerType.GetMethod("PostImpersonationContextGenerateTokensAsync");
             Type attributeType = typeof(InvisibleApiAttribute);
 
             // When
