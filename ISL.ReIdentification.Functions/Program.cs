@@ -95,7 +95,7 @@ internal class Program
 
         NotifyConfigurations notifyConfigurations = new NotifyConfigurations
         {
-            ApiKey = notificationConfigurations.ApiKey
+            ApiKey = notificationConfigurations.ApiKey ?? string.Empty
         };
 
         services.AddSingleton(notificationConfigurations);
