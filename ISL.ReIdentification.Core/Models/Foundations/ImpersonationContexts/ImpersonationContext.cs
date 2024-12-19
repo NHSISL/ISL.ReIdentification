@@ -26,12 +26,16 @@ namespace ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts
         public string Purpose { get; set; } = string.Empty;
         public string Organisation { get; set; } = string.Empty;
         public string ProjectName { get; set; } = string.Empty;
+
         [NotMapped]
         public string InboxSasToken { get; set; } = string.Empty;
+        
         [NotMapped]
         public string OutboxSasToken { get; set; } = string.Empty;
+        
         [NotMapped]
         public string ErrorsSasToken { get; set; } = string.Empty;
+        
         public bool IsApproved { get; set; }
         public string IdentifierColumn { get; set; } = string.Empty;
         public string CreatedBy { get; set; } = string.Empty;

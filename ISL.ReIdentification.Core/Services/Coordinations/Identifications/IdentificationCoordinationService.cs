@@ -204,7 +204,7 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
             }
         });
 
-        public ValueTask<AccessRequest> ExpireRenewImpersonationContextTokensAsync(Guid impersonationContextId) =>
+        public async ValueTask<AccessRequest> ExpireRenewImpersonationContextTokensAsync(Guid impersonationContextId) =>
             throw new NotImplementedException();
 
         virtual async internal ValueTask<AccessRequest> ConvertCsvIdentificationRequestToIdentificationRequest(
