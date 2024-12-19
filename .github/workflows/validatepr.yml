@@ -34,7 +34,7 @@ jobs:
           console.log(`PR Body: ${prBody}`);
 
     - name: Normalize PR description and validate
-      if: ${{ steps.get-pr.outputs.prOwner != 'dependabot[bot]' && steps.get-pr.outputs.description != '' }}  # Only run if the description is not empty (i.e., not skipped)
+      if: ${{ steps.get-pr.outputs.prOwner != 'dependabot[bot]' }}
       id: validate
       shell: bash
       run: |
@@ -44,8 +44,8 @@ jobs:
         echo "::notice::Raw PR Body: $PR_BODY"
     
         if [[ -z "$PR_BODY" ]]; then
-          echo "Skipping PR validation due to empty description."
-          exit 0
+          echo "Error: PR description does not contain any links to issue(s)/task(s) (e.g., 'closes #123' / 'closes AB#123' / 'fixes #123' / 'fixes AB#123')."
+          exit 1
         fi
     
         # Normalize newlines and remove leading/trailing spaces
@@ -55,9 +55,9 @@ jobs:
         echo "::notice::Normalized PR Body: $PR_BODY"
     
         # Ensure the PR description matches the expected pattern
-        if echo "$PR_BODY" | grep -Piq "(closes\s*\[#?\d+\]?|closes\s*\[?AB#\d+\]?|CLOSES\s*\[#?\d+\]?|CLOSES\s*\[?AB#\d+\]?)"; then
+        if echo "$PR_BODY" | grep -Piq "((close|closes|closed|fix|fixes|fixed|resolve|resolves|resolved)\s*(\[#\d+\]|\#\d+)|(?:close|closes|closed|fix|fixes|fixed|resolve|resolves|resolved)\s*(\[AB#\d+\]|AB#\d+))"; then
           echo "Valid PR description."
         else
-          echo "Error: PR description does not contain a closing issue/task link (e.g., 'closes #123' or 'closes AB#123')."
+          echo "Error: PR description does not contain any links to issue(s)/task(s) (e.g., 'closes #123' / 'closes AB#123' / 'fixes #123' / 'fixes AB#123')."
           exit 1
         fi
