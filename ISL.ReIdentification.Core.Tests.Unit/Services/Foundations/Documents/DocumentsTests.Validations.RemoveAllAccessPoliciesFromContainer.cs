@@ -16,7 +16,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnRemoveAllAccessPoliciesFromContainerAsync(
+        public async Task ShouldThrowValidationExceptionOnRemoveAllAccessPoliciesAsync(
             string invalidString)
         {
             // given
@@ -35,7 +35,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
 
             // when
             ValueTask removedPoliciesTask =
-                this.documentService.RemoveAllAccessPoliciesFromContainerAsync(invalidContainer);
+                this.documentService.RemoveAllAccessPoliciesAsync(invalidContainer);
 
             DocumentValidationException actualDocumentValidationException =
                 await Assert.ThrowsAsync<DocumentValidationException>(removedPoliciesTask.AsTask);
