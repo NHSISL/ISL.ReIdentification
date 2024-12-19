@@ -17,12 +17,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnCreateDirectorySasTokenAsync(
+        public async Task ShouldThrowValidationExceptionOnCreateSasTokenAsync(
             string invalidString)
         {
             // given
             string invalidContainer = invalidString;
-            string invalidDirectoryPath = invalidString;
+            string invalidpath = invalidString;
             string invalidAccessPolicyIdentifier = invalidString;
             DateTimeOffset invalidDateTimeOffset = GetRandomFutureDateTimeOffset();
 
@@ -30,7 +30,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                 message: "Invalid document. Please correct the errors and try again.");
 
             invalidDocumentException.AddData(
-                key: "directoryPath",
+                key: "path",
                 values: "Text is invalid");
 
             invalidDocumentException.AddData(
@@ -47,9 +47,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
 
             // when
             ValueTask<string> createDirectorySasTokenTask =
-                this.documentService.CreateDirectorySasTokenAsync(
+                this.documentService.CreateSasTokenAsync(
                     invalidContainer, 
-                    invalidDirectoryPath, 
+                    invalidpath, 
                     invalidAccessPolicyIdentifier, 
                     invalidDateTimeOffset);
 

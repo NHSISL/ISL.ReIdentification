@@ -10,17 +10,17 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
     public partial class DocumentsTests
     {
         [Fact]
-        public async Task ShouldRemoveAllAccessPoliciesFromContainerAsync()
+        public async Task ShouldRemoveAllAccessPoliciesAsync()
         {
             // given
             string randomContainer = GetRandomString();
 
             // when
-            await this.documentService.RemoveAllAccessPoliciesFromContainerAsync(randomContainer);
+            await this.documentService.RemoveAllAccessPoliciesAsync(randomContainer);
 
             // then
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.RemoveAccessPoliciesFromContainerAsync(randomContainer),
+                broker.RemoveAllAccessPoliciesAsync(randomContainer),
                     Times.Once);
 
             this.blobStorageBrokerMock.VerifyNoOtherCalls();

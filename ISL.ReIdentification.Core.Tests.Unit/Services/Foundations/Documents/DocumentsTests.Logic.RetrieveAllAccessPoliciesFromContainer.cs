@@ -13,7 +13,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
     public partial class DocumentsTests
     {
         [Fact]
-        public async Task ShouldRetrieveAllAccessPoliciesFromContainerAsync()
+        public async Task ShouldRetrieveListOfAllAccessPoliciesAsync()
         {
             // given
             string randomContainer = GetRandomString();
@@ -22,18 +22,18 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             List<string> expectedAccessPolicies = outputAccessPolicies;
 
             this.blobStorageBrokerMock.Setup(broker =>
-                broker.RetrieveAllAccessPoliciesFromContainerAsync(randomContainer))
+                broker.RetrieveListOfAllAccessPoliciesAsync(randomContainer))
                     .ReturnsAsync(outputAccessPolicies);
 
             // when
             List<string> actualAccessPolicies = 
-                await this.documentService.RetrieveAllAccessPoliciesFromContainerAsync(randomContainer);
+                await this.documentService.RetrieveListOfAllAccessPoliciesAsync(randomContainer);
 
             // then
             actualAccessPolicies.Should().BeEquivalentTo(expectedAccessPolicies);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.RetrieveAllAccessPoliciesFromContainerAsync(randomContainer),
+                broker.RetrieveListOfAllAccessPoliciesAsync(randomContainer),
                     Times.Once);
 
             this.blobStorageBrokerMock.VerifyNoOtherCalls();

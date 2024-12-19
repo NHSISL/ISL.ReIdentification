@@ -4,12 +4,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Threading.Tasks;
 using ISL.Providers.Storages.Abstractions.Models;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Storages.Blob;
+using ISL.ReIdentification.Core.Models.Foundations.Documents;
 
 namespace ISL.ReIdentification.Core.Services.Foundations.Documents
 {
@@ -47,38 +47,61 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             await this.blobStorageBroker.DeleteFileAsync(fileName, container);
         });
 
-        public ValueTask<string> GetDownloadLinkAsync(string fileName, string container) =>
-           throw new NotImplementedException();
+        public ValueTask CreateAndAssignAccessPoliciesAsync(string container, List<AccessPolicy> policies) =>
+            throw new NotImplementedException();
 
-        public ValueTask<List<string>> RetrieveAllAccessPoliciesFromContainerAsync(string container) =>
+        public ValueTask<List<string>> RetrieveListOfAllAccessPoliciesAsync(string container) =>
         TryCatch(async () =>
         {
             ValidateStorageArgumentsOnRetrieveAccessPolicies(container);
 
-            return await this.blobStorageBroker.RetrieveAllAccessPoliciesFromContainerAsync(container);
+            return await this.blobStorageBroker.RetrieveListOfAllAccessPoliciesAsync(container);
         });
 
-        public ValueTask<List<Policy>> RetrieveAllAccessPoliciesAsync(string container) =>
+        public ValueTask<List<AccessPolicy>> RetrieveAllAccessPoliciesAsync(string container) =>
         TryCatch(async () =>
         {
             ValidateStorageArgumentsOnRetrieveAccessPolicies(container);
-            
-            return await this.blobStorageBroker.RetrieveAllAccessPoliciesAsync(container);
+
+            List<Policy> retrievedPolicies = await this.blobStorageBroker
+                .RetrieveAllAccessPoliciesAsync(container);
+
+            List<AccessPolicy> accessPolicies = ConvertToAccessPolicyList(retrievedPolicies);
+
+            return accessPolicies;
+        });
+
+        public ValueTask<AccessPolicy> RetrieveAccessPolicyByNameAsync(string container, string policyName) =>
+        TryCatch(async () =>
+        {
+            ValidateStorageArgumentsOnRetrieveAccessPolicyByName(container, policyName);
+
+            List<string> policyNames = await this.blobStorageBroker
+                .RetrieveListOfAllAccessPoliciesAsync(container);
+
+            ValidateAccessPolicyExists(policyName, policyNames);
+
+            Policy retrievedPolicy = await this.blobStorageBroker
+                .RetrieveAccessPolicyByNameAsync(container, policyName);
+
+            AccessPolicy accessPolicy = ConvertToAccessPolicy(retrievedPolicy);
+
+            return accessPolicy;
         });
 
         public ValueTask<List<string>> ListFilesInContainerAsync(string container) =>
-        TryCatch(async () => 
+        TryCatch(async () =>
         {
             ValidateOnListFilesInContainer(container);
 
             return await this.blobStorageBroker.ListFilesInContainerAsync(container);
         });
 
-        public ValueTask RemoveAllAccessPoliciesFromContainerAsync(string container) =>
+        public ValueTask RemoveAllAccessPoliciesAsync(string container) =>
         TryCatch(async () =>
         {
             ValidateStorageArgumentsOnRemoveAccessPolicies(container);
-            await this.blobStorageBroker.RemoveAccessPoliciesFromContainerAsync(container);
+            await this.blobStorageBroker.RemoveAllAccessPoliciesAsync(container);
         });
 
         public ValueTask RemoveAccessPolicyByNameAsync(string container, string policyName) =>
@@ -106,21 +129,43 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
         TryCatch(async () =>
         {
             ValidateOnGetDownloadLink(fileName, container, expiresOn);
-            
+
             return await this.blobStorageBroker.GetDownloadLinkAsync(fileName, container, expiresOn);
         });
 
-        public ValueTask<string> CreateDirectorySasTokenAsync(
-            string container, 
-            string directoryPath, 
-            string accessPolicyIdentifier, 
+        public ValueTask<string> CreateSasTokenAsync(
+            string container,
+            string path,
+            string accessPolicyIdentifier,
             DateTimeOffset expiresOn) =>
         TryCatch(async () =>
         {
-            ValidateOnCreateDirectorySasToken(container, directoryPath, accessPolicyIdentifier, expiresOn);
+            ValidateOnCreateDirectorySasToken(container, path, accessPolicyIdentifier, expiresOn);
 
             return await this.blobStorageBroker
-                .CreateDirectorySasTokenAsync(container, directoryPath, accessPolicyIdentifier, expiresOn);
+                .CreateSasTokenAsync(container, path, accessPolicyIdentifier, expiresOn);
         });
-    }
+
+        private static AccessPolicy ConvertToAccessPolicy(Policy policy) =>
+            new AccessPolicy
+            {
+                PolicyName = policy.PolicyName,
+                Permissions = policy.Permissions,
+                StartTime = policy.StartTime,
+                ExpiryTime = policy.ExpiryTime,
+            };
+
+        private static List<AccessPolicy> ConvertToAccessPolicyList(List<Policy> policies)
+        {
+            List<AccessPolicy> accessPolicyList = new List<AccessPolicy>();
+
+            foreach (Policy policy in policies)
+            {
+                AccessPolicy accessPolicy = ConvertToAccessPolicy(policy);
+                accessPolicyList.Add(accessPolicy);
+            }
+
+            return accessPolicyList;
+        }
+    };
 }

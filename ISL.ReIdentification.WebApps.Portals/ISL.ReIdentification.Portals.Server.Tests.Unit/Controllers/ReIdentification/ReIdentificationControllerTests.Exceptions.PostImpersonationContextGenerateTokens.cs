@@ -30,7 +30,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.ReIdentific
                 new ActionResult<AccessRequest>(expectedBadRequestObjectResult);
 
             this.identificationCoordinationServiceMock.Setup(service =>
-                service.GenerateImpersonationContextTokensAsync(It.IsAny<Guid>()))
+                service.ExpireRenewImpersonationContextTokensAsync(It.IsAny<Guid>()))
                     .ThrowsAsync(validationException);
 
             // when
@@ -41,7 +41,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.ReIdentific
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
             this.identificationCoordinationServiceMock.Verify(service =>
-                service.GenerateImpersonationContextTokensAsync(It.IsAny<Guid>()),
+                service.ExpireRenewImpersonationContextTokensAsync(It.IsAny<Guid>()),
                     Times.Once);
 
             this.identificationCoordinationServiceMock.VerifyNoOtherCalls();
@@ -62,7 +62,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.ReIdentific
                 new ActionResult<AccessRequest>(expectedBadRequestObjectResult);
 
             this.identificationCoordinationServiceMock.Setup(service =>
-                service.GenerateImpersonationContextTokensAsync(It.IsAny<Guid>()))
+                service.ExpireRenewImpersonationContextTokensAsync(It.IsAny<Guid>()))
                     .ThrowsAsync(validationException);
 
             // when
@@ -73,7 +73,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.ReIdentific
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
             this.identificationCoordinationServiceMock.Verify(service =>
-                service.GenerateImpersonationContextTokensAsync(It.IsAny<Guid>()),
+                service.ExpireRenewImpersonationContextTokensAsync(It.IsAny<Guid>()),
                     Times.Once);
 
             this.identificationCoordinationServiceMock.VerifyNoOtherCalls();

@@ -3,7 +3,9 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using ISL.ReIdentification.Core.Models.Foundations.Documents.Exceptions;
 
 namespace ISL.ReIdentification.Core.Services.Foundations.Documents
@@ -38,10 +40,15 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             Validate((Rule: IsInvalid(container), Parameter: "Container"));
         }
 
-        private static void ValidateStorageArgumentsOnRemoveAccessPolicies(string container)
+        private static void ValidateStorageArgumentsOnRetrieveAccessPolicyByName(string container, string policyName)
         {
-            Validate((Rule: IsInvalid(container), Parameter: "Container"));
+            Validate(
+                (Rule: IsInvalid(container), Parameter: "Container"),
+                (Rule: IsInvalid(policyName), Parameter: "PolicyName"));
         }
+
+        private static void ValidateStorageArgumentsOnRemoveAccessPolicies(string container) =>
+            Validate((Rule: IsInvalid(container), Parameter: "Container"));
 
         private static void ValidateStorageArgumentsOnRemoveAccessPolicyByName(string container, string policyName)
         {
@@ -50,15 +57,11 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
                 (Rule: IsInvalid(policyName), Parameter: "PolicyName"));
         }
 
-        private static void ValidateOnAddContainer(string container)
-        {
+        private static void ValidateOnAddContainer(string container) =>
             Validate((Rule: IsInvalid(container), Parameter: nameof(container)));
-        }
 
-        private static void ValidateOnListFilesInContainer(string container)
-        {
+        private static void ValidateOnListFilesInContainer(string container) =>
             Validate((Rule: IsInvalid(container), Parameter: "Container"));
-        }
 
         private static void ValidateOnAddFolder(string folderName, string container)
         {
@@ -68,8 +71,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
         }
 
         private static void ValidateOnGetDownloadLink(
-            string folderName, 
-            string container, 
+            string folderName,
+            string container,
             DateTimeOffset dateTimeOffset)
         {
             Validate(
@@ -79,16 +82,25 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
         }
 
         private static void ValidateOnCreateDirectorySasToken(
-            string container, 
-            string directoryPath, 
-            string accessPolicyIdentifier, 
+            string container,
+            string path,
+            string accessPolicyIdentifier,
             DateTimeOffset expiresOn)
         {
             Validate(
                 (Rule: IsInvalid(container), Parameter: nameof(container)),
-                (Rule: IsInvalid(directoryPath), Parameter: nameof(directoryPath)),
+                (Rule: IsInvalid(path), Parameter: nameof(path)),
                 (Rule: IsInvalid(accessPolicyIdentifier), Parameter: nameof(accessPolicyIdentifier)),
                 (Rule: IsInvalid(expiresOn), Parameter: nameof(expiresOn)));
+        }
+
+        private static void ValidateAccessPolicyExists(string policyName, List<string> policyNames)
+        {
+            if (!(policyNames.Any(policy => policy == policyName)))
+            {
+                throw new AccessPolicyNotFoundDocumentException(
+                    message: "Access policy with the provided name was not found on this container.");
+            }
         }
 
         private static dynamic IsInvalid(DateTimeOffset dateTimeOffset) => new
