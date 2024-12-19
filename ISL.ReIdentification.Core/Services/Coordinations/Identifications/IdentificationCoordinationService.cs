@@ -204,6 +204,9 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
             }
         });
 
+        public async ValueTask<AccessRequest> ExpireRenewImpersonationContextTokensAsync(Guid impersonationContextId) =>
+            throw new NotImplementedException();
+
         virtual async internal ValueTask<AccessRequest> ConvertCsvIdentificationRequestToIdentificationRequest(
             AccessRequest accessRequest)
         {
@@ -353,8 +356,5 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
 
             return (landingFilepath, pickFilepath, errorFilepath, impersonationContextId);
         }
-
-        public async ValueTask<AccessRequest> GenerateImpersonationContextTokensAsync(Guid impersonationContextId) =>
-            throw new NotImplementedException();
     }
 }

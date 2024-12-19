@@ -25,8 +25,9 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.Impersonat
         public string Purpose { get; set; } = string.Empty;
         public string Organisation { get; set; } = string.Empty;
         public string ProjectName { get; set; } = string.Empty;
-        public string ClientId { get; set; } = string.Empty;
-        public string ClientSecret { get; set; } = string.Empty;
+        public string InboxSasToken { get; set; } = string.Empty;
+        public string OutboxSasToken { get; set; } = string.Empty;
+        public string ErrorsSasToken { get; set; } = string.Empty;
         public bool IsApproved { get; set; }
         public string IdentifierColumn { get; set; } = string.Empty;
         public string CreatedBy { get; set; } = string.Empty;
