@@ -37,7 +37,7 @@ using Microsoft.Extensions.Logging;
 
 internal class Program
 {
-    public static async Task Main(string[] args)
+    private static async Task Main(string[] args)
     {
         var host = new HostBuilder()
         .ConfigureAppConfiguration(config =>
