@@ -34,7 +34,7 @@ jobs:
           console.log(`PR Body: ${prBody}`);
 
     - name: Normalize PR description and validate
-      if: ${{ steps.get-pr.outputs.prOwner != 'dependabot[bot]' && steps.get-pr.outputs.description != '' }}  # Only run if the description is not empty (i.e., not skipped)
+      if: ${{ steps.get-pr.outputs.prOwner != 'dependabot[bot]' }}
       id: validate
       shell: bash
       run: |
@@ -44,8 +44,8 @@ jobs:
         echo "::notice::Raw PR Body: $PR_BODY"
     
         if [[ -z "$PR_BODY" ]]; then
-          echo "Skipping PR validation due to empty description."
-          exit 0
+          echo "Error: PR description does not contain any links to issue(s)/task(s) link (e.g., 'closes #123' / 'closes AB#123' / 'fixes #123' / 'fixes AB#123')."
+          exit 1
         fi
     
         # Normalize newlines and remove leading/trailing spaces
