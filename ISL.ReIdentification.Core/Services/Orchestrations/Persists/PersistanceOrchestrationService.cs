@@ -63,6 +63,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
             this.dateTimeBroker = dateTimeBroker;
             this.identifierBroker = identifierBroker;
             this.csvReIdentificationConfigurations = csvReIdentificationConfigurations;
+            this.projectStorageConfiguration = projectStorageConfiguration;
         }
 
         public ValueTask<AccessRequest> PersistImpersonationContextAsync(AccessRequest accessRequest) =>
@@ -215,12 +216,13 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
 
         virtual internal async ValueTask<AccessRequest> CreateOrRenewTokens(AccessRequest accessRequest)
         {
-            // use the retrieve list all access policies to check the container
             string container = accessRequest.ImpersonationContext.Id.ToString();
             string inboxPolicyname = container + "-InboxPolicy";
             string outboxPolicyname = container + "-OutboxPolicy";
             string errorsPolicyname = container + "-ErrorsPolicy";
             DateTimeOffset currentDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+
+            var test = this.projectStorageConfiguration;
 
             DateTimeOffset expiresOn = currentDateTimeOffset
                 .AddMinutes(this.projectStorageConfiguration.TokenLifetimeMinutes);
@@ -228,13 +230,10 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
             List<string> maybeAccessPolicies = await this.documentService
                 .RetrieveListOfAllAccessPoliciesAsync(container);
 
-            // if any are found, remove all access policies from container
             if (maybeAccessPolicies.Any())
             {
                 await this.documentService.RemoveAllAccessPoliciesAsync(container);
             }
-
-            // create the appropriate access policies - one for each folder
 
             List<AccessPolicy> accessPolicies = new List<AccessPolicy>
             {
@@ -257,29 +256,23 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
 
             await this.documentService.CreateAndAssignAccessPoliciesAsync(container, accessPolicies);
 
-            // create the access tokens for each one.
-            string inboxSasToken = await this.documentService.CreateSasTokenAsync(
+            accessRequest.ImpersonationContext.InboxSasToken = await this.documentService.CreateSasTokenAsync(
                 container,
                 this.projectStorageConfiguration.PickupFolder,
                 inboxPolicyname,
                 expiresOn);
 
-            string outboxSasToken = await this.documentService.CreateSasTokenAsync(
+            accessRequest.ImpersonationContext.OutboxSasToken = await this.documentService.CreateSasTokenAsync(
                 container,
-                this.projectStorageConfiguration.PickupFolder,
+                this.projectStorageConfiguration.LandingFolder,
                 outboxPolicyname,
                 expiresOn);
 
-            string errorsSasToken = await this.documentService.CreateSasTokenAsync(
+            accessRequest.ImpersonationContext.ErrorsSasToken = await this.documentService.CreateSasTokenAsync(
                 container,
-                this.projectStorageConfiguration.PickupFolder,
+                this.projectStorageConfiguration.ErrorFolder,
                 errorsPolicyname,
                 expiresOn);
-
-            // add to the
-            //accessRequest.ImpersonationContext.InboxSasToken = inboxSasToken;
-            //accessRequest.ImpersonationContext.OutboxSasToken = outboxSasToken;
-            //accessRequest.ImpersonationContext.ErrorsSasToken = errorsSasToken;
 
             return accessRequest;
         }

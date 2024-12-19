@@ -15,6 +15,7 @@ using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests.Exceptions;
+using ISL.ReIdentification.Core.Models.Foundations.Documents;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.Notifications.Exceptions;
@@ -68,8 +69,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                 ExpireAfterMinutes = expireAfterMinutes
             };
 
-            this.projectStorageConfiguration = CreateRandomProjectStorageConfiguration();
-
             this.persistanceOrchestrationService =
                 new PersistanceOrchestrationService(
                     impersonationContextService: impersonationContextServiceMock.Object,
@@ -82,7 +81,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                     dateTimeBroker: dateTimeBrokerMock.Object,
                     identifierBroker: identifierBrokerMock.Object,
                     csvReIdentificationConfigurations: csvReIdentificationConfigurations,
-                    projectStorageConfiguration: projectStorageConfiguration);
+                    projectStorageConfiguration: CreateRandomProjectStorageConfiguration());
         }
 
         private static int GetRandomNumber() =>
@@ -96,6 +95,20 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
 
             return result.Length > length ? result.Substring(0, length) : result;
+        }
+
+        private static List<string> GetRandomStringList()
+        {
+            int randomNumber = GetRandomNumber();
+            List<string> randomStringList = new List<string>();
+
+            for (int index = 0; index < randomNumber; index++)
+            {
+                string randomString = GetRandomStringWithLengthOf(randomNumber);
+                randomStringList.Add(randomString);
+            }
+
+            return randomStringList;
         }
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
@@ -262,6 +275,29 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             return filler;
         }
 
+        private static List<AccessPolicy> GetAccessPolicies(
+            string inboxPolicyname,
+            string outboxPolicyname,
+            string errorsPolicyname) =>
+            new List<AccessPolicy>
+            {
+                new AccessPolicy
+                {
+                    PolicyName = inboxPolicyname,
+                    Permissions = new List<string>{ "read", "list"}
+                },
+                new AccessPolicy
+                {
+                    PolicyName = outboxPolicyname,
+                    Permissions = new List<string>{ "write", "add", "create"}
+                },
+                new AccessPolicy
+                {
+                    PolicyName = errorsPolicyname,
+                    Permissions = new List<string>{ "read", "list"}
+                },
+            };
+
         private static Expression<Func<Xeption, bool>> SameExceptionAs(
             Xeption expectedException)
         {
@@ -274,10 +310,14 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                 actualCsvIdentificationRequest => this.compareLogic
                     .Compare(expectedCsvIdentificationRequest, actualCsvIdentificationRequest).AreEqual;
 
-        private Expression<Func<AccessAudit, bool>> SameAccessAuditAs(
-            AccessAudit expectedAccessAudit) =>
+        private Expression<Func<AccessAudit, bool>> SameAccessAuditAs(AccessAudit expectedAccessAudit) =>
                 actualAccessAudit => this.compareLogic
                     .Compare(expectedAccessAudit, actualAccessAudit).AreEqual;
+
+        private Expression<Func<List<AccessPolicy>, bool>> SameAccessPolicyListAs(
+            List<AccessPolicy> expectedAccessPolicyList) =>
+                actualAccessPolicyList => this.compareLogic
+                    .Compare(expectedAccessPolicyList, actualAccessPolicyList).AreEqual;
 
         public static TheoryData<Xeption> DependencyValidationExceptions()
         {
