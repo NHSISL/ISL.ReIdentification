@@ -319,6 +319,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                 actualAccessPolicyList => this.compareLogic
                     .Compare(expectedAccessPolicyList, actualAccessPolicyList).AreEqual;
 
+        private Expression<Func<AccessRequest, bool>> SameAccessRequestAs(AccessRequest expectedAccessRequest) =>
+            actualAccessRequest => this.compareLogic
+                .Compare(expectedAccessRequest, actualAccessRequest).AreEqual;
+
         public static TheoryData<Xeption> DependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();

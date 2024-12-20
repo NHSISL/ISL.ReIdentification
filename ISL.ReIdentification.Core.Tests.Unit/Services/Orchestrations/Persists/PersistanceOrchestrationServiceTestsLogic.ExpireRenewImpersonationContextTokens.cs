@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
+using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Services.Orchestrations.Persists;
 using Moq;
@@ -22,8 +23,15 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             AccessRequest randomAccessRequest = CreateRandomAccessRequest();
             randomAccessRequest.CsvIdentificationRequest = null;
             randomAccessRequest.IdentificationRequest = null;
-            AccessRequest inputAccessRequest = randomAccessRequest.DeepClone();
-            Guid inputImpersonationContextId = inputAccessRequest.ImpersonationContext.Id;
+            ImpersonationContext randomImpersonationContext = CreateRandomImpersonationContext();
+            Guid inputImpersonationContextId = randomImpersonationContext.Id;
+            ImpersonationContext outputImpersonationContext = randomImpersonationContext.DeepClone();
+
+            AccessRequest inputAccessRequest = new AccessRequest
+            {
+                ImpersonationContext = outputImpersonationContext
+            };
+
             AccessRequest outputAccessRequest = inputAccessRequest.DeepClone();
             string randomInboxSasToken = GetRandomString();
             string outputInboxSasToken = randomInboxSasToken;
@@ -51,11 +59,14 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                 this.identifierBrokerMock.Object,
                 null,
                 randomProjectStorageConfiguration)
-
             { CallBase = true };
 
+            this.impersonationContextServiceMock.Setup(service =>
+                service.RetrieveImpersonationContextByIdAsync(inputImpersonationContextId))
+                    .ReturnsAsync(outputImpersonationContext);
+
             persistanceOrchestrationServiceMock.Setup(service =>
-                service.CreateOrRenewTokensAsync(inputAccessRequest))
+                service.CreateOrRenewTokensAsync(It.Is(SameAccessRequestAs(inputAccessRequest))))
                     .ReturnsAsync(outputAccessRequest);
 
             PersistanceOrchestrationService service = persistanceOrchestrationServiceMock.Object;
@@ -67,14 +78,19 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             // then
             actualAccessRequest.Should().BeEquivalentTo(expectedAccessRequest);
 
+            this.impersonationContextServiceMock.Verify(service =>
+                service.RetrieveImpersonationContextByIdAsync(inputImpersonationContextId),
+                    Times.Once);
+
             persistanceOrchestrationServiceMock.Verify(service =>
-                service.CreateOrRenewTokensAsync(inputAccessRequest),
+                service.CreateOrRenewTokensAsync(It.Is(SameAccessRequestAs(inputAccessRequest))),
                     Times.Once);
 
             this.csvIdentificationRequestServiceMock.VerifyNoOtherCalls();
             this.impersonationContextServiceMock.VerifyNoOtherCalls();
             this.notificationServiceMock.VerifyNoOtherCalls();
             this.accessAuditServiceMock.VerifyNoOtherCalls();
+            this.documentServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.hashBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
