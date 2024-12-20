@@ -23,7 +23,6 @@ using ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Services.Foundations.Documents;
 using ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Services.Foundations.Notifications;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
 {
@@ -247,7 +246,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
             List<string> maybeAccessPolicies = await this.documentService
                 .RetrieveListOfAllAccessPoliciesAsync(container);
 
-            if (maybeAccessPolicies.Any())
+            if (maybeAccessPolicies.Count != 0)
             {
                 await this.documentService.RemoveAllAccessPoliciesAsync(container);
             }
