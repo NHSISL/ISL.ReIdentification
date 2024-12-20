@@ -8,10 +8,6 @@ class UserAgreementBroker {
 
     async UserHasSignedAgreement(userId: string, userAgreementVersion?: string, agreementType?: string): Promise<boolean> {
         if (!userId || !userAgreementVersion) {
-            throw new Error("Invalid parameters");
-        }
-
-        if (!userId) {
             return false;
         }
 
