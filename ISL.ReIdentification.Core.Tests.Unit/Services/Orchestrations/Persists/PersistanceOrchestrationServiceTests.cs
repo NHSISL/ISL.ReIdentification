@@ -377,6 +377,40 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             };
         }
 
+        public static TheoryData<Xeption> ReturningNothingDependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new AccessAuditDependencyException(
+                    message: "Access audit dependency error occurred, please contact support.",
+                    innerException),
+
+                new AccessAuditServiceException(
+                    message: "Access audit service error occurred, please contact support.",
+                    innerException),
+
+                new CsvIdentificationRequestDependencyException(
+                    message: "CSV identification request dependency error occurred, please contact support.",
+                    innerException),
+
+                new CsvIdentificationRequestServiceException(
+                    message: "CSV identification request service error occurred, please contact support.",
+                    innerException),
+
+                new NotificationDependencyException(
+                    message: "Notification dependency error occurred, please contact support.",
+                    innerException),
+
+                new NotificationServiceException(
+                    message: "Notification service error occurred, please contact support.",
+                    innerException),
+            };
+        }
+
         public static TheoryData<Xeption> PurgeDependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();

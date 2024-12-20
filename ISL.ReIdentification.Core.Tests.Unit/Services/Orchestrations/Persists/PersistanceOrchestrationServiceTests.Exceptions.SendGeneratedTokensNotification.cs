@@ -14,7 +14,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
     public partial class PersistanceOrchestrationServiceTests
     {
         [Theory]
-        [MemberData(nameof(PurgeDependencyValidationExceptions))]
+        [MemberData(nameof(ReturningNothingDependencyValidationExceptions))]
         public async Task ShouldThrowDependencyValidationOnSendGeneratedTokensNotificationAndLogItAsync(
             Xeption dependencyValidationException)
         {
@@ -51,6 +51,56 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             this.loggingBrokerMock.Verify(broker =>
                broker.LogErrorAsync(It.Is(SameExceptionAs(
                    expectedPersistanceOrchestrationDependencyValidationException))),
+                       Times.Once);
+
+            this.csvIdentificationRequestServiceMock.VerifyNoOtherCalls();
+            this.impersonationContextServiceMock.VerifyNoOtherCalls();
+            this.notificationServiceMock.VerifyNoOtherCalls();
+            this.accessAuditServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(ReturningNothingDependencyExceptions))]
+        public async Task ShouldThrowDependencyOnSendGeneratedTokensNotificationAndLogItAsync(
+            Xeption dependencyException)
+        {
+            // given
+            AccessRequest someAccessRequest = CreateRandomAccessRequest();
+
+            this.notificationServiceMock.Setup(service =>
+                service.SendImpersonationTokenGeneratedNotificationAsync(someAccessRequest))
+                    .ThrowsAsync(dependencyException);
+
+            var expectedPersistanceOrchestrationDependencyException =
+                new PersistanceOrchestrationDependencyException(
+                    message: "Persistance orchestration dependency error occurred, " +
+                        "fix the errors and try again.",
+                    innerException: dependencyException.InnerException as Xeption);
+
+            // when
+            ValueTask sendGeneratedTokensNotificationTask = this.persistanceOrchestrationService
+                .SendGeneratedTokensNotificationAsync(someAccessRequest);
+
+            PersistanceOrchestrationDependencyException
+                actualPersistanceOrchestrationDependencyException =
+                await Assert.ThrowsAsync<PersistanceOrchestrationDependencyException>(
+                    testCode: sendGeneratedTokensNotificationTask.AsTask);
+
+            // then
+            actualPersistanceOrchestrationDependencyException
+                .Should().BeEquivalentTo(expectedPersistanceOrchestrationDependencyException);
+
+            this.notificationServiceMock.Verify(service => service
+                .SendImpersonationTokenGeneratedNotificationAsync(It.Is(SameAccessRequestAs(someAccessRequest))),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
+                   expectedPersistanceOrchestrationDependencyException))),
                        Times.Once);
 
             this.csvIdentificationRequestServiceMock.VerifyNoOtherCalls();

@@ -175,6 +175,16 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
                 throw await CreateAndLogDependencyExceptionAsync(
                     accessAuditServiceException);
             }
+            catch (NotificationDependencyException notificationDependencyException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(
+                    notificationDependencyException);
+            }
+            catch (NotificationServiceException notificationServiceException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(
+                    notificationServiceException);
+            }
             catch (Exception exception)
             {
                 var failedServicePersistanceOrchestrationException =
