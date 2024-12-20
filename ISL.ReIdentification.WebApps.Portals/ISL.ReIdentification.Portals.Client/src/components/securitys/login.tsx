@@ -4,7 +4,7 @@ import { Button, NavDropdown } from "react-bootstrap";
 import { UserProfile } from '../securitys/userProfile';
 import { MsalConfig } from '../../authConfig';
 
-const Login: React.FC =  () => {
+const Login: React.FC = () => {
     const { instance } = useMsal();
     const activeAccount = instance.getActiveAccount();
 
@@ -25,11 +25,7 @@ const Login: React.FC =  () => {
                 </div>
             </UnauthenticatedTemplate>
             <AuthenticatedTemplate>
-                <NavDropdown
-                    title={<span style={{ color: 'white' }}>{activeAccount?.username}</span>}
-                    id="collasible-nav-dropdown"
-                    className="me-3">
-
+                <NavDropdown title={activeAccount?.username} id="collasible-nav-dropdown" className="me-3">
                     <NavDropdown.Item onClick={handleLogoutRedirect}>Sign out</NavDropdown.Item>
                     <UserProfile />
                 </NavDropdown>
