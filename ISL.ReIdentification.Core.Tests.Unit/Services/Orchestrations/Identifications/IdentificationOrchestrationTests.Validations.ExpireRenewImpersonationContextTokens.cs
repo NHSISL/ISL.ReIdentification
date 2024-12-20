@@ -5,6 +5,7 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
+using ISL.ReIdentification.Core.Models.Orchestrations.Accesses.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Identifications.Exceptions;
 using Moq;
 
@@ -12,6 +13,47 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
 {
     public partial class IdentificationOrchestrationTests
     {
+        [Fact]
+        public async Task
+            ShouldThrowValidationExceptionOnExpireRenewImpersonationContextTokensWhenNullAccessRequestAndLogItAsync()
+        {
+            // givennull;
+            var inputIsPreviouslyApproved = true;
+
+            var nullAccessRequesttIdentificationOrchestrationException =
+                new NullAccessRequestException(
+                    message: "Access request is null.");
+
+            var expectedIdentificationOrchestrationValidationException =
+            new IdentificationOrchestrationValidationException(
+                message: "Identification orchestration validation error occurred, fix the errors and try again.",
+                innerException: nullAccessRequesttIdentificationOrchestrationException);
+
+            // when
+            ValueTask<AccessRequest> expireRenewImpersonationContextTokenTask = this.identificationOrchestrationService
+                    .ExpireRenewImpersonationContextTokensAsync(null, inputIsPreviouslyApproved);
+
+            IdentificationOrchestrationValidationException actualImpersonationContextValidationException =
+                await Assert.ThrowsAsync<IdentificationOrchestrationValidationException>(
+                    testCode: expireRenewImpersonationContextTokenTask.AsTask);
+
+            // then
+            actualImpersonationContextValidationException.Should().BeEquivalentTo(
+                expectedIdentificationOrchestrationValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedIdentificationOrchestrationValidationException))),
+                    Times.Once);
+
+            this.accessAuditServiceMock.VerifyNoOtherCalls();
+            this.reIdentificationServiceMock.VerifyNoOtherCalls();
+            this.documentServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+        }
+
         [Fact]
         public async Task
             ShouldThrowValidationExceptionOnExpireRenewImpersonationContextTokensWhenInvalidAndLogItAsync()
