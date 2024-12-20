@@ -23,6 +23,7 @@ using ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Services.Foundations.Documents;
 using ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Services.Foundations.Notifications;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
 {
@@ -184,7 +185,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
             foreach (CsvIdentificationRequest csvIdentificationRequest in expiredCsvIdentificationRequests)
             {
                 var accessAuditId = await this.identifierBroker.GetIdentifierAsync();
-                csvIdentificationRequest.Data = null;
+                csvIdentificationRequest.Data = Array.Empty<byte>();
                 csvIdentificationRequest.UpdatedDate = dateTimeOffset;
 
                 await this.csvIdentificationRequestService.ModifyCsvIdentificationRequestAsync(csvIdentificationRequest);
