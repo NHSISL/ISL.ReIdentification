@@ -92,7 +92,7 @@ internal class Program
     private static void AddProviders(IServiceCollection services, IConfiguration configuration)
     {
         NotificationConfigurations notificationConfigurations = configuration
-            .GetSection("notificationConfigurations")
+            .GetSection("NotificationConfigurations")
                 .Get<NotificationConfigurations>();
 
         NotifyConfigurations notifyConfigurations = new NotifyConfigurations
@@ -104,7 +104,7 @@ internal class Program
         services.AddSingleton(notifyConfigurations);
 
         ProjectStorageConfiguration projectStorageConfiguration = configuration
-            .GetSection("projectStorageConfiguration")
+            .GetSection("ProjectStorageConfiguration")
                 .Get<ProjectStorageConfiguration>();
 
         AzureBlobStoreConfigurations projectsBlobStoreConfigurations = new AzureBlobStoreConfigurations

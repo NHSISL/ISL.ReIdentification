@@ -320,7 +320,7 @@ namespace ISL.ReIdentification.Configurations.Server
         private static void AddOrchestrationServices(IServiceCollection services, IConfiguration configuration)
         {
             CsvReIdentificationConfigurations csvReIdentificationConfigurations = configuration
-                .GetSection("csvReIdentificationConfigurations")
+                .GetSection("CsvReIdentificationConfigurations")
                     .Get<CsvReIdentificationConfigurations>() ??
                         new CsvReIdentificationConfigurations();
 
