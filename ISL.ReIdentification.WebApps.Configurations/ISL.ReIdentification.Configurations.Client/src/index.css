@@ -68,6 +68,6 @@ button:focus-visible {
 
 
 .list-group {
-    --bs-list-group-active-bg: #45B8AC !important;
-    --bs-list-group-active-border-color: #45B8AC !important;
+    --bs-list-group-active-bg: #00ABCD !important;
+    --bs-list-group-active-border-color: #00ABCD !important;
 }

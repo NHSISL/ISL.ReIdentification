@@ -5,15 +5,17 @@ import { Col, Container, Row } from "react-bootstrap";
 import { useFrontendConfiguration } from '../../hooks/useFrontendConfiguration';
 
 const FooterComponent: React.FC = () => {
-    const {configuration} = useFrontendConfiguration();
+    const { configuration } = useFrontendConfiguration();
     return (
         <Container>
             <Row className="bg-light">
                 <Col className="m-2">
-                    <FontAwesomeIcon icon={faCopyright} className="me-2 fa-icon" />
-                    2024 NEL ICB. All rights reserved.
-                    <br/>
-                    Version:&nbsp;{configuration?.version}
+                    <small>
+                        <FontAwesomeIcon icon={faCopyright} className="me-2 fa-icon fa-regular" />
+                        2025 One London. All rights reserved.
+                        <br />
+                        <strong>Version:&nbsp;{configuration?.version}</strong>
+                    </small>
                 </Col>
             </Row>
         </Container>
