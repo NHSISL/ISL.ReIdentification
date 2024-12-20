@@ -21,13 +21,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             var inputIsPreviouslyApproved = true;
 
             var nullAccessRequesttIdentificationOrchestrationException =
-                new NullAccessRequestException(
-                    message: "Access request is null.");
+                new NullAccessRequestException(message: "Access request is null.");
 
             var expectedIdentificationOrchestrationValidationException =
-            new IdentificationOrchestrationValidationException(
-                message: "Identification orchestration validation error occurred, fix the errors and try again.",
-                innerException: nullAccessRequesttIdentificationOrchestrationException);
+                new IdentificationOrchestrationValidationException(
+                    message: "Identification orchestration validation error occurred, fix the errors and try again.",
+                    innerException: nullAccessRequesttIdentificationOrchestrationException);
 
             // when
             ValueTask<AccessRequest> expireRenewImpersonationContextTokenTask = this.identificationOrchestrationService
@@ -38,8 +37,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                     testCode: expireRenewImpersonationContextTokenTask.AsTask);
 
             // then
-            actualImpersonationContextValidationException.Should().BeEquivalentTo(
-                expectedIdentificationOrchestrationValidationException);
+            actualImpersonationContextValidationException.Should()
+                .BeEquivalentTo(expectedIdentificationOrchestrationValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -72,9 +71,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                 values: "Object is invalid");
 
             var expectedIdentificationOrchestrationValidationException =
-            new IdentificationOrchestrationValidationException(
-                message: "Identification orchestration validation error occurred, fix the errors and try again.",
-                innerException: invalidArgumentIdentificationOrchestrationException);
+                new IdentificationOrchestrationValidationException(
+                    message: "Identification orchestration validation error occurred, fix the errors and try again.",
+                    innerException: invalidArgumentIdentificationOrchestrationException);
 
             // when
             ValueTask<AccessRequest> expireRenewImpersonationContextTokenTask = this.identificationOrchestrationService
@@ -85,8 +84,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                     testCode: expireRenewImpersonationContextTokenTask.AsTask);
 
             // then
-            actualImpersonationContextValidationException.Should().BeEquivalentTo(
-                expectedIdentificationOrchestrationValidationException);
+            actualImpersonationContextValidationException.Should()
+                .BeEquivalentTo(expectedIdentificationOrchestrationValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(

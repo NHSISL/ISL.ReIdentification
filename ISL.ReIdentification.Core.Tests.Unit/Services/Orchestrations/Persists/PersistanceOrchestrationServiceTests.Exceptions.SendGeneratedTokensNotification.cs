@@ -38,8 +38,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
 
             PersistanceOrchestrationDependencyValidationException
                 actualPersistanceOrchestrationDependencyValidationException =
-                await Assert.ThrowsAsync<PersistanceOrchestrationDependencyValidationException>(
-                    testCode: sendGeneratedTokensNotificationTask.AsTask);
+                    await Assert.ThrowsAsync<PersistanceOrchestrationDependencyValidationException>(
+                        testCode: sendGeneratedTokensNotificationTask.AsTask);
 
             // then
             actualPersistanceOrchestrationDependencyValidationException
@@ -88,8 +88,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
 
             PersistanceOrchestrationDependencyException
                 actualPersistanceOrchestrationDependencyException =
-                await Assert.ThrowsAsync<PersistanceOrchestrationDependencyException>(
-                    testCode: sendGeneratedTokensNotificationTask.AsTask);
+                    await Assert.ThrowsAsync<PersistanceOrchestrationDependencyException>(
+                        testCode: sendGeneratedTokensNotificationTask.AsTask);
 
             // then
             actualPersistanceOrchestrationDependencyException
@@ -141,8 +141,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
 
             PersistanceOrchestrationServiceException
                 actualPersistanceOrchestrationValidationException =
-                await Assert.ThrowsAsync<PersistanceOrchestrationServiceException>(
-                    testCode: sendGeneratedTokensNotificationTask.AsTask);
+                    await Assert.ThrowsAsync<PersistanceOrchestrationServiceException>(
+                        testCode: sendGeneratedTokensNotificationTask.AsTask);
 
             // then
             actualPersistanceOrchestrationValidationException.Should()

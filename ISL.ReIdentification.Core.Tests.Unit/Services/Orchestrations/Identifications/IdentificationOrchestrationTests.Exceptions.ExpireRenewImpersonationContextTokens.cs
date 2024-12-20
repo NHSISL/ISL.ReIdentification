@@ -42,8 +42,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
 
             IdentificationOrchestrationDependencyValidationException
                 actualIdentificationOrchestrationDependencyValidationException =
-                await Assert.ThrowsAsync<IdentificationOrchestrationDependencyValidationException>(
-                    testCode: expireRenewImpersonationContextTokensTask.AsTask);
+                    await Assert.ThrowsAsync<IdentificationOrchestrationDependencyValidationException>(
+                        testCode: expireRenewImpersonationContextTokensTask.AsTask);
 
             // then
             actualIdentificationOrchestrationDependencyValidationException
@@ -94,8 +94,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
 
             IdentificationOrchestrationDependencyException
                 actualIdentificationOrchestrationDependencyException =
-                await Assert.ThrowsAsync<IdentificationOrchestrationDependencyException>(
-                    testCode: expireRenewImpersonationContextTokensTask.AsTask);
+                    await Assert.ThrowsAsync<IdentificationOrchestrationDependencyException>(
+                        testCode: expireRenewImpersonationContextTokensTask.AsTask);
 
             // then
             actualIdentificationOrchestrationDependencyException
@@ -149,8 +149,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
 
             IdentificationOrchestrationServiceException
                 actualIdentificationOrchestrationServiceException =
-                await Assert.ThrowsAsync<IdentificationOrchestrationServiceException>(
-                    testCode: expireRenewImpersonationContextTokensTask.AsTask);
+                    await Assert.ThrowsAsync<IdentificationOrchestrationServiceException>(
+                        testCode: expireRenewImpersonationContextTokensTask.AsTask);
 
             // then
             actualIdentificationOrchestrationServiceException

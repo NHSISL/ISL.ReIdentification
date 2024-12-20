@@ -44,7 +44,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedPersistanceOrchestrationValidationException))),
-                    Times.Once);
+                        Times.Once);
 
             this.csvIdentificationRequestServiceMock.VerifyNoOtherCalls();
             this.impersonationContextServiceMock.VerifyNoOtherCalls();

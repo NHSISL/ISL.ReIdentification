@@ -26,15 +26,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             AccessRequest randomAccessRequest = CreateRandomAccessRequest();
             randomAccessRequest.CsvIdentificationRequest = null;
             randomAccessRequest.IdentificationRequest = null;
-
             AccessRequest inputAccessRequest = randomAccessRequest.DeepClone();
-
-            //AccessRequest inputAccessRequest = randomAccessRequest.DeepClone();
             AccessRequest outputAccessRequest = inputAccessRequest.DeepClone();
             string inputContainer = inputAccessRequest.ImpersonationContext.Id.ToString();
             List<string> randomAccessPolicies = GetRandomStringList();
             List<string> outputAccessPolicies = randomAccessPolicies;
-
             string inputInboxPolicyname = inputContainer + "-InboxPolicy";
             string inputOutboxPolicyname = inputContainer + "-OutboxPolicy";
             string inputErrorsPolicyname = inputContainer + "-ErrorsPolicy";
