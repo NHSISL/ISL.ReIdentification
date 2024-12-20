@@ -10,21 +10,26 @@ using Force.DeepCloner;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
 using ISL.ReIdentification.Core.Models.Foundations.Documents;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
-using ISL.ReIdentification.Core.Services.Orchestrations.Persists;
+using ISL.ReIdentification.Core.Services.Orchestrations.Identifications;
 using Moq;
 
-namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
+namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identifications
 {
-    public partial class PersistanceOrchestrationServiceTests
+    public partial class IdentificationOrchestrationTests
     {
-        [Fact]
-        public async Task ShouldCreatOrRenewTokenAsync()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task ShouldExpireRenewImpersonationContextTokensAsync(bool isPreviouslyApproved)
         {
             // given
             AccessRequest randomAccessRequest = CreateRandomAccessRequest();
             randomAccessRequest.CsvIdentificationRequest = null;
             randomAccessRequest.IdentificationRequest = null;
+
             AccessRequest inputAccessRequest = randomAccessRequest.DeepClone();
+
+            //AccessRequest inputAccessRequest = randomAccessRequest.DeepClone();
             AccessRequest outputAccessRequest = inputAccessRequest.DeepClone();
             string inputContainer = inputAccessRequest.ImpersonationContext.Id.ToString();
             List<string> randomAccessPolicies = GetRandomStringList();
@@ -90,24 +95,22 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                     inputExpiresOn))
                         .ReturnsAsync(outputErrorsSasToken);
 
-            var persistanceOrchestrationServiceMock = new Mock<PersistanceOrchestrationService>(
-                this.impersonationContextServiceMock.Object,
-                this.csvIdentificationRequestServiceMock.Object,
-                this.notificationServiceMock.Object,
-                this.accessAuditServiceMock.Object,
-                this.documentServiceMock.Object,
-                this.loggingBrokerMock.Object,
-                this.hashBrokerMock.Object,
-                this.dateTimeBrokerMock.Object,
-                this.identifierBrokerMock.Object,
-                null,
-                randomProjectStorageConfiguration)
-            { CallBase = true };
+            var identificationOrchestrationServiceMock =
+                new Mock<IdentificationOrchestrationService>(
+                    this.reIdentificationServiceMock.Object,
+                    this.accessAuditServiceMock.Object,
+                    this.documentServiceMock.Object,
+                    this.loggingBrokerMock.Object,
+                    this.dateTimeBrokerMock.Object,
+                    this.identifierBrokerMock.Object,
+                    randomProjectStorageConfiguration)
+                { CallBase = true };
 
-            PersistanceOrchestrationService service = persistanceOrchestrationServiceMock.Object;
+            IdentificationOrchestrationService service = identificationOrchestrationServiceMock.Object;
 
             // when
-            AccessRequest actualAccessRequest = await service.CreateOrRenewTokensAsync(inputAccessRequest);
+            AccessRequest actualAccessRequest = await service
+                .ExpireRenewImpersonationContextTokensAsync(inputAccessRequest, isPreviouslyApproved);
 
             // then
             actualAccessRequest.Should().BeEquivalentTo(expectedAccessRequest);
@@ -119,6 +122,31 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             this.documentServiceMock.Verify(service =>
                 service.RetrieveListOfAllAccessPoliciesAsync(inputContainer),
                     Times.Once);
+
+            if (!isPreviouslyApproved)
+            {
+                this.documentServiceMock.Verify(service =>
+                    service.AddContainerAsync(inputContainer),
+                        Times.Once);
+
+                this.documentServiceMock.Verify(service =>
+                    service.AddFolderAsync(
+                        inputContainer,
+                        randomProjectStorageConfiguration.PickupFolder),
+                            Times.Once);
+
+                this.documentServiceMock.Verify(service =>
+                    service.AddFolderAsync(
+                        inputContainer,
+                        randomProjectStorageConfiguration.LandingFolder),
+                            Times.Once);
+
+                this.documentServiceMock.Verify(service =>
+                    service.AddFolderAsync(
+                        inputContainer,
+                        randomProjectStorageConfiguration.ErrorFolder),
+                            Times.Once);
+            }
 
             this.documentServiceMock.Verify(service =>
                 service.RemoveAllAccessPoliciesAsync(inputContainer),
@@ -154,14 +182,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                     inputExpiresOn),
                         Times.Once);
 
-            this.csvIdentificationRequestServiceMock.VerifyNoOtherCalls();
-            this.impersonationContextServiceMock.VerifyNoOtherCalls();
-            this.notificationServiceMock.VerifyNoOtherCalls();
-            this.accessAuditServiceMock.VerifyNoOtherCalls();
             this.documentServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.hashBrokerMock.VerifyNoOtherCalls();
+            this.accessAuditServiceMock.VerifyNoOtherCalls();
+            this.reIdentificationServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }
     }

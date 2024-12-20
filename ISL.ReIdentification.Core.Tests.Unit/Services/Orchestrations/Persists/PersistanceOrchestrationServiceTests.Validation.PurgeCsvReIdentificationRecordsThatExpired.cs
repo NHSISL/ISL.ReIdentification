@@ -24,13 +24,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                 csvIdentificationRequestService: this.csvIdentificationRequestServiceMock.Object,
                 notificationService: this.notificationServiceMock.Object,
                 accessAuditService: this.accessAuditServiceMock.Object,
-                documentService: this.documentServiceMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object,
                 hashBroker: this.hashBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
                 identifierBroker: this.identifierBrokerMock.Object,
-                csvReIdentificationConfigurations: null,
-                projectStorageConfiguration: null);
+                csvReIdentificationConfigurations: null);
 
             var nullCsvReIdentificationConfigurationPersistanceOrchestrationException =
                 new NullCsvReIdentificationConfigurationException(
@@ -62,7 +60,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             this.impersonationContextServiceMock.VerifyNoOtherCalls();
             this.notificationServiceMock.VerifyNoOtherCalls();
             this.accessAuditServiceMock.VerifyNoOtherCalls();
-            this.documentServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.hashBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
@@ -81,7 +78,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                 csvIdentificationRequestService: this.csvIdentificationRequestServiceMock.Object,
                 notificationService: this.notificationServiceMock.Object,
                 accessAuditService: this.accessAuditServiceMock.Object,
-                documentService: this.documentServiceMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object,
                 hashBroker: this.hashBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
@@ -90,9 +86,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                 csvReIdentificationConfigurations: new CsvReIdentificationConfigurations
                 {
                     ExpireAfterMinutes = invalidExpireAfterMinutes
-                },
-
-                projectStorageConfiguration: null);
+                });
 
             var invalidPersistanceOrchestrationException =
                 new InvalidArgumentPersistanceOrchestrationException(
@@ -128,7 +122,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             this.impersonationContextServiceMock.VerifyNoOtherCalls();
             this.notificationServiceMock.VerifyNoOtherCalls();
             this.accessAuditServiceMock.VerifyNoOtherCalls();
-            this.documentServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.hashBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

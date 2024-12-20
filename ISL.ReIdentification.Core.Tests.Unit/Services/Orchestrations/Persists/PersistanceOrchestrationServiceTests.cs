@@ -10,7 +10,6 @@ using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Hashing;
 using ISL.ReIdentification.Core.Brokers.Identifiers;
 using ISL.ReIdentification.Core.Brokers.Loggings;
-using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
@@ -23,7 +22,6 @@ using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Models.Orchestrations.Persists;
 using ISL.ReIdentification.Core.Services.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationRequests;
-using ISL.ReIdentification.Core.Services.Foundations.Documents;
 using ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Services.Foundations.Notifications;
 using ISL.ReIdentification.Core.Services.Orchestrations.Persists;
@@ -40,13 +38,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
         private readonly Mock<ICsvIdentificationRequestService> csvIdentificationRequestServiceMock;
         private readonly Mock<INotificationService> notificationServiceMock;
         private readonly Mock<IAccessAuditService> accessAuditServiceMock;
-        private readonly Mock<IDocumentService> documentServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IHashBroker> hashBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;
         private readonly CsvReIdentificationConfigurations csvReIdentificationConfigurations;
-        private readonly ProjectStorageConfiguration projectStorageConfiguration;
         private readonly PersistanceOrchestrationService persistanceOrchestrationService;
         private readonly ICompareLogic compareLogic;
         private static readonly int expireAfterMinutes = 10080;
@@ -57,7 +53,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             this.csvIdentificationRequestServiceMock = new Mock<ICsvIdentificationRequestService>();
             this.notificationServiceMock = new Mock<INotificationService>();
             this.accessAuditServiceMock = new Mock<IAccessAuditService>();
-            this.documentServiceMock = new Mock<IDocumentService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.hashBrokerMock = new Mock<IHashBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
@@ -75,13 +70,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                     csvIdentificationRequestService: csvIdentificationRequestServiceMock.Object,
                     notificationService: notificationServiceMock.Object,
                     accessAuditService: accessAuditServiceMock.Object,
-                    documentService: documentServiceMock.Object,
                     loggingBroker: loggingBrokerMock.Object,
                     hashBroker: hashBrokerMock.Object,
                     dateTimeBroker: dateTimeBrokerMock.Object,
                     identifierBroker: identifierBrokerMock.Object,
-                    csvReIdentificationConfigurations: csvReIdentificationConfigurations,
-                    projectStorageConfiguration: CreateRandomProjectStorageConfiguration());
+                    csvReIdentificationConfigurations: csvReIdentificationConfigurations);
         }
 
         private static int GetRandomNumber() =>
@@ -95,20 +88,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
 
             return result.Length > length ? result.Substring(0, length) : result;
-        }
-
-        private static List<string> GetRandomStringList()
-        {
-            int randomNumber = GetRandomNumber();
-            List<string> randomStringList = new List<string>();
-
-            for (int index = 0; index < randomNumber; index++)
-            {
-                string randomString = GetRandomStringWithLengthOf(randomNumber);
-                randomStringList.Add(randomString);
-            }
-
-            return randomStringList;
         }
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
@@ -203,12 +182,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             return filler;
         }
 
-        private static ProjectStorageConfiguration CreateRandomProjectStorageConfiguration() =>
-            CreateProjectStorageConfigurationFiller().Create();
-
-        private static Filler<ProjectStorageConfiguration> CreateProjectStorageConfigurationFiller() =>
-            new Filler<ProjectStorageConfiguration>();
-
         private static AccessAudit CreateRandomPurgedAccessAudit(Guid accessAuditId, Guid requestId, DateTimeOffset now) =>
             CreateRandomPurgedAccessAuditFiller(accessAuditId, requestId, now).Create();
 
@@ -274,29 +247,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
 
             return filler;
         }
-
-        private static List<AccessPolicy> GetAccessPolicies(
-            string inboxPolicyname,
-            string outboxPolicyname,
-            string errorsPolicyname) =>
-            new List<AccessPolicy>
-            {
-                new AccessPolicy
-                {
-                    PolicyName = inboxPolicyname,
-                    Permissions = new List<string>{ "read", "list"}
-                },
-                new AccessPolicy
-                {
-                    PolicyName = outboxPolicyname,
-                    Permissions = new List<string>{ "write", "add", "create"}
-                },
-                new AccessPolicy
-                {
-                    PolicyName = errorsPolicyname,
-                    Permissions = new List<string>{ "read", "list"}
-                },
-            };
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(
             Xeption expectedException)

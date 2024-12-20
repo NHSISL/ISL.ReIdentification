@@ -11,16 +11,13 @@ using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Hashing;
 using ISL.ReIdentification.Core.Brokers.Identifiers;
 using ISL.ReIdentification.Core.Brokers.Loggings;
-using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
-using ISL.ReIdentification.Core.Models.Foundations.Documents;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Models.Orchestrations.Persists;
 using ISL.ReIdentification.Core.Services.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationRequests;
-using ISL.ReIdentification.Core.Services.Foundations.Documents;
 using ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Services.Foundations.Notifications;
 
@@ -32,38 +29,32 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
         private readonly ICsvIdentificationRequestService csvIdentificationRequestService;
         private readonly INotificationService notificationService;
         private readonly IAccessAuditService accessAuditService;
-        private readonly IDocumentService documentService;
         private readonly ILoggingBroker loggingBroker;
         private readonly IHashBroker hashBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIdentifierBroker identifierBroker;
         private readonly CsvReIdentificationConfigurations csvReIdentificationConfigurations;
-        private readonly ProjectStorageConfiguration projectStorageConfiguration;
 
         public PersistanceOrchestrationService(
             IImpersonationContextService impersonationContextService,
             ICsvIdentificationRequestService csvIdentificationRequestService,
             INotificationService notificationService,
             IAccessAuditService accessAuditService,
-            IDocumentService documentService,
             ILoggingBroker loggingBroker,
             IHashBroker hashBroker,
             IDateTimeBroker dateTimeBroker,
             IIdentifierBroker identifierBroker,
-            CsvReIdentificationConfigurations csvReIdentificationConfigurations,
-            ProjectStorageConfiguration projectStorageConfiguration)
+            CsvReIdentificationConfigurations csvReIdentificationConfigurations)
         {
             this.impersonationContextService = impersonationContextService;
             this.csvIdentificationRequestService = csvIdentificationRequestService;
             this.notificationService = notificationService;
             this.accessAuditService = accessAuditService;
-            this.documentService = documentService;
             this.loggingBroker = loggingBroker;
             this.hashBroker = hashBroker;
             this.dateTimeBroker = dateTimeBroker;
             this.identifierBroker = identifierBroker;
             this.csvReIdentificationConfigurations = csvReIdentificationConfigurations;
-            this.projectStorageConfiguration = projectStorageConfiguration;
         }
 
         public ValueTask<AccessRequest> PersistImpersonationContextAsync(AccessRequest accessRequest) =>
@@ -214,86 +205,13 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
             }
         });
 
-        public ValueTask<AccessRequest> ExpireRenewImpersonationContextTokensAsync(Guid impersonationContextId) =>
+        public ValueTask ExpireRenewImpersonationContextTokensAsync(AccessRequest accessRequest) =>
         TryCatch(async () =>
         {
-            ValidateOnExpireRenewImpersonationContextTokensAsync(impersonationContextId);
 
-            ImpersonationContext impersonationContext = await this.impersonationContextService
-                .RetrieveImpersonationContextByIdAsync(impersonationContextId);
-
-            AccessRequest accessRequest = new AccessRequest
-            {
-                ImpersonationContext = impersonationContext
-            };
-
-            AccessRequest tokensAccessRequest = await CreateOrRenewTokensAsync(accessRequest);
-
-            return tokensAccessRequest;
+            ValidateOnExpireRenewImpersonationContextTokensAsync(accessRequest);
+            // This is where we will call notification service
+            await this.notificationService.SendImpersonationTokenGeneratedNotificationAsync(accessRequest);
         });
-
-        virtual internal async ValueTask<AccessRequest> CreateOrRenewTokensAsync(AccessRequest accessRequest)
-        {
-            string container = accessRequest.ImpersonationContext.Id.ToString();
-            string inboxPolicyname = container + "-InboxPolicy";
-            string outboxPolicyname = container + "-OutboxPolicy";
-            string errorsPolicyname = container + "-ErrorsPolicy";
-            DateTimeOffset currentDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-
-            DateTimeOffset expiresOn = currentDateTimeOffset
-                .AddMinutes(this.projectStorageConfiguration.TokenLifetimeMinutes);
-
-            List<string> maybeAccessPolicies = await this.documentService
-                .RetrieveListOfAllAccessPoliciesAsync(container);
-
-            if (maybeAccessPolicies.Count != 0)
-            {
-                await this.documentService.RemoveAllAccessPoliciesAsync(container);
-            }
-
-            List<AccessPolicy> accessPolicies = new List<AccessPolicy>
-            {
-                new AccessPolicy
-                {
-                    PolicyName = inboxPolicyname,
-                    Permissions = new List<string>{ "read", "list"}
-                },
-                new AccessPolicy
-                {
-                    PolicyName = outboxPolicyname,
-                    Permissions = new List<string>{ "write", "add", "create"}
-                },
-                new AccessPolicy
-                {
-                    PolicyName = errorsPolicyname,
-                    Permissions = new List<string>{ "read", "list"}
-                },
-            };
-
-            await this.documentService.CreateAndAssignAccessPoliciesAsync(container, accessPolicies);
-
-            accessRequest.ImpersonationContext.InboxSasToken =
-                await this.documentService.CreateSasTokenAsync(
-                    container,
-                    this.projectStorageConfiguration.PickupFolder,
-                    inboxPolicyname,
-                    expiresOn);
-
-            accessRequest.ImpersonationContext.OutboxSasToken =
-                await this.documentService.CreateSasTokenAsync(
-                    container,
-                    this.projectStorageConfiguration.LandingFolder,
-                    outboxPolicyname,
-                    expiresOn);
-
-            accessRequest.ImpersonationContext.ErrorsSasToken =
-                await this.documentService.CreateSasTokenAsync(
-                    container,
-                    this.projectStorageConfiguration.ErrorFolder,
-                    errorsPolicyname,
-                    expiresOn);
-
-            return accessRequest;
-        }
     }
 }

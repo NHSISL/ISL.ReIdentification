@@ -72,16 +72,22 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
                     Parameter: $"{nameof(CsvReIdentificationConfigurations)}.{nameof(CsvReIdentificationConfigurations.ExpireAfterMinutes)}"));
         }
 
-        private static void ValidateOnExpireRenewImpersonationContextTokensAsync(Guid impersonationContextId)
+        private static void ValidateOnExpireRenewImpersonationContextTokensAsync(AccessRequest accessRequest)
         {
             Validate(
-                (Rule: IsInvalid(impersonationContextId), Parameter: nameof(impersonationContextId)));
+               (Rule: IsInvalid(accessRequest), Parameter: nameof(accessRequest)));
         }
 
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,
             Message = "Id is invalid"
+        };
+
+        private static dynamic IsInvalid(AccessRequest accessRequest) => new
+        {
+            Condition = accessRequest is null || accessRequest.ImpersonationContext is null,
+            Message = "AccessRequest is invalid"
         };
 
         private static dynamic IsInvalid(CsvIdentificationRequest csvIdentificationRequest) => new
