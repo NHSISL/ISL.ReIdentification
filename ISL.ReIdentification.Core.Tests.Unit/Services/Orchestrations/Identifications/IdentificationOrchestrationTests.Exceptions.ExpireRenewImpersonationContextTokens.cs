@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
@@ -16,7 +17,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
         [Theory]
         [MemberData(nameof(DocumentDependencyValidationExceptions))]
         public async Task ShouldThrowDependencyValidationOnExpireRenewImpersonationContextTokensAndLogItAsync(
-                    Xeption dependencyValidationException)
+            Xeption dependencyValidationException)
         {
             // given
             AccessRequest someAccessRequest = CreateRandomAccessRequest();
@@ -65,112 +66,111 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
-        //[Theory]
-        //[MemberData(nameof(DependencyExceptions))]
-        //public async Task ShouldThrowDependencyOnExpireRenewImpersonationContextTokensAndLogItAsync(
-        //    Xeption dependencyValidationException)
-        //{
-        //    // given
-        //    Guid someId = Guid.NewGuid();
+        [Theory]
+        [MemberData(nameof(DocumentDependencyExceptions))]
+        public async Task ShouldThrowDependencyOnExpireRenewImpersonationContextTokensAndLogItAsync(
+            Xeption dependencyValidationException)
+        {
+            // given
+            AccessRequest someAccessRequest = CreateRandomAccessRequest();
+            bool someIsPreviouslyApproved = true;
 
-        //    this.impersonationContextServiceMock.Setup(service =>
-        //        service.RetrieveImpersonationContextByIdAsync(It.IsAny<Guid>()))
-        //            .ThrowsAsync(dependencyValidationException);
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ThrowsAsync(dependencyValidationException);
 
-        //    var expectedIdentificationOrchestrationDependencyException =
-        //        new IdentificationOrchestrationDependencyException(
-        //            message: "Identification orchestration dependency error occurred, " +
-        //                "fix the errors and try again.",
-        //            innerException: dependencyValidationException.InnerException as Xeption);
+            var expectedIdentificationOrchestrationDependencyException =
+                new IdentificationOrchestrationDependencyException(
+                    message: "Identification orchestration dependency error occurred, " +
+                        "fix the errors and try again.",
+                    innerException: dependencyValidationException.InnerException as Xeption);
 
-        //    // when
-        //    ValueTask<AccessRequest> expireRenewImpersonationContextTokensTask =
-        //        this.identificationOrchestrationService
-        //            .ExpireRenewImpersonationContextTokensAsync(someId);
+            // when
+            ValueTask<AccessRequest> expireRenewImpersonationContextTokensTask =
+                this.identificationOrchestrationService
+                    .ExpireRenewImpersonationContextTokensAsync(
+                        someAccessRequest,
+                        someIsPreviouslyApproved);
 
-        //    IdentificationOrchestrationDependencyException
-        //        actualIdentificationOrchestrationDependencyException =
-        //        await Assert.ThrowsAsync<IdentificationOrchestrationDependencyException>(
-        //            testCode: expireRenewImpersonationContextTokensTask.AsTask);
+            IdentificationOrchestrationDependencyException
+                actualIdentificationOrchestrationDependencyException =
+                await Assert.ThrowsAsync<IdentificationOrchestrationDependencyException>(
+                    testCode: expireRenewImpersonationContextTokensTask.AsTask);
 
-        //    // then
-        //    actualIdentificationOrchestrationDependencyException
-        //        .Should().BeEquivalentTo(expectedIdentificationOrchestrationDependencyException);
+            // then
+            actualIdentificationOrchestrationDependencyException
+                .Should().BeEquivalentTo(expectedIdentificationOrchestrationDependencyException);
 
-        //    this.impersonationContextServiceMock.Verify(service =>
-        //        service.RetrieveImpersonationContextByIdAsync(It.IsAny<Guid>()),
-        //            Times.Once);
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
 
-        //    this.loggingBrokerMock.Verify(broker =>
-        //       broker.LogErrorAsync(It.Is(SameExceptionAs(
-        //           expectedIdentificationOrchestrationDependencyException))),
-        //               Times.Once);
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
+                   expectedIdentificationOrchestrationDependencyException))),
+                       Times.Once);
 
-        //    this.csvIdentificationRequestServiceMock.VerifyNoOtherCalls();
-        //    this.impersonationContextServiceMock.VerifyNoOtherCalls();
-        //    this.notificationServiceMock.VerifyNoOtherCalls();
-        //    this.accessAuditServiceMock.VerifyNoOtherCalls();
-        //    this.documentServiceMock.VerifyNoOtherCalls();
-        //    this.loggingBrokerMock.VerifyNoOtherCalls();
-        //    this.hashBrokerMock.VerifyNoOtherCalls();
-        //    this.dateTimeBrokerMock.VerifyNoOtherCalls();
-        //    this.identifierBrokerMock.VerifyNoOtherCalls();
-        //}
+            this.accessAuditServiceMock.VerifyNoOtherCalls();
+            this.reIdentificationServiceMock.VerifyNoOtherCalls();
+            this.documentServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+        }
 
-        //[Fact]
-        //public async Task
-        //    ShouldThrowServiceExceptionOnExpireRenewImpersonationContextTokensIfServiceErrorOccurredAndLogItAsync()
-        //{
-        //    // given
-        //    Guid someId = Guid.NewGuid();
-        //    var serviceException = new Exception();
+        [Fact]
+        public async Task ShouldThrowServiceOnExpireRenewImpersonationContextTokensAndLogItAsync()
+        {
+            // given
+            AccessRequest someAccessRequest = CreateRandomAccessRequest();
+            bool someIsPreviouslyApproved = true;
+            var serviceException = new Exception();
 
-        //    var failedServiceIdentificationOrchestrationException =
-        //        new FailedServiceIdentificationOrchestrationException(
-        //            message: "Failed service identification orchestration error occurred, contact support.",
-        //            innerException: serviceException);
+            var failedServiceIdentificationOrchestrationException =
+                new FailedServiceIdentificationOrchestrationException(
+                    message: "Failed service identification orchestration error occurred, contact support.",
+                    innerException: serviceException);
 
-        //    var expectedIdentificationOrchestrationServiceException =
-        //        new IdentificationOrchestrationServiceException(
-        //            message: "Identification orchestration service error occurred, contact support.",
-        //            innerException: failedServiceIdentificationOrchestrationException);
+            var expectedIdentificationOrchestrationServiceException =
+                new IdentificationOrchestrationServiceException(
+                    message: "Service error occurred, contact support.",
+                    innerException: failedServiceIdentificationOrchestrationException);
 
-        //    this.impersonationContextServiceMock.Setup(service =>
-        //        service.RetrieveImpersonationContextByIdAsync(It.IsAny<Guid>()))
-        //            .ThrowsAsync(serviceException);
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ThrowsAsync(serviceException);
 
-        //    // when
-        //    ValueTask<AccessRequest> expireRenewImpersonationContextTokensTask =
-        //        this.identificationOrchestrationService
-        //            .ExpireRenewImpersonationContextTokensAsync(someId);
+            // when
+            ValueTask<AccessRequest> expireRenewImpersonationContextTokensTask =
+                this.identificationOrchestrationService
+                    .ExpireRenewImpersonationContextTokensAsync(
+                        someAccessRequest,
+                        someIsPreviouslyApproved);
 
-        //    IdentificationOrchestrationServiceException
-        //        actualIdentificationOrchestrationValidationException =
-        //        await Assert.ThrowsAsync<IdentificationOrchestrationServiceException>(
-        //            testCode: expireRenewImpersonationContextTokensTask.AsTask);
+            IdentificationOrchestrationServiceException
+                actualIdentificationOrchestrationServiceException =
+                await Assert.ThrowsAsync<IdentificationOrchestrationServiceException>(
+                    testCode: expireRenewImpersonationContextTokensTask.AsTask);
 
-        //    // then
-        //    actualIdentificationOrchestrationValidationException.Should().BeEquivalentTo(
-        //        expectedIdentificationOrchestrationServiceException);
+            // then
+            actualIdentificationOrchestrationServiceException
+                .Should().BeEquivalentTo(expectedIdentificationOrchestrationServiceException);
 
-        //    this.impersonationContextServiceMock.Verify(service =>
-        //        service.RetrieveImpersonationContextByIdAsync(It.IsAny<Guid>()),
-        //            Times.Once);
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
 
-        //    this.loggingBrokerMock.Verify(broker =>
-        //       broker.LogErrorAsync(It.Is(SameExceptionAs(
-        //           expectedIdentificationOrchestrationServiceException))),
-        //               Times.Once);
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
+                   expectedIdentificationOrchestrationServiceException))),
+                       Times.Once);
 
-        //    this.csvIdentificationRequestServiceMock.VerifyNoOtherCalls();
-        //    this.impersonationContextServiceMock.VerifyNoOtherCalls();
-        //    this.notificationServiceMock.VerifyNoOtherCalls();
-        //    this.accessAuditServiceMock.VerifyNoOtherCalls();
-        //    this.documentServiceMock.VerifyNoOtherCalls();
-        //    this.loggingBrokerMock.VerifyNoOtherCalls();
-        //    this.hashBrokerMock.VerifyNoOtherCalls();
-        //    this.dateTimeBrokerMock.VerifyNoOtherCalls();
-        //    this.identifierBrokerMock.VerifyNoOtherCalls();
-        //}
+            this.accessAuditServiceMock.VerifyNoOtherCalls();
+            this.reIdentificationServiceMock.VerifyNoOtherCalls();
+            this.documentServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
