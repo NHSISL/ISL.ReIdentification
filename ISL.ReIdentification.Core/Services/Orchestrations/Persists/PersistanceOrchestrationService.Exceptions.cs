@@ -145,6 +145,16 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
                 throw await CreateAndLogDependencyValidationExceptionAsync(
                     accessAuditDependencyValidationException);
             }
+            catch (NotificationValidationException notificationValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    notificationValidationException);
+            }
+            catch (NotificationDependencyValidationException notificationDependencyValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    notificationDependencyValidationException);
+            }
             catch (CsvIdentificationRequestDependencyException csvIdentificationRequestDependencyException)
             {
                 throw await CreateAndLogDependencyExceptionAsync(

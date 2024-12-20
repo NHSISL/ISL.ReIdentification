@@ -30,9 +30,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                     innerException: nullAccessRequestPersistanceOrchestrationException);
 
             // when
-            ValueTask sendGeneratedTokensNotificationTask =
-                this.persistanceOrchestrationService.SendGeneratedTokensNotificationAsync(
-                    invalidAccessRequest);
+            ValueTask sendGeneratedTokensNotificationTask = this.persistanceOrchestrationService
+                .SendGeneratedTokensNotificationAsync(invalidAccessRequest);
 
             PersistanceOrchestrationValidationException actualImpersonationContextValidationException =
                 await Assert.ThrowsAsync<PersistanceOrchestrationValidationException>(

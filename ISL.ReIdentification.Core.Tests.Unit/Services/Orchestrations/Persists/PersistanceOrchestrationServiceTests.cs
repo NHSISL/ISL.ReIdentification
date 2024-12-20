@@ -308,6 +308,41 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             };
         }
 
+        public static TheoryData<Xeption> ReturningNothingDependencyValidationExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new AccessAuditValidationException(
+                    message: "Access audit validation errors occured, please try again",
+                    innerException),
+
+                new AccessAuditDependencyValidationException(
+                    message: "Access audit dependency validation occurred, please try again.",
+                    innerException),
+
+                new CsvIdentificationRequestValidationException(
+                    message: "CSV identification request validation error occurred, please fix errors and try again.",
+                    innerException),
+
+                new CsvIdentificationRequestDependencyValidationException(
+                    message: "CSV identification request dependency validation error occurred, " +
+                        "fix errors and try again.",
+                    innerException),
+
+                new NotificationValidationException(
+                    message: "Notification validation error occurred, please fix errors and try again.",
+                    innerException),
+
+                new NotificationDependencyValidationException(
+                    message: "Notification dependency validation error occurred, fix errors and try again.",
+                    innerException),
+            };
+        }
+
         public static TheoryData<Xeption> DependencyExceptions()
         {
             string randomMessage = GetRandomString();
