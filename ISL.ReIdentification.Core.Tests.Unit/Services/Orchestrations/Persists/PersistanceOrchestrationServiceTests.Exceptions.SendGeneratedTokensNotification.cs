@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
@@ -113,105 +114,57 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
-        //[Theory]
-        //[MemberData(nameof(PurgeDependencyExceptions))]
-        //public async Task ShouldThrowDependencyOnPurgeCsvIdentificationRecordsThatExpiredAndLogItAsync(
-        //    Xeption dependencyException)
-        //{
-        //    // given
-        //    this.dateTimeBrokerMock.Setup(broker =>
-        //        broker.GetCurrentDateTimeOffsetAsync())
-        //            .ThrowsAsync(dependencyException);
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnSendGeneratedTokensNotificationdAndLogItAsync()
+        {
+            // given
+            AccessRequest someAccessRequest = CreateRandomAccessRequest();
+            var serviceException = new Exception();
 
-        //    var expectedPersistanceOrchestrationDependencyException =
-        //        new PersistanceOrchestrationDependencyException(
-        //            message: "Persistance orchestration dependency error occurred, " +
-        //                "fix the errors and try again.",
-        //            innerException: dependencyException.InnerException as Xeption);
+            var failedServicePersistanceOrchestrationException =
+                new FailedServicePersistanceOrchestrationException(
+                    message: "Failed service persistance orchestration error occurred, contact support.",
+                    innerException: serviceException);
 
-        //    // when
-        //    ValueTask purgeCsvIdentificationRequestAsyncTask =
-        //        this.persistanceOrchestrationService.PurgeCsvReIdentificationRecordsThatExpired();
+            var expectedPersistanceOrchestrationServiceException =
+                new PersistanceOrchestrationServiceException(
+                    message: "Persistance orchestration service error occurred, contact support.",
+                    innerException: failedServicePersistanceOrchestrationException);
 
-        //    PersistanceOrchestrationDependencyException
-        //        actualPersistanceOrchestrationDependencyException =
-        //        await Assert.ThrowsAsync<PersistanceOrchestrationDependencyException>(
-        //            testCode: purgeCsvIdentificationRequestAsyncTask.AsTask);
+            this.notificationServiceMock.Setup(service =>
+                service.SendImpersonationTokenGeneratedNotificationAsync(someAccessRequest))
+                    .ThrowsAsync(serviceException);
 
-        //    // then
-        //    actualPersistanceOrchestrationDependencyException
-        //        .Should().BeEquivalentTo(expectedPersistanceOrchestrationDependencyException);
+            // when
+            ValueTask sendGeneratedTokensNotificationTask = this.persistanceOrchestrationService
+                 .SendGeneratedTokensNotificationAsync(someAccessRequest);
 
-        //    this.dateTimeBrokerMock.Verify(broker =>
-        //        broker.GetCurrentDateTimeOffsetAsync(),
-        //            Times.Once);
+            PersistanceOrchestrationServiceException
+                actualPersistanceOrchestrationValidationException =
+                await Assert.ThrowsAsync<PersistanceOrchestrationServiceException>(
+                    testCode: sendGeneratedTokensNotificationTask.AsTask);
 
-        //    this.loggingBrokerMock.Verify(broker =>
-        //       broker.LogErrorAsync(It.Is(SameExceptionAs(
-        //           expectedPersistanceOrchestrationDependencyException))),
-        //               Times.Once);
+            // then
+            actualPersistanceOrchestrationValidationException.Should()
+                .BeEquivalentTo(expectedPersistanceOrchestrationServiceException);
 
-        //    this.csvIdentificationRequestServiceMock.VerifyNoOtherCalls();
-        //    this.impersonationContextServiceMock.VerifyNoOtherCalls();
-        //    this.notificationServiceMock.VerifyNoOtherCalls();
-        //    this.accessAuditServiceMock.VerifyNoOtherCalls();
-        //    this.loggingBrokerMock.VerifyNoOtherCalls();
-        //    this.hashBrokerMock.VerifyNoOtherCalls();
-        //    this.dateTimeBrokerMock.VerifyNoOtherCalls();
-        //    this.identifierBrokerMock.VerifyNoOtherCalls();
-        //}
+            this.notificationServiceMock.Verify(service => service
+                .SendImpersonationTokenGeneratedNotificationAsync(It.Is(SameAccessRequestAs(someAccessRequest))),
+                    Times.Once);
 
-        //[Fact]
-        //public async Task
-        //    ShouldThrowServiceExceptionOnPurgeCsvIdentificationRecordsThatExpiredIfServiceErrorOccurredAndLogItAsync()
-        //{
-        //    // given
-        //    var serviceException = new Exception();
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
+                   expectedPersistanceOrchestrationServiceException))),
+                       Times.Once);
 
-        //    var failedServicePersistanceOrchestrationException =
-        //        new FailedServicePersistanceOrchestrationException(
-        //            message: "Failed service persistance orchestration error occurred, contact support.",
-        //            innerException: serviceException);
-
-        //    var expectedPersistanceOrchestrationServiceException =
-        //        new PersistanceOrchestrationServiceException(
-        //            message: "Persistance orchestration service error occurred, contact support.",
-        //            innerException: failedServicePersistanceOrchestrationException);
-
-        //    this.dateTimeBrokerMock.Setup(broker =>
-        //        broker.GetCurrentDateTimeOffsetAsync())
-        //            .ThrowsAsync(serviceException);
-
-        //    // when
-        //    ValueTask purgeCsvIdentificationRequestAsyncTask =
-        //        this.persistanceOrchestrationService.PurgeCsvReIdentificationRecordsThatExpired();
-
-        //    PersistanceOrchestrationServiceException
-        //        actualPersistanceOrchestrationValidationException =
-        //        await Assert.ThrowsAsync<PersistanceOrchestrationServiceException>(
-        //            testCode: purgeCsvIdentificationRequestAsyncTask.AsTask);
-
-        //    // then
-        //    actualPersistanceOrchestrationValidationException.Should().BeEquivalentTo(
-        //        expectedPersistanceOrchestrationServiceException);
-
-        //    this.dateTimeBrokerMock.Verify(broker =>
-        //        broker.GetCurrentDateTimeOffsetAsync(),
-        //            Times.Once);
-
-        //    this.loggingBrokerMock.Verify(broker =>
-        //       broker.LogErrorAsync(It.Is(SameExceptionAs(
-        //           expectedPersistanceOrchestrationServiceException))),
-        //               Times.Once);
-
-        //    this.csvIdentificationRequestServiceMock.VerifyNoOtherCalls();
-        //    this.impersonationContextServiceMock.VerifyNoOtherCalls();
-        //    this.notificationServiceMock.VerifyNoOtherCalls();
-        //    this.accessAuditServiceMock.VerifyNoOtherCalls();
-        //    this.loggingBrokerMock.VerifyNoOtherCalls();
-        //    this.hashBrokerMock.VerifyNoOtherCalls();
-        //    this.dateTimeBrokerMock.VerifyNoOtherCalls();
-        //    this.identifierBrokerMock.VerifyNoOtherCalls();
-        //}
+            this.csvIdentificationRequestServiceMock.VerifyNoOtherCalls();
+            this.impersonationContextServiceMock.VerifyNoOtherCalls();
+            this.notificationServiceMock.VerifyNoOtherCalls();
+            this.accessAuditServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
