@@ -72,10 +72,9 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
                     Parameter: $"{nameof(CsvReIdentificationConfigurations)}.{nameof(CsvReIdentificationConfigurations.ExpireAfterMinutes)}"));
         }
 
-        private static void ValidateOnExpireRenewImpersonationContextTokensAsync(AccessRequest accessRequest)
+        private static void ValidateOnSendGeneratedTokensNotificationAsyncAsync(AccessRequest accessRequest)
         {
-            Validate(
-               (Rule: IsInvalid(accessRequest), Parameter: nameof(accessRequest)));
+            ValidateAccessRequestIsNotNull(accessRequest);
         }
 
         private static dynamic IsInvalid(Guid id) => new

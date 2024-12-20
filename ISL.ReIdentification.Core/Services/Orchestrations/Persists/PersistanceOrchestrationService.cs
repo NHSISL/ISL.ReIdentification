@@ -208,7 +208,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
         public ValueTask SendGeneratedTokensNotificationAsync(AccessRequest accessRequest) =>
         TryCatch(async () =>
         {
-            ValidateOnExpireRenewImpersonationContextTokensAsync(accessRequest);
+            ValidateOnSendGeneratedTokensNotificationAsyncAsync(accessRequest);
             await this.notificationService.SendImpersonationTokenGeneratedNotificationAsync(accessRequest);
         });
     }
