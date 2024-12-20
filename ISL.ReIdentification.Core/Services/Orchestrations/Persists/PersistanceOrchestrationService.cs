@@ -240,8 +240,6 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
             string errorsPolicyname = container + "-ErrorsPolicy";
             DateTimeOffset currentDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
-            var test = this.projectStorageConfiguration;
-
             DateTimeOffset expiresOn = currentDateTimeOffset
                 .AddMinutes(this.projectStorageConfiguration.TokenLifetimeMinutes);
 
@@ -274,23 +272,26 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
 
             await this.documentService.CreateAndAssignAccessPoliciesAsync(container, accessPolicies);
 
-            accessRequest.ImpersonationContext.InboxSasToken = await this.documentService.CreateSasTokenAsync(
-                container,
-                this.projectStorageConfiguration.PickupFolder,
-                inboxPolicyname,
-                expiresOn);
+            accessRequest.ImpersonationContext.InboxSasToken =
+                await this.documentService.CreateSasTokenAsync(
+                    container,
+                    this.projectStorageConfiguration.PickupFolder,
+                    inboxPolicyname,
+                    expiresOn);
 
-            accessRequest.ImpersonationContext.OutboxSasToken = await this.documentService.CreateSasTokenAsync(
-                container,
-                this.projectStorageConfiguration.LandingFolder,
-                outboxPolicyname,
-                expiresOn);
+            accessRequest.ImpersonationContext.OutboxSasToken =
+                await this.documentService.CreateSasTokenAsync(
+                    container,
+                    this.projectStorageConfiguration.LandingFolder,
+                    outboxPolicyname,
+                    expiresOn);
 
-            accessRequest.ImpersonationContext.ErrorsSasToken = await this.documentService.CreateSasTokenAsync(
-                container,
-                this.projectStorageConfiguration.ErrorFolder,
-                errorsPolicyname,
-                expiresOn);
+            accessRequest.ImpersonationContext.ErrorsSasToken =
+                await this.documentService.CreateSasTokenAsync(
+                    container,
+                    this.projectStorageConfiguration.ErrorFolder,
+                    errorsPolicyname,
+                    expiresOn);
 
             return accessRequest;
         }
