@@ -214,8 +214,11 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
             }
         });
 
-        public async ValueTask<AccessRequest> ExpireRenewImpersonationContextTokensAsync(Guid impersonationContextId)
+        public ValueTask<AccessRequest> ExpireRenewImpersonationContextTokensAsync(Guid impersonationContextId) =>
+        TryCatch(async () =>
         {
+            ValidateOnExpireRenewImpersonationContextTokensAsync(impersonationContextId);
+
             ImpersonationContext impersonationContext = await this.impersonationContextService
                 .RetrieveImpersonationContextByIdAsync(impersonationContextId);
 
@@ -227,7 +230,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
             AccessRequest tokensAccessRequest = await CreateOrRenewTokensAsync(accessRequest);
 
             return tokensAccessRequest;
-        }
+        });
 
         virtual internal async ValueTask<AccessRequest> CreateOrRenewTokensAsync(AccessRequest accessRequest)
         {
