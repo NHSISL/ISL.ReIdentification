@@ -47,12 +47,13 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             await this.blobStorageBroker.DeleteFileAsync(fileName, container);
         });
 
-        public async ValueTask CreateAndAssignAccessPoliciesAsync(string container, List<AccessPolicy> accessPolicies)
+        public ValueTask CreateAndAssignAccessPoliciesAsync(string container, List<AccessPolicy> accessPolicies) =>
+        TryCatch(async () =>
         {
+            ValidateOnCreateAndAssignAccessPolicies(container, accessPolicies);
             List<Policy> policies = ConvertToPolicyList(accessPolicies);
             await this.blobStorageBroker.CreateAndAssignAccessPoliciesAsync(container, policies);
-        }
-
+        });
 
         public ValueTask<List<string>> RetrieveListOfAllAccessPoliciesAsync(string container) =>
         TryCatch(async () =>

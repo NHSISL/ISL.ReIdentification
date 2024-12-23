@@ -15,7 +15,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
     {
         [Theory]
         [MemberData(nameof(InvalidCreateAccessPolicyArguments))]
-        public async Task ShouldThrowValidationExceptionOnCreateAndAssignAccessPoliciesAsync(
+        public async Task ShouldThrowValidationExceptionOnCreateAndAssignAccessPoliciesInvalidArgumentsAndLogitAsync(
             string invalidString,
             List<AccessPolicy> invalidList)
         {
@@ -27,11 +27,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                 message: "Invalid document. Please correct the errors and try again.");
 
             invalidDocumentException.AddData(
-                key: "Container",
+                key: "container",
                 values: "Text is invalid");
 
             invalidDocumentException.AddData(
-                key: "AccessPolicies",
+                key: "accessPolicies",
                 values: "List is invalid");
 
             var expectedDocumentValidationException = new DocumentValidationException(
