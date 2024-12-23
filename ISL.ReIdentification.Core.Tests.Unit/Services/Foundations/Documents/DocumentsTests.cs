@@ -66,27 +66,27 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
         }
 
         private static List<Policy> GetPolicies() =>
-        new List<Policy>
-        {
-            new Policy
+            new List<Policy>
             {
-                PolicyName = "read",
-                Permissions = new List<string>
+                new Policy
                 {
-                    "Read",
-                    "list"
-                }
-            },
-            new Policy
-            {
-                PolicyName = "write",
-                Permissions = new List<string>
+                    PolicyName = "read",
+                    Permissions = new List<string>
+                    {
+                        "Read",
+                        "list"
+                    }
+                },
+                new Policy
                 {
-                    "write",
-                    "add",
-                    "Create"
-                }
-            },
+                    PolicyName = "write",
+                    Permissions = new List<string>
+                    {
+                        "write",
+                        "add",
+                        "Create"
+                    }
+                },
         };
 
         private static Policy GetPolicy()
@@ -103,6 +103,30 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                 }
             };
         }
+
+        private static List<AccessPolicy> GetAccessPolicies() =>
+            new List<AccessPolicy>
+            {
+                new AccessPolicy
+                {
+                    PolicyName = "read",
+                    Permissions = new List<string>
+                    {
+                        "Read",
+                        "list"
+                    }
+                },
+                new AccessPolicy
+                {
+                    PolicyName = "write",
+                    Permissions = new List<string>
+                    {
+                        "write",
+                        "add",
+                        "Create"
+                    }
+                },
+        };
 
         private static AccessPolicy GetAccessPolicy(string policyName)
         {
