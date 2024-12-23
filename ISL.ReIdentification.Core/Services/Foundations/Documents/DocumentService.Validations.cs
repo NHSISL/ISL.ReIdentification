@@ -101,6 +101,16 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
                 (Rule: IsInvalid(container), Parameter: nameof(container)),
                 (Rule: IsInvalid(accessPolicies), Parameter: nameof(accessPolicies)));
 
+            foreach (var accessPolicy in accessPolicies)
+            {
+                Validate(
+                    (Rule: IsInvalid(accessPolicy.PolicyName),
+                    Parameter: $"{nameof(AccessPolicy)}.{nameof(AccessPolicy.PolicyName)}"),
+
+                    (Rule: IsInvalid(accessPolicy.Permissions),
+                    Parameter: $"{nameof(AccessPolicy)}.{nameof(AccessPolicy.Permissions)}"));
+            }
+
             ValidateAccessPolicyPermissions(accessPolicies);
         }
 
@@ -149,6 +159,12 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
         {
             Condition = string.IsNullOrWhiteSpace(value),
             Message = "Text is invalid"
+        };
+
+        private static dynamic IsInvalid(List<string> textList) => new
+        {
+            Condition = textList is null || textList.Count == 0 || textList.Any(string.IsNullOrWhiteSpace),
+            Message = "List is invalid"
         };
 
         private static dynamic IsInvalid(List<AccessPolicy> accessPolicies) => new
