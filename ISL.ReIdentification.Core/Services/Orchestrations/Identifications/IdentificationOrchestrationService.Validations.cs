@@ -24,12 +24,10 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
 
         private static void ValidateOnExpireRenewImpersonationContextTokensAsync(AccessRequest accessRequest)
         {
-            {
-                ValidateAccessRequestIsNotNull(accessRequest);
+            ValidateAccessRequestIsNotNull(accessRequest);
 
-                Validate((Rule: IsInvalid(accessRequest.ImpersonationContext),
-                    Parameter: nameof(AccessRequest.ImpersonationContext)));
-            }
+            Validate((Rule: IsInvalid(accessRequest.ImpersonationContext),
+                Parameter: nameof(AccessRequest.ImpersonationContext)));
         }
 
         private static void ValidateOnRemoveDocumentByFileName(string fileName, string container)
