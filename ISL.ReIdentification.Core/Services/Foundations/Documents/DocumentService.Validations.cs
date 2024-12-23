@@ -100,6 +100,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             Validate(
                 (Rule: IsInvalid(container), Parameter: nameof(container)),
                 (Rule: IsInvalid(accessPolicies), Parameter: nameof(accessPolicies)));
+
+            ValidateAccessPolicyPermissions(accessPolicies);
         }
 
         private static void ValidateAccessPolicyExists(string policyName, List<string> policyNames)
@@ -108,6 +110,32 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             {
                 throw new AccessPolicyNotFoundDocumentException(
                     message: "Access policy with the provided name was not found on this container.");
+            }
+        }
+
+        private static void ValidateAccessPolicyPermissions(List<AccessPolicy> accessPolicies)
+        {
+            foreach (var accessPolicy in accessPolicies)
+            {
+                ValidatePermissions(accessPolicy.Permissions);
+            }
+        }
+
+        private static void ValidatePermissions(List<string> permissions)
+        {
+            foreach (var permission in permissions)
+            {
+                if (permission.ToLower() != "read" &&
+                    permission.ToLower() != "write" &&
+                    permission.ToLower() != "delete" &&
+                    permission.ToLower() != "create" &&
+                    permission.ToLower() != "add" &&
+                    permission.ToLower() != "list")
+                {
+                    throw new InvalidPermissionDocumentException(
+                        message: "Invalid permission. Read, write, delete, create, add and list " +
+                        "permissions are supported at this time.");
+                }
             }
         }
 
