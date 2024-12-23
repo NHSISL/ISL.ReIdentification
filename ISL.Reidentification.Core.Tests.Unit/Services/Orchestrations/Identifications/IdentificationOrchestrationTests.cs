@@ -10,11 +10,15 @@ using System.Linq.Expressions;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Identifiers;
 using ISL.ReIdentification.Core.Brokers.Loggings;
+using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits.Exceptions;
+using ISL.ReIdentification.Core.Models.Foundations.Documents;
 using ISL.ReIdentification.Core.Models.Foundations.Documents.Exceptions;
+using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications.Exceptions;
+using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Services.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Services.Foundations.Documents;
 using ISL.ReIdentification.Core.Services.Foundations.ReIdentifications;
@@ -35,6 +39,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;
+        private readonly ProjectStorageConfiguration projectStorageConfiguration;
         private readonly IIdentificationOrchestrationService identificationOrchestrationService;
         private readonly ICompareLogic compareLogic;
         private readonly ITestOutputHelper testOutputHelper;
@@ -47,6 +52,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.identifierBrokerMock = new Mock<IIdentifierBroker>();
+            this.projectStorageConfiguration = CreateRandomProjectStorageConfiguration();
             this.compareLogic = new CompareLogic();
             this.testOutputHelper = testOutputHelper;
 
@@ -56,7 +62,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                 this.documentServiceMock.Object,
                 this.loggingBrokerMock.Object,
                 this.dateTimeBrokerMock.Object,
-                this.identifierBrokerMock.Object);
+                this.identifierBrokerMock.Object,
+                this.projectStorageConfiguration);
         }
 
         private static string GetRandomString() =>
@@ -67,6 +74,20 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
 
             return result.Length > length ? result.Substring(0, length) : result;
+        }
+
+        private static List<string> GetRandomStringList()
+        {
+            int randomNumber = GetRandomNumber();
+            List<string> randomStringList = new List<string>();
+
+            for (int index = 0; index < randomNumber; index++)
+            {
+                string randomString = GetRandomStringWithLength(randomNumber);
+                randomStringList.Add(randomString);
+            }
+
+            return randomStringList;
         }
 
         private static int GetRandomNumber() =>
@@ -107,6 +128,91 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             return filler;
         }
 
+        private static AccessRequest CreateRandomAccessRequest() =>
+            CreateAccessRequestFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
+
+        private static Filler<AccessRequest> CreateAccessRequestFiller(DateTimeOffset dateTimeOffset)
+        {
+            var filler = new Filler<AccessRequest>();
+
+            filler.Setup()
+                .OnProperty(accessRequest => accessRequest.ImpersonationContext)
+                    .Use(CreateRandomImpersonationContext())
+
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use((DateTimeOffset?)default);
+
+            return filler;
+        }
+
+        private static ImpersonationContext CreateRandomImpersonationContext() =>
+            CreateRandomImpersonationContext(dateTimeOffset: GetRandomDateTimeOffset());
+
+        private static ImpersonationContext CreateRandomImpersonationContext(DateTimeOffset dateTimeOffset) =>
+            CreateImpersonationContextsFiller(dateTimeOffset).Create();
+
+        private static Filler<ImpersonationContext> CreateImpersonationContextsFiller(DateTimeOffset dateTimeOffset)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<ImpersonationContext>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+
+                .OnProperty(impersonationContext => impersonationContext.RequesterEmail)
+                    .Use(GetRandomStringWithLength(320))
+
+                .OnProperty(impersonationContext => impersonationContext.ResponsiblePersonEmail)
+                    .Use(GetRandomStringWithLength(320))
+
+                .OnProperty(impersonationContext => impersonationContext.Organisation)
+                    .Use(GetRandomStringWithLength(255))
+
+                .OnProperty(impersonationContext => impersonationContext.ProjectName)
+                    .Use(GetRandomStringWithLength(255))
+
+                .OnProperty(impersonationContext => impersonationContext.IdentifierColumn)
+                    .Use(GetRandomStringWithLength(9))
+
+                .OnProperty(impersonationContext => impersonationContext.IsApproved)
+                    .Use(true)
+
+                .OnProperty(impersonationContext => impersonationContext.CreatedBy).Use(user)
+                .OnProperty(impersonationContext => impersonationContext.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
+        private static ProjectStorageConfiguration CreateRandomProjectStorageConfiguration() =>
+            CreateProjectStorageConfigurationFiller().Create();
+
+        private static Filler<ProjectStorageConfiguration> CreateProjectStorageConfigurationFiller() =>
+            new Filler<ProjectStorageConfiguration>();
+
+        private static List<AccessPolicy> GetAccessPolicies(
+            string inboxPolicyname,
+            string outboxPolicyname,
+            string errorsPolicyname) =>
+            new List<AccessPolicy>
+            {
+                new AccessPolicy
+                {
+                    PolicyName = inboxPolicyname,
+                    Permissions = new List<string>{ "read", "list"}
+                },
+                new AccessPolicy
+                {
+                    PolicyName = outboxPolicyname,
+                    Permissions = new List<string>{ "write", "add", "create"}
+                },
+                new AccessPolicy
+                {
+                    PolicyName = errorsPolicyname,
+                    Permissions = new List<string>{ "read", "list"}
+                },
+            };
+
         private Expression<Func<AccessAudit, bool>> SameAccessAuditAs(
           AccessAudit expectedAccessAudit)
         {
@@ -128,6 +234,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
 
         private Expression<Func<Stream, bool>> SameStreamAs(Stream expectedStream) =>
             actualStream => this.compareLogic.Compare(expectedStream, actualStream).AreEqual;
+
+        private Expression<Func<List<AccessPolicy>, bool>> SameAccessPolicyListAs(
+            List<AccessPolicy> expectedAccessPolicyList) =>
+                actualAccessPolicyList => this.compareLogic
+                    .Compare(expectedAccessPolicyList, actualAccessPolicyList).AreEqual;
 
         private static byte[] ReadAllBytesFromStream(Stream stream)
         {

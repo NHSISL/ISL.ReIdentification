@@ -240,5 +240,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
             ValidateInputsOnSendImpersonationDeniedNotificationAsync(toEmail, subject, body, personalisation);
             await this.notificationBroker.SendEmailAsync(toEmail, subject, body, personalisation);
         });
+
+        public ValueTask SendImpersonationTokenGeneratedNotificationAsync(AccessRequest accessRequest) =>
+            throw new System.NotImplementedException();
     }
 }

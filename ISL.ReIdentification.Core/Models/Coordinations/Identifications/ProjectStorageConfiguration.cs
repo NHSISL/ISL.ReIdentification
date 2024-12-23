@@ -13,5 +13,6 @@ namespace ISL.ReIdentification.Core.Models.Coordinations.Identifications
         public string ServiceUri { get; set; }
         public string StorageAccountName { get; set; }
         public string StorageAccountAccessKey { get; set; }
+        public int TokenLifetimeMinutes { get; set; }
     }
 }

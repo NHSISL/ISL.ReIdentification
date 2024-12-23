@@ -20,7 +20,6 @@ using ISL.ReIdentification.Core.Services.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Services.Foundations.Notifications;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
 {
@@ -204,6 +203,13 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
 
                 await this.accessAuditService.AddAccessAuditAsync(accessAudit);
             }
+        });
+
+        public ValueTask SendGeneratedTokensNotificationAsync(AccessRequest accessRequest) =>
+        TryCatch(async () =>
+        {
+            ValidateOnSendGeneratedTokensNotificationAsyncAsync(accessRequest);
+            await this.notificationService.SendImpersonationTokenGeneratedNotificationAsync(accessRequest);
         });
     }
 }

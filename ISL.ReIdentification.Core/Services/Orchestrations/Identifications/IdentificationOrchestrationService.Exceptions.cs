@@ -8,6 +8,8 @@ using ISL.ReIdentification.Core.Models.Foundations.AccessAudits.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.Documents.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications.Exceptions;
+using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
+using ISL.ReIdentification.Core.Models.Orchestrations.Accesses.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Identifications.Exceptions;
 using Xeptions;
 
@@ -16,6 +18,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
     public partial class IdentificationOrchestrationService : IIdentificationOrchestrationService
     {
         private delegate ValueTask<IdentificationRequest> ReturningIdentificationRequestFunction();
+        private delegate ValueTask<AccessRequest> ReturningAccessRequestFunction();
         private delegate ValueTask ReturningNothingFunction();
 
         private async ValueTask<IdentificationRequest> TryCatch(
@@ -68,6 +71,52 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             {
                 throw await CreateAndLogDependencyExceptionAsync(
                     reIdentificationDependencyException);
+            }
+            catch (Exception exception)
+            {
+                var failedServiceIdentificationOrchestrationException =
+                    new FailedServiceIdentificationOrchestrationException(
+                        message: "Failed service identification orchestration error occurred, contact support.",
+                        innerException: exception);
+
+                throw await CreateAndLogServiceExceptionAsync(failedServiceIdentificationOrchestrationException);
+            }
+        }
+
+        private async ValueTask<AccessRequest> TryCatch(ReturningAccessRequestFunction returningAccessRequestFunction)
+        {
+            try
+            {
+                return await returningAccessRequestFunction();
+            }
+            catch (NullAccessRequestException nullAccessRequestException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(nullAccessRequestException);
+            }
+            catch (InvalidArgumentIdentificationOrchestrationException
+                invalidArgumentIdentificationOrchestrationException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentIdentificationOrchestrationException);
+            }
+            catch (DocumentValidationException documentValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    documentValidationException);
+            }
+            catch (DocumentDependencyValidationException documentDependencyValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    documentDependencyValidationException);
+            }
+            catch (DocumentDependencyException documentDependencyException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(
+                    documentDependencyException);
+            }
+            catch (DocumentServiceException documentServiceException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(
+                    documentServiceException);
             }
             catch (Exception exception)
             {
