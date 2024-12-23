@@ -4,7 +4,7 @@
 }
 
 .hero-text {
-    color: #00ABCD;
+    color: #45B8AC;
 }
 
 .sidebar {
@@ -19,12 +19,12 @@
     }
 
     .sidebar .list-group-item.active a {
-        color: #00ABCD;
+        color: #45B8AC;
         margin-left: 10px
     }
 
     .sidebar .list-group-item.active .fa-icon {
-        color: #00ABCD;
+        color: #45B8AC;
         margin-left: 10px
     }
 
