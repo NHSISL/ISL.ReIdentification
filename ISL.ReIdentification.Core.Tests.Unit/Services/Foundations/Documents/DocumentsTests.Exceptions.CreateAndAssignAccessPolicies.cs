@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -87,6 +88,48 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(expectedDocumentDependencyException))),
+                    Times.Once);
+
+            this.blobStorageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnCreateAndAssignAccessPoliciesAsync()
+        {
+            // given
+            string someContainer = GetRandomString();
+            List<AccessPolicy> someAccessPolicies = GetAccessPolicies();
+            Exception someException = new Exception();
+
+            var failedServiceDocumentException = new FailedServiceDocumentException(
+                message: "Failed service document error occurred, contact support.",
+                innerException: someException);
+
+            var expectedDocumentServiceException = new DocumentServiceException(
+                message: "Document service error occurred, contact support.",
+                innerException: failedServiceDocumentException);
+
+            this.blobStorageBrokerMock.Setup(broker =>
+                broker.CreateAndAssignAccessPoliciesAsync(someContainer, It.IsAny<List<Policy>>()))
+                    .ThrowsAsync(someException);
+
+            // when
+            ValueTask createAndAssignAccessPoliciesTask =
+                this.documentService.CreateAndAssignAccessPoliciesAsync(someContainer, someAccessPolicies);
+
+            DocumentServiceException actualDocumentServiceException =
+                await Assert.ThrowsAsync<DocumentServiceException>(createAndAssignAccessPoliciesTask.AsTask);
+
+            // then
+            actualDocumentServiceException.Should().BeEquivalentTo(expectedDocumentServiceException);
+
+            this.blobStorageBrokerMock.Verify(broker =>
+                broker.CreateAndAssignAccessPoliciesAsync(someContainer, It.IsAny<List<Policy>>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(expectedDocumentServiceException))),
                     Times.Once);
 
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
