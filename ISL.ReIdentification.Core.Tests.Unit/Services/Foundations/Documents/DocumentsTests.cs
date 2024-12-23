@@ -214,6 +214,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
         private Expression<Func<Stream, bool>> SameStreamAs(Stream expectedStream) =>
             actualStream => this.compareLogic.Compare(expectedStream, actualStream).AreEqual;
 
+        private Expression<Func<List<Policy>, bool>> SamePolicyListAs(List<Policy> expectedPolicyList) =>
+            actualPolicyList => this.compareLogic.Compare(expectedPolicyList, actualPolicyList).AreEqual;
+
         private static byte[] ReadAllBytesFromStream(Stream stream)
         {
             if (stream.CanSeek)
