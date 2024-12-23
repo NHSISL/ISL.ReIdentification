@@ -16,11 +16,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
         [Theory]
         [MemberData(nameof(InvalidCreateAccessPolicyArguments))]
         public async Task ShouldThrowValidationExceptionOnCreateAndAssignAccessPoliciesInvalidArgumentsAndLogitAsync(
-            string invalidString,
+            string invalidText,
             List<AccessPolicy> invalidList)
         {
             // given
-            string invalidContainer = invalidString;
+            string invalidContainer = invalidText;
             List<AccessPolicy> invalidAccessPolicyList = invalidList;
 
             var invalidDocumentException = new InvalidDocumentException(
@@ -41,6 +41,61 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             // when
             ValueTask createAndAssignAccessPoliciesTask =
                 this.documentService.CreateAndAssignAccessPoliciesAsync(invalidContainer, invalidAccessPolicyList);
+
+            DocumentValidationException actualDocumentValidationException =
+                await Assert.ThrowsAsync<DocumentValidationException>(createAndAssignAccessPoliciesTask.AsTask);
+
+            // then
+            actualDocumentValidationException.Should().BeEquivalentTo(expectedDocumentValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedDocumentValidationException))),
+                        Times.Once);
+
+            this.blobStorageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task
+            ShouldThrowValidationExceptionOnCreateAccessPolicyIfAccessPolicyObjectArgumentsInvalidAndLogItAsync(
+            string invalidText)
+        {
+            // given
+            string randomString = GetRandomString();
+            string someContainer = randomString;
+
+            List<AccessPolicy> invalidAccessPolicies = new List<AccessPolicy>
+            {
+                new AccessPolicy
+                {
+                    PolicyName = invalidText,
+                    Permissions = new List<string>{ invalidText }
+                }
+            };
+
+            var invalidDocumentException = new InvalidDocumentException(
+                message: "Invalid document. Please correct the errors and try again.");
+
+            invalidDocumentException.AddData(
+                key: $"{nameof(AccessPolicy)}.{nameof(AccessPolicy.PolicyName)}",
+                values: "Text is invalid");
+
+            invalidDocumentException.AddData(
+                key: $"{nameof(AccessPolicy)}.{nameof(AccessPolicy.Permissions)}",
+                values: "List is invalid");
+
+            var expectedDocumentValidationException = new DocumentValidationException(
+                message: "Document validation error occurred, please fix errors and try again.",
+                innerException: invalidDocumentException);
+
+            // when
+            ValueTask createAndAssignAccessPoliciesTask =
+                this.documentService.CreateAndAssignAccessPoliciesAsync(someContainer, invalidAccessPolicies);
 
             DocumentValidationException actualDocumentValidationException =
                 await Assert.ThrowsAsync<DocumentValidationException>(createAndAssignAccessPoliciesTask.AsTask);
