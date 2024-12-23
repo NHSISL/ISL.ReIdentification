@@ -15,7 +15,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
     {
         [Theory]
         [MemberData(nameof(InvalidCreateAccessPolicyArguments))]
-        public async Task ShouldThrowValidationExceptionOnCreateAndAssignAccessPoliciesInvalidArgumentsAndLogitAsync(
+        public async Task
+            ShouldThrowValidationExceptionOnCreateAndAssignAccessPoliciesInvalidArgumentsAndLogitAsync(
             string invalidText,
             List<AccessPolicy> invalidList)
         {
@@ -43,15 +44,15 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                 this.documentService.CreateAndAssignAccessPoliciesAsync(invalidContainer, invalidAccessPolicyList);
 
             DocumentValidationException actualDocumentValidationException =
-                await Assert.ThrowsAsync<DocumentValidationException>(createAndAssignAccessPoliciesTask.AsTask);
+                await Assert.ThrowsAsync<DocumentValidationException>(
+                    testCode: createAndAssignAccessPoliciesTask.AsTask);
 
             // then
             actualDocumentValidationException.Should().BeEquivalentTo(expectedDocumentValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogErrorAsync(It.Is(SameExceptionAs(
-                    expectedDocumentValidationException))),
-                        Times.Once);
+                broker.LogErrorAsync(It.Is(SameExceptionAs(expectedDocumentValidationException))),
+                    Times.Once);
 
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -62,7 +63,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
         [InlineData("")]
         [InlineData(" ")]
         public async Task
-            ShouldThrowValidationExceptionOnCreateAccessPolicyIfAccessPolicyObjectArgumentsInvalidAndLogItAsync(
+            ShouldThrowValidationExceptionOnCreateAccessPolicyIfAccessPolicyObjectPropertiesInvalidAndLogItAsync(
             string invalidText)
         {
             // given
@@ -98,15 +99,15 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                 this.documentService.CreateAndAssignAccessPoliciesAsync(someContainer, invalidAccessPolicies);
 
             DocumentValidationException actualDocumentValidationException =
-                await Assert.ThrowsAsync<DocumentValidationException>(createAndAssignAccessPoliciesTask.AsTask);
+                await Assert.ThrowsAsync<DocumentValidationException>(
+                    testCode: createAndAssignAccessPoliciesTask.AsTask);
 
             // then
             actualDocumentValidationException.Should().BeEquivalentTo(expectedDocumentValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogErrorAsync(It.Is(SameExceptionAs(
-                    expectedDocumentValidationException))),
-                        Times.Once);
+                broker.LogErrorAsync(It.Is(SameExceptionAs(expectedDocumentValidationException))),
+                    Times.Once);
 
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -143,15 +144,15 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                 this.documentService.CreateAndAssignAccessPoliciesAsync(someContainer, invalidAccessPolicies);
 
             DocumentValidationException actualDocumentValidationException =
-                await Assert.ThrowsAsync<DocumentValidationException>(createAndAssignAccessPoliciesTask.AsTask);
+                await Assert.ThrowsAsync<DocumentValidationException>(
+                    testCode: createAndAssignAccessPoliciesTask.AsTask);
 
             // then
             actualDocumentValidationException.Should().BeEquivalentTo(expectedDocumentValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogErrorAsync(It.Is(SameExceptionAs(
-                    expectedDocumentValidationException))),
-                        Times.Once);
+                broker.LogErrorAsync(It.Is(SameExceptionAs(expectedDocumentValidationException))),
+                    Times.Once);
 
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

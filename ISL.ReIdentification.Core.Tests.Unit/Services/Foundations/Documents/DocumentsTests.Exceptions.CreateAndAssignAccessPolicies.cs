@@ -38,7 +38,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                 this.documentService.CreateAndAssignAccessPoliciesAsync(someContainer, someAccessPolicies);
 
             DocumentDependencyValidationException actualDocumentServiceException =
-                await Assert.ThrowsAsync<DocumentDependencyValidationException>(createAndAssignAccessPoliciesTask.AsTask);
+                await Assert.ThrowsAsync<DocumentDependencyValidationException>(
+                    testCode: createAndAssignAccessPoliciesTask.AsTask);
 
             // then
             actualDocumentServiceException.Should().BeEquivalentTo(expectedDependencyValidationException);
@@ -77,7 +78,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                 this.documentService.CreateAndAssignAccessPoliciesAsync(someContainer, someAccessPolicies);
 
             DocumentDependencyException actualDocumentDependencyException =
-                await Assert.ThrowsAsync<DocumentDependencyException>(createAndAssignAccessPoliciesTask.AsTask);
+                await Assert.ThrowsAsync<DocumentDependencyException>(
+                    testCode: createAndAssignAccessPoliciesTask.AsTask);
 
             // then
             actualDocumentDependencyException.Should().BeEquivalentTo(expectedDocumentDependencyException);
@@ -119,7 +121,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                 this.documentService.CreateAndAssignAccessPoliciesAsync(someContainer, someAccessPolicies);
 
             DocumentServiceException actualDocumentServiceException =
-                await Assert.ThrowsAsync<DocumentServiceException>(createAndAssignAccessPoliciesTask.AsTask);
+                await Assert.ThrowsAsync<DocumentServiceException>(
+                    testCode: createAndAssignAccessPoliciesTask.AsTask);
 
             // then
             actualDocumentServiceException.Should().BeEquivalentTo(expectedDocumentServiceException);
