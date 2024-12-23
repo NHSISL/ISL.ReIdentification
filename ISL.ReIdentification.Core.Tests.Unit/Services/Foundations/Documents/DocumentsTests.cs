@@ -271,5 +271,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
 
             return new DateTimeRange(earliestDate: futureStartDate, latestDate: futureEndDate).GetValue();
         }
+
+        public static TheoryData<string, List<AccessPolicy>> InvalidCreateAccessPolicyArguments() =>
+            new TheoryData<string, List<AccessPolicy>>
+            {
+                { null, null },
+                { "", new List<AccessPolicy>() },
+                { " ", new List<AccessPolicy>() }
+            };
     }
 }
