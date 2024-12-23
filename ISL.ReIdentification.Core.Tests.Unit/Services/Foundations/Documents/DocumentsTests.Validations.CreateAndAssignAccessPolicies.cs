@@ -56,5 +56,50 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task
+            ShouldThrowValidationExceptionOnCreateAndAssignAccessPoliciesInvalidPermissionsAndLogitAsync()
+        {
+            // given
+            string someContainer = GetRandomString();
+            string somePolicyname = GetRandomString();
+            List<string> invalidPermissions = GetRandomStringList();
+
+            List<AccessPolicy> invalidAccessPolicies = new List<AccessPolicy>
+            {
+                new AccessPolicy
+                {
+                    PolicyName = somePolicyname,
+                    Permissions = invalidPermissions
+                }
+            };
+
+            var invalidPermissionDocumentException = new InvalidPermissionDocumentException(
+                message: "Invalid permission. Read, write, delete, create, add and list " +
+                    "permissions are supported at this time.");
+
+            var expectedDocumentValidationException = new DocumentValidationException(
+                message: "Document validation error occurred, please fix errors and try again.",
+                innerException: invalidPermissionDocumentException);
+
+            // when
+            ValueTask createAndAssignAccessPoliciesTask =
+                this.documentService.CreateAndAssignAccessPoliciesAsync(someContainer, invalidAccessPolicies);
+
+            DocumentValidationException actualDocumentValidationException =
+                await Assert.ThrowsAsync<DocumentValidationException>(createAndAssignAccessPoliciesTask.AsTask);
+
+            // then
+            actualDocumentValidationException.Should().BeEquivalentTo(expectedDocumentValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedDocumentValidationException))),
+                        Times.Once);
+
+            this.blobStorageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
