@@ -25,12 +25,6 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Blob
             string accessPolicyIdentifier,
             DateTimeOffset expiresOn);
 
-        ValueTask<string> CreateSasTokenAsync(
-            string container,
-            string path,
-            DateTimeOffset expiresOn,
-            List<string> permissions);
-
         ValueTask<List<string>> RetrieveListOfAllAccessPoliciesAsync(string container);
         ValueTask<List<Policy>> RetrieveAllAccessPoliciesAsync(string container);
         ValueTask<Policy> RetrieveAccessPolicyByNameAsync(string container, string policyName);

@@ -247,8 +247,8 @@ namespace ISL.ReIdentification.Portals.Server
             services.AddSingleton(notifyConfigurations);
 
             ProjectStorageConfiguration projectStorageConfiguration = configuration
-            .GetSection("projectStorageConfiguration")
-                .Get<ProjectStorageConfiguration>();
+                .GetSection("ProjectStorageConfiguration")
+                    .Get<ProjectStorageConfiguration>();
 
             AzureBlobStoreConfigurations projectsBlobStoreConfigurations = new AzureBlobStoreConfigurations
             {
@@ -326,7 +326,7 @@ namespace ISL.ReIdentification.Portals.Server
         private static void AddOrchestrationServices(IServiceCollection services, IConfiguration configuration)
         {
             CsvReIdentificationConfigurations csvReIdentificationConfigurations = configuration
-                .GetSection("csvReIdentificationConfigurations")
+                .GetSection("CsvReIdentificationConfigurations")
                     .Get<CsvReIdentificationConfigurations>() ??
                         new CsvReIdentificationConfigurations();
 

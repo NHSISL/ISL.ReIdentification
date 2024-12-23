@@ -14,6 +14,7 @@ using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests.Exceptions;
+using ISL.ReIdentification.Core.Models.Foundations.Documents;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.Notifications.Exceptions;
@@ -62,8 +63,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             {
                 ExpireAfterMinutes = expireAfterMinutes
             };
-
-
 
             this.persistanceOrchestrationService =
                 new PersistanceOrchestrationService(
@@ -261,10 +260,18 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                 actualCsvIdentificationRequest => this.compareLogic
                     .Compare(expectedCsvIdentificationRequest, actualCsvIdentificationRequest).AreEqual;
 
-        private Expression<Func<AccessAudit, bool>> SameAccessAuditAs(
-            AccessAudit expectedAccessAudit) =>
+        private Expression<Func<AccessAudit, bool>> SameAccessAuditAs(AccessAudit expectedAccessAudit) =>
                 actualAccessAudit => this.compareLogic
                     .Compare(expectedAccessAudit, actualAccessAudit).AreEqual;
+
+        private Expression<Func<List<AccessPolicy>, bool>> SameAccessPolicyListAs(
+            List<AccessPolicy> expectedAccessPolicyList) =>
+                actualAccessPolicyList => this.compareLogic
+                    .Compare(expectedAccessPolicyList, actualAccessPolicyList).AreEqual;
+
+        private Expression<Func<AccessRequest, bool>> SameAccessRequestAs(AccessRequest expectedAccessRequest) =>
+            actualAccessRequest => this.compareLogic
+                .Compare(expectedAccessRequest, actualAccessRequest).AreEqual;
 
         public static TheoryData<Xeption> DependencyValidationExceptions()
         {
@@ -301,6 +308,41 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             };
         }
 
+        public static TheoryData<Xeption> ReturningNothingDependencyValidationExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new AccessAuditValidationException(
+                    message: "Access audit validation errors occured, please try again",
+                    innerException),
+
+                new AccessAuditDependencyValidationException(
+                    message: "Access audit dependency validation occurred, please try again.",
+                    innerException),
+
+                new CsvIdentificationRequestValidationException(
+                    message: "CSV identification request validation error occurred, please fix errors and try again.",
+                    innerException),
+
+                new CsvIdentificationRequestDependencyValidationException(
+                    message: "CSV identification request dependency validation error occurred, " +
+                        "fix errors and try again.",
+                    innerException),
+
+                new NotificationValidationException(
+                    message: "Notification validation error occurred, please fix errors and try again.",
+                    innerException),
+
+                new NotificationDependencyValidationException(
+                    message: "Notification dependency validation error occurred, fix errors and try again.",
+                    innerException),
+            };
+        }
+
         public static TheoryData<Xeption> DependencyExceptions()
         {
             string randomMessage = GetRandomString();
@@ -315,6 +357,40 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
 
                 new ImpersonationContextServiceException(
                     message: "Impersonation context service error occurred, please contact support.",
+                    innerException),
+
+                new CsvIdentificationRequestDependencyException(
+                    message: "CSV identification request dependency error occurred, please contact support.",
+                    innerException),
+
+                new CsvIdentificationRequestServiceException(
+                    message: "CSV identification request service error occurred, please contact support.",
+                    innerException),
+
+                new NotificationDependencyException(
+                    message: "Notification dependency error occurred, please contact support.",
+                    innerException),
+
+                new NotificationServiceException(
+                    message: "Notification service error occurred, please contact support.",
+                    innerException),
+            };
+        }
+
+        public static TheoryData<Xeption> ReturningNothingDependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new AccessAuditDependencyException(
+                    message: "Access audit dependency error occurred, please contact support.",
+                    innerException),
+
+                new AccessAuditServiceException(
+                    message: "Access audit service error occurred, please contact support.",
                     innerException),
 
                 new CsvIdentificationRequestDependencyException(

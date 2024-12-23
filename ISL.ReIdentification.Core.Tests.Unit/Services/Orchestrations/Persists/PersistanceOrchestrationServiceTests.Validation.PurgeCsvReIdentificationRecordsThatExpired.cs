@@ -82,6 +82,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                 hashBroker: this.hashBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
                 identifierBroker: this.identifierBrokerMock.Object,
+
                 csvReIdentificationConfigurations: new CsvReIdentificationConfigurations
                 {
                     ExpireAfterMinutes = invalidExpireAfterMinutes
