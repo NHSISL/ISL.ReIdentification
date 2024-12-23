@@ -241,9 +241,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
             await this.notificationBroker.SendEmailAsync(toEmail, subject, body, personalisation);
         });
 
-        public ValueTask SendImpersonationTokenGeneratedNotificationAsync(AccessRequest accessRequest)
-        {
+        public ValueTask SendImpersonationTokenGeneratedNotificationAsync(AccessRequest accessRequest) =>
             throw new System.NotImplementedException();
-        }
     }
 }
