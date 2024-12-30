@@ -18,4 +18,5 @@ export const BreachModal : FunctionComponent<BreachModalProps> = ({show, hide}) 
             <Button onClick={hide}>Ok</Button>
         </Modal.Footer>
     </Modal>
+
 }
