@@ -30,4 +30,8 @@
 		<ProjectReference Include="..\..\ISL.ReIdentification.Core\ISL.ReIdentification.Core.csproj" />
 		<ProjectReference Include="..\ISL.Reidentification.Configurations.Client\ISL.ReIdentification.Configurations.Client.esproj" />
 	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="wwwroot\**" CopyToPublishDirectory="PreserveNewest" />
+	</ItemGroup>
 </Project>
