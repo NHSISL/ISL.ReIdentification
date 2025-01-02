@@ -107,5 +107,50 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnExpireRenewTokensAndLogItAsync()
+        {
+            // given
+            Exception someException = new Exception();
+            Guid someImpersonationContextId = Guid.NewGuid();
+
+            this.persistanceOrchestrationServiceMock.Setup(service =>
+                service.RetrieveImpersonationContextByIdAsync(someImpersonationContextId))
+                    .ThrowsAsync(someException);
+
+            var expectedIdentificationCoordinationServiceException =
+                new IdentificationCoordinationServiceException(
+                    message: "Identification coordination service error occurred, " +
+                        "fix the errors and try again.",
+                    innerException: someException);
+
+            // when
+            ValueTask<AccessRequest> expireRenewTokensTask = this.identificationCoordinationService
+                .ExpireRenewImpersonationContextTokensAsync(someImpersonationContextId);
+
+            IdentificationCoordinationServiceException
+                actualIdentificationCoordinationServiceException =
+                    await Assert.ThrowsAsync<IdentificationCoordinationServiceException>(
+                        testCode: expireRenewTokensTask.AsTask);
+
+            // then
+            actualIdentificationCoordinationServiceException
+                .Should().BeEquivalentTo(expectedIdentificationCoordinationServiceException);
+
+            this.persistanceOrchestrationServiceMock.Verify(service =>
+                 service.RetrieveImpersonationContextByIdAsync(someImpersonationContextId),
+                     Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(expectedIdentificationCoordinationServiceException))),
+                    Times.Once);
+
+            this.accessOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.identificationOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.persistanceOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
