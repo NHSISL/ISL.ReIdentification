@@ -23,7 +23,7 @@ const NavbarComponent: React.FC<NavbarComponentProps> = ({ toggleSidebar, showMe
                     </Button>
                 )}
                 <Navbar.Brand href="/" className="me-auto ms-3 d-flex align-items-center">
-                    <img src="/OneLondon_Logo_OneLondon_Logo_White.png" alt="London Data Service logo" height="30" width="110" />
+                    <img src="/OneLondon_Logo_OneLondon_Logo_White.png" alt="London Data Service logo" height="30" width="100" />
                     <span className="d-none d-md-inline text-white" style={{ marginLeft: "10px" }}>
                         LDS - Re-Identification Portal
                         <small> {configuration?.environment !== "Live" && <>&nbsp;({configuration?.environment})</>}</small>
