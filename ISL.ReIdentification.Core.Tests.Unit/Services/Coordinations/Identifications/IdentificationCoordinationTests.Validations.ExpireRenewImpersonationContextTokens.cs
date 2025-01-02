@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications.Exceptions;
+using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using Moq;
 
@@ -24,7 +25,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                     message: "Invalid identification coordination exception. Please correct the errors and try again.");
 
             invalidIdentificationCoordinationException.AddData(
-                key: "impersonationContextId",
+                key: nameof(ImpersonationContext.Id),
                 values: "Id is invalid");
 
             var expectedIdentificationCoordinationValidationException =
