@@ -32,7 +32,7 @@ const MenuComponent: React.FC = () => {
 
             <FeatureSwitch feature={FeatureDefinitions.ReportReidentify}>
                 <ListGroup.Item
-                    className={`bg-dark text-white ${activePath === '/reports' ? 'active' : ''}`}
+                    className={`bg-dark text-white ${activePath === '/report' ? 'active' : ''}`}
                     onClick={() => handleItemClick('/report')}>
                     <FontAwesomeIcon icon={faLineChart} className="me-2 fa-icon" />
                     <SecuredLink to="/report">Report Re-identification</SecuredLink>
