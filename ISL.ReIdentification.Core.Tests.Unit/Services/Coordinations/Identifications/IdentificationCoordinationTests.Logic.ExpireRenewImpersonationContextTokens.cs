@@ -25,8 +25,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             Guid inputImpersonationContextId = randomAccessRequest.ImpersonationContext.Id;
             AccessRequest retrievedAccessRequest = randomAccessRequest.DeepClone();
             retrievedAccessRequest.ImpersonationContext.IsApproved = isPreviosulyApproved;
-
-
             AccessRequest approvedAccessRequest = retrievedAccessRequest.DeepClone();
 
             if (!isPreviosulyApproved)
@@ -87,6 +85,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             this.accessOrchestrationServiceMock.VerifyNoOtherCalls();
             this.identificationOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }
