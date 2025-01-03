@@ -241,8 +241,10 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
             await this.notificationBroker.SendEmailAsync(toEmail, subject, body, personalisation);
         });
 
-        public async ValueTask SendImpersonationTokensGeneratedNotificationAsync(AccessRequest accessRequest)
+        public ValueTask SendImpersonationTokensGeneratedNotificationAsync(AccessRequest accessRequest) =>
+        TryCatch(async () =>
         {
+            ValidateOnSendImpersonationTokensGeneratedNotificationAsync(accessRequest, this.notificationConfigurations);
             string toEmail = accessRequest.ImpersonationContext.RequesterEmail;
             string subject = "Tokens Generated";
             string body = "SAS tokens have been generated";
@@ -271,6 +273,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
             };
 
             await this.notificationBroker.SendEmailAsync(toEmail, subject, body, personalisation);
-        }
+        });
     }
 }
