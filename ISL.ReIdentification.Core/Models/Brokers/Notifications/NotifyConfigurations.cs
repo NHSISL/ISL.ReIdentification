@@ -15,5 +15,6 @@ namespace ISL.ReIdentification.Core.Models.Brokers.Notifications
         public string ImpersonationPendingApprovalRequestTemplateId { get; set; } = string.Empty;
         public string ImpersonationApprovedRequestTemplateId { get; set; } = string.Empty;
         public string ImpersonationDeniedRequestTemplateId { get; set; } = string.Empty;
+        public string ImpersonationTokensGeneratedTemplateId { get; set; } = string.Empty;
     }
 }

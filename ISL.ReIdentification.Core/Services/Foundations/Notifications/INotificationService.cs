@@ -15,6 +15,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
         ValueTask SendImpersonationPendingApprovalNotificationAsync(AccessRequest accessRequest);
         ValueTask SendImpersonationApprovedNotificationAsync(AccessRequest accessRequest);
         ValueTask SendImpersonationDeniedNotificationAsync(AccessRequest accessRequest);
-        ValueTask SendImpersonationTokenGeneratedNotificationAsync(AccessRequest accessRequest);
+        ValueTask SendImpersonationTokensGeneratedNotificationAsync(AccessRequest accessRequest);
     }
 }
