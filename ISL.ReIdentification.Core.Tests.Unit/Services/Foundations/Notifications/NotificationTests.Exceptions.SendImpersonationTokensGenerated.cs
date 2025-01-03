@@ -24,8 +24,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Notification
             Xeption dependencyValidationException)
         {
             // given
-            AccessRequest invalidAccessRequest = CreateImpersonationContextAccessRequest();
-            NotificationConfigurations invalidNotificationConfigurations = this.notificationConfigurations;
+            AccessRequest someAccessRequest = CreateImpersonationContextAccessRequest();
+            NotificationConfigurations someNotificationConfigurations = this.notificationConfigurations;
 
             ClientNotificationException clientNotificationException = new ClientNotificationException(
                 message: "Client notification error occurred, contact support.",
@@ -45,13 +45,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Notification
                         .ThrowsAsync(dependencyValidationException);
 
             NotificationService notificationService = new NotificationService(
-                notificationConfigurations: invalidNotificationConfigurations,
+                notificationConfigurations: someNotificationConfigurations,
                 notificationBroker: this.notificationBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
 
             // when
             ValueTask sendImpersonationTokensGeneratedNotificationTask =
-                notificationService.SendImpersonationTokensGeneratedNotificationAsync(invalidAccessRequest);
+                notificationService.SendImpersonationTokensGeneratedNotificationAsync(someAccessRequest);
 
             NotificationDependencyValidationException actualNotificationDependencyValidationException =
                 await Assert.ThrowsAsync<NotificationDependencyValidationException>(
@@ -84,8 +84,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Notification
             Xeption dependencyException)
         {
             // given
-            AccessRequest invalidAccessRequest = CreateImpersonationContextAccessRequest();
-            NotificationConfigurations invalidNotificationConfigurations = this.notificationConfigurations;
+            AccessRequest someAccessRequest = CreateImpersonationContextAccessRequest();
+            NotificationConfigurations someNotificationConfigurations = this.notificationConfigurations;
 
             ServerNotificationException serverNotificationException = new ServerNotificationException(
                 message: "Server notification error occurred, contact support.",
@@ -106,13 +106,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Notification
 
             NotificationService notificationService =
                 new NotificationService(
-                    notificationConfigurations: invalidNotificationConfigurations,
+                    notificationConfigurations: someNotificationConfigurations,
                     notificationBroker: this.notificationBrokerMock.Object,
                     loggingBroker: this.loggingBrokerMock.Object);
 
             // when
             ValueTask sendImpersonationTokensGeneratedNotificationTask =
-                notificationService.SendImpersonationTokensGeneratedNotificationAsync(invalidAccessRequest);
+                notificationService.SendImpersonationTokensGeneratedNotificationAsync(someAccessRequest);
 
             NotificationDependencyException actualNotificationDependencyException =
                 await Assert.ThrowsAsync<NotificationDependencyException>(
@@ -143,8 +143,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Notification
         public async Task ShouldThrowServiceExceptionOnSendImpersonationTokensGeneratedNotificationAndLogItAsync()
         {
             // given
-            AccessRequest invalidAccessRequest = CreateImpersonationContextAccessRequest();
-            NotificationConfigurations invalidNotificationConfigurations = this.notificationConfigurations;
+            AccessRequest someAccessRequest = CreateImpersonationContextAccessRequest();
+            NotificationConfigurations someNotificationConfigurations = this.notificationConfigurations;
             Exception someException = new Exception();
 
             var failedServiceNotificationException =
@@ -167,13 +167,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Notification
 
             NotificationService notificationService =
                 new NotificationService(
-                    notificationConfigurations: invalidNotificationConfigurations,
+                    notificationConfigurations: someNotificationConfigurations,
                     notificationBroker: this.notificationBrokerMock.Object,
                     loggingBroker: this.loggingBrokerMock.Object);
 
             // when
             ValueTask sendImpersonationTokensGeneratedNotificationTask =
-                notificationService.SendImpersonationTokensGeneratedNotificationAsync(invalidAccessRequest);
+                notificationService.SendImpersonationTokensGeneratedNotificationAsync(someAccessRequest);
 
             NotificationServiceException actualNotificationServiceException =
                 await Assert.ThrowsAsync<NotificationServiceException>(
