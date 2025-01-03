@@ -267,6 +267,19 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
                 (Rule: IsInvalid(personalisation), Parameter: nameof(personalisation)));
         }
 
+        private static void ValidateInputsOnSendImpersonationTokensGeneratedNotificationAsync(
+            string toEmail,
+            string subject,
+            string body,
+            Dictionary<string, dynamic> personalisation)
+        {
+            Validate(
+                (Rule: IsInvalid(toEmail), Parameter: nameof(toEmail)),
+                (Rule: IsInvalid(subject), Parameter: nameof(subject)),
+                (Rule: IsInvalid(body), Parameter: nameof(body)),
+                (Rule: IsInvalid(personalisation), Parameter: nameof(personalisation)));
+        }
+
         private static dynamic IsInvalid(AccessRequest accessRequest) => new
         {
             Condition = accessRequest is null,

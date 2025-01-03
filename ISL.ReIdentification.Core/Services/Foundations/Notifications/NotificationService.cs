@@ -272,6 +272,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
                 { "portalBaseUrl", this.notificationConfigurations.PortalBaseUrl },
             };
 
+            ValidateInputsOnSendImpersonationTokensGeneratedNotificationAsync(toEmail, subject, body, personalisation);
             await this.notificationBroker.SendEmailAsync(toEmail, subject, body, personalisation);
         });
     }
