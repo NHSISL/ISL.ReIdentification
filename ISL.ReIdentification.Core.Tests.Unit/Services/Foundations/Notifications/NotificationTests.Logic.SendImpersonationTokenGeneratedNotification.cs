@@ -16,7 +16,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Notification
         {
             // given
             AccessRequest accessRequest = CreateImpersonationContextAccessRequest();
-            string toEmail = accessRequest.ImpersonationContext.ResponsiblePersonEmail;
+            string toEmail = accessRequest.ImpersonationContext.RequesterEmail;
             string subject = "Tokens Generated";
             string body = "SAS tokens have been generated";
             string randomResponseId = GetRandomString();
