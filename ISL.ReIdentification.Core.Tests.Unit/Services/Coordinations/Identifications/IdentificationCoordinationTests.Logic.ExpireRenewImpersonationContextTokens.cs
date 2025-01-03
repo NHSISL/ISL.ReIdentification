@@ -19,6 +19,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
         public async Task ShouldExpireRenewImpersonationContextTokensAsync(bool isPreviosulyApproved)
         {
             // given
+            DateTimeOffset randomDateTimeOffset = GetRandomFutureDateTimeOffset();
             AccessRequest randomAccessRequest = CreateRandomAccessRequest();
             randomAccessRequest.IdentificationRequest = null;
             randomAccessRequest.CsvIdentificationRequest = null;
@@ -30,6 +31,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             if (!isPreviosulyApproved)
             {
                 approvedAccessRequest.ImpersonationContext.IsApproved = true;
+                approvedAccessRequest.ImpersonationContext.UpdatedDate = randomDateTimeOffset;
             }
 
             AccessRequest inputAccessRequest = approvedAccessRequest.DeepClone();
@@ -45,6 +47,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 this.persistanceOrchestrationServiceMock.Setup(service =>
                     service.PersistImpersonationContextAsync(It.Is(SameAccessRequestAs(approvedAccessRequest))))
                         .ReturnsAsync(retrievedAccessRequest);
+
+                this.dateTimeBrokerMock.Setup(broker =>
+                    broker.GetCurrentDateTimeOffsetAsync())
+                        .ReturnsAsync(randomDateTimeOffset);
             }
 
             this.identificationOrchestrationServiceMock.Setup(service =>
@@ -68,6 +74,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             {
                 this.persistanceOrchestrationServiceMock.Verify(service =>
                    service.PersistImpersonationContextAsync(It.Is(SameAccessRequestAs(approvedAccessRequest))),
+                        Times.Once);
+
+                this.dateTimeBrokerMock.Verify(broker =>
+                    broker.GetCurrentDateTimeOffsetAsync(),
                         Times.Once);
             }
 
