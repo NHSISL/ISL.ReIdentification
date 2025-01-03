@@ -218,6 +218,9 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
             {
                 retrievedImpersonationContext.ImpersonationContext.IsApproved = true;
 
+                retrievedImpersonationContext.ImpersonationContext.UpdatedDate =
+                    await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+
                 await this.persistanceOrchestrationService
                     .PersistImpersonationContextAsync(retrievedImpersonationContext);
             }

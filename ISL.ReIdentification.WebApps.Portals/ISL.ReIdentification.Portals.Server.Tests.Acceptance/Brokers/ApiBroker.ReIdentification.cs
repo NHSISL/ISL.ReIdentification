@@ -18,6 +18,12 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Brokers
         public async ValueTask<AccessRequest> PostImpersonationContextRequestAsync(AccessRequest accessRequest) =>
             await this.apiFactoryClient.PostContentAsync($"{reIdentificationRelativeUrl}/impersonation", accessRequest);
 
+        public async ValueTask<AccessRequest>
+            PostImpersonationContextGenerateTokensAsync(Guid impersonationContextId) =>
+            await this.apiFactoryClient.PostContentAsync<Guid, AccessRequest>(
+                $"{reIdentificationRelativeUrl}/generatetokens",
+                impersonationContextId);
+
         public async ValueTask<byte[]> GetCsvIdentificationRequestByIdAsync(
             Guid csvIdentificationRequestId, string reason)
         {
