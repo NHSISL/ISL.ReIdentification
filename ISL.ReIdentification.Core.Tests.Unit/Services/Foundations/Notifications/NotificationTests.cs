@@ -42,6 +42,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Notification
                 ImpersonationPendingApprovalRequestTemplateId = GetRandomString(),
                 ImpersonationApprovedRequestTemplateId = GetRandomString(),
                 ImpersonationDeniedRequestTemplateId = GetRandomString(),
+                ImpersonationTokensGeneratedTemplateId = GetRandomString(),
                 ConfigurationBaseUrl = GetRandomString(),
                 PortalBaseUrl = GetRandomString()
             };
