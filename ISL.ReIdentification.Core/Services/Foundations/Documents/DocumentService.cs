@@ -47,8 +47,13 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             await this.blobStorageBroker.DeleteFileAsync(fileName, container);
         });
 
-        public ValueTask CreateAndAssignAccessPoliciesAsync(string container, List<AccessPolicy> policies) =>
-            throw new NotImplementedException();
+        public ValueTask CreateAndAssignAccessPoliciesAsync(string container, List<AccessPolicy> accessPolicies) =>
+        TryCatch(async () =>
+        {
+            ValidateOnCreateAndAssignAccessPolicies(container, accessPolicies);
+            List<Policy> policies = ConvertToPolicyList(accessPolicies);
+            await this.blobStorageBroker.CreateAndAssignAccessPoliciesAsync(container, policies);
+        });
 
         public ValueTask<List<string>> RetrieveListOfAllAccessPoliciesAsync(string container) =>
         TryCatch(async () =>
@@ -166,6 +171,28 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             }
 
             return accessPolicyList;
+        }
+
+        private static Policy ConvertToPolicy(AccessPolicy accessPolicy) =>
+            new Policy
+            {
+                PolicyName = accessPolicy.PolicyName,
+                Permissions = accessPolicy.Permissions,
+                StartTime = accessPolicy.StartTime,
+                ExpiryTime = accessPolicy.ExpiryTime,
+            };
+
+        private static List<Policy> ConvertToPolicyList(List<AccessPolicy> accessPolicies)
+        {
+            List<Policy> policyList = new List<Policy>();
+
+            foreach (AccessPolicy accessPolicy in accessPolicies)
+            {
+                Policy policy = ConvertToPolicy(accessPolicy);
+                policyList.Add(policy);
+            }
+
+            return policyList;
         }
     };
 }

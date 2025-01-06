@@ -24,25 +24,25 @@ namespace ISL.ReIdentification.Functions
             this.loggingBroker = loggingBroker;
         }
 
-        [Function("ResolvedAddressLoaderFunction")]
-        public async Task Run(
-            [BlobTrigger("addresses/resolve/in/{name}", Connection = "BlobStorage")] Stream myBlob, string name)
-        {
-            await loggingBroker
-                .LogInformationAsync(
-                    $"C# Blob trigger function Processing blob\n " +
-                    $"Name: address/in/{{name}}");
+        //[Function("ProjectOutboxEventFunction")]
+        //public async Task Run(
+        //    [BlobTrigger("addresses/resolve/in/{name}", Connection = "BlobStorage")] Stream myBlob, string name)
+        //{
+        //    await loggingBroker
+        //        .LogInformationAsync(
+        //            $"C# Blob trigger function Processing blob\n " +
+        //            $"Name: address/in/{{name}}");
 
-            try
-            {
-                // TODO:  Refactor the identification service to take in the stream and name
-                // await this.identificationCoordinationService.ProcessImpersonationContextRequestAsync(name, myBlob);
-            }
-            catch (Exception ex)
-            {
-                await loggingBroker.LogErrorAsync(ex);
-                throw;
-            }
-        }
+        //    try
+        //    {
+        //        // TODO:  Refactor the identification service to take in the stream and name
+        //        // await this.identificationCoordinationService.ProcessImpersonationContextRequestAsync(name, myBlob);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        await loggingBroker.LogErrorAsync(ex);
+        //        throw;
+        //    }
+        //}
     }
 }

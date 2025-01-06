@@ -6,7 +6,7 @@
 		<ImplicitUsings>disable</ImplicitUsings>
 		<SpaRoot>..\ISL.ReIdentification.Configurations.Client</SpaRoot>
 		<SpaProxyLaunchCommand>npm run dev</SpaProxyLaunchCommand>
-		<SpaProxyServerUrl>https://localhost:6073</SpaProxyServerUrl>
+		<SpaProxyServerUrl>https://localhost:5173</SpaProxyServerUrl>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -28,5 +28,6 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\ISL.ReIdentification.Core\ISL.ReIdentification.Core.csproj" />
+		<ProjectReference Include="..\ISL.ReIdentification.Configurations.Client\ISL.ReIdentification.Configurations.Client.esproj" />
 	</ItemGroup>
 </Project>

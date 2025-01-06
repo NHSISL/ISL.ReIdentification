@@ -20,7 +20,7 @@ const NavbarComponent: React.FC<NavbarComponentProps> = ({ toggleSidebar, showMe
                     </Button>
                 )}
                 <Navbar.Brand href="/" className="me-auto ms-3 d-flex align-items-center">
-                    <img src="/LHDLogoRound.png" alt="London Data Service logo" height="30" width="30" />
+                    <img src="/OneLondon_Logo_OneLondon_Logo_Blue.png" alt="London Data Service logo" height="30" width="100" />
                     <span className="d-none d-md-inline" style={{ marginLeft: "10px" }}>
                         London Data Service -
                         <strong className="hero-text"> Re-Identification Management</strong>
