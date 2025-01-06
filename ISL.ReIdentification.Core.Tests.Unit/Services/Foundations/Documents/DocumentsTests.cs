@@ -66,27 +66,27 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
         }
 
         private static List<Policy> GetPolicies() =>
-        new List<Policy>
-        {
-            new Policy
+            new List<Policy>
             {
-                PolicyName = "read",
-                Permissions = new List<string>
+                new Policy
                 {
-                    "Read",
-                    "list"
-                }
-            },
-            new Policy
-            {
-                PolicyName = "write",
-                Permissions = new List<string>
+                    PolicyName = "read",
+                    Permissions = new List<string>
+                    {
+                        "Read",
+                        "list"
+                    }
+                },
+                new Policy
                 {
-                    "write",
-                    "add",
-                    "Create"
-                }
-            },
+                    PolicyName = "write",
+                    Permissions = new List<string>
+                    {
+                        "write",
+                        "add",
+                        "Create"
+                    }
+                },
         };
 
         private static Policy GetPolicy()
@@ -103,6 +103,30 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                 }
             };
         }
+
+        private static List<AccessPolicy> GetAccessPolicies() =>
+            new List<AccessPolicy>
+            {
+                new AccessPolicy
+                {
+                    PolicyName = "read",
+                    Permissions = new List<string>
+                    {
+                        "Read",
+                        "list"
+                    }
+                },
+                new AccessPolicy
+                {
+                    PolicyName = "write",
+                    Permissions = new List<string>
+                    {
+                        "write",
+                        "add",
+                        "Create"
+                    }
+                },
+        };
 
         private static AccessPolicy GetAccessPolicy(string policyName)
         {
@@ -214,6 +238,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
         private Expression<Func<Stream, bool>> SameStreamAs(Stream expectedStream) =>
             actualStream => this.compareLogic.Compare(expectedStream, actualStream).AreEqual;
 
+        private Expression<Func<List<Policy>, bool>> SamePolicyListAs(List<Policy> expectedPolicyList) =>
+            actualPolicyList => this.compareLogic.Compare(expectedPolicyList, actualPolicyList).AreEqual;
+
         private static byte[] ReadAllBytesFromStream(Stream stream)
         {
             if (stream.CanSeek)
@@ -268,5 +295,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
 
             return new DateTimeRange(earliestDate: futureStartDate, latestDate: futureEndDate).GetValue();
         }
+
+        public static TheoryData<string, List<AccessPolicy>> InvalidCreateAccessPolicyArguments() =>
+            new TheoryData<string, List<AccessPolicy>>
+            {
+                { null, null },
+                { "", new List<AccessPolicy>() },
+                { " ", new List<AccessPolicy>() }
+            };
     }
 }
