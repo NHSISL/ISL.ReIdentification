@@ -18,15 +18,15 @@ const NavbarComponent: React.FC<NavbarComponentProps> = ({ toggleSidebar, showMe
         <Navbar sticky="top" style={{ backgroundColor: configuration?.bannerColour || "#f8f9fa" }}>
             <Container fluid>
                 {showMenuButton && (
-                    <Button onClick={toggleSidebar} variant="outline-dark" className="ms-3">
+                    <Button onClick={toggleSidebar} variant="outline-light" className="ms-3">
                         <FontAwesomeIcon icon={faBars} />
                     </Button>
                 )}
                 <Navbar.Brand href="/" className="me-auto ms-3 d-flex align-items-center">
-                    <img src="/LHDLogoRound.png" alt="London Data Service logo" height="30" width="30" />
-                    <span className="d-none d-md-inline" style={{ marginLeft: "10px" }}>
+                    <img src="/OneLondon_Logo_OneLondon_Logo_White.png" alt="London Data Service logo" height="30" width="100" />
+                    <span className="d-none d-md-inline text-white" style={{ marginLeft: "10px" }}>
                         LDS - Re-Identification Portal
-                        {configuration?.environment !== "Live" && <>&nbsp;({configuration?.environment})</>}
+                        <small> {configuration?.environment !== "Live" && <>&nbsp;({configuration?.environment})</>}</small>
                     </span>
                 </Navbar.Brand>
                 <Navbar.Text>

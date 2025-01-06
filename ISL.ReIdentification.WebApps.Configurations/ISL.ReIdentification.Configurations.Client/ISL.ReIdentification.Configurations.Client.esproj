@@ -16,4 +16,7 @@
     <Folder Include="src\components\accessControls\" />
     <Folder Include="dependencies\guid-typescript\node_modules\%40types\" />
   </ItemGroup>
+	<Target Name="NpmBuild" AfterTargets="ComputeFilesToPublish">
+		<Exec Command="npm run build:$(Configuration)" WorkingDirectory="$(SpaRoot)" />
+	</Target>
 </Project>
