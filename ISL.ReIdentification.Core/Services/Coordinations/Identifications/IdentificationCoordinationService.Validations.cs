@@ -81,8 +81,7 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
                 (Rule: IsInvalid(reason), Parameter: nameof(CsvIdentificationRequest.Reason)));
 
         private static void ValidateOnExpireRenewImpersonationContextTokens(Guid impersonationContextId) =>
-            Validate(
-                (Rule: IsInvalid(impersonationContextId), Parameter: nameof(ImpersonationContext.Id)));
+            Validate((Rule: IsInvalid(impersonationContextId), Parameter: nameof(ImpersonationContext.Id)));
 
         private static dynamic IsInvalid(Guid id) => new
         {
