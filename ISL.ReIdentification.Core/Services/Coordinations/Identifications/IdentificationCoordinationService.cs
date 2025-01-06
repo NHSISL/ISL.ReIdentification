@@ -83,6 +83,7 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
         TryCatch(async () =>
         {
             ValidateOnPersistsCsvIdentificationRequest(accessRequest);
+            await ConvertCsvIdentificationRequestToIdentificationRequest(accessRequest);
 
             return await this.persistanceOrchestrationService.PersistCsvIdentificationRequestAsync(accessRequest);
         });
@@ -212,9 +213,13 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
         {
             string data = Encoding.UTF8.GetString(accessRequest.CsvIdentificationRequest.Data);
 
-            Dictionary<string, int> fieldMappings = new Dictionary<string, int>
+            Dictionary<string, int> fieldMappings =
+                new Dictionary<string, int>
                 {
-                    { nameof(CsvIdentificationItem.Identifier), accessRequest.CsvIdentificationRequest.IdentifierColumnIndex }
+                    {
+                        nameof(CsvIdentificationItem.Identifier),
+                        accessRequest.CsvIdentificationRequest.IdentifierColumnIndex
+                    }
                 };
 
             var mappedItems =
@@ -232,12 +237,18 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
                     HasAccess = false,
                     Identifier = mappedItems[index].Identifier,
                     IsReidentified = false,
-                    Message = System.String.Empty,
-                    RowNumber = index.ToString()
+                    Message = string.Empty,
+                    RowNumber = accessRequest.CsvIdentificationRequest.HasHeaderRecord
+                        ? index.ToString() + 2
+                        : index.ToString() + 1
                 };
 
                 identificationItems.Add(identificationItem);
             }
+
+            throw new NotImplementedException();
+            // next line is new.  Need validation test for this
+            ValidateCsvData(identificationItems);
 
             accessRequest.IdentificationRequest = new IdentificationRequest();
             accessRequest.IdentificationRequest.Id = accessRequest.CsvIdentificationRequest.Id;
@@ -279,7 +290,6 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
                     shouldAddTrailingComma: false);
 
             byte[] csvIdentificationRequestDataByteArray = Encoding.UTF8.GetBytes(csvIdentificationRequestData);
-
             accessRequest.CsvIdentificationRequest.Data = csvIdentificationRequestDataByteArray;
 
             return accessRequest;

@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
@@ -26,6 +27,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             this.persistanceOrchestrationServiceMock.Setup(service =>
                 service.PersistCsvIdentificationRequestAsync(inputAccessRequest))
                     .ReturnsAsync(outputAccessRequest);
+
+            throw new NotImplementedException();
+            // This needs to be a partial mock so we can vefify the virtual method call
 
             // when
             AccessRequest actualAccessRequest = await this.identificationCoordinationService
