@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
+using ISL.ReIdentification.Core.Services.Coordinations.Identifications;
 using Moq;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifications
@@ -20,15 +21,35 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             randomAccessRequest.IdentificationRequest = null;
             randomAccessRequest.ImpersonationContext = null;
             AccessRequest inputAccessRequest = randomAccessRequest;
+            AccessRequest postConversionAccessRequest = inputAccessRequest.DeepClone();
             AccessRequest outputAccessRequest = inputAccessRequest.DeepClone();
             AccessRequest expectedAccessRequest = outputAccessRequest.DeepClone();
+
+            var identificationCoordinationServiceMock = new Mock<IdentificationCoordinationService>
+                (this.accessOrchestrationServiceMock.Object,
+                this.persistanceOrchestrationServiceMock.Object,
+                this.identificationOrchestrationServiceMock.Object,
+                this.csvHelperBrokerMock.Object,
+                this.securityBrokerMock.Object,
+                this.loggingBrokerMock.Object,
+                this.dateTimeBrokerMock.Object,
+                this.projectStorageConfiguration)
+            { CallBase = true };
+
+            identificationCoordinationServiceMock.Setup(service =>
+                service.ConvertCsvIdentificationRequestToIdentificationRequest(
+                    It.Is(SameAccessRequestAs(inputAccessRequest))))
+                        .ReturnsAsync(postConversionAccessRequest);
 
             this.persistanceOrchestrationServiceMock.Setup(service =>
                 service.PersistCsvIdentificationRequestAsync(inputAccessRequest))
                     .ReturnsAsync(outputAccessRequest);
 
+            IdentificationCoordinationService identificationCoordinationService =
+                identificationCoordinationServiceMock.Object;
+
             // when
-            AccessRequest actualAccessRequest = await this.identificationCoordinationService
+            AccessRequest actualAccessRequest = await identificationCoordinationService
                 .PersistsCsvIdentificationRequestAsync(inputAccessRequest);
 
             // then
@@ -42,6 +63,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             this.accessOrchestrationServiceMock.VerifyNoOtherCalls();
             this.identificationOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

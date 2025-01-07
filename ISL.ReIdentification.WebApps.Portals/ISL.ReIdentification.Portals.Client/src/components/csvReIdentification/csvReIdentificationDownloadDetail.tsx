@@ -126,35 +126,49 @@ const CsvReIdentificationDownloadDetail: FunctionComponent<CsvReIdentificationDo
                             </Row>
                         </Alert>
 
+
+
                         <Form onSubmit={handleSubmit}>
-                            <Form.Group className="text-start">
-                                <Form.Label><strong>Re-identification reason:</strong></Form.Label>
-                                <Form.Select
-                                    value={selectedLookupId}
-                                    onChange={handleLookupChange}
-                                    required >
-                                    {lookupOptions.map((option) => (
-                                        <option key={option.value} value={option.value}>
-                                            {option.name}
-                                        </option>
-                                    ))}
-                                </Form.Select>
-                                <Form.Text className="text-muted">
-                                    Please supply a reason why you are requesting to Reidentify this csv of patients.
-                                </Form.Text>
-                            </Form.Group>
-                            <br />
-                            {fetchError && <Alert variant="danger">
-                                Error: {fetchError.message}
-                            </Alert>}
-                            <Button type="submit" disabled={!selectedLookupId || fetchLoading}>
-                                {!fetchLoading ? <>Download</> : <Spinner />}
-                            </Button>
-                            <Card.Subtitle className="text-start mb-3 mt-3">
-                                <small>
-                                    On <strong>Download</strong>, the file will be saved to your local machine. Please ensure you check your downloads folder.
-                                </small>
-                            </Card.Subtitle>
+                            {data.data && (
+                                <>
+                                    <Form.Group className="text-start">
+                                        <Form.Label><strong>Re-identification reason:</strong></Form.Label>
+                                        <Form.Select
+                                            value={selectedLookupId}
+                                            onChange={handleLookupChange}
+                                            required >
+                                            {lookupOptions.map((option) => (
+                                                <option key={option.value} value={option.value}>
+                                                    {option.name}
+                                                </option>
+                                            ))}
+                                        </Form.Select>
+                                        <Form.Text className="text-muted">
+                                            Please supply a reason why you are requesting to Reidentify this csv of patients.
+                                        </Form.Text>
+                                    </Form.Group>
+                                    <br />
+                                    {fetchError && <Alert variant="danger">
+                                        Error: {fetchError.message}
+                                    </Alert>}
+
+                                    <Button type="submit" disabled={!selectedLookupId || fetchLoading}>
+                                        {!fetchLoading ? <>Download</> : <Spinner />}
+                                    </Button>
+
+                                    <Card.Subtitle className="text-start mb-3 mt-3">
+                                        <small>
+                                            On <strong>Download</strong>, the file will be saved to your local machine. Please ensure you check your downloads folder.
+                                        </small>
+                                    </Card.Subtitle>
+                                </>
+                            )}
+
+                            {!data.data && (
+                                <Alert variant="danger">
+                                    This download link has expired, please re-request by re-submitting your CSV.
+                                </Alert>
+                            )}
                         </Form>
                     </Card.Body>
                 </Card>

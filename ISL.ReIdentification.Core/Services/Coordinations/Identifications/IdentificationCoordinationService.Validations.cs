@@ -3,10 +3,12 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
+using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses.Exceptions;
 
@@ -67,6 +69,23 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
                     $".{nameof(AccessRequest.CsvIdentificationRequest.Filepath)}"));
         }
 
+
+        private void ValidateCsvData(List<IdentificationItem> mappedItems)
+        {
+            List<(dynamic Rule, string Parameter)> rules = new List<(dynamic Rule, string Parameter)>();
+
+            foreach (IdentificationItem item in mappedItems)
+            {
+                rules.Add(
+                    (
+                        Rule: IsInvalidRow(item.Identifier, item.RowNumber),
+                        Parameter: nameof(CsvIdentificationItem.Identifier))
+                    );
+            }
+
+            Validate(rules.ToArray());
+        }
+
         private static void ValidateAccessRequestIsNotNull(AccessRequest accessRequest)
         {
             if (accessRequest is null)
@@ -81,8 +100,7 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
                 (Rule: IsInvalid(reason), Parameter: nameof(CsvIdentificationRequest.Reason)));
 
         private static void ValidateOnExpireRenewImpersonationContextTokens(Guid impersonationContextId) =>
-            Validate(
-                (Rule: IsInvalid(impersonationContextId), Parameter: nameof(ImpersonationContext.Id)));
+            Validate((Rule: IsInvalid(impersonationContextId), Parameter: nameof(ImpersonationContext.Id)));
 
         private static dynamic IsInvalid(Guid id) => new
         {
@@ -94,6 +112,12 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
         {
             Condition = string.IsNullOrWhiteSpace(value),
             Message = "Text is invalid"
+        };
+
+        private static dynamic IsInvalidRow(string value, string index) => new
+        {
+            Condition = string.IsNullOrWhiteSpace(value),
+            Message = $"Text is invalid at row {index}"
         };
 
         private static dynamic IsInvalid(Object @object) => new

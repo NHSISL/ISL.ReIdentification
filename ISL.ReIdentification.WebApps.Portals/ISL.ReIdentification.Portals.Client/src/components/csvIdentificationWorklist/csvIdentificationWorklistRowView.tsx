@@ -13,6 +13,7 @@ const CsvIdentificationWorklistRow: FunctionComponent<CsvIdentificationWorklistR
         csvIdentificationRequest
     } = props;
 
+    const isRequestEmpty = !csvIdentificationRequest.data;
 
     return (
         <tr>
@@ -25,7 +26,11 @@ const CsvIdentificationWorklistRow: FunctionComponent<CsvIdentificationWorklistR
             <td>
                 <Link to={`/csvReIdentification/${csvIdentificationRequest.id}`} >
                     <Button size="sm" variant="link">
-                        View to Download
+                        {isRequestEmpty ? (
+                            <>
+                                View to Download <span style={{ color: '#dc3545' }}>(expired)</span>
+                            </>
+                        ) : "View to Download"}
                     </Button>
                 </Link>
             </td>
