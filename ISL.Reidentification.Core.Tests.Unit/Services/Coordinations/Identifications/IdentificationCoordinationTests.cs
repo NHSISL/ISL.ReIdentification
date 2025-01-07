@@ -99,6 +99,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
         private static int GetRandomNumber() =>
             new IntRange(max: 15, min: 2).GetValue();
 
+        private static int GetRandomNumber(int max, int min) =>
+            new IntRange(max: max, min: min).GetValue();
+
         private static string GetRandomStringWithLengthOf(int length)
         {
             string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
