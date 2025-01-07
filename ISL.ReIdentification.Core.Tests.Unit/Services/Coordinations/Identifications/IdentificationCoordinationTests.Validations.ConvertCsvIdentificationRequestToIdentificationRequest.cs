@@ -18,15 +18,16 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 {
     public partial class IdentificationCoordinationTests
     {
-        [Fact]
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
         public async Task
-            ShouldThrowValidationExceptionOnConvertCsvIdentificationRequestIfIdIsInvalidAsync()
+            ShouldThrowValidationExceptionOnConvertCsvIdentificationRequestIfIdIsInvalidAsync(bool hasHeaderRecord)
         {
             // given
             CsvIdentificationRequest randomCsvIdentificationRequest = CreateRandomCsvIdentificationRequest();
             CsvIdentificationRequest invalidCsvIdentificationRequest = randomCsvIdentificationRequest.DeepClone();
-            invalidCsvIdentificationRequest.HasHeaderRecord = true;
-            invalidCsvIdentificationRequest.IdentifierColumnIndex = 3;
+            invalidCsvIdentificationRequest.HasHeaderRecord = hasHeaderRecord;
             string csvIdentificationRequestData = GetRandomString();
             byte[] invalidCsvIdentificationRequestDataByteArray = Encoding.UTF8.GetBytes(csvIdentificationRequestData);
             invalidCsvIdentificationRequest.Data = invalidCsvIdentificationRequestDataByteArray;
@@ -62,9 +63,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
             for (int i = 0; i < invalidIdentifierCount; i++)
             {
+                int rowAdjustment = hasHeaderRecord ? 2 : 1;
+
                 expectedInvalidIdentificationCoordinationException.UpsertDataList(
-                key: nameof(CsvIdentificationItem.Identifier),
-                value: $"Text is invalid at row {i + 2}");
+                    key: nameof(CsvIdentificationItem.Identifier),
+                    value: $"Text is invalid at row {i + rowAdjustment}");
             }
 
             this.csvHelperBrokerMock.Setup(broker =>
