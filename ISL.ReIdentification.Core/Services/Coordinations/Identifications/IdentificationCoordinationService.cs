@@ -239,14 +239,14 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
                     IsReidentified = false,
                     Message = string.Empty,
                     RowNumber = accessRequest.CsvIdentificationRequest.HasHeaderRecord
-                        ? index.ToString() + 2
-                        : index.ToString() + 1
+                        ? (index + 2).ToString()
+                        : (index + 1).ToString()
                 };
 
                 identificationItems.Add(identificationItem);
             }
 
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
             // next line is new.  Need validation test for this
             ValidateCsvData(identificationItems);
 

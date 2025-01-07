@@ -99,6 +99,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
         private static int GetRandomNumber() =>
             new IntRange(max: 15, min: 2).GetValue();
 
+        private static int GetRandomNumber(int max, int min) =>
+            new IntRange(max: max, min: min).GetValue();
+
         private static string GetRandomStringWithLengthOf(int length)
         {
             string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
@@ -251,6 +254,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
             return csvIdentificationItems;
         }
+
+        //private static IQueryable<CsvIdentificationItem> CreateCsvIdentificationItemsWithEmptyIdentifiers(
+        //    int itemCount = 1,
+        //    int blankIdentifierCount = 1)
+        //{
+
+        //}
 
         private static IQueryable<IdentificationItem> CreateRandomIdentificationItems(int count = 0)
         {
