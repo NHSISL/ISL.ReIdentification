@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using ISL.ReIdentification.Core.Models.Foundations.Documents;
 using ISL.ReIdentification.Core.Models.Foundations.Documents.Exceptions;
 
 namespace ISL.ReIdentification.Core.Services.Foundations.Documents
@@ -94,12 +95,57 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
                 (Rule: IsInvalid(expiresOn), Parameter: nameof(expiresOn)));
         }
 
+        private static void ValidateOnCreateAndAssignAccessPolicies(string container, List<AccessPolicy> accessPolicies)
+        {
+            Validate(
+                (Rule: IsInvalid(container), Parameter: nameof(container)),
+                (Rule: IsInvalid(accessPolicies), Parameter: nameof(accessPolicies)));
+
+            foreach (var accessPolicy in accessPolicies)
+            {
+                Validate(
+                    (Rule: IsInvalid(accessPolicy.PolicyName),
+                    Parameter: $"{nameof(AccessPolicy)}.{nameof(AccessPolicy.PolicyName)}"),
+
+                    (Rule: IsInvalid(accessPolicy.Permissions),
+                    Parameter: $"{nameof(AccessPolicy)}.{nameof(AccessPolicy.Permissions)}"));
+            }
+
+            ValidateAccessPolicyPermissions(accessPolicies);
+        }
+
         private static void ValidateAccessPolicyExists(string policyName, List<string> policyNames)
         {
             if (!(policyNames.Any(policy => policy == policyName)))
             {
                 throw new AccessPolicyNotFoundDocumentException(
                     message: "Access policy with the provided name was not found on this container.");
+            }
+        }
+
+        private static void ValidateAccessPolicyPermissions(List<AccessPolicy> accessPolicies)
+        {
+            foreach (var accessPolicy in accessPolicies)
+            {
+                ValidatePermissions(accessPolicy.Permissions);
+            }
+        }
+
+        private static void ValidatePermissions(List<string> permissions)
+        {
+            foreach (var permission in permissions)
+            {
+                if (permission.ToLower() != "read" &&
+                    permission.ToLower() != "write" &&
+                    permission.ToLower() != "delete" &&
+                    permission.ToLower() != "create" &&
+                    permission.ToLower() != "add" &&
+                    permission.ToLower() != "list")
+                {
+                    throw new InvalidPermissionDocumentException(
+                        message: "Invalid permission. Read, write, delete, create, add and list " +
+                        "permissions are supported at this time.");
+                }
             }
         }
 
@@ -113,6 +159,18 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
         {
             Condition = string.IsNullOrWhiteSpace(value),
             Message = "Text is invalid"
+        };
+
+        private static dynamic IsInvalid(List<string> textList) => new
+        {
+            Condition = textList is null || textList.Count == 0 || textList.Any(string.IsNullOrWhiteSpace),
+            Message = "List is invalid"
+        };
+
+        private static dynamic IsInvalid(List<AccessPolicy> accessPolicies) => new
+        {
+            Condition = accessPolicies is null || accessPolicies.Count == 0,
+            Message = "List is invalid"
         };
 
         private static dynamic IsInvalidInputStream(Stream inputStream) => new

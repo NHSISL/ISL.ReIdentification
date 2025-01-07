@@ -30,6 +30,10 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             {
                 throw await CreateAndLogValidationExceptionAsync(invalidDocumentException);
             }
+            catch (InvalidPermissionDocumentException invalidPermissionDocumentException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(invalidPermissionDocumentException);
+            }
             catch (StorageProviderValidationException storageProviderValidationException)
             {
                 throw await CreateAndLogDependencyValidationExceptionAsync(storageProviderValidationException);

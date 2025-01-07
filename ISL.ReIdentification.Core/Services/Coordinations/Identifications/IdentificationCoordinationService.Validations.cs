@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
+using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses.Exceptions;
@@ -97,6 +98,9 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
             Validate(
                 (Rule: IsInvalid(csvIdentificationRequestId), Parameter: nameof(CsvIdentificationRequest.Id)),
                 (Rule: IsInvalid(reason), Parameter: nameof(CsvIdentificationRequest.Reason)));
+
+        private static void ValidateOnExpireRenewImpersonationContextTokens(Guid impersonationContextId) =>
+            Validate((Rule: IsInvalid(impersonationContextId), Parameter: nameof(ImpersonationContext.Id)));
 
         private static dynamic IsInvalid(Guid id) => new
         {

@@ -205,8 +205,34 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
             }
         });
 
-        public async ValueTask<AccessRequest> ExpireRenewImpersonationContextTokensAsync(Guid impersonationContextId) =>
-            throw new NotImplementedException();
+        public ValueTask<AccessRequest> ExpireRenewImpersonationContextTokensAsync(Guid impersonationContextId) =>
+        TryCatch(async () =>
+        {
+            ValidateOnExpireRenewImpersonationContextTokens(impersonationContextId);
+
+            AccessRequest retrievedImpersonationContext = await this.persistanceOrchestrationService
+                .RetrieveImpersonationContextByIdAsync(impersonationContextId);
+
+            bool isPreviouslyApproved = retrievedImpersonationContext.ImpersonationContext.IsApproved;
+
+            if (!isPreviouslyApproved)
+            {
+                retrievedImpersonationContext.ImpersonationContext.IsApproved = true;
+
+                retrievedImpersonationContext.ImpersonationContext.UpdatedDate =
+                    await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+
+                await this.persistanceOrchestrationService
+                    .PersistImpersonationContextAsync(retrievedImpersonationContext);
+            }
+
+            AccessRequest tokensAccessRequest = await this.identificationOrchestrationService
+                .ExpireRenewImpersonationContextTokensAsync(retrievedImpersonationContext, isPreviouslyApproved);
+
+            await this.persistanceOrchestrationService.SendGeneratedTokensNotificationAsync(tokensAccessRequest);
+
+            return tokensAccessRequest;
+        });
 
         virtual async internal ValueTask<AccessRequest> ConvertCsvIdentificationRequestToIdentificationRequest(
             AccessRequest accessRequest)
