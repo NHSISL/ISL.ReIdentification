@@ -40,7 +40,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                     Identifier = randomCsvIdentificationItems[index].Identifier,
                     IsReidentified = false,
                     Message = String.Empty,
-                    RowNumber = index.ToString()
+                    RowNumber = hasHeaderRecord
+                        ? (index + 2).ToString()
+                        : (index + 1).ToString()
                 };
 
                 convertedIdentificationItems.Add(identificationItem);
