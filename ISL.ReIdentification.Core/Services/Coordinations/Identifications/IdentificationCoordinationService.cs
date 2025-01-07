@@ -246,10 +246,7 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
                 identificationItems.Add(identificationItem);
             }
 
-            //throw new NotImplementedException();
-            // next line is new.  Need validation test for this
             ValidateCsvData(identificationItems);
-
             accessRequest.IdentificationRequest = new IdentificationRequest();
             accessRequest.IdentificationRequest.Id = accessRequest.CsvIdentificationRequest.Id;
             accessRequest.IdentificationRequest.IdentificationItems = identificationItems;
