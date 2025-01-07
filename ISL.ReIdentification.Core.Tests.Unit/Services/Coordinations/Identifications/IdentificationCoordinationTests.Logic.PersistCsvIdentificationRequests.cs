@@ -36,14 +36,14 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 this.projectStorageConfiguration)
             { CallBase = true };
 
-            this.persistanceOrchestrationServiceMock.Setup(service =>
-                service.PersistCsvIdentificationRequestAsync(inputAccessRequest))
-                    .ReturnsAsync(outputAccessRequest);
-
             identificationCoordinationServiceMock.Setup(service =>
                 service.ConvertCsvIdentificationRequestToIdentificationRequest(
                     It.Is(SameAccessRequestAs(inputAccessRequest))))
                         .ReturnsAsync(postConversionAccessRequest);
+
+            this.persistanceOrchestrationServiceMock.Setup(service =>
+                service.PersistCsvIdentificationRequestAsync(inputAccessRequest))
+                    .ReturnsAsync(outputAccessRequest);
 
             IdentificationCoordinationService identificationCoordinationService =
                 identificationCoordinationServiceMock.Object;
