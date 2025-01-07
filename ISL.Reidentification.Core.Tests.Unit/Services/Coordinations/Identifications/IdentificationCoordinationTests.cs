@@ -264,13 +264,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             return csvIdentificationItems;
         }
 
-        //private static IQueryable<CsvIdentificationItem> CreateCsvIdentificationItemsWithEmptyIdentifiers(
-        //    int itemCount = 1,
-        //    int blankIdentifierCount = 1)
-        //{
-
-        //}
-
         private static IQueryable<IdentificationItem> CreateRandomIdentificationItems(int count = 0)
         {
             if (count == 0)
