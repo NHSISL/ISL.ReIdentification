@@ -20,9 +20,6 @@ const AccessAuditRowView: FunctionComponent<AccessAuditRowProps> = (props) => {
                 <td><small>{accessAudit.message}</small></td>
                 <td><small>{moment(accessAudit.createdDate?.toString()).format("Do-MMM-yyyy HH:mm")}</small></td>
             </tr>
-
-
-
         </>
     );
 }
