@@ -83,6 +83,7 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
         TryCatch(async () =>
         {
             ValidateOnPersistsCsvIdentificationRequest(accessRequest);
+            await ConvertCsvIdentificationRequestToIdentificationRequest(accessRequest);
 
             return await this.persistanceOrchestrationService.PersistCsvIdentificationRequestAsync(accessRequest);
         });
@@ -204,17 +205,47 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
             }
         });
 
-        public async ValueTask<AccessRequest> ExpireRenewImpersonationContextTokensAsync(Guid impersonationContextId) =>
-            throw new NotImplementedException();
+        public ValueTask<AccessRequest> ExpireRenewImpersonationContextTokensAsync(Guid impersonationContextId) =>
+        TryCatch(async () =>
+        {
+            ValidateOnExpireRenewImpersonationContextTokens(impersonationContextId);
+
+            AccessRequest retrievedImpersonationContext = await this.persistanceOrchestrationService
+                .RetrieveImpersonationContextByIdAsync(impersonationContextId);
+
+            bool isPreviouslyApproved = retrievedImpersonationContext.ImpersonationContext.IsApproved;
+
+            if (!isPreviouslyApproved)
+            {
+                retrievedImpersonationContext.ImpersonationContext.IsApproved = true;
+
+                retrievedImpersonationContext.ImpersonationContext.UpdatedDate =
+                    await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+
+                await this.persistanceOrchestrationService
+                    .PersistImpersonationContextAsync(retrievedImpersonationContext);
+            }
+
+            AccessRequest tokensAccessRequest = await this.identificationOrchestrationService
+                .ExpireRenewImpersonationContextTokensAsync(retrievedImpersonationContext, isPreviouslyApproved);
+
+            await this.persistanceOrchestrationService.SendGeneratedTokensNotificationAsync(tokensAccessRequest);
+
+            return tokensAccessRequest;
+        });
 
         virtual async internal ValueTask<AccessRequest> ConvertCsvIdentificationRequestToIdentificationRequest(
             AccessRequest accessRequest)
         {
             string data = Encoding.UTF8.GetString(accessRequest.CsvIdentificationRequest.Data);
 
-            Dictionary<string, int> fieldMappings = new Dictionary<string, int>
+            Dictionary<string, int> fieldMappings =
+                new Dictionary<string, int>
                 {
-                    { nameof(CsvIdentificationItem.Identifier), accessRequest.CsvIdentificationRequest.IdentifierColumnIndex }
+                    {
+                        nameof(CsvIdentificationItem.Identifier),
+                        accessRequest.CsvIdentificationRequest.IdentifierColumnIndex
+                    }
                 };
 
             var mappedItems =
@@ -232,13 +263,16 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
                     HasAccess = false,
                     Identifier = mappedItems[index].Identifier,
                     IsReidentified = false,
-                    Message = System.String.Empty,
-                    RowNumber = index.ToString()
+                    Message = string.Empty,
+                    RowNumber = accessRequest.CsvIdentificationRequest.HasHeaderRecord
+                        ? (index + 2).ToString()
+                        : (index + 1).ToString()
                 };
 
                 identificationItems.Add(identificationItem);
             }
 
+            ValidateCsvData(identificationItems);
             accessRequest.IdentificationRequest = new IdentificationRequest();
             accessRequest.IdentificationRequest.Id = accessRequest.CsvIdentificationRequest.Id;
             accessRequest.IdentificationRequest.IdentificationItems = identificationItems;
@@ -279,7 +313,6 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
                     shouldAddTrailingComma: false);
 
             byte[] csvIdentificationRequestDataByteArray = Encoding.UTF8.GetBytes(csvIdentificationRequestData);
-
             accessRequest.CsvIdentificationRequest.Data = csvIdentificationRequestDataByteArray;
 
             return accessRequest;

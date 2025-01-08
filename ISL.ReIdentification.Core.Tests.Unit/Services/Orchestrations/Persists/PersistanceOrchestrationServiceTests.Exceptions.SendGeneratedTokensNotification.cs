@@ -23,7 +23,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             AccessRequest someAccessRequest = CreateRandomAccessRequest();
 
             this.notificationServiceMock.Setup(service =>
-                service.SendImpersonationTokenGeneratedNotificationAsync(someAccessRequest))
+                service.SendImpersonationTokensGeneratedNotificationAsync(someAccessRequest))
                     .ThrowsAsync(dependencyValidationException);
 
             var expectedPersistanceOrchestrationDependencyValidationException =
@@ -46,7 +46,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                 .Should().BeEquivalentTo(expectedPersistanceOrchestrationDependencyValidationException);
 
             this.notificationServiceMock.Verify(service => service
-                .SendImpersonationTokenGeneratedNotificationAsync(It.Is(SameAccessRequestAs(someAccessRequest))),
+                .SendImpersonationTokensGeneratedNotificationAsync(It.Is(SameAccessRequestAs(someAccessRequest))),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -73,7 +73,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             AccessRequest someAccessRequest = CreateRandomAccessRequest();
 
             this.notificationServiceMock.Setup(service =>
-                service.SendImpersonationTokenGeneratedNotificationAsync(someAccessRequest))
+                service.SendImpersonationTokensGeneratedNotificationAsync(someAccessRequest))
                     .ThrowsAsync(dependencyException);
 
             var expectedPersistanceOrchestrationDependencyException =
@@ -96,7 +96,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                 .Should().BeEquivalentTo(expectedPersistanceOrchestrationDependencyException);
 
             this.notificationServiceMock.Verify(service => service
-                .SendImpersonationTokenGeneratedNotificationAsync(It.Is(SameAccessRequestAs(someAccessRequest))),
+                .SendImpersonationTokensGeneratedNotificationAsync(It.Is(SameAccessRequestAs(someAccessRequest))),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -132,7 +132,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                     innerException: failedServicePersistanceOrchestrationException);
 
             this.notificationServiceMock.Setup(service =>
-                service.SendImpersonationTokenGeneratedNotificationAsync(someAccessRequest))
+                service.SendImpersonationTokensGeneratedNotificationAsync(someAccessRequest))
                     .ThrowsAsync(serviceException);
 
             // when
@@ -149,7 +149,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                 .BeEquivalentTo(expectedPersistanceOrchestrationServiceException);
 
             this.notificationServiceMock.Verify(service => service
-                .SendImpersonationTokenGeneratedNotificationAsync(It.Is(SameAccessRequestAs(someAccessRequest))),
+                .SendImpersonationTokensGeneratedNotificationAsync(It.Is(SameAccessRequestAs(someAccessRequest))),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

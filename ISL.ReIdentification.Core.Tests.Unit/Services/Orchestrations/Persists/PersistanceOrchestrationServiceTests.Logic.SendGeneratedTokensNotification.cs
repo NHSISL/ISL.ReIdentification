@@ -24,7 +24,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
 
             // then
             this.notificationServiceMock.Verify(service => service
-                .SendImpersonationTokenGeneratedNotificationAsync(It.Is(SameAccessRequestAs(inputAccessRequest))),
+                .SendImpersonationTokensGeneratedNotificationAsync(It.Is(SameAccessRequestAs(inputAccessRequest))),
                     Times.Once);
 
             this.csvIdentificationRequestServiceMock.VerifyNoOtherCalls();

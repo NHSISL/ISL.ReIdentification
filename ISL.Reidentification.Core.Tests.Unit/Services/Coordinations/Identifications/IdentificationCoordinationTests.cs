@@ -99,6 +99,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
         private static int GetRandomNumber() =>
             new IntRange(max: 15, min: 2).GetValue();
 
+        private static int GetRandomNumber(int max, int min) =>
+            new IntRange(max: max, min: min).GetValue();
+
         private static string GetRandomStringWithLengthOf(int length)
         {
             string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
@@ -147,6 +150,15 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static DateTimeOffset GetRandomFutureDateTimeOffset()
+        {
+            DateTime futureStartDate = DateTimeOffset.UtcNow.AddDays(1).Date;
+            int randomDaysInFuture = GetRandomNumber();
+            DateTime futureEndDate = futureStartDate.AddDays(randomDaysInFuture).Date;
+
+            return new DateTimeRange(earliestDate: futureStartDate, latestDate: futureEndDate).GetValue();
+        }
 
         private static ImpersonationContext CreateRandomImpersonationContext() =>
             CreateRandomImpersonationContext(dateTimeOffset: GetRandomDateTimeOffset());

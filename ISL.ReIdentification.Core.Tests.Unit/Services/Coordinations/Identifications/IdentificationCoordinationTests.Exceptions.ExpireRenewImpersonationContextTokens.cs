@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
-using ISL.ReIdentification.Core.Services.Coordinations.Identifications;
 using Moq;
 using Xeptions;
 
@@ -17,25 +16,14 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
     {
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
-        public async Task ShouldThrowDependencyValidationExceptionOnPersistsCsvIdentificationRequestAndLogItAsync(
+        public async Task ShouldThrowDependencyValidationExceptionOnExpireRenewTokensAndLogItAsync(
             Xeption dependencyValidationException)
         {
             // given
-            AccessRequest someAccessRequest = CreateRandomAccessRequest();
+            Guid someImpersonationContextId = Guid.NewGuid();
 
-            var identificationCoordinationServiceMock = new Mock<IdentificationCoordinationService>
-                (this.accessOrchestrationServiceMock.Object,
-                this.persistanceOrchestrationServiceMock.Object,
-                this.identificationOrchestrationServiceMock.Object,
-                this.csvHelperBrokerMock.Object,
-                this.securityBrokerMock.Object,
-                this.loggingBrokerMock.Object,
-                this.dateTimeBrokerMock.Object,
-                this.projectStorageConfiguration)
-            { CallBase = true };
-
-            identificationCoordinationServiceMock.Setup(service =>
-                service.ConvertCsvIdentificationRequestToIdentificationRequest(It.IsAny<AccessRequest>()))
+            this.persistanceOrchestrationServiceMock.Setup(service =>
+                service.RetrieveImpersonationContextByIdAsync(someImpersonationContextId))
                     .ThrowsAsync(dependencyValidationException);
 
             var expectedIdentificationCoordinationDependencyValidationException =
@@ -44,24 +32,21 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                         "fix the errors and try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
 
-            IdentificationCoordinationService identificationCoordinationService =
-                identificationCoordinationServiceMock.Object;
-
             // when
-            ValueTask<AccessRequest> accessRequestTask = identificationCoordinationService
-                .PersistsCsvIdentificationRequestAsync(someAccessRequest);
+            ValueTask<AccessRequest> expireRenewTokensTask = this.identificationCoordinationService
+                .ExpireRenewImpersonationContextTokensAsync(someImpersonationContextId);
 
             IdentificationCoordinationDependencyValidationException
                 actualIdentificationCoordinationDependencyValidationException =
                     await Assert.ThrowsAsync<IdentificationCoordinationDependencyValidationException>(
-                        testCode: accessRequestTask.AsTask);
+                        testCode: expireRenewTokensTask.AsTask);
 
             // then
             actualIdentificationCoordinationDependencyValidationException
                 .Should().BeEquivalentTo(expectedIdentificationCoordinationDependencyValidationException);
 
-            identificationCoordinationServiceMock.Verify(service =>
-                service.ConvertCsvIdentificationRequestToIdentificationRequest(It.IsAny<AccessRequest>()),
+            this.persistanceOrchestrationServiceMock.Verify(service =>
+                service.RetrieveImpersonationContextByIdAsync(someImpersonationContextId),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -69,36 +54,23 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                    expectedIdentificationCoordinationDependencyValidationException))),
                        Times.Once);
 
-            this.persistanceOrchestrationServiceMock.VerifyNoOtherCalls();
             this.accessOrchestrationServiceMock.VerifyNoOtherCalls();
             this.identificationOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.persistanceOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.csvHelperBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
-        public async Task ShouldThrowDependencyExceptionOnPersistsCsvIdentificationRequestAndLogItAsync(
+        public async Task ShouldThrowDependencyExceptionOnExpireRenewTokensAndLogItAsync(
             Xeption dependencyException)
         {
             // given
-            AccessRequest someAccessRequest = CreateRandomAccessRequest();
+            Guid someImpersonationContextId = Guid.NewGuid();
 
-            var identificationCoordinationServiceMock = new Mock<IdentificationCoordinationService>
-                (this.accessOrchestrationServiceMock.Object,
-                this.persistanceOrchestrationServiceMock.Object,
-                this.identificationOrchestrationServiceMock.Object,
-                this.csvHelperBrokerMock.Object,
-                this.securityBrokerMock.Object,
-                this.loggingBrokerMock.Object,
-                this.dateTimeBrokerMock.Object,
-                this.projectStorageConfiguration)
-            { CallBase = true };
-
-            identificationCoordinationServiceMock.Setup(service =>
-                service.ConvertCsvIdentificationRequestToIdentificationRequest(It.IsAny<AccessRequest>()))
+            this.persistanceOrchestrationServiceMock.Setup(service =>
+                service.RetrieveImpersonationContextByIdAsync(someImpersonationContextId))
                     .ThrowsAsync(dependencyException);
 
             var expectedIdentificationCoordinationDependencyException =
@@ -107,24 +79,21 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                         "fix the errors and try again.",
                     innerException: dependencyException.InnerException as Xeption);
 
-            IdentificationCoordinationService identificationCoordinationService =
-                identificationCoordinationServiceMock.Object;
-
             // when
-            ValueTask<AccessRequest> accessRequestTask = identificationCoordinationService
-                .PersistsCsvIdentificationRequestAsync(someAccessRequest);
+            ValueTask<AccessRequest> expireRenewTokensTask = this.identificationCoordinationService
+                .ExpireRenewImpersonationContextTokensAsync(someImpersonationContextId);
 
             IdentificationCoordinationDependencyException
                 actualIdentificationCoordinationDependencyException =
                     await Assert.ThrowsAsync<IdentificationCoordinationDependencyException>(
-                        testCode: accessRequestTask.AsTask);
+                        testCode: expireRenewTokensTask.AsTask);
 
             // then
             actualIdentificationCoordinationDependencyException
                 .Should().BeEquivalentTo(expectedIdentificationCoordinationDependencyException);
 
-            identificationCoordinationServiceMock.Verify(service =>
-                service.ConvertCsvIdentificationRequestToIdentificationRequest(It.IsAny<AccessRequest>()),
+            this.persistanceOrchestrationServiceMock.Verify(service =>
+                service.RetrieveImpersonationContextByIdAsync(someImpersonationContextId),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -132,35 +101,22 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                    expectedIdentificationCoordinationDependencyException))),
                        Times.Once);
 
-            this.persistanceOrchestrationServiceMock.VerifyNoOtherCalls();
             this.accessOrchestrationServiceMock.VerifyNoOtherCalls();
             this.identificationOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.persistanceOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.csvHelperBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnPersistsCsvIdentificationRequestAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnExpireRenewTokensAndLogItAsync()
         {
             // given
-            AccessRequest someAccessRequest = CreateRandomAccessRequest();
             Exception someException = new Exception();
+            Guid someImpersonationContextId = Guid.NewGuid();
 
-            var identificationCoordinationServiceMock = new Mock<IdentificationCoordinationService>
-                (this.accessOrchestrationServiceMock.Object,
-                this.persistanceOrchestrationServiceMock.Object,
-                this.identificationOrchestrationServiceMock.Object,
-                this.csvHelperBrokerMock.Object,
-                this.securityBrokerMock.Object,
-                this.loggingBrokerMock.Object,
-                this.dateTimeBrokerMock.Object,
-                this.projectStorageConfiguration)
-            { CallBase = true };
-
-            identificationCoordinationServiceMock.Setup(service =>
-                service.ConvertCsvIdentificationRequestToIdentificationRequest(It.IsAny<AccessRequest>()))
+            this.persistanceOrchestrationServiceMock.Setup(service =>
+                service.RetrieveImpersonationContextByIdAsync(someImpersonationContextId))
                     .ThrowsAsync(someException);
 
             var expectedIdentificationCoordinationServiceException =
@@ -169,36 +125,31 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                         "fix the errors and try again.",
                     innerException: someException);
 
-            IdentificationCoordinationService identificationCoordinationService =
-                identificationCoordinationServiceMock.Object;
-
             // when
-            ValueTask<AccessRequest> accessRequestTask = identificationCoordinationService
-                .PersistsCsvIdentificationRequestAsync(someAccessRequest);
+            ValueTask<AccessRequest> expireRenewTokensTask = this.identificationCoordinationService
+                .ExpireRenewImpersonationContextTokensAsync(someImpersonationContextId);
 
             IdentificationCoordinationServiceException
                 actualIdentificationCoordinationServiceException =
                     await Assert.ThrowsAsync<IdentificationCoordinationServiceException>(
-                        testCode: accessRequestTask.AsTask);
+                        testCode: expireRenewTokensTask.AsTask);
 
             // then
             actualIdentificationCoordinationServiceException
                 .Should().BeEquivalentTo(expectedIdentificationCoordinationServiceException);
 
-            identificationCoordinationServiceMock.Verify(service =>
-                service.ConvertCsvIdentificationRequestToIdentificationRequest(It.IsAny<AccessRequest>()),
-                    Times.Once);
+            this.persistanceOrchestrationServiceMock.Verify(service =>
+                 service.RetrieveImpersonationContextByIdAsync(someImpersonationContextId),
+                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(expectedIdentificationCoordinationServiceException))),
                     Times.Once);
 
-            this.persistanceOrchestrationServiceMock.VerifyNoOtherCalls();
             this.accessOrchestrationServiceMock.VerifyNoOtherCalls();
             this.identificationOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.persistanceOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.csvHelperBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
