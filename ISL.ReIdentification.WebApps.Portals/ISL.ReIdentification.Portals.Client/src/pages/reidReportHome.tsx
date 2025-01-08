@@ -21,7 +21,7 @@ export const ReIdReportHome = () => {
 
                             <div className="bg-light p-3">
                                 <h5>Report URL Generator Help</h5>
-                                <p>The ISL re-identification portal provides 3 types of integration into to BI tools:</p>
+                                <p>The One London re-identification portal provides 3 types of integration into to BI tools:</p>
                                 <ol>
                                     <li>Seemless integration to re-identify one patient within Power BI.</li>
                                     <li>Seemless integration to re-identify a group of patients within Power BI.</li>

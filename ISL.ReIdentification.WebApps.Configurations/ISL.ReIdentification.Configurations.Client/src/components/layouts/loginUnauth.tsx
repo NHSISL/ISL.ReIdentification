@@ -17,7 +17,7 @@ export const LoginUnAuthorisedComponent = () => {
                     <Card className="text-center" style={{ maxWidth: '400px', margin: 'auto' }}>
                         <Card.Body>
                             <Card.Title className="mb-4 ">
-                                <img src="/OneLondon_Logo_OneLondon_Logo_Blue.png" alt="London Data Service logo" height="70" width="200" />
+                                <img src="/OneLondon_Logo_OneLondon_Logo_Blue.png" alt="London Data Service logo" height="70" width="216" />
                                 <br />
                                 <span style={{ marginLeft: "10px" }}>
                                     London Data Service <br />
