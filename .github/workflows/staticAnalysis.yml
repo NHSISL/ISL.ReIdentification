@@ -2,7 +2,7 @@ name: SonarQube
 on:
   push:
     branches:
-      - main
+      - users/dcunliffe/sonarqube
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
