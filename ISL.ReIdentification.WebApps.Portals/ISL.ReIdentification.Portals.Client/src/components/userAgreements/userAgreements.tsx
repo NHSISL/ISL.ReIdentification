@@ -38,7 +38,7 @@ export const UserAgreementModal = () => {
 
     return <AuthenticatedTemplate>
         {isLoading || isSuccess ? <></> :
-            <Modal show={!hasAgreed} size="lg">
+            <Modal show={!hasAgreed} dialogClassName="modal-90w">
                 <Modal.Header>
                     <Modal.Title>User Agreement - Version {configuration?.activeAgreement} </Modal.Title>
                 </Modal.Header>
