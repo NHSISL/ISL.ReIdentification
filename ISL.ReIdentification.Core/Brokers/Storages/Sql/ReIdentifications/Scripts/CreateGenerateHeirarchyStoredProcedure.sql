@@ -151,8 +151,6 @@ FROM [dbo].[TempOdsInbound]
 WHERE IsActive = 1;
 
 
-select * from OdsDatas
-
 -- Mark records with children in OdsDatas
 UPDATE dbo.OdsDatas
 SET HasChildren = 1
@@ -166,18 +164,6 @@ WHERE Id IN (
 update od set  od.OrganisationName = cast(o.Organisation_Name as varchar(30))
 from dbo.OdsDatas od
     INNER JOIN Dictionary.Organisation o on od.OrganisationCode = o.Organisation_Code
-
-
-
-
-select OdsHierarchy.GetDescendant(null,null) from OdsDatas where Id = 'eebe433c-903f-4e22-9d8d-0a7d6a0bfa1f'
-
-    SELECT o1.OdsHierarchy.GetDescendant(NULL, NULL).ToString(), o1.OdsHierarchy.ToString(),*
-    FROM dbo.OdsDatas o1
-   -- LEFT JOIN dbo.OdsDatas o2 ON o1.OdsHierarchy.GetDescendant(NULL, NULL) = o2.OdsHierarchy
-    WHERE o1.id='eebe433c-903f-4e22-9d8d-0a7d6a0bfa1f'
-
-select OdsHierarchy.ToString(),* from OdsDatas where OrganisationCode = 'G84001'
 
 
    
