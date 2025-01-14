@@ -15,7 +15,7 @@ using RESTFulSense.Controllers;
 
 namespace ISL.ReIdentification.Configurations.Server.Controllers
 {
-    [Authorize(Roles = "ISL.Reidentification.Configuration.Administrators")]
+    [Authorize(Roles = "ISL.Reidentification.Configuration.Administrators,ISL.Reidentification.Configuration.Users")]
     [ApiController]
     [Route("api/[controller]")]
     public class PdsDataController : RESTFulController
