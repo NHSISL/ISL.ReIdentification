@@ -17,7 +17,7 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
     const [selectedHeaderColumnIndex, setSelectedHeaderColumnIndex] = useState<number>(0);
     const [selectedUser, setSelectedUser] = useState<UserAccessView | undefined>();
     const { submit, loading } = reIdentificationService.useRequestReIdentificationCsv();
-    const [error, setError] = useState("");
+    const [error, setError] = useState<string[]>([]);
     const [success, setSuccess] = useState("");
     const [savedSuccessfull, setSavedSuccessfull] = useState(false);
     const [fileName, setFileName] = useState<string>("");
@@ -60,18 +60,24 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                 identifierColumnIndex: selectedHeaderColumnIndex
             }
         }
-        setError("");
+        setError([]);
         submit(csvIdentificationRequest).then((d) => {
             console.log("Sent", d);
             setSavedSuccessfull(true)
-        }).catch(() => {
-            setSavedSuccessfull(false)
-            setError("Something went wrong when saving, please contact an administrator");
-        })
+        }).catch((error) => {
+            setSavedSuccessfull(false);
+            setSuccess("");
+            if (error.response && error.response.data && error.response.data.errors) {
+                const errorMessages = error.response.data.errors.identifier as string[];
+                setError(errorMessages);
+            } else {
+                setError(["Something went wrong when saving, please contact an administrator"]);
+            }
+        });
     };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setError("");
+        setError([]);
         const file = e.target.files?.[0];
         if (file) {
             const sizeInBytes = file.size;
@@ -79,7 +85,7 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
             console.log(`File size: ${sizeInBytes} bytes (${sizeInMB} MB)`);
 
             if (sizeInBytes > 1024 * 1024) {
-                setError("File size exceeds 1MB. Please upload a smaller file.");
+                setError(["File size exceeds 1MB. Please upload a smaller file."]);
                 return;
             }
 
@@ -93,7 +99,7 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                     const headers = rows[0].split(",");
 
                     if (headers.length <= 1) {
-                        setError("The CSV file does not contain a valid header row.");
+                        setError(["The CSV file does not contain a valid header row."]);
                         return;
                     }
 
@@ -104,10 +110,10 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                 };
                 reader.readAsText(file);
             } else {
-                setError("Please upload a valid .csv file.");
+                setError(["Please upload a valid .csv file."]);
             }
         } else {
-            setError("No file selected. Please upload a .csv file.");
+            setError(["No file selected. Please upload a .csv file."]);
         }
     };
 
@@ -126,11 +132,11 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                 const value = nextRow[index];
 
                 if (/^\d{10}$/.test(value)) {
-                    setError("");
+                    setError([]);
                     setSuccess(`The value "${value}" in the next row at the selected column index is 10 digits long and is a valid Pseudo Identifier.`);
                 } else {
                     setSuccess("");
-                    setError(`The value "${value}" in the next row for the selected column index is not a valid Pseudo Identifier, please follow the guidance in the help section.`);
+                    setError([`The value "${value}" in the next row for the selected column index is not a valid Pseudo Identifier, please follow the guidance in the help section.`]);
                 }
             }
         }
@@ -219,31 +225,39 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                                     <br />
                                 </>
                             )}
-                                <Form.Group className="text-start">
-                                    <Form.Label><strong>Re-identification Reason:</strong></Form.Label>
+                            <Form.Group className="text-start">
+                                <Form.Label><strong>Re-identification Reason:</strong></Form.Label>
 
-                                    <Form.Control
-                                        as="textarea"
-                                        value={reason}
-                                        onChange={(e) => setReason(e.target.value)}
-                                        placeholder="Enter a reason"
-                                        rows={3}
-                                        required
-                                    />
+                                <Form.Control
+                                    as="textarea"
+                                    value={reason}
+                                    onChange={(e) => setReason(e.target.value)}
+                                    placeholder="Enter a reason"
+                                    rows={3}
+                                    required
+                                />
 
-                                    <Form.Text className="text-muted">
-                                        Please supply a reason why you are requesting to Reidentify, this will be visable in the email to the recipient.
-                                    </Form.Text>
-                                </Form.Group>
+                                <Form.Text className="text-muted">
+                                    Please supply a reason why you are requesting to Reidentify, this will be visable in the email to the recipient.
+                                </Form.Text>
+                            </Form.Group>
                             <br />
 
-                            {error && <Alert variant="danger">
-                                {error}
-                            </Alert>}
+                            {error && error.length > 0 && (
+                                <Alert variant="danger">
+                                    Something went wrong when saving, please see details below:
+                                    <ul>
+                                        {error.map((errMsg, index) => (
+                                            <li key={index}>{errMsg}</li>
+                                        ))}
+                                    </ul>
+                                </Alert>
+                            )}
+
                             {success && <Alert variant="success">
                                 {success}
                             </Alert>}
-                            <Button type="submit" disabled={!selectedHeaderColumn || !selectedUser || !selectedHeaderColumn || !!error}>
+                            <Button type="submit" disabled={!selectedHeaderColumn || !selectedUser || !selectedHeaderColumn || !!error.length}>
                                 {!loading ? <>Send File</> : <Spinner />}
                             </Button>
                         </Form>
@@ -294,7 +308,9 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
         </>
     );
 
-    return <>{error ? error : "Something went wrong."}</>;
+    return <>
+        {error ? <Alert variant="danger">{error}</Alert> : <Alert variant="danger">Something went wrong.</Alert>}
+    </>;
 }
 
 export default CsvReIdentificationDetailCardView;
