@@ -73,3 +73,8 @@ button {
     --bs-list-group-active-bg: #00ABCD !important;
     --bs-list-group-active-border-color: #00ABCD !important;
 }
+
+.modal-90w {
+    width: 90% !important;
+    max-width: none !important;
+}
