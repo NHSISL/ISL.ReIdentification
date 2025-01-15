@@ -1,9 +1,9 @@
 import { Agreement } from "../agreementCatalogue"
 
-export const agreement_v0_2 = () => {
+export const agreement_v1_0 = () => {
     return {
         type: "UserAgreement",
-        version: "0.2",
+        version: "1.0",
         text: <>
             <h5>1. Purpose</h5>
             <p>The re-identification service is designed to assist authorised healthcare professionals in securely re-identifying patients under their direct care and governance for the purpose of providing appropriate medical treatment, care, support, or follow-up</p>
