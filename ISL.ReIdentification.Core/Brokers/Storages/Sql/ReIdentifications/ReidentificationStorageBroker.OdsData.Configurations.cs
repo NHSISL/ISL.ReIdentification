@@ -16,7 +16,7 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications
                 .IsRequired();
 
             builder.Property(OdsData => OdsData.OrganisationName)
-                .HasMaxLength(30);
+                .HasMaxLength(255);
         }
     }
 }

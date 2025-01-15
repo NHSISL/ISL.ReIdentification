@@ -1,5 +1,5 @@
 import { agreement_v0_1 } from "./versions/agreement_v0_1"
-import { agreement_v0_2 } from "./versions/agreement_v0_2";
+import { agreement_v1_0 } from "./versions/agreement_v1_0";
 
 export type Agreement = { 
     type: string;
@@ -11,7 +11,7 @@ export const useAgreementCatalogue = () => {
 
     const agreements : Agreement[] = [ 
         agreement_v0_1(),
-        agreement_v0_2(),
+        agreement_v1_0(),
     ]
 
     return {
