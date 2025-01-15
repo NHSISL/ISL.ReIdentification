@@ -25,7 +25,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Unit.Controllers.PdsD
 
             List<string> expectedAttributeValues = new List<string>
             {
-                "ISL.Reidentification.Configuration.Administrators"
+                "ISL.Reidentification.Configuration.Administrators","ISL.Reidentification.Configuration.Users"
             };
 
             // When
