@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
+using ISL.ReIdentification.Core.Models.Foundations.Audits;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Foundations.Lookups;
@@ -14,7 +15,6 @@ using ISL.ReIdentification.Core.Models.Foundations.OdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.PdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Models.Foundations.UserAgreements;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using STX.EFCore.Client.Clients;
@@ -53,6 +53,7 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications
             AddOdsDataConfigurations(modelBuilder.Entity<OdsData>());
             AddPdsDataConfigurations(modelBuilder.Entity<PdsData>());
             AddUserAgreementConfigurations(modelBuilder.Entity<UserAgreement>());
+            AddAuditConfigurations(modelBuilder.Entity<Audit>());
         }
 
         private async ValueTask<T> InsertAsync<T>(T @object) where T : class =>
