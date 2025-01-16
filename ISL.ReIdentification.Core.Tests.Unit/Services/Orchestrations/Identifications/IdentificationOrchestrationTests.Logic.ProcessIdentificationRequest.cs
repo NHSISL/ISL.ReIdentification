@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
@@ -220,12 +221,15 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
 
             foreach (IdentificationItem item in randomIdentificationRequest.IdentificationItems)
             {
+                var pseudoIdentifier = randomIdentificationRequest.IdentificationItems
+                    .FirstOrDefault(identificationItem => identificationItem.RowNumber == item.RowNumber).Identifier;
+
                 AccessAudit successAccessAudit = new AccessAudit
                 {
                     Id = randomGuid,
                     RequestId = randomIdentificationRequest.Id,
                     TransactionId = randomGuid,
-                    PseudoIdentifier = $"{item.Identifier}",
+                    PseudoIdentifier = pseudoIdentifier,
                     EntraUserId = randomIdentificationRequest.EntraUserId,
                     GivenName = randomIdentificationRequest.GivenName,
                     Surname = randomIdentificationRequest.Surname,

@@ -85,6 +85,7 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.Reidentification.Portal.Administrators,ISL.Reidentification.Portal.DataEngineers")]
         [HttpPost("impersonation")]
         public async ValueTask<ActionResult<AccessRequest>> PostImpersonationContextRequestAsync(
             [FromBody] AccessRequest accessRequest)
@@ -95,6 +96,37 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
                     .PersistsImpersonationContextAsync(accessRequest);
 
                 return Created(addedAccessRequest);
+            }
+            catch (IdentificationCoordinationValidationException identificationCoordinationValidationException)
+            {
+                return BadRequest(identificationCoordinationValidationException.InnerException);
+            }
+            catch (IdentificationCoordinationDependencyValidationException
+                identificationCoordinationDependencyValidationException)
+            {
+                return BadRequest(identificationCoordinationDependencyValidationException.InnerException);
+            }
+            catch (IdentificationCoordinationDependencyException identificationCoordinationDependencyException)
+            {
+                return InternalServerError(identificationCoordinationDependencyException);
+            }
+            catch (IdentificationCoordinationServiceException identificationCoordinationServiceException)
+            {
+                return InternalServerError(identificationCoordinationServiceException);
+            }
+        }
+
+        [Authorize(Roles = "ISL.Reidentification.Portal.Administrators,ISL.Reidentification.Portal.DataEngineers")]
+        [HttpPost("generatetokens")]
+        public async ValueTask<ActionResult<AccessRequest>> PostImpersonationContextGenerateTokensAsync(
+            [FromBody] Guid impersonationContextId)
+        {
+            try
+            {
+                AccessRequest addedAccessRequest = await identificationCoordinationService
+                    .ExpireRenewImpersonationContextTokensAsync(impersonationContextId);
+
+                return Ok(addedAccessRequest);
             }
             catch (IdentificationCoordinationValidationException identificationCoordinationValidationException)
             {

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using ISL.Providers.Storages.Abstractions.Models;
 
 namespace ISL.ReIdentification.Core.Brokers.Storages.Blob
 {
@@ -18,15 +19,18 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Blob
         ValueTask CreateContainerAsync(string container);
         ValueTask<List<string>> ListFilesInContainerAsync(string container);
 
-        ValueTask<string> CreateDirectorySasTokenAsync(
-            string container, string directoryPath, string accessPolicyIdentifier, DateTimeOffset expiresOn);
+        ValueTask<string> CreateSasTokenAsync(
+            string container,
+            string path,
+            string accessPolicyIdentifier,
+            DateTimeOffset expiresOn);
 
-        ValueTask<string> GetAccessTokenAsync(
-            string path, string container, string accessLevel, DateTimeOffset expiresOn);
-
-        ValueTask<List<string>> RetrieveAllAccessPoliciesFromContainerAsync(string container);
-        ValueTask CreateAndAssignAccessPoliciesToContainerAsync(string container, List<string> policyNames);
-        ValueTask RemoveAccessPoliciesFromContainerAsync(string container);
+        ValueTask<List<string>> RetrieveListOfAllAccessPoliciesAsync(string container);
+        ValueTask<List<Policy>> RetrieveAllAccessPoliciesAsync(string container);
+        ValueTask<Policy> RetrieveAccessPolicyByNameAsync(string container, string policyName);
+        ValueTask CreateAndAssignAccessPoliciesAsync(string container, List<Policy> policies);
+        ValueTask RemoveAllAccessPoliciesAsync(string container);
+        ValueTask RemoveAccessPolicyByNameAsync(string container, string policyName);
         ValueTask CreateFolderInContainerAsync(string container, string folder);
     }
 }

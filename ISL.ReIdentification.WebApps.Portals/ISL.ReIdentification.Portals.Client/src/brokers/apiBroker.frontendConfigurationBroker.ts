@@ -5,7 +5,10 @@ export type FrontendConfigurationResponse = {
     authority: string,
     scopes: string,
     environment: string,
-    application: string
+    application: string,
+    version: string,
+    bannerColour: string,
+    activeAgreement: string,
 }
 
 export type FrontendConfiguration = {
@@ -13,7 +16,10 @@ export type FrontendConfiguration = {
     authority: string,
     scopes: string[],
     environment: string,
-    application: string
+    application: string,
+    version: string,
+    bannerColour: string,
+    activeAgreement: string,
 }
 
 class FrontendConfigurationBroker {

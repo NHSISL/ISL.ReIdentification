@@ -92,6 +92,15 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
                 .OnProperty(impersonationContext => impersonationContext.IdentifierColumn)
                     .Use(() => GetRandomStringWithLengthOf(10))
 
+                .OnProperty(impersonationContext => impersonationContext.InboxSasToken)
+                    .Use("")
+
+                .OnProperty(impersonationContext => impersonationContext.OutboxSasToken)
+                    .Use("")
+
+                .OnProperty(impersonationContext => impersonationContext.ErrorsSasToken)
+                    .Use("")
+
                 .OnProperty(impersonationContext => impersonationContext.CreatedDate).Use(now)
                 .OnProperty(impersonationContext => impersonationContext.CreatedBy).Use(user)
                 .OnProperty(impersonationContext => impersonationContext.UpdatedDate).Use(now)

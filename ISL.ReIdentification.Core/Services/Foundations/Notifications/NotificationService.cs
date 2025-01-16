@@ -240,5 +240,40 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Notifications
             ValidateInputsOnSendImpersonationDeniedNotificationAsync(toEmail, subject, body, personalisation);
             await this.notificationBroker.SendEmailAsync(toEmail, subject, body, personalisation);
         });
+
+        public ValueTask SendImpersonationTokensGeneratedNotificationAsync(AccessRequest accessRequest) =>
+        TryCatch(async () =>
+        {
+            ValidateOnSendImpersonationTokensGeneratedNotificationAsync(accessRequest, this.notificationConfigurations);
+            string toEmail = accessRequest.ImpersonationContext.RequesterEmail;
+            string subject = "Tokens Generated";
+            string body = "SAS tokens have been generated";
+
+            Dictionary<string, dynamic> personalisation = new Dictionary<string, dynamic>
+            {
+                { "id", accessRequest.ImpersonationContext.Id.ToString() },
+                { "requesterEntraUserId", accessRequest.ImpersonationContext.RequesterEntraUserId.ToString() },
+                { "requesterFirstName", accessRequest.ImpersonationContext.RequesterFirstName },
+                { "requesterLastName", accessRequest.ImpersonationContext.RequesterLastName },
+                { "requesterDisplayName", accessRequest.ImpersonationContext.RequesterDisplayName },
+                { "requesterEmail", accessRequest.ImpersonationContext.RequesterEmail },
+                { "requesterJobTitle", accessRequest.ImpersonationContext.RequesterJobTitle },
+                { "recipientEntraUserId", accessRequest.ImpersonationContext.ResponsiblePersonEntraUserId.ToString() },
+                { "recipientFirstName", accessRequest.ImpersonationContext.ResponsiblePersonFirstName },
+                { "recipientLastName", accessRequest.ImpersonationContext.ResponsiblePersonLastName },
+                { "recipientDisplayName", accessRequest.ImpersonationContext.ResponsiblePersonDisplayName },
+                { "recipientEmail", accessRequest.ImpersonationContext.ResponsiblePersonEmail },
+                { "recipientJobTitle", accessRequest.ImpersonationContext.ResponsiblePersonJobTitle },
+                { "reason", accessRequest.ImpersonationContext.Reason },
+                { "organisation", accessRequest.ImpersonationContext.Organisation },
+                { "identifierColumn", accessRequest.ImpersonationContext.IdentifierColumn },
+                { "templateId", this.notificationConfigurations.ImpersonationTokensGeneratedTemplateId },
+                { "configurationBaseUrl", this.notificationConfigurations.ConfigurationBaseUrl },
+                { "portalBaseUrl", this.notificationConfigurations.PortalBaseUrl },
+            };
+
+            ValidateInputsOnSendImpersonationTokensGeneratedNotificationAsync(toEmail, subject, body, personalisation);
+            await this.notificationBroker.SendEmailAsync(toEmail, subject, body, personalisation);
+        });
     }
 }

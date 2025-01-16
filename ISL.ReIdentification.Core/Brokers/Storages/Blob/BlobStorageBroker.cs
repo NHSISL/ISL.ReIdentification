@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using ISL.Providers.Storages.Abstractions;
+using ISL.Providers.Storages.Abstractions.Models;
 
 namespace ISL.ReIdentification.Core.Brokers.Storages.Blob
 {
@@ -38,33 +39,49 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Blob
         public async ValueTask<List<string>> ListFilesInContainerAsync(string container) =>
             await this.storageAbstractionProvider.ListFilesInContainerAsync(container);
 
-        public async ValueTask<string> CreateDirectorySasTokenAsync(
-            string container, 
-            string directoryPath, 
-            string accessPolicyIdentifier, 
+        public async ValueTask<string> CreateSasTokenAsync(
+            string container,
+            string path,
+            string accessPolicyIdentifier,
             DateTimeOffset expiresOn)
         {
-            return await this.storageAbstractionProvider.CreateDirectorySasTokenAsync(
-                container, directoryPath, accessPolicyIdentifier, expiresOn);
+            return await this.storageAbstractionProvider.CreateSasTokenAsync(
+                container,
+                path,
+                accessPolicyIdentifier,
+                expiresOn);
         }
 
-        public async ValueTask<string> GetAccessTokenAsync(
-            string path, 
-            string container, 
-            string accessLevel, 
-            DateTimeOffset expiresOn) =>
-                await this.storageAbstractionProvider.GetAccessTokenAsync(path, container, accessLevel, expiresOn);
+        public async ValueTask<string> CreateSasTokenAsync(
+            string container,
+            string path,
+            DateTimeOffset expiresOn,
+            List<string> permissions)
+        {
+            return await this.storageAbstractionProvider.CreateSasTokenAsync(
+                container,
+                path,
+                expiresOn,
+                permissions);
+        }
 
-        public async ValueTask<List<string>> RetrieveAllAccessPoliciesFromContainerAsync(string container) =>
-            await this.storageAbstractionProvider.RetrieveAllAccessPoliciesFromContainerAsync(container);
+        public async ValueTask<List<string>> RetrieveListOfAllAccessPoliciesAsync(string container) =>
+            await this.storageAbstractionProvider.RetrieveListOfAllAccessPoliciesAsync(container);
 
-        public async ValueTask CreateAndAssignAccessPoliciesToContainerAsync(
-            string container, 
-            List<string> policyNames) =>
-            await this.storageAbstractionProvider.CreateAndAssignAccessPoliciesToContainerAsync(container, policyNames);
+        public async ValueTask<List<Policy>> RetrieveAllAccessPoliciesAsync(string container) =>
+            await this.storageAbstractionProvider.RetrieveAllAccessPoliciesAsync(container);
 
-        public async ValueTask RemoveAccessPoliciesFromContainerAsync(string container) =>
-            await this.storageAbstractionProvider.RemoveAccessPoliciesFromContainerAsync(container);
+        public async ValueTask<Policy> RetrieveAccessPolicyByNameAsync(string container, string policyName) =>
+            await this.storageAbstractionProvider.RetrieveAccessPolicyByNameAsync(container, policyName);
+
+        public async ValueTask CreateAndAssignAccessPoliciesAsync(string container, List<Policy> policies) =>
+            await this.storageAbstractionProvider.CreateAndAssignAccessPoliciesAsync(container, policies);
+
+        public async ValueTask RemoveAllAccessPoliciesAsync(string container) =>
+            await this.storageAbstractionProvider.RemoveAllAccessPoliciesAsync(container);
+
+        public async ValueTask RemoveAccessPolicyByNameAsync(string container, string policyName) =>
+            await this.storageAbstractionProvider.RemoveAccessPolicyByNameAsync(container, policyName);
 
         public async ValueTask CreateFolderInContainerAsync(string container, string folder) =>
             await this.storageAbstractionProvider.CreateFolderInContainerAsync(container, folder);

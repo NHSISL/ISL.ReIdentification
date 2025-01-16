@@ -175,7 +175,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
             foreach (CsvIdentificationRequest csvIdentificationRequest in expiredCsvIdentificationRequests)
             {
                 var accessAuditId = await this.identifierBroker.GetIdentifierAsync();
-                csvIdentificationRequest.Data = null;
+                csvIdentificationRequest.Data = Array.Empty<byte>();
                 csvIdentificationRequest.UpdatedDate = dateTimeOffset;
 
                 await this.csvIdentificationRequestService.ModifyCsvIdentificationRequestAsync(csvIdentificationRequest);
@@ -203,6 +203,13 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
 
                 await this.accessAuditService.AddAccessAuditAsync(accessAudit);
             }
+        });
+
+        public ValueTask SendGeneratedTokensNotificationAsync(AccessRequest accessRequest) =>
+        TryCatch(async () =>
+        {
+            ValidateOnSendGeneratedTokensNotificationAsyncAsync(accessRequest);
+            await this.notificationService.SendImpersonationTokensGeneratedNotificationAsync(accessRequest);
         });
     }
 }

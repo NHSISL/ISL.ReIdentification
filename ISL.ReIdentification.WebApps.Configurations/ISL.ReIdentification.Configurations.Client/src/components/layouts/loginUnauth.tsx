@@ -17,7 +17,7 @@ export const LoginUnAuthorisedComponent = () => {
                     <Card className="text-center" style={{ maxWidth: '400px', margin: 'auto' }}>
                         <Card.Body>
                             <Card.Title className="mb-4 ">
-                                <img src="/LHDLogoRound.png" alt="London Data Service logo" height="50" width="50" />
+                                <img src="/OneLondon_Logo_OneLondon_Logo_Blue.png" alt="London Data Service logo" height="70" width="216" />
                                 <br />
                                 <span style={{ marginLeft: "10px" }}>
                                     London Data Service <br />
@@ -26,7 +26,7 @@ export const LoginUnAuthorisedComponent = () => {
 
                             </Card.Title>
                             <Card.Text className="mb-4 align-items-left" >
-                                <p>Welcome to the London Data Service Reidentification Configuration Portal.</p>
+                                <p>Welcome to the One London Data Service Reidentification Configuration Portal.</p>
                                 <p>Please sign in to continue.</p>
                             </Card.Text>
                             <Button onClick={handleLoginRedirect} className="me-3">Sign in</Button>

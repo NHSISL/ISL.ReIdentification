@@ -116,6 +116,10 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
             {
                 throw await CreateAndLogCriticalValidationExceptionAsync(nullCsvReIdentificationConfigurationException);
             }
+            catch (NullAccessRequestException nullAccessRequestException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(nullAccessRequestException);
+            }
             catch (InvalidArgumentPersistanceOrchestrationException invalidArgumentPersistanceOrchestrationException)
             {
                 throw await CreateAndLogValidationExceptionAsync(invalidArgumentPersistanceOrchestrationException);
@@ -141,6 +145,16 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
                 throw await CreateAndLogDependencyValidationExceptionAsync(
                     accessAuditDependencyValidationException);
             }
+            catch (NotificationValidationException notificationValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    notificationValidationException);
+            }
+            catch (NotificationDependencyValidationException notificationDependencyValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    notificationDependencyValidationException);
+            }
             catch (CsvIdentificationRequestDependencyException csvIdentificationRequestDependencyException)
             {
                 throw await CreateAndLogDependencyExceptionAsync(
@@ -160,6 +174,16 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
             {
                 throw await CreateAndLogDependencyExceptionAsync(
                     accessAuditServiceException);
+            }
+            catch (NotificationDependencyException notificationDependencyException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(
+                    notificationDependencyException);
+            }
+            catch (NotificationServiceException notificationServiceException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(
+                    notificationServiceException);
             }
             catch (Exception exception)
             {

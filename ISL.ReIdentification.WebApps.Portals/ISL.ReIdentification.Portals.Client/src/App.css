@@ -4,7 +4,7 @@
 }
 
 .hero-text {
-    color: #45B8AC;
+    color: #00ABCD;
 }
 
 .sidebar {
@@ -19,12 +19,12 @@
     }
 
     .sidebar .list-group-item.active a {
-        color: #45B8AC;
+        color: #00ABCD;
         margin-left: 10px
     }
 
     .sidebar .list-group-item.active .fa-icon {
-        color: #45B8AC;
+        color: #00ABCD;
         margin-left: 10px
     }
 
@@ -91,5 +91,5 @@
     display: inline-block !important;
     text-decoration: underline;
     color: rgba(var(--bs-link-color-rgb),var(--bs-link-opacity,1));
-    font-weight:500;
+    font-weight: 500;
 }

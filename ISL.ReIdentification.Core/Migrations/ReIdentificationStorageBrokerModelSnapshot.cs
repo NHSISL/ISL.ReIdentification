@@ -18,7 +18,7 @@ namespace ISL.ReIdentification.Core.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.10")
+                .HasAnnotation("ProductVersion", "8.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -199,12 +199,6 @@ namespace ISL.ReIdentification.Core.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ClientId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ClientSecret")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -359,8 +353,8 @@ namespace ISL.ReIdentification.Core.Migrations
                         .HasColumnType("nvarchar(15)");
 
                     b.Property<string>("OrganisationName")
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<DateTimeOffset?>("RelationshipWithParentEndDate")
                         .HasColumnType("datetimeoffset");
@@ -496,6 +490,9 @@ namespace ISL.ReIdentification.Core.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
+                    b.Property<string>("AgreementVersion")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -517,8 +514,9 @@ namespace ISL.ReIdentification.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EntraUserId", "AgreementType")
-                        .IsUnique();
+                    b.HasIndex("EntraUserId", "AgreementType", "AgreementVersion")
+                        .IsUnique()
+                        .HasFilter("[AgreementVersion] IS NOT NULL");
 
                     b.ToTable("UserAgreements");
                 });

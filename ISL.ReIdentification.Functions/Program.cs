@@ -10,11 +10,12 @@ using ISL.Providers.Notifications.GovukNotify.Models;
 using ISL.Providers.Notifications.GovukNotify.Providers.Notifications;
 using ISL.Providers.ReIdentification.Abstractions;
 using ISL.Providers.ReIdentification.Necs.Models.Brokers.NECS;
-using ISL.Providers.ReIdentification.Necs.Models.Brokers.Notifications;
 using ISL.Providers.ReIdentification.Necs.Providers.NecsReIdentifications;
 using ISL.Providers.ReIdentification.OfflineFileSources.Models;
 using ISL.Providers.ReIdentification.OfflineFileSources.Providers.OfflineFileSources;
 using ISL.Providers.Storages.Abstractions;
+using ISL.Providers.Storages.AzureBlobStorage.Models;
+using ISL.Providers.Storages.AzureBlobStorage.Providers.AzureBlobStorage;
 using ISL.ReIdentification.Core.Brokers.CsvHelpers;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Hashing;
@@ -22,8 +23,9 @@ using ISL.ReIdentification.Core.Brokers.Identifiers;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Notifications;
 using ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications;
+using ISL.ReIdentification.Core.Models.Brokers.Notifications;
+using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
 using ISL.ReIdentification.Core.Models.Orchestrations.Persists;
-using ISL.ReIdentification.Core.Providers.Storage;
 using ISL.ReIdentification.Core.Services.Coordinations.Identifications;
 using ISL.ReIdentification.Core.Services.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationRequests;
@@ -68,14 +70,13 @@ internal class Program
 
             CsvReIdentificationConfigurations csvReIdentificationConfigurations =
             configuration
-                .GetSection("csvReIdentificationConfigurations")
+                .GetSection("CsvReIdentificationConfigurations")
                     .Get<CsvReIdentificationConfigurations>();
 
             services.AddSingleton(csvReIdentificationConfigurations);
 
             AddProviders(services, configuration);
             AddBrokers(services);
-            AddServices(services);
             AddServices(services);
             AddProcessings(services);
             AddOrchestrations(services);
@@ -91,8 +92,8 @@ internal class Program
     private static void AddProviders(IServiceCollection services, IConfiguration configuration)
     {
         NotificationConfigurations notificationConfigurations = configuration
-        .GetSection("notificationConfigurations")
-            .Get<NotificationConfigurations>();
+            .GetSection("NotificationConfigurations")
+                .Get<NotificationConfigurations>();
 
         NotifyConfigurations notifyConfigurations = new NotifyConfigurations
         {
@@ -101,18 +102,31 @@ internal class Program
 
         services.AddSingleton(notificationConfigurations);
         services.AddSingleton(notifyConfigurations);
+
+        ProjectStorageConfiguration projectStorageConfiguration = configuration
+            .GetSection("ProjectStorageConfiguration")
+                .Get<ProjectStorageConfiguration>();
+
+        AzureBlobStoreConfigurations projectsBlobStoreConfigurations = new AzureBlobStoreConfigurations
+        {
+            ServiceUri = projectStorageConfiguration.ServiceUri,
+            StorageAccountName = projectStorageConfiguration.StorageAccountName,
+            StorageAccountAccessKey = projectStorageConfiguration.StorageAccountAccessKey
+        };
+
+        services.AddSingleton(projectsBlobStoreConfigurations);
         services.AddTransient<INotificationAbstractionProvider, NotificationAbstractionProvider>();
         services.AddTransient<IStorageAbstractionProvider, StorageAbstractionProvider>();
         services.AddTransient<INotificationProvider, GovukNotifyProvider>();
-        services.AddTransient<IStorageProvider, FakeStorageProvider>();
+        services.AddTransient<IStorageProvider, AzureBlobStorageProvider>();
 
         bool reIdentificationProviderOfflineMode = configuration
-            .GetSection("reIdentificationProviderOfflineMode").Get<bool>();
+            .GetSection("ReIdentificationProviderOfflineMode").Get<bool>();
 
         if (reIdentificationProviderOfflineMode == true)
         {
             OfflineSourceReIdentificationConfigurations offlineSourceReIdentificationConfigurations = configuration
-                .GetSection("offlineSourceReIdentificationConfigurations")
+                .GetSection("OfflineSourceReIdentificationConfigurations")
                     .Get<OfflineSourceReIdentificationConfigurations>();
 
             services.AddSingleton(offlineSourceReIdentificationConfigurations);
@@ -121,7 +135,7 @@ internal class Program
         else
         {
             NecsReIdentificationConfigurations necsReIdentificationConfigurations = configuration
-                .GetSection("necsReIdentificationConfigurations")
+                .GetSection("NecsReIdentificationConfigurations")
                     .Get<NecsReIdentificationConfigurations>();
 
             services.AddSingleton(necsReIdentificationConfigurations);
@@ -138,7 +152,7 @@ internal class Program
         services.AddTransient<IIdentifierBroker, IdentifierBroker>();
         services.AddTransient<IReIdentificationStorageBroker, ReIdentificationStorageBroker>();
         services.AddTransient<IHashBroker, HashBroker>();
-        services.AddTransient<INotificationBroker, INotificationBroker>();
+        services.AddTransient<INotificationBroker, NotificationBroker>();
         services.AddTransient<ICsvHelperBroker, CsvHelperBroker>();
     }
 

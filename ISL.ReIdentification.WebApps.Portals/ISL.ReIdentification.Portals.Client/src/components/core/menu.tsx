@@ -32,7 +32,7 @@ const MenuComponent: React.FC = () => {
 
             <FeatureSwitch feature={FeatureDefinitions.ReportReidentify}>
                 <ListGroup.Item
-                    className={`bg-dark text-white ${activePath === '/reports' ? 'active' : ''}`}
+                    className={`bg-dark text-white ${activePath === '/report' ? 'active' : ''}`}
                     onClick={() => handleItemClick('/report')}>
                     <FontAwesomeIcon icon={faLineChart} className="me-2 fa-icon" />
                     <SecuredLink to="/report">Report Re-identification</SecuredLink>
@@ -48,21 +48,21 @@ const MenuComponent: React.FC = () => {
                 </ListGroup.Item>
             </FeatureSwitch>
 
+            <FeatureSwitch feature={FeatureDefinitions.CsvReidentify}>
+                <ListGroup.Item
+                    className={`bg-dark text-white ${activePath === '/csvReIdentification' ? 'active' : ''}`}
+                    onClick={() => handleItemClick('/csvReIdentification')}>
+                    <FontAwesomeIcon icon={faListAlt} className="me-2 fa-icon" />
+                    <SecuredLink to="/csvReIdentification">Re-Identify Dataset</SecuredLink>
+                </ListGroup.Item>
+            </FeatureSwitch>
+
             <FeatureSwitch feature={FeatureDefinitions.CsvWorklist}>
                 <ListGroup.Item
                     className={`bg-dark text-white ${activePath === '/csvReIdentificationWorklist' ? 'active' : ''}`}
                     onClick={() => handleItemClick('/csvReIdentificationWorklist')}>
                     <FontAwesomeIcon icon={faTable} className="me-2 fa-icon" />
                     <SecuredLink to="/csvReIdentificationWorklist">My Dataset Worklist</SecuredLink>
-                </ListGroup.Item>
-            </FeatureSwitch>
-
-            <FeatureSwitch feature={FeatureDefinitions.CsvReidentify}>
-                <ListGroup.Item
-                    className={`bg-dark text-white ${activePath === '/csvReIdentification' ? 'active' : ''}`}
-                    onClick={() => handleItemClick('/csvReIdentification')}>
-                    <FontAwesomeIcon icon={faListAlt} className="me-2 fa-icon" />
-                    <SecuredLink to="/csvReIdentification">ReIdentify Dataset</SecuredLink>
                 </ListGroup.Item>
             </FeatureSwitch>
 

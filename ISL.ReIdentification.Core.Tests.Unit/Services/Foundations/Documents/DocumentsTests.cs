@@ -5,11 +5,13 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Linq.Expressions;
+using ISL.Providers.Storages.Abstractions.Models;
 using ISL.Providers.Storages.Abstractions.Models.Exceptions;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Storages.Blob;
-using ISL.ReIdentification.Core.Models.Foundations.UserAccesses.Exceptions;
+using ISL.ReIdentification.Core.Models.Foundations.Documents;
 using ISL.ReIdentification.Core.Services.Foundations.Documents;
 using KellermanSoftware.CompareNetObjects;
 using Moq;
@@ -63,6 +65,136 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             return randomStringList;
         }
 
+        private static List<Policy> GetPolicies() =>
+            new List<Policy>
+            {
+                new Policy
+                {
+                    PolicyName = "read",
+                    Permissions = new List<string>
+                    {
+                        "Read",
+                        "list"
+                    }
+                },
+                new Policy
+                {
+                    PolicyName = "write",
+                    Permissions = new List<string>
+                    {
+                        "write",
+                        "add",
+                        "Create"
+                    }
+                },
+        };
+
+        private static Policy GetPolicy()
+        {
+            return new Policy
+            {
+                PolicyName = "default",
+                Permissions = new List<string>
+                {
+                    "Read",
+                    "Write",
+                    "List",
+                    "Create"
+                }
+            };
+        }
+
+        private static List<AccessPolicy> GetAccessPolicies() =>
+            new List<AccessPolicy>
+            {
+                new AccessPolicy
+                {
+                    PolicyName = "read",
+                    Permissions = new List<string>
+                    {
+                        "Read",
+                        "list"
+                    }
+                },
+                new AccessPolicy
+                {
+                    PolicyName = "write",
+                    Permissions = new List<string>
+                    {
+                        "write",
+                        "add",
+                        "Create"
+                    }
+                },
+        };
+
+        private static AccessPolicy GetAccessPolicy(string policyName)
+        {
+            return new AccessPolicy
+            {
+                PolicyName = policyName,
+                Permissions = new List<string>
+                {
+                    "Read",
+                    "Write",
+                    "List",
+                    "Create"
+                }
+            };
+        }
+
+        private static Policy GetPolicy(string policyName)
+        {
+            return new Policy
+            {
+                PolicyName = policyName,
+                Permissions = new List<string>
+                {
+                    "Read",
+                    "Write",
+                    "List",
+                    "Create"
+                }
+            };
+        }
+
+        private static dynamic CreateRandomPolicyProperties() =>
+            new
+            {
+                PolicyName = GetRandomString(),
+                Permissions = GetRandomPermissionsList(),
+            };
+
+        private static List<dynamic> CreateRandomPolicyPropertiesList() =>
+            Enumerable.Range(1, GetRandomNumber())
+                .Select(item => CreateRandomPolicyProperties())
+                    .ToList();
+
+        private static List<string> GetRandomPermissionsList()
+        {
+            List<string> returnedList = new List<string>();
+
+            List<string> permissionsList = new List<string>
+            {
+                "read",
+                "write",
+                "delete",
+                "list",
+                "add",
+                "create"
+            };
+
+            var rng = new Random();
+            int index = rng.Next(1, permissionsList.Count);
+
+            for (int i = 0; i < index; i++)
+            {
+                returnedList.Add(permissionsList[i]);
+            }
+
+            return returnedList;
+        }
+
         public class ZeroLengthStream : MemoryStream
         {
             public override long Length => 0;
@@ -105,6 +237,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
 
         private Expression<Func<Stream, bool>> SameStreamAs(Stream expectedStream) =>
             actualStream => this.compareLogic.Compare(expectedStream, actualStream).AreEqual;
+
+        private Expression<Func<List<Policy>, bool>> SamePolicyListAs(List<Policy> expectedPolicyList) =>
+            actualPolicyList => this.compareLogic.Compare(expectedPolicyList, actualPolicyList).AreEqual;
 
         private static byte[] ReadAllBytesFromStream(Stream stream)
         {
@@ -151,5 +286,22 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                     innerException)
             };
         }
+
+        private static DateTimeOffset GetRandomFutureDateTimeOffset()
+        {
+            DateTime futureStartDate = DateTimeOffset.UtcNow.AddDays(1).Date;
+            int randomDaysInFuture = GetRandomNumber();
+            DateTime futureEndDate = futureStartDate.AddDays(randomDaysInFuture).Date;
+
+            return new DateTimeRange(earliestDate: futureStartDate, latestDate: futureEndDate).GetValue();
+        }
+
+        public static TheoryData<string, List<AccessPolicy>> InvalidCreateAccessPolicyArguments() =>
+            new TheoryData<string, List<AccessPolicy>>
+            {
+                { null, null },
+                { "", new List<AccessPolicy>() },
+                { " ", new List<AccessPolicy>() }
+            };
     }
 }

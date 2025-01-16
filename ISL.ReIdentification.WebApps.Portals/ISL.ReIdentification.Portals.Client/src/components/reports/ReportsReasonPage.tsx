@@ -22,7 +22,7 @@ const ReportsReasonPage: FunctionComponent<ReportReasonPageProps> = (props: Repo
                 </Card.Header>
                 <Card.Body>
                     <div>
-                        <h4>Welcome to the London Data Service Re-Identification Portal</h4>
+                        <h4>Welcome to the One London Re-Identification Portal</h4>
                         <p>The link you have followed provides Re-Identification integrated into Power BI reports.</p>
                         <p>The <a href="/">Re-Identification home page</a> has additional Re-Identification capabilities.</p>
                     </div>
