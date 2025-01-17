@@ -4,8 +4,6 @@
 
 
 
-using System;
-using System.Threading.Tasks;
 using ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification.Models.Accesses;
 
 namespace ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification.Brokers
@@ -26,5 +24,10 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification
 
             return fileContent;
         }
+
+        public async ValueTask<AccessRequest>
+            PostImpersonationContextGenerateTokensAsync(Guid impersonationContextId) =>
+            await this.apiFactoryClient
+                .PostContentAsync($"{reIdentificationRelativeUrl}/generatetokens", impersonationContextId);
     }
 }
