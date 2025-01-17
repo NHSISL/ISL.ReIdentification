@@ -236,7 +236,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification
             return filler;
         }
 
-        private async static ImpersonationContext PostRandomImpersonationContextAsync()
+        private async ValueTask<ImpersonationContext> PostRandomImpersonationContextAsync()
         {
             ImpersonationContext randomImpersonationContext = CreateRandomImpersonationContext();
             randomImpersonationContext.IsApproved = false;
