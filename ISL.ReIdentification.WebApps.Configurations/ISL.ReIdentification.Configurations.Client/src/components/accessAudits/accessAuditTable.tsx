@@ -72,7 +72,7 @@ const AccessAuditTable: FunctionComponent<AccessAuditTableProps> = () => {
                         <Table striped bordered hover variant="light" responsive>
                             <thead>
                                 <tr>
-                                    {/* <th>Identifier</th>*/}
+                                    <th>Identifier</th>
                                     <th>Name</th>
                                     <th>Email</th>
                                     <th>Reason</th>
