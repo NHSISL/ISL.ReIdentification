@@ -6,6 +6,7 @@ class SimpleReIdentificationBroker {
     relativeReIdentificationCsvUrl = '/api/reIdentification/submitcsv';
     relativeCsvReIdentificationUrl = '/api/reIdentification/csvreidentification';
     relativeImpersonationReIdentificationUrl = '/api/reIdentification/impersonation';
+    relativeImpersonationReIdentificationGenerateUrl = '/api/reIdentification/generatetokens';
 
     private apiBroker: ApiBroker = new ApiBroker();
 
@@ -23,6 +24,20 @@ class SimpleReIdentificationBroker {
         return await this.apiBroker.PostAsync(this.relativeImpersonationReIdentificationUrl, accessRequestView)
             .then(result => result.data as AccessRequest);
     }
+
+    async PostImpersonationContextGenerateTokensAsync(impersonationContextId: string) {
+        alert(impersonationContextId);
+        return await this.apiBroker.PostAsync(
+            this.relativeImpersonationReIdentificationGenerateUrl,
+            {
+                body: JSON.stringify({ impersonationContextId }),
+                headers: { "Content-Type": "application/json" },
+            }
+        )
+            .then(result => result.data as AccessRequest);
+    }
+
+
 
     async GetCsvIdentificationRequestByIdAsync(id: string, reason: string): Promise<{ data: AccessRequest, filename: string }> {
         const url = `${this.relativeCsvReIdentificationUrl}/${id}/${reason}`;

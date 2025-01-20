@@ -1,13 +1,14 @@
-import { FunctionComponent } from "react";
+import { FunctionComponent, useState } from "react";
 import Container from "react-bootstrap/esm/Container";
 import BreadCrumbBase from "../bases/layouts/BreadCrumb/BreadCrumbBase";
-import { Alert, Button, Card, Col, Row } from "react-bootstrap";
+import { Alert, Button, Card, Col, Row, Spinner } from "react-bootstrap";
 import { impersonationContextService } from "../../services/foundations/impersonationContextService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { useMsal } from "@azure/msal-react";
 import { impersonationContextViewService } from "../../services/views/impersonationContext/impersonationContextViewService";
 import { ImpersonationContext } from "../../models/impersonationContext/impersonationContext";
+import { reIdentificationService } from "../../services/foundations/reIdentificationService";
 
 interface ImpersonationContextDetailManageProps {
     impersonationIdentificationRequestId: string | undefined;
@@ -24,6 +25,9 @@ const ImpersonationContextDetailManage: FunctionComponent<ImpersonationContextDe
         .useRetrieveAllImpersonationById(
             impersonationIdentificationRequestId!);
 
+    const { submit, loading } = reIdentificationService.useRequestReIdentificationImpersonationGenerateTokens();
+    const [ errorStatus, setErrorStatus] = useState("");
+    const [ success, setSuccess] = useState("");
 
     const updateImpersonation = impersonationContextViewService.useUpdateImpersonationContext();
     const handleUpdate = (isApproved: boolean) => {
@@ -32,6 +36,16 @@ const ImpersonationContextDetailManage: FunctionComponent<ImpersonationContextDe
             isApproved: isApproved,
         };
         return updateImpersonation.mutateAsync(updatedImpersonationContext);
+    };
+
+    const handleSubmit = (e: React.FormEvent<HTMLButtonElement>, impersonationIdentificationRequestId: string | undefined) => {
+        e.preventDefault();
+        alert(impersonationIdentificationRequestId)
+        submit(impersonationIdentificationRequestId!).then((message) => {
+            setSuccess("generated Tokens succesfully " + message);
+        }).catch(() => {
+            setErrorStatus("Something went wrong when generating, please contact an administrator.");
+        })
     };
 
     return (
@@ -66,8 +80,6 @@ const ImpersonationContextDetailManage: FunctionComponent<ImpersonationContextDe
                                 </Col>
                                 <Col md={6} className="mb-3">
                                     <div><strong>Reason:</strong> <span>{data?.reason}</span></div>
-                                    <div><strong>Organisation:</strong> <span>{data?.organisation}</span></div>
-                                    <div><strong>Identifier Column:</strong> <span>{data?.identifierColumn}</span></div>
                                     <div><strong>Approved: </strong><span>
                                         {data?.isApproved
                                             ? <FontAwesomeIcon icon={faCheck} className="text-success" />
@@ -99,8 +111,20 @@ const ImpersonationContextDetailManage: FunctionComponent<ImpersonationContextDe
                         <br /><br />
                         {account.accounts[0].idTokenClaims?.oid === data?.requesterEntraUserId && (
                             <>
-                                <p>As the Owner of this project you have the ability to genrate the SAS Tokens for your container, once clicked the old token will be invalid and you will have to setup the new tokens to ensure files are processed.</p>
-                                <Button variant="dark">Generate Tokens</Button>&nbsp;
+                                <p>As the Owner of this project you have the ability to generate the SAS Tokens for your container. Once clicked, the old token will be invalid and you will have to set up the new tokens to ensure files are processed.</p>
+
+                                <Button type="submit" disabled={!data?.isApproved || !!error} onClick={(e) => handleSubmit(e, impersonationIdentificationRequestId)}>
+                                    {!loading ? "Generate Tokens" : <Spinner />}
+                                </Button>
+                                <br /><br />
+                                {errorStatus && <Alert variant="danger">
+                                    {errorStatus}
+                                </Alert>}
+
+                                {success && <Alert variant="success">
+                                    {success}
+                                </Alert>}
+
                             </>
                         )} &nbsp;
 

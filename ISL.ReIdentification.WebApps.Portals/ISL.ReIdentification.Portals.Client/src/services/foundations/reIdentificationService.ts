@@ -115,6 +115,21 @@ export const reIdentificationService = {
         };
     },
 
+    useRequestReIdentificationImpersonationGenerateTokens: () => {
+        const broker = new ReIdentificationBroker();
+        const [loading, setIsLoading] = useState(false);
+        return {
+            submit: (impersonationContextId: string) => {
+                setIsLoading(true);
+                alert(impersonationContextId)
+                return broker.PostImpersonationContextGenerateTokensAsync(impersonationContextId).finally(() => {
+                    setIsLoading(false);
+                })
+            },
+            loading
+        };
+    },
+
     useGetCsvIdentificationRequestById: (id: string, reason: string) => {
         const broker = new ReIdentificationBroker();
         const [loading, setIsLoading] = useState(false);
