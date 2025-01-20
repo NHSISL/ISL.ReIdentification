@@ -25,10 +25,11 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification
             return fileContent;
         }
 
-        public async ValueTask<AccessRequest>
-            PostImpersonationContextGenerateTokensAsync(Guid impersonationContextId) =>
+        public async ValueTask<AccessRequest> PostImpersonationContextGenerateTokensAsync(Guid impersonationContextId)
+        {
             await this.apiFactoryClient.PostContentAsync<Guid, AccessRequest>(
                 $"{reIdentificationRelativeUrl}/generatetokens", 
                 impersonationContextId);
+        }
     }
 }
