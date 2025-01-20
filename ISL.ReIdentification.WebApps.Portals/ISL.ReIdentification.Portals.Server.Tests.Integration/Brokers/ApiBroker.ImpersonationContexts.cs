@@ -16,8 +16,10 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification
             ImpersonationContext impersonationContext) =>
                 await this.apiFactoryClient.PostContentAsync(impersonationContextsRelativeUrl, impersonationContext);
 
-        public async ValueTask<ImpersonationContext> DeleteImpersonationContextByIdAsync(Guid impersonationContextId) =>
+        public async ValueTask<ImpersonationContext> DeleteImpersonationContextByIdAsync(Guid impersonationContextId)
+        {
             await this.apiFactoryClient.DeleteContentAsync<ImpersonationContext>(
                 $"{impersonationContextsRelativeUrl}/{impersonationContextId}");
+        }
     }
 }
