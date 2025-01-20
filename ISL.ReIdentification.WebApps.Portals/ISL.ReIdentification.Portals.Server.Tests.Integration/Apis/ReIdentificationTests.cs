@@ -247,7 +247,6 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification
         private static ImpersonationContext CreateRandomImpersonationContext() =>
            CreateRandomImpersonationContextFiller().Create();
 
-
         private static Filler<ImpersonationContext> CreateRandomImpersonationContextFiller()
         {
             string user = Guid.NewGuid().ToString();
