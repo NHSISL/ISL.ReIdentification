@@ -14,7 +14,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
         ValueTask<AccessAudit> AddAccessAuditAsync(AccessAudit accessAudit);
         ValueTask<IQueryable<AccessAudit>> RetrieveAllAccessAuditsAsync();
         ValueTask<AccessAudit> RetrieveAccessAuditByIdAsync(Guid accessAuditId);
-        ValueTask<AccessAudit> ModifyAccessAuditAsync(AccessAudit lookup);
+        ValueTask<AccessAudit> ModifyAccessAuditAsync(AccessAudit accessAudit);
         ValueTask<AccessAudit> RemoveAccessAuditByIdAsync(Guid accessAuditId);
     }
 }
