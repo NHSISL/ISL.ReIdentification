@@ -1,0 +1,116 @@
+﻿// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
+using System;
+using System.Threading.Tasks;
+using FluentAssertions;
+using ISL.ReIdentification.Core.Models.Foundations.Audits;
+using ISL.ReIdentification.Core.Models.Foundations.Audits.Exceptions;
+using Microsoft.Data.SqlClient;
+using Moq;
+
+namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Audits
+{
+    public partial class AuditTests
+    {
+        [Fact]
+        public async Task ShouldThrowCriticalDependencyExceptionOnRetrieveByIdIfSqlErrorOccursAndLogItAsync()
+        {
+            // given
+            Guid randomAuditId = Guid.NewGuid();
+            SqlException sqlException = CreateSqlException();
+
+            var failedAuditStorageException =
+                new FailedStorageAuditException(
+                    message: "Failed audit storage error occurred, contact support.",
+                        innerException: sqlException);
+
+            var expectedAuditDependencyException =
+                new AuditDependencyException(
+                    message: "Audit dependency error occurred, contact support.",
+                        innerException: failedAuditStorageException);
+
+            this.reIdentificationStorageBroker.Setup(broker =>
+                broker.SelectAuditByIdAsync(randomAuditId))
+                    .ThrowsAsync(sqlException);
+
+            // when
+            ValueTask<Audit> retrieveByIdAuditTask =
+                this.accessAuditService.RetrieveAuditByIdAsync(randomAuditId);
+
+            AuditDependencyException actualAuditDependencyException =
+                await Assert.ThrowsAsync<AuditDependencyException>(
+                    testCode: retrieveByIdAuditTask.AsTask);
+
+            // then
+            actualAuditDependencyException.Should().BeEquivalentTo(
+                expectedAuditDependencyException);
+
+            this.reIdentificationStorageBroker.Verify(broker =>
+                broker.SelectAuditByIdAsync(randomAuditId),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogCriticalAsync(It.Is(SameExceptionAs(
+                    expectedAuditDependencyException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRetrieveByIdWhenServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            Guid randomAuditId = Guid.NewGuid();
+            Exception serviceError = new Exception();
+
+            var failedServiceAuditException = new FailedServiceAuditException(
+                message: "Failed service audit error occurred, contact support.",
+                innerException: serviceError);
+
+            var expectedAuditServiceException = new AuditServiceException(
+                message: "Service error occurred, contact support.",
+                innerException: failedServiceAuditException);
+
+            this.reIdentificationStorageBroker.Setup(broker =>
+                broker.SelectAuditByIdAsync(randomAuditId))
+                    .ThrowsAsync(serviceError);
+
+            // when
+            ValueTask<Audit> retrieveByIdAuditTask =
+                this.accessAuditService.RetrieveAuditByIdAsync(randomAuditId);
+
+            AuditServiceException actualAuditServiceExcpetion =
+                await Assert.ThrowsAsync<AuditServiceException>(
+                    testCode: retrieveByIdAuditTask.AsTask);
+
+            // then
+            actualAuditServiceExcpetion.Should().BeEquivalentTo(expectedAuditServiceException);
+
+            this.reIdentificationStorageBroker.Verify(broker =>
+                broker.SelectAuditByIdAsync(randomAuditId),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedAuditServiceException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Never);
+
+            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+    }
+}
