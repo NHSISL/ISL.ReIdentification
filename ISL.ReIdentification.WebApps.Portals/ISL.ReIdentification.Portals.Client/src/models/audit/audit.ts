@@ -1,4 +1,4 @@
-export class audit {
+export class Audit {
     public id: string = "";
     public correlationId: string = "";
     public auditType: string = "";
