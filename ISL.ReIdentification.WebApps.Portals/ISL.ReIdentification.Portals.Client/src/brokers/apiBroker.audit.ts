@@ -27,6 +27,13 @@ class AuditBroker {
             .then(result => result.data as Audit[]);
     }
 
+    async GetAllAuditOdataAsync(queryString: string) {
+        const url = this.relativeAuditOdataUrl + queryString;
+
+        const result = await this.apiBroker.GetAsync(url);
+        return result.data.value as Audit[];
+    }
+
     async GetAuditFirstPagesAsync(query: string) {
         const url = this.relativeAuditOdataUrl + query;
         return this.processOdataResult(await this.apiBroker.GetAsync(url));
