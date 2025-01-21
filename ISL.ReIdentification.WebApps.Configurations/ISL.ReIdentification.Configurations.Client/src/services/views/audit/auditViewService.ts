@@ -1,48 +1,41 @@
 import { useEffect, useState } from "react";
-import { Audit } from "../../../models/audit/audit";
 import { auditService } from "../../foundations/auditService";
-
-type AuditViewServiceResponse = {
-    pages: Array<{ data: Audit[] }> | undefined;
-    isLoading: boolean;
-    fetchNextPage: () => void;
-    isFetchingNextPage: boolean;
-    hasNextPage: boolean;
-    data: { pages: Array<{ data: Audit[] }> } | undefined;
-    refetch: () => void;
-};
+import { Audit } from "../../../models/audit/audit";
 
 export const auditViewService = {
-    useGetAllAudit: (searchTerm?: string): AuditViewServiceResponse => {
-        let query = `?$`;
 
-        if (searchTerm) {
-            query = query + ` and (contains(AuditType,'${searchTerm}'))`;
-        }
-
-        query = query + `&$orderby=createdDate desc`;
-
-        const response = auditService.useRetrieveAllAuditPages(query);
-        const [pages, setPages] = useState<Array<{ data: Audit[] }>>([]);
+    useGetOdsAudit: () => {
+        const query = `?$filter=AuditType eq 'OdsDataLoad'&$orderby=createdDate desc&$top=1`;
+        const response = auditService.useRetrieveAllAudits(query);
+        const [mappedAudit, setMappedAudit] = useState<Array<Audit>>([]);
 
         useEffect(() => {
-            if (response.data && Array.isArray(response.data.pages)) {
-                setPages(response.data.pages);
+            if (response.data) {
+                const audit = response.data as Audit[];
+                setMappedAudit(audit);
             }
         }, [response.data]);
 
         return {
-            pages,
-            isLoading: response.isLoading,
-            fetchNextPage: response.fetchNextPage,
-            isFetchingNextPage: response.isFetchingNextPage,
-            hasNextPage: !!response.hasNextPage,
-            data: response.data,
-            refetch: response.refetch
+            mappedAudit, ...response,
+            isLoading: response.isLoading
         };
     },
+    useGetPdsAudit: () => {
+        const query = `?$filter=AuditType eq 'PdsDataLoad'&$orderby=createdDate desc&$top=1`;
+        const response = auditService.useRetrieveAllAudits(query);
+        const [mappedAudit, setMappedAudit] = useState<Array<Audit>>([]);
 
-    useGetOdsLoadAudit: () => {
+        useEffect(() => {
+            if (response.data) {
+                const audit = response.data as Audit[];
+                setMappedAudit(audit);
+            }
+        }, [response.data]);
 
-    },
+        return {
+            mappedAudit, ...response,
+            isLoading: response.isLoading
+        };
+    }
 }

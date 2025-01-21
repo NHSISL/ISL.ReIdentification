@@ -1,24 +1,24 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { auditService } from "../../foundations/auditService";
+import { Audit } from "../../../models/audit/audit";
 
 export const auditViewService = {
 
     useGetPdsAudit: () => {
-        const query = `?$filter=auditType eq 'odsDataLoad'&$orderby=createdDate desc&$top=1`;
+        const query = `?$filter=AuditType eq 'PdsDataLoad'&$orderby=createdDate desc&$top=1`;
         const response = auditService.useRetrieveAllAudits(query);
+        const [mappedAudit, setMappedAudit] = useState<Array<Audit>>([]);
 
         useEffect(() => {
             if (response.data) {
-                alert("")
+                const audit = response.data as Audit[];
+                setMappedAudit(audit);
             }
         }, [response.data]);
 
         return {
-            data: response.data,
+            mappedAudit, ...response,
+            isLoading: response.isLoading
         };
-    },
-
-    useGetOdsLoadAudit: () => {
-
-    },
+    }
 }

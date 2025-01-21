@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Card, CardBody, CardFooter, CardHeader, Container, Spinner } from "react-bootstrap"
+import { Alert, Button, ButtonGroup, Card, CardBody, CardFooter, CardHeader, Container, Spinner } from "react-bootstrap"
 import BreadCrumbBase from "../bases/layouts/BreadCrumb/BreadCrumbBase"
 import EntraUserSearch from "../EntraUserSearch/entraUserSearch"
 import { useState } from "react"
@@ -9,6 +9,7 @@ import { userAccessService } from "../../services/foundations/userAccessService"
 import { UserAccess } from "../../models/userAccess/userAccess"
 import { useNavigate } from "react-router-dom"
 import { toastError } from "../../brokers/toastBroker.error"
+import { OdsLoadAudit } from "../audit/odsLoadAudit"
 
 export const UserAccessNew = () => {
 
@@ -50,6 +51,9 @@ export const UserAccessNew = () => {
                     currentLink="New User">
                 </BreadCrumbBase>
                 <div className="mt-3">
+
+                    <OdsLoadAudit isAlert={true} />
+
                     <h1>New User Access</h1>
                     {!selectedUser ? 
                         <EntraUserSearch selectUser={(entraUser) => { setSelectedUser(entraUser)}} />
