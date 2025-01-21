@@ -9,17 +9,18 @@ interface PdsLoadAuditProps {
 }
 
 export const PdsLoadAudit: FunctionComponent<PdsLoadAuditProps> = ({ isAlert = false, isHover = false }) => {
-    const { data, isLoading } = auditViewService.useGetPdsAudit();
+    const { data, isLoading } = auditViewService.useGetPdsAuditByAuditType("PdsDataLoad");
     const [showTooltip, setShowTooltip] = useState(false);
 
-    if (isLoading || !data || !data[0]?.createdDate) {
+    if (isLoading || !data || !data?.createdDate) {
         return <></>;
     }
 
-    const content = `PDS last uploaded: ${moment(data[0].createdDate.toString()).format("YY/MM/DD HH:mm")}`;
+    const content = `PDS last uploaded: ${moment(data.createdDate.toString()).format("DD/MM/YY HH:mm")}`;
+    const variant = data.auditDetail === 'failure' ? 'danger' : data.auditDetail;
 
     if (isAlert) {
-        return <Alert variant="success" className="m-0">{content}</Alert>;
+        return <Alert variant={variant} className="m-0 p-1">{content}</Alert>;
     }
 
     if (isHover) {

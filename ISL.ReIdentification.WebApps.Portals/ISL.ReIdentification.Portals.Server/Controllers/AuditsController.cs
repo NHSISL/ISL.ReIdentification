@@ -16,7 +16,6 @@ using RESTFulSense.Controllers;
 
 namespace ISL.ReIdentification.Configurations.Server.Controllers
 {
-    //[Authorize(Roles = "ISL.Reidentification.Configuration.Administrators")]
     [ApiController]
     [Route("api/[controller]")]
     public class AuditsController : RESTFulController
@@ -60,6 +59,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             }
         }
 
+        [InvisibleApi]
         [HttpGet]
         [EnableQuery()]
         public async ValueTask<ActionResult<IQueryable<Audit>>> Get()
@@ -82,12 +82,44 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
         }
 
         [InvisibleApi]
-        [HttpGet("{auditId}")]
+        [HttpGet("id/{auditId}")]
         public async ValueTask<ActionResult<Audit>> GetAuditByIdAsync(Guid auditId)
         {
             try
             {
                 Audit audit = await this.auditService.RetrieveAuditByIdAsync(auditId);
+
+                return Ok(audit);
+            }
+            catch (AuditValidationException auditValidationException)
+                when (auditValidationException.InnerException is NotFoundAuditException)
+            {
+                return NotFound(auditValidationException.InnerException);
+            }
+            catch (AuditValidationException auditValidationException)
+            {
+                return BadRequest(auditValidationException.InnerException);
+            }
+            catch (AuditDependencyValidationException auditDependencyValidationException)
+            {
+                return BadRequest(auditDependencyValidationException.InnerException);
+            }
+            catch (AuditDependencyException auditDependencyException)
+            {
+                return InternalServerError(auditDependencyException);
+            }
+            catch (AuditServiceException auditServiceException)
+            {
+                return InternalServerError(auditServiceException);
+            }
+        }
+
+        [HttpGet("type/{auditType}")]
+        public async ValueTask<ActionResult<Audit>> GetAuditByAuditTypeAsync(string auditType)
+        {
+            try
+            {
+                Audit audit = await this.auditService.RetrieveAuditByAuditTypeAsync(auditType);
 
                 return Ok(audit);
             }

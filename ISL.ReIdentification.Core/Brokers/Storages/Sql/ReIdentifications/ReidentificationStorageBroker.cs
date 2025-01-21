@@ -79,5 +79,8 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications
 
         private async ValueTask BulkDeleteAsync<T>(IEnumerable<T> objects) where T : class =>
             await efCoreClient.BulkDeleteAsync<T>(objects);
+
+        public ValueTask<IQueryable<Audit>> SelectAuditsByAuditTypeAsync(string auditType) =>
+             new ValueTask<IQueryable<Audit>>(this.Audits.Where(audit => audit.AuditType == auditType));
     }
 }

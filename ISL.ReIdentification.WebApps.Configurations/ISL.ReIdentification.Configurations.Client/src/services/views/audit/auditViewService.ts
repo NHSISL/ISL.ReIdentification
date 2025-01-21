@@ -37,5 +37,39 @@ export const auditViewService = {
             mappedAudit, ...response,
             isLoading: response.isLoading
         };
-    }
+    },
+
+    useGetOdsAuditByAuditType: (auditType: string) => {
+        const response = auditService.useRetrieveAllAuditsByAuditType(auditType);
+        const [mappedAudit, setMappedAudit] = useState<Audit | null>(null);
+
+        useEffect(() => {
+            if (response.data) {
+                const audit = response.data as Audit;
+                setMappedAudit(audit);
+            }
+        }, [response.data]);
+
+        return {
+            mappedAudit, ...response,
+            isLoading: response.isLoading
+        };
+    },
+
+    useGetPdsAuditByAuditType: (auditType: string) => {
+        const response = auditService.useRetrieveAllAuditsByAuditType(auditType);
+        const [mappedAudit, setMappedAudit] = useState<Audit | null>(null);
+
+        useEffect(() => {
+            if (response.data) {
+                const audit = response.data as Audit;
+                setMappedAudit(audit);
+            }
+        }, [response.data]);
+
+        return {
+            mappedAudit, ...response,
+            isLoading: response.isLoading
+        };
+    },
 }

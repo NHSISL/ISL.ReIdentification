@@ -23,6 +23,9 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications
         public async ValueTask<Audit> SelectAuditByIdAsync(Guid auditId) =>
             await SelectAsync<Audit>(auditId);
 
+        public async ValueTask<Audit> SelectAuditByAuditDetailAsync(string auditType) =>
+           await SelectAsync<Audit>(auditType);
+
         public async ValueTask<Audit> UpdateAuditAsync(Audit audit) =>
             await UpdateAsync(audit);
 

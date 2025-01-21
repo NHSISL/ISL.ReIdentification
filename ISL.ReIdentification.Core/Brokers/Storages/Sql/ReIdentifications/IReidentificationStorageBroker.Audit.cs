@@ -14,6 +14,7 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications
         ValueTask<Audit> InsertAuditAsync(Audit audit);
         ValueTask<IQueryable<Audit>> SelectAllAuditsAsync();
         ValueTask<Audit> SelectAuditByIdAsync(Guid auditId);
+        ValueTask<IQueryable<Audit>> SelectAuditsByAuditTypeAsync(string auditType);
         ValueTask<Audit> UpdateAuditAsync(Audit audit);
         ValueTask<Audit> DeleteAuditAsync(Audit audit);
     }

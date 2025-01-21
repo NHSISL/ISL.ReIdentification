@@ -4,6 +4,7 @@ import React from 'react';
 import { Col, Container, Row } from "react-bootstrap";
 import { useFrontendConfiguration } from '../../hooks/useFrontendConfiguration';
 import { PdsLoadAudit } from '../audit/pdsLoadAudit';
+import { OdsLoadAudit } from '../audit/odsLoadAudit';
 
 const FooterComponent: React.FC = () => {
     const { configuration } = useFrontendConfiguration();
@@ -12,6 +13,7 @@ const FooterComponent: React.FC = () => {
             <Row className="bg-dark">
                 <Col className="mb-2">
                     <small>
+                        <OdsLoadAudit isAlert={true} />
                         <PdsLoadAudit isAlert={true} />
                     </small>
                 </Col>

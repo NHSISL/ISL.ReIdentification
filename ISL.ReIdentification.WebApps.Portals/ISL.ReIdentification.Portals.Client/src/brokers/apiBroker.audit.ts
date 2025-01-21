@@ -42,5 +42,12 @@ class AuditBroker {
     async GetAuditSubsequentPagesAsync(absoluteUri: string) {
         return this.processOdataResult(await this.apiBroker.GetAsyncAbsolute(absoluteUri));
     }
+
+    async GetAuditByAuditTypeAsync(auditType: string) {
+        const url = `${this.relativeAuditUrl}/type/${auditType}`;
+
+        return await this.apiBroker.GetAsync(url)
+            .then(result => result.data as Audit);
+    }
 }
 export default AuditBroker;

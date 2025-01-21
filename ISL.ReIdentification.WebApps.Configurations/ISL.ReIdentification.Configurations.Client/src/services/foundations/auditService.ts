@@ -11,5 +11,15 @@ export const auditService = {
             queryFn: () => broker.GetAllAuditAsync(query),
             staleTime: Infinity
         });
+    },
+
+    useRetrieveAllAuditsByAuditType: (auditType: string) => {
+        const broker = new AuditBroker();
+
+        return useQuery({
+            queryKey: ["AccessAuditGetByAuditType", { query: auditType }],
+            queryFn: () => broker.GetAuditByAuditTypeAsync(auditType),
+            staleTime: Infinity
+        });
     }
 }

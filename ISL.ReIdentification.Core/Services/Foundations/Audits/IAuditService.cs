@@ -14,6 +14,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Audits
         ValueTask<Audit> AddAuditAsync(Audit audit);
         ValueTask<IQueryable<Audit>> RetrieveAllAuditsAsync();
         ValueTask<Audit> RetrieveAuditByIdAsync(Guid auditId);
+        ValueTask<Audit> RetrieveAuditByAuditTypeAsync(string auditType);
         ValueTask<Audit> ModifyAuditAsync(Audit audit);
         ValueTask<Audit> RemoveAuditByIdAsync(Guid auditId);
     }
