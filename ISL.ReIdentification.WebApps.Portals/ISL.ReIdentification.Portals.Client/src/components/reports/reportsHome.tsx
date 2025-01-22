@@ -1,5 +1,5 @@
 import { FunctionComponent, useEffect, useState } from "react";
-import { Button, Card, Col, Container, Dropdown, DropdownButton, Navbar, Row } from "react-bootstrap";
+import { Alert, Button, Card, Col, Container, Dropdown, DropdownButton, Navbar, Row } from "react-bootstrap";
 import { AuthenticatedTemplate, UnauthenticatedTemplate, useMsal } from "@azure/msal-react";
 import ReportsReasonPage from "./ReportsReasonPage";
 import ReportsLaunchPage from "./reportsLaunchPage";
@@ -25,7 +25,7 @@ const ReportsHome: FunctionComponent = () => {
     const [lastEvent, setLastEvent] = useState<DeveloperEvents>();
     const [noAccess, setNoAccess] = useState(false);
     const [toastHidden, setToastHidden] = useState(false);
-    const {configuration} = useFrontendConfiguration();
+    const { configuration } = useFrontendConfiguration();
 
     const aquireAccessToken = async () => {
         await instance.initialize();
@@ -101,7 +101,7 @@ const ReportsHome: FunctionComponent = () => {
     }
 
     const launch = async () => {
-        if(reportGroupId == "fake") {
+        if (reportGroupId == "fake") {
             setReportConfig({
                 type: 'fake'
             })
@@ -129,7 +129,7 @@ const ReportsHome: FunctionComponent = () => {
                         <Navbar.Brand style={{ fontSize: "1em", padding: 0 }}>
                             <Card.Link href="/" style={{ color: "black", textDecoration: "none" }}>
                                 LDS Re-Identification Portal
-                                {configuration?.environment !== "Live" && <>&nbsp;({configuration?.environment})</>}    
+                                {configuration?.environment !== "Live" && <>&nbsp;({configuration?.environment})</>}
                             </Card.Link>
                         </Navbar.Brand>
                         {toastHidden && <Button onClick={() => setToastHidden(false)}>Show reidentification window</Button>}
@@ -163,9 +163,11 @@ const ReportsHome: FunctionComponent = () => {
                         {noAccess && accounts.length && <Card>
                             <Card.Header>No Access </Card.Header>
                             <Card.Body>
-                                <p>You do not have access to this report with the account:</p>
-                                <p>{accounts[0].username} ({accounts[0].name}).</p>
-                                <p>Please contact your local service desk for access.</p>
+                                <Alert variant="info" className="mb-0">
+                                    <p>You do not have access to this report with the account:</p>
+                                    <p>{accounts[0].username} ({accounts[0].name}).</p>
+                                    <p>Please contact <a href="mailto:isl.support@nhs.net">isl.support@nhs.net</a> for access.</p>
+                                </Alert>
                                 <Button onClick={() => { instance.logout(); setNoAccess(true); }}>Logout</Button>
                             </Card.Body>
                         </Card>}

@@ -20,7 +20,15 @@ const UserAccessTable: FunctionComponent<UserAccessTableProps> = () => {
         <>
             <Container fluid className="infiniteScrollContainer">
                 <Card>
-                    <Card.Header> <FontAwesomeIcon icon={faDatabase} className="me-2" /> User Access</Card.Header>
+                    <Card.Header>
+                        <div className="ms-auto">
+                            <SecuredComponent allowedRoles={securityPoints.userAccess.add}>
+                                <Link to="/userAccess/newUser">
+                                    <Button><FontAwesomeIcon icon={faDatabase} className="me-2" /> Add New User</Button>
+                                </Link>
+                            </SecuredComponent>
+                        </div>
+                    </Card.Header>
                     <Card.Body>
 
                         <Table striped bordered hover variant="light">
@@ -58,13 +66,6 @@ const UserAccessTable: FunctionComponent<UserAccessTableProps> = () => {
                             </tbody>
                         </Table>
                     </Card.Body>
-                    <CardFooter>
-                        <SecuredComponent allowedRoles={securityPoints.userAccess.add}>
-                            <Link to="/userAccess/newUser">
-                                <Button>Add New User</Button>
-                            </Link>
-                        </SecuredComponent>
-                    </CardFooter>
                 </Card>
             </Container>
         </>
