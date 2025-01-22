@@ -92,7 +92,7 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
                     <Card.Title className="text-start">
                         <OverlayTrigger placement="right" overlay={renderTooltip}>
                             <FontAwesomeIcon icon={faCircleInfo} className="text-primary" size="lg" />
-                        </OverlayTrigger>&nbsp;Reidentify Single Patient
+                        </OverlayTrigger>&nbsp;Re-Identify Single Patient
                     </Card.Title>
                 </Card.Header>
                 <Card.Body>
