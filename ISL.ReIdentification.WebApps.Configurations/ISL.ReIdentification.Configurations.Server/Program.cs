@@ -41,6 +41,7 @@ using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Models.Orchestrations.Persists;
 using ISL.ReIdentification.Core.Services.Coordinations.Identifications;
 using ISL.ReIdentification.Core.Services.Foundations.AccessAudits;
+using ISL.ReIdentification.Core.Services.Foundations.Audits;
 using ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Services.Foundations.Documents;
 using ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts;
@@ -299,6 +300,7 @@ namespace ISL.ReIdentification.Configurations.Server
 
         private static void AddFoundationServices(IServiceCollection services)
         {
+            services.AddTransient<IAuditService, AuditService>();
             services.AddTransient<IAccessAuditService, AccessAuditService>();
             services.AddTransient<IImpersonationContextService, ImpersonationContextService>();
             services.AddTransient<ILookupService, LookupService>();
