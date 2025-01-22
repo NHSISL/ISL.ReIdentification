@@ -2,13 +2,13 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification.Brokers;
 using ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification.Models.Accesses;
 using ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification.Models.CsvIdentificationRequests;
+using ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification.Models.ImpersonationContexts;
 using ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification.Models.OdsDatas;
 using ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification.Models.PdsDatas;
 using ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification.Models.ReIdentifications;
@@ -232,6 +232,49 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification
 
                 .OnProperty(csvIdentificationRequest => csvIdentificationRequest.CreatedBy).Use(user)
                 .OnProperty(csvIdentificationRequest => csvIdentificationRequest.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
+        private async ValueTask<ImpersonationContext> PostRandomImpersonationContextAsync()
+        {
+            ImpersonationContext randomImpersonationContext = CreateRandomImpersonationContext();
+            randomImpersonationContext.IsApproved = false;
+
+            return await this.apiBroker.PostImpersonationContextAsync(randomImpersonationContext);
+        }
+
+        private static ImpersonationContext CreateRandomImpersonationContext() =>
+           CreateRandomImpersonationContextFiller().Create();
+
+        private static Filler<ImpersonationContext> CreateRandomImpersonationContextFiller()
+        {
+            string user = Guid.NewGuid().ToString();
+            DateTimeOffset now = DateTimeOffset.UtcNow;
+            var filler = new Filler<ImpersonationContext>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(now)
+
+                .OnProperty(impersonationContext => impersonationContext.RequesterEmail)
+                    .Use(() => GetRandomEmail())
+
+                .OnProperty(impersonationContext => impersonationContext.ResponsiblePersonEmail)
+                    .Use(() => GetRandomEmail())
+
+                .OnProperty(impersonationContext => impersonationContext.Organisation)
+                    .Use(() => GetRandomStringWithLengthOf(255))
+
+                .OnProperty(impersonationContext => impersonationContext.ProjectName)
+                    .Use(() => GetRandomStringWithLengthOf(255))
+
+                .OnProperty(impersonationContext => impersonationContext.IdentifierColumn)
+                    .Use(() => GetRandomStringWithLengthOf(10))
+
+                .OnProperty(impersonationContext => impersonationContext.CreatedDate).Use(now)
+                .OnProperty(impersonationContext => impersonationContext.CreatedBy).Use(user)
+                .OnProperty(impersonationContext => impersonationContext.UpdatedDate).Use(now)
+                .OnProperty(impersonationContext => impersonationContext.UpdatedBy).Use(user);
 
             return filler;
         }
