@@ -56,7 +56,7 @@ const ReportsHome: FunctionComponent = () => {
     }
 
     const aquireReportEmbeddingUrl = async (accessToken: AuthenticationResult) => {
-        return axios.get("https://api.powerbi.com/v1.0/myorg/groups/" + reportGroupId + "/reports/" + reportId,
+        return axios.get("https://api.powerbi.com/v1.0/myorg/reports/" + reportId,
             {
                 headers: {
                     "Authorization": "Bearer " + accessToken.accessToken
