@@ -25,7 +25,7 @@ export const ReIdReportHome = () => {
                                 <ol>
                                     <li>Seemless integration to re-identify one patient within Power BI.</li>
                                     <li>Seemless integration to re-identify a group of patients within Power BI.</li>
-                                    <li>A popup web page that can be integrated into any web based BI tool that can reidentify a single patient.</li>
+                                    <li>A popup web page that can be integrated into any web based BI tool that can re-identify a single patient.</li>
                                 </ol>
                                 <p>This page is intended for Analysts and provides instructions and tools to enable this integration.</p>
 
