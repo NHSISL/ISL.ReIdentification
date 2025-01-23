@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using ISL.ReIdentification.Core.Migrations;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
 using Moq;
@@ -30,8 +29,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
 
             var accessMessage = "User have access to the organisation(s) " +
                 "associated with patient.  Item will be submitted for re-identification.";
-
-            var auditType = "PDS Access";
 
             IdentificationRequest randomIdentificationRequest =
                CreateRandomIdentificationRequest(hasAccess, itemCount: itemCount);
@@ -87,7 +84,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                     Organisation = randomIdentificationRequest.Organisation,
                     HasAccess = hasAccess,
                     Message = item.HasAccess ? accessMessage : noAccessMessage,
-                    AuditType = auditType,
                     CreatedBy = "System",
                     CreatedDate = randomDateTimeOffset,
                     UpdatedBy = "System",
@@ -206,7 +202,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                     Organisation = randomIdentificationRequest.Organisation,
                     HasAccess = item.HasAccess,
                     Message = item.HasAccess ? accessMessage : noAccessMessage,
-                    AuditType = "PDS Access",
                     CreatedBy = "System",
                     CreatedDate = randomDateTimeOffset,
                     UpdatedBy = "System",
@@ -242,7 +237,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                     Reason = randomIdentificationRequest.Reason,
                     Organisation = randomIdentificationRequest.Organisation,
                     HasAccess = item.HasAccess,
-                    AuditType = "NECS Access",
                     Message = $"Re-identification outcome: {item.Message}",
                     CreatedBy = "System",
                     CreatedDate = randomDateTimeOffset,

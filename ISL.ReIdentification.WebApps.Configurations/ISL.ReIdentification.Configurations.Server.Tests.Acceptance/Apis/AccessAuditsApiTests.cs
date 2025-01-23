@@ -64,8 +64,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
 
             for (int i = 0; i < randomNumber; i++)
             {
-                var audit = await PostRandomAccessAuditAsync();
-                randomAccessAudits.Add(audit);
+                randomAccessAudits.Add(await PostRandomAccessAuditAsync());
             }
 
             return randomAccessAudits;
