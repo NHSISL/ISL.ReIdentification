@@ -78,6 +78,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
                 values: "Id is invalid");
 
             invalidAccessAuditException.AddData(
+                key: nameof(AccessAudit.AuditType),
+                values: "Text is invalid");
+
+            invalidAccessAuditException.AddData(
                 key: nameof(AccessAudit.Email),
                 values: "Text is invalid");
 
@@ -150,6 +154,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
             var inputCreatedByUpdatedByString = GetRandomStringWithLengthOf(256);
             invalidAccessAudit.PseudoIdentifier = GetRandomStringWithLengthOf(11);
             invalidAccessAudit.Email = GetRandomStringWithLengthOf(321);
+            invalidAccessAudit.AuditType = GetRandomStringWithLengthOf(256);
             invalidAccessAudit.CreatedBy = inputCreatedByUpdatedByString;
             invalidAccessAudit.UpdatedBy = inputCreatedByUpdatedByString;
 
@@ -163,6 +168,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
             invalidAccessAuditException.AddData(
                 key: nameof(AccessAudit.Email),
                 values: $"Text exceed max length of {invalidAccessAudit.Email.Length - 1} characters");
+
+            invalidAccessAuditException.AddData(
+                key: nameof(AccessAudit.AuditType),
+                values: $"Text exceed max length of {invalidAccessAudit.AuditType.Length - 1} characters");
 
             invalidAccessAuditException.AddData(
                 key: nameof(AccessAudit.CreatedBy),
