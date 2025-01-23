@@ -82,8 +82,8 @@ const AccessAuditTable: FunctionComponent<AccessAuditTableProps> = ({ requestId 
 
     const mapToUniqueAccessAudit = (groupedData: { [key: string]: AccessAudit[] }): Array<AccessAudit & { count: number, okCount: number, notOkCount: number }> => {
         return Object.values(groupedData).map(group => {
-            const okCount = group.filter(audit => audit.message === 'User have access to the organisation(s) associated with patient.  Item will be submitted for re-identification.').length;
-            const notOkCount = group.filter(audit => audit.message === 'User do not have access to the organisation(s) associated with patient.  Re-identification blocked.').length;
+            const okCount = group.filter(audit => audit.hasAccess === true && audit.auditType === 'NECS Access').length;
+            const notOkCount = group.filter(audit => audit.hasAccess === false && audit.auditType === 'NECS Access').length;
 
             return {
                 ...group[0],
