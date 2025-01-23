@@ -32,6 +32,10 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications
             builder.Property(accessAudit => accessAudit.HasAccess)
                 .IsRequired();
 
+            builder.Property(accessAudit => accessAudit.AuditType)
+                .HasMaxLength(255)
+                .IsRequired();
+
             builder.Property(accessAudit => accessAudit.CreatedBy)
                 .HasMaxLength(255)
                 .IsRequired();
@@ -50,6 +54,7 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications
             builder.HasIndex(accessAudit => accessAudit.EntraUserId);
             builder.HasIndex(accessAudit => accessAudit.Email);
             builder.HasIndex(accessAudit => accessAudit.HasAccess);
+            builder.HasIndex(accessAudit => accessAudit.AuditType);
             builder.HasIndex(accessAudit => accessAudit.CreatedDate);
         }
     }

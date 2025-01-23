@@ -4,6 +4,7 @@ using ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.SqlServer.Types;
 
@@ -12,9 +13,11 @@ using Microsoft.SqlServer.Types;
 namespace ISL.ReIdentification.Core.Migrations
 {
     [DbContext(typeof(ReIdentificationStorageBroker))]
-    partial class ReIdentificationStorageBrokerModelSnapshot : ModelSnapshot
+    [Migration("20250123102027_AuditTypeCol")]
+    partial class AuditTypeCol
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,9 +33,7 @@ namespace ISL.ReIdentification.Core.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("AuditType")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -91,8 +92,6 @@ namespace ISL.ReIdentification.Core.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AuditType");
 
                     b.HasIndex("CreatedDate");
 
