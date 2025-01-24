@@ -40,7 +40,6 @@ const ImpersonationContextDetailManage: FunctionComponent<ImpersonationContextDe
 
     const handleSubmit = (e: React.FormEvent<HTMLButtonElement>, impersonationIdentificationRequestId: string | undefined) => {
         e.preventDefault();
-        alert(impersonationIdentificationRequestId)
         submit(impersonationIdentificationRequestId!).then((message) => {
             setSuccess("generated Tokens succesfully " + message);
         }).catch(() => {
@@ -103,7 +102,9 @@ const ImpersonationContextDetailManage: FunctionComponent<ImpersonationContextDe
                                 {data?.isApproved ?
                                     <Button variant="danger" onClick={() => handleUpdate(false)}>Deny</Button>
                                     :
-                                    <Button variant="success" onClick={() => handleUpdate(true)}>Approve</Button>
+                                    <Button type="submit" variant="success" onClick={(e) => handleSubmit(e, impersonationIdentificationRequestId)}>
+                                        {!loading ? "Approve And Generate Tokens" : <Spinner />}
+                                    </Button>
                                 }
                             </>
                         )}
@@ -114,7 +115,7 @@ const ImpersonationContextDetailManage: FunctionComponent<ImpersonationContextDe
                                 <p>As the Owner of this project you have the ability to generate the SAS Tokens for your container. Once clicked, the old token will be invalid and you will have to set up the new tokens to ensure files are processed.</p>
 
                                 <Button type="submit" disabled={!data?.isApproved || !!error} onClick={(e) => handleSubmit(e, impersonationIdentificationRequestId)}>
-                                    {!loading ? "Generate Tokens" : <Spinner />}
+                                    {!loading ? "Re-Generate Tokens" : <Spinner />}
                                 </Button>
                                 <br /><br />
                                 {errorStatus && <Alert variant="danger">

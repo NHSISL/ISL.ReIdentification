@@ -1,3 +1,4 @@
+/// <reference path="apibroker.lookups.ts" />
 import { AccessRequest } from "../models/accessRequest/accessRequest";
 import ApiBroker from "./apiBroker";
 
@@ -26,13 +27,8 @@ class SimpleReIdentificationBroker {
     }
 
     async PostImpersonationContextGenerateTokensAsync(impersonationContextId: string) {
-        alert(impersonationContextId);
-        return await this.apiBroker.PostAsync(
-            this.relativeImpersonationReIdentificationGenerateUrl,
-            {
-                body: JSON.stringify({ impersonationContextId }),
-                headers: { "Content-Type": "application/json" },
-            }
+        return await this.apiBroker.GetAsync(
+            this.relativeImpersonationReIdentificationGenerateUrl + '/' + impersonationContextId,
         )
             .then(result => result.data as AccessRequest);
     }

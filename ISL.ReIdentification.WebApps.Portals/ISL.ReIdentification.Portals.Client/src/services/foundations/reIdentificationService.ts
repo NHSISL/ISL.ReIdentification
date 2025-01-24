@@ -121,7 +121,6 @@ export const reIdentificationService = {
         return {
             submit: (impersonationContextId: string) => {
                 setIsLoading(true);
-                alert(impersonationContextId)
                 return broker.PostImpersonationContextGenerateTokensAsync(impersonationContextId).finally(() => {
                     setIsLoading(false);
                 })
