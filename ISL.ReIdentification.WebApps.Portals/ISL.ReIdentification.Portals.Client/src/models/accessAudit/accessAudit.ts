@@ -8,8 +8,9 @@ export class AccessAudit {
     public email: string = "";
     public reason: string = "";
     public organisation: string = "";
-    public hasAccess: string[] = [];
+    public hasAccess: boolean = false;
     public message: string = "";
+    public auditType: string = "";
     public transactionId: string = "";
     public count: number = 0
     public createdBy?: string;

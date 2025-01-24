@@ -238,7 +238,7 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                                 />
 
                                 <Form.Text className="text-muted">
-                                    Please supply a reason why you are requesting to Reidentify, this will be visable in the email to the recipient.
+                                    Please supply a reason why you are requesting to re-identify, this will be visible in the email to the recipient.
                                 </Form.Text>
                             </Form.Group>
                             <br />

@@ -38,7 +38,7 @@ const ReportToast: FunctionComponent<ReportToastProps> = (props) => {
         if (!reidRecord.hasAccess) {
             return <Card bg="danger" text="white" className="mb-1">
                 <CardBody>
-                    You do not have permissions to reidentify {reidRecord.pseudo}.
+                    You do not have permissions to re-identify {reidRecord.pseudo}.
                 </CardBody>
             </Card>
         }
@@ -159,7 +159,7 @@ const ReportToast: FunctionComponent<ReportToastProps> = (props) => {
         <Modal show={showNoAccessInfo} onHide={() => { setShowNoAccessInfo(false) }}>
             <Modal.Header closeButton>You do not have access to this Patient Record</Modal.Header>
             <Modal.Body>
-                <p>You have tried to reidentify a patient's that our records indicate that you do not have access to.</p>
+                <p>You have tried to re-identify a patient's that our records indicate that you do not have access to.</p>
                 <p>Check that the patient is registered to an GP practice that you have access to.</p>
                 <p>To view your ODS organisations configured in the re-identification tool click <a href="about:blank">here</a> and contact your local ICB should you need further access.</p>
                 <p>Any changes to the patient record regisistration will take 24 hours to apply to the re-identification service </p>

@@ -40,7 +40,7 @@ const ReportsReasonPage: FunctionComponent<ReportReasonPageProps> = (props: Repo
                         <Button onClick={launchReport} disabled={!reidReason}>Launch Report</Button>
                     </Form>
                     <Alert variant="secondary" className="mt-2">
-                        <p><strong>Note:</strong> you will only be able to reidentify patients that are present within your organisation.</p>
+                        <p><strong>Note:</strong> you will only be able to re-identify patients that are present within your organisation.</p>
                         <p><strong>Note:</strong> all re-identification requests are subject to breach monitoring and reporting</p>
                         <p>Details of breach thresholds can be found  <a href='#' onClick={() => setShowBreachModal(true)}>here</a>.</p>
                     </Alert>

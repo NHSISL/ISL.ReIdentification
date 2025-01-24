@@ -20,6 +20,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.Acc
         public string Reason { get; set; }
         public string Organisation { get; set; }
         public bool HasAccess { get; set; }
+        public string AuditType { get; set; }
         public string Message { get; set; }
         public string CreatedBy { get; set; }
         public DateTimeOffset CreatedDate { get; set; }

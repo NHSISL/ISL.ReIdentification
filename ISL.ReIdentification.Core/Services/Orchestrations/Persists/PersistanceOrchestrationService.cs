@@ -194,6 +194,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
                     Reason = "PURGED",
                     Organisation = "PURGED",
                     HasAccess = false,
+                    AuditType = "PURGED",
                     Message = $"Purged on {dateTimeOffset}",
                     CreatedBy = "System",
                     CreatedDate = dateTimeOffset,

@@ -87,7 +87,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
         }
 
         [HttpGet]
-        [EnableQuery(PageSize = 25)]
+        [EnableQuery(PageSize = 500)]
         public async ValueTask<ActionResult<IQueryable<UserAccess>>> Get()
         {
             try
