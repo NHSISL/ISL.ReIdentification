@@ -144,7 +144,7 @@ const CsvReIdentificationDownloadDetail: FunctionComponent<CsvReIdentificationDo
                                             ))}
                                         </Form.Select>
                                         <Form.Text className="text-muted">
-                                            Please supply a reason why you are requesting to Reidentify this csv of patients.
+                                            Please supply a reason why you are requesting to re-identify this csv of patients.
                                         </Form.Text>
                                     </Form.Group>
                                     <br />

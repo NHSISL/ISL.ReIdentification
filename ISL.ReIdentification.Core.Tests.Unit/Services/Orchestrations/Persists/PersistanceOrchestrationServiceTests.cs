@@ -211,6 +211,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                 .OnProperty(accessAudit => accessAudit.Reason).Use(purgedValue)
                 .OnProperty(accessAudit => accessAudit.Organisation).Use(purgedValue)
                 .OnProperty(accessAudit => accessAudit.HasAccess).Use(false)
+                .OnProperty(accessAudit => accessAudit.AuditType).Use(purgedValue)
                 .OnProperty(accessAudit => accessAudit.Message).Use(message)
                 .OnProperty(accessAudit => accessAudit.CreatedBy).Use(user)
                 .OnProperty(accessAudit => accessAudit.UpdatedBy).Use(user);
