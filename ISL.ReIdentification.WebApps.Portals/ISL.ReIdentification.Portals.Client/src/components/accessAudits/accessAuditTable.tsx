@@ -83,7 +83,7 @@ const AccessAuditTable: FunctionComponent<AccessAuditTableProps> = ({ requestId 
     const mapToUniqueAccessAudit = (groupedData: { [key: string]: AccessAudit[] }): Array<AccessAudit & { count: number, okCount: number, notOkCount: number }> => {
         return Object.values(groupedData).map(group => {
             const okCount = group.filter(audit => audit.hasAccess === true && audit.auditType === 'NECS Access').length;
-            const notOkCount = group.filter(audit => audit.hasAccess === false && audit.auditType === 'NECS Access').length;
+            const notOkCount = group.filter(audit => audit.hasAccess === false && audit.auditType === 'PDS Access').length;
 
             return {
                 ...group[0],
