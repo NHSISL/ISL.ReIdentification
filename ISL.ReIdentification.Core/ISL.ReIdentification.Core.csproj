@@ -23,7 +23,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="EFxceptions" Version="0.4.5" />
-		<PackageReference Include="FluentAssertions" Version="7.0.0" />
+		<PackageReference Include="FluentAssertions" Version="8.0.1" />
 		<PackageReference Include="ISL.Providers.Notifications.GovukNotify" Version="0.0.0.3" />
 		<PackageReference Include="ISL.Providers.ReIdentification.Abstractions" Version="0.0.0.4" />
 		<PackageReference Include="ISL.Providers.ReIdentification.Necs" Version="0.0.0.4" />
