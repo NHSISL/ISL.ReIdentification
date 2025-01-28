@@ -47,7 +47,7 @@ export const UserProfile = ({ modalTitle = "My Profile", className }: UserProfil
                                 <ListGroup.Item>
                                     <div className="d-flex justify-content-between align-items-center">
                                         <div className="fw-bold">Organisations </div>
-                                        <div><MyOdsAssigned /></div>
+                                        <div style={{maxWidth:"400px"} }><MyOdsAssigned /></div>
                                     </div>
                                 </ListGroup.Item>
                             </ListGroup>
