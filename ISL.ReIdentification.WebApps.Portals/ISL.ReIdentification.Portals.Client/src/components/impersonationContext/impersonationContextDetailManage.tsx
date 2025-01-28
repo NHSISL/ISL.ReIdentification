@@ -1,7 +1,7 @@
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent, useState, useEffect } from "react";
 import Container from "react-bootstrap/esm/Container";
 import BreadCrumbBase from "../bases/layouts/BreadCrumb/BreadCrumbBase";
-import { Alert, Button, Card, Col, Row, Spinner } from "react-bootstrap";
+import { Alert, Button, ButtonGroup, Card, Col, ListGroup, Row, Spinner, Table } from "react-bootstrap";
 import { impersonationContextService } from "../../services/foundations/impersonationContextService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
@@ -18,33 +18,54 @@ const ImpersonationContextDetailManage: FunctionComponent<ImpersonationContextDe
 
     const account = useMsal();
 
-    const {
-        data,
-        error
-    } = impersonationContextService
-        .useRetrieveAllImpersonationById(
-            impersonationIdentificationRequestId!);
+    const { data, error, refetch } = impersonationContextService.useRetrieveAllImpersonationById(impersonationIdentificationRequestId!);
 
     const { submit, loading } = reIdentificationService.useRequestReIdentificationImpersonationGenerateTokens();
-    const [ errorStatus, setErrorStatus] = useState("");
-    const [ success, setSuccess] = useState("");
+    const [errorStatus, setErrorStatus] = useState("");
+    const [success, setSuccess] = useState("");
+    const [accessRequest, setAccessRequest] = useState<any>(null);
+    const [confirmReGenerate, setConfirmReGenerate] = useState(false);
 
     const updateImpersonation = impersonationContextViewService.useUpdateImpersonationContext();
-    const handleUpdate = (isApproved: boolean) => {
+
+    useEffect(() => {
+        if (impersonationIdentificationRequestId) {
+            refetch();
+        }
+    }, [impersonationIdentificationRequestId, accessRequest, refetch]);
+
+    const handleDeny = (isApproved: boolean) => {
         const updatedImpersonationContext: ImpersonationContext = {
-            ...data,
+            ...data!,
             isApproved: isApproved,
         };
-        return updateImpersonation.mutateAsync(updatedImpersonationContext);
+        return updateImpersonation.mutateAsync(updatedImpersonationContext).then(() => {
+            setAccessRequest(null);
+            setSuccess("");
+        });
     };
 
     const handleSubmit = (e: React.FormEvent<HTMLButtonElement>, impersonationIdentificationRequestId: string | undefined) => {
         e.preventDefault();
-        submit(impersonationIdentificationRequestId!).then((message) => {
-            setSuccess("generated Tokens succesfully " + message);
+        submit(impersonationIdentificationRequestId!).then((response) => {
+            setSuccess("Generated Tokens successfully! Please copy your tokens below.");
+            setAccessRequest(response);
+            setConfirmReGenerate(false); // Reset the confirmation state
         }).catch(() => {
             setErrorStatus("Something went wrong when generating, please contact an administrator.");
-        })
+        });
+    };
+
+    const handleReGenerateClick = () => {
+        setConfirmReGenerate(true);
+    };
+
+    const handleCancelReGenerate = () => {
+        setConfirmReGenerate(false);
+    };
+
+    const copyToClipboard = (text: string) => {
+        navigator.clipboard.writeText(text);
     };
 
     return (
@@ -73,8 +94,8 @@ const ImpersonationContextDetailManage: FunctionComponent<ImpersonationContextDe
                                 <Col md={6} className="mb-3">
                                     <div><strong>Requester Display Name:</strong> <span>{data?.requesterDisplayName}</span></div>
                                     <div><strong>Requester Display Name:</strong> <span>{data?.requesterEmail}</span></div>
-                                    <div><strong>Requester Display Name:</strong> <span>{data?.responsiblePersonDisplayName}</span></div>
-                                    <div><strong>Requester Display Name:</strong> <span>{data?.responsiblePersonEmail}</span></div>
+                                    <div><strong>Responsible Person Display Name:</strong> <span>{data?.responsiblePersonDisplayName}</span></div>
+                                    <div><strong>Responsible Person Display Name:</strong> <span>{data?.responsiblePersonEmail}</span></div>
 
                                 </Col>
                                 <Col md={6} className="mb-3">
@@ -88,23 +109,21 @@ const ImpersonationContextDetailManage: FunctionComponent<ImpersonationContextDe
                             </Row>
                         </Alert>
 
-                        {/*<strong>Logged in user: </strong>{account.accounts[0].idTokenClaims?.oid} <br />*/}
-                        {/*<strong>Requester ID: </strong>{data?.requesterEntraUserId}  <br />*/}
-                        {/*<strong>Respnosible Person ID: </strong>{data?.responsiblePersonEntraUserId}<br /><br />*/}
-
-                        {/* TODO: Approve Deny update */}
-                        {/* TODO: Regenerate Call */}
-
-
                         {account.accounts[0].idTokenClaims?.oid === data?.responsiblePersonEntraUserId && (
                             <>
-                                <p>You have been selected as the responsible owner for this project, in order for the service to process files dropped to this service please accept that this is correct.</p>
+
                                 {data?.isApproved ?
-                                    <Button variant="danger" onClick={() => handleUpdate(false)}>Deny</Button>
+                                    <span>
+                                    <p>As the responsible person for this project you have the ability to deny access, NOTE: in doing this it will revoke all persmissions previously granted and new keys will need to be generated.</p>
+                                        <Button variant="danger" onClick={() => handleDeny(false)}>Deny Token Generation</Button>
+                                    </span>
                                     :
-                                    <Button type="submit" variant="success" onClick={(e) => handleSubmit(e, impersonationIdentificationRequestId)}>
-                                        {!loading ? "Approve And Generate Tokens" : <Spinner />}
-                                    </Button>
+                                    <span>
+                                        <p>You have been selected as the responsible person for this project, in order for the service to process files dropped to this service please accept that this is correct.</p>
+                                        <Button type="submit" variant="success" onClick={(e) => handleSubmit(e, impersonationIdentificationRequestId)}>
+                                            {!loading ? "Approve And Generate Tokens" : <Spinner />}
+                                        </Button>
+                                    </span>
                                 }
                             </>
                         )}
@@ -112,20 +131,71 @@ const ImpersonationContextDetailManage: FunctionComponent<ImpersonationContextDe
                         <br /><br />
                         {account.accounts[0].idTokenClaims?.oid === data?.requesterEntraUserId && (
                             <>
-                                <p>As the Owner of this project you have the ability to generate the SAS Tokens for your container. Once clicked, the old token will be invalid and you will have to set up the new tokens to ensure files are processed.</p>
-
-                                <Button type="submit" disabled={!data?.isApproved || !!error} onClick={(e) => handleSubmit(e, impersonationIdentificationRequestId)}>
-                                    {!loading ? "Re-Generate Tokens" : <Spinner />}
-                                </Button>
-                                <br /><br />
+                                {(data?.isApproved && !error) && (
+                                    confirmReGenerate ? (
+                                        <>
+                                            <p>If you continue, you will expire any existing previous tokens. Do you want to proceed?</p>
+                                            <ButtonGroup>
+                                                <Button variant="danger" onClick={handleCancelReGenerate}>Cancel</Button>
+                                                <Button variant="success" onClick={(e) => handleSubmit(e, impersonationIdentificationRequestId)}>OK</Button>
+                                            </ButtonGroup>
+                                        </>
+                                    ) : (
+                                        <ButtonGroup>
+                                            <Button type="submit" onClick={handleReGenerateClick}>
+                                                {!loading ? "Re-Generate Tokens" : <Spinner />}
+                                            </Button>
+                                        </ButtonGroup>
+                                    )
+                                )}
                                 {errorStatus && <Alert variant="danger">
                                     {errorStatus}
                                 </Alert>}
 
-                                {success && <Alert variant="success">
-                                    {success}
-                                </Alert>}
-
+                                {accessRequest && (
+                                    <>
+                                        <br /><br />
+                                    { success && <Alert variant="success">{success}</Alert>}
+                                    <Card className="mt-4">
+                                    <Card.Header>Token Generation</Card.Header>
+                                        <Card.Body>
+                                            <Table striped bordered hover>
+                                                <thead>
+                                                    <tr>
+                                                        <th>Token Type</th>
+                                                        <th>Token</th>
+                                                        <th>Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td><strong>Errors SAS Token:</strong></td>
+                                                        <td><small>{accessRequest.impersonationContext.errorsSasToken}</small></td>
+                                                        <td>
+                                                            <Button variant="outline-primary" size="sm" onClick={() => copyToClipboard(accessRequest.impersonationContext.errorsSasToken)}>Copy</Button>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><strong>Inbox SAS Token:</strong></td>
+                                                        <td><small>{accessRequest.impersonationContext.inboxSasToken}</small></td>
+                                                        <td>
+                                                            <Button variant="outline-primary" size="sm" onClick={() => copyToClipboard(accessRequest.impersonationContext.inboxSasToken)}>Copy</Button>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><strong>Outbox SAS Token:</strong></td>
+                                                        <td><small>{accessRequest.impersonationContext.outboxSasToken}</small></td>
+                                                        <td>
+                                                            <Button variant="outline-primary" size="sm" onClick={() => copyToClipboard(accessRequest.impersonationContext.outboxSasToken)}>Copy</Button>
+                                                        </td>
+                                                    </tr>
+                                                   
+                                                </tbody>
+                                            </Table>
+                                        </Card.Body>
+                                    </Card>
+                                </>
+                                )}
                             </>
                         )} &nbsp;
 
@@ -134,7 +204,7 @@ const ImpersonationContextDetailManage: FunctionComponent<ImpersonationContextDe
             </Row>
 
         </>
-    )
+    );
 };
 
 export default ImpersonationContextDetailManage;
