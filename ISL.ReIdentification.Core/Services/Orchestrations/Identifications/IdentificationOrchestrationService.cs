@@ -67,10 +67,10 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                 var now = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
                 var accessAuditId = await this.identifierBroker.GetIdentifierAsync();
 
-                var noAccessMessage = "User do not have access to the organisation(s) " +
+                var noAccessMessage = "User does not have access to the organisation(s) " +
                     "associated with patient.  Re-identification blocked.";
 
-                var accessMessage = "User have access to the organisation(s) " +
+                var accessMessage = "User does have access to the organisation(s) " +
                     "associated with patient.  Item will be submitted for re-identification.";
 
                 AccessAudit accessAudit = new AccessAudit
