@@ -25,10 +25,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             Guid randomGuid = Guid.NewGuid();
             int itemCount = GetRandomNumber();
             bool hasAccess = false;
-            var noAccessMessage = "User do not have access to the organisation(s) " +
+            var noAccessMessage = "User does not have access to the organisation(s) " +
                 "associated with patient.  Re-identification blocked.";
 
-            var accessMessage = "User have access to the organisation(s) " +
+            var accessMessage = "User does have access to the organisation(s) " +
                 "associated with patient.  Item will be submitted for re-identification.";
 
             var auditType = "PDS Access";
@@ -118,10 +118,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             string reIdentifiedIdentifier = randomString;
             bool hasAccess = true;
 
-            var noAccessMessage = "User do not have access to the organisation(s) " +
+            var noAccessMessage = "User does not have access to the organisation(s) " +
                 "associated with patient.  Re-identification blocked.";
 
-            var accessMessage = "User have access to the organisation(s) " +
+            var accessMessage = "User does have access to the organisation(s) " +
                 "associated with patient.  Item will be submitted for re-identification.";
 
             IdentificationRequest randomIdentificationRequest =
