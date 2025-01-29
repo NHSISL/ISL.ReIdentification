@@ -1,4 +1,4 @@
-export const useFileUpload = (setError: React.Dispatch<React.SetStateAction<string[]>>, setFileName: React.Dispatch<React.SetStateAction<string>>, setCsvData: React.Dispatch<React.SetStateAction<string | null>>, setHeaderColumns: React.Dispatch<React.SetStateAction<string[]>>) => {
+export const useFileChange = (setError: React.Dispatch<React.SetStateAction<string[]>>, setFileName: React.Dispatch<React.SetStateAction<string>>, setHeaderColumns: React.Dispatch<React.SetStateAction<string[]>>, setCsvData: React.Dispatch<React.SetStateAction<string | null>>, hasHeaderRecord: boolean) => {
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setError([]);
         const file = e.target.files?.[0];
@@ -21,7 +21,7 @@ export const useFileUpload = (setError: React.Dispatch<React.SetStateAction<stri
                     const rows = text.split("\n");
                     const headers = rows.length === 1 ? [rows[0]] : rows[0].split(",");
 
-                    if (headers.length <= 0) {
+                    if (headers.length <= 0 || (!hasHeaderRecord && /[a-zA-Z]/.test(rows[0]))) {
                         setError(["The CSV file does not contain a valid header row."]);
                         return;
                     }
