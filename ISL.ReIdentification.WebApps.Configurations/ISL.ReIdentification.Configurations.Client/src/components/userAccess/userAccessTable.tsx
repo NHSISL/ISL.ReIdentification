@@ -62,10 +62,7 @@ const UserAccessTable: FunctionComponent<UserAccessTableProps> = () => {
             </InputGroup>
 
             <Container fluid className="infiniteScrollContainer">
-                <InfiniteScroll loading={isLoading || showSpinner} hasNextPage={hasNextPage || false} loadMore={() => {
-                    console.log("Fetching next page...");
-                    fetchNextPage();
-                }}>
+                <InfiniteScroll loading={isLoading || showSpinner} hasNextPage={hasNextPage || false} loadMore={fetchNextPage}>
                     <Card>
                         <Card.Header>
                             <div className="ms-auto">
@@ -87,7 +84,7 @@ const UserAccessTable: FunctionComponent<UserAccessTableProps> = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {isLoading ? (
+                                    {isLoading || showSpinner ? (
                                         <tr>
                                             <td colSpan={6} className="text-center">
                                                 <SpinnerBase />
@@ -110,7 +107,7 @@ const UserAccessTable: FunctionComponent<UserAccessTableProps> = () => {
                                             </tr>)}
 
                                             <tr>
-                                                <td colSpan={7} className="text-center">
+                                                <td colSpan={3} className="text-center">
                                                     <InfiniteScrollLoader
                                                         loading={isLoading || isFetchingNextPage}
                                                         spinner={<SpinnerBase />}
