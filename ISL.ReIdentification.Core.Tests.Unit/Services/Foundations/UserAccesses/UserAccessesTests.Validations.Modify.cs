@@ -8,6 +8,7 @@ using FluentAssertions;
 using Force.DeepCloner;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses.Exceptions;
+using ISL.ReIdentification.Core.Models.Securities;
 using Moq;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
@@ -379,8 +380,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             // given
             int randomNegativeNumber = GetRandomNegativeNumber();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            string randomUserId = GetRandomString();
-            UserAccess randomUserAccess = CreateRandomModifyUserAccess(randomDateTimeOffset, randomUserId);
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            UserAccess randomUserAccess =
+                CreateRandomModifyUserAccess(randomDateTimeOffset, randomEntraUser.EntraUserId.ToString());
+
             UserAccess invalidUserAccess = randomUserAccess;
             UserAccess storageUserAccess = invalidUserAccess.DeepClone();
             storageUserAccess.CreatedDate = randomDateTimeOffset.AddMinutes(randomNegativeNumber);
@@ -401,6 +405,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
             this.reIdentificationStorageBroker.Setup(broker =>
                 broker.SelectUserAccessByIdAsync(invalidUserAccess.Id))
                     .ReturnsAsync(storageUserAccess);
@@ -418,6 +426,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Exactly(2));
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
                     Times.Once);
 
             this.reIdentificationStorageBroker.Verify(broker =>
