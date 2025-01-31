@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses.Exceptions;
+using ISL.ReIdentification.Core.Models.Securities;
 using Moq;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
@@ -212,8 +213,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
         {
             // given
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
-            string randomUserId = GetRandomString();
-            UserAccess randomUserAccess = CreateRandomUserAccess(randomDateTime, randomUserId);
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            UserAccess randomUserAccess =
+                CreateRandomModifyUserAccess(randomDateTime, randomEntraUser.EntraUserId.ToString());
+
             UserAccess invalidUserAccess = randomUserAccess;
             invalidUserAccess.CreatedBy = GetRandomString();
             invalidUserAccess.UpdatedBy = GetRandomString();
@@ -240,6 +244,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTime);
 
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
             // when
             ValueTask<UserAccess> addUserAccessTask =
                 this.userAccessService.AddUserAccessAsync(invalidUserAccess);
@@ -254,6 +262,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Exactly(2));
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -278,20 +290,19 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             int invalidSeconds)
         {
             // given
-            DateTimeOffset randomDateTime =
-                GetRandomDateTimeOffset();
+            DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            UserAccess randomUserAccess =
+                CreateRandomModifyUserAccess(randomDateTime, randomEntraUser.EntraUserId.ToString());
 
             DateTimeOffset now = randomDateTime;
             DateTimeOffset startDate = now.AddSeconds(-90);
             DateTimeOffset endDate = now.AddSeconds(0);
-            UserAccess randomUserAccess = CreateRandomUserAccess();
             UserAccess invalidUserAccess = randomUserAccess;
 
             DateTimeOffset invalidDate =
                 now.AddSeconds(invalidSeconds);
-
-            invalidUserAccess.CreatedDate = invalidDate;
-            invalidUserAccess.UpdatedDate = invalidDate;
 
             var invalidUserAccessException = new InvalidUserAccessException(
                 message: "Invalid user access. Please correct the errors and try again.");
@@ -307,9 +318,14 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
                     message: "UserAccess validation error occurred, please fix errors and try again.",
                     innerException: invalidUserAccessException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
+            this.dateTimeBrokerMock.SetupSequence(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(now.AddSeconds(invalidSeconds))
                     .ReturnsAsync(now);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             // when
             ValueTask<UserAccess> addUserAccessTask =
@@ -325,6 +341,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Exactly(2));
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
