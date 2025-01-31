@@ -59,14 +59,14 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
         private static UserAccess CreateRandomUserAccess() =>
-            CreateRandomUserAccess(dateTimeOffset: GetRandomDateTimeOffset());
+            CreateRandomUserAccess(dateTimeOffset: GetRandomDateTimeOffset(), userId: GetRandomString());
 
-        private static UserAccess CreateRandomUserAccess(DateTimeOffset dateTimeOffset) =>
-            CreateUserAccessesFiller(dateTimeOffset).Create();
+        private static UserAccess CreateRandomUserAccess(DateTimeOffset dateTimeOffset, string userId) =>
+            CreateUserAccessesFiller(dateTimeOffset, userId).Create();
 
         private static List<UserAccess> CreateRandomUserAccesses()
         {
-            return CreateUserAccessesFiller(GetRandomDateTimeOffset())
+            return CreateUserAccessesFiller(dateTimeOffset: GetRandomDateTimeOffset(), userId: GetRandomString())
                 .Create(GetRandomNumber())
                 .ToList();
         }
@@ -164,10 +164,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
         private SqlException CreateSqlException() =>
             (SqlException)RuntimeHelpers.GetUninitializedObject(type: typeof(SqlException));
 
-        private static UserAccess CreateRandomModifyUserAccess(DateTimeOffset dateTimeOffset)
+        private static UserAccess CreateRandomModifyUserAccess(DateTimeOffset dateTimeOffset, string userId)
         {
             int randomDaysInThePast = GetRandomNegativeNumber();
-            UserAccess randomUserAccess = CreateRandomUserAccess(dateTimeOffset);
+            UserAccess randomUserAccess = CreateRandomUserAccess(dateTimeOffset, userId);
             randomUserAccess.CreatedDate = dateTimeOffset.AddDays(randomDaysInThePast);
 
             return randomUserAccess;
@@ -198,16 +198,15 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             return filler;
         }
 
-        private static Filler<UserAccess> CreateUserAccessesFiller(DateTimeOffset dateTimeOffset)
+        private static Filler<UserAccess> CreateUserAccessesFiller(DateTimeOffset dateTimeOffset, string userId)
         {
-            string user = Guid.NewGuid().ToString();
             var filler = new Filler<UserAccess>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
-                .OnProperty(userAccess => userAccess.CreatedBy).Use(user)
-                .OnProperty(userAccess => userAccess.UpdatedBy).Use(user);
+                .OnProperty(userAccess => userAccess.CreatedBy).Use(userId)
+                .OnProperty(userAccess => userAccess.UpdatedBy).Use(userId);
 
             return filler;
         }

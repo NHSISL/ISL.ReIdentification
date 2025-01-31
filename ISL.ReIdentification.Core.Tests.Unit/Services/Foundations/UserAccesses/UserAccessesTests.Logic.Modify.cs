@@ -18,9 +18,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
         {
             // given
             DateTimeOffset randomDateOffset = GetRandomDateTimeOffset();
+            string randomUserId = GetRandomString();
 
             UserAccess randomModifyUserAccess =
-                CreateRandomModifyUserAccess(randomDateOffset);
+                CreateRandomModifyUserAccess(randomDateOffset, randomUserId);
 
             UserAccess inputUserAccess = randomModifyUserAccess.DeepClone();
             UserAccess storageUserAccess = randomModifyUserAccess.DeepClone();

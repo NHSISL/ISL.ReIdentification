@@ -138,7 +138,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            UserAccess invalidUserAccess = CreateRandomUserAccess(dateTimeOffset: randomDateTimeOffset);
+            string randomUserId = GetRandomString();
+            UserAccess invalidUserAccess = CreateRandomUserAccess(randomDateTimeOffset, randomUserId);
             var inputCreatedByUpdatedByString = GetRandomStringWithLength(256);
             invalidUserAccess.GivenName = GetRandomStringWithLength(256);
             invalidUserAccess.Surname = GetRandomStringWithLength(256);
@@ -211,12 +212,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
         {
             // given
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
-            DateTimeOffset now = randomDateTime;
-            UserAccess randomUserAccess = CreateRandomUserAccess(now);
+            string randomUserId = GetRandomString();
+            UserAccess randomUserAccess = CreateRandomUserAccess(randomDateTime, randomUserId);
             UserAccess invalidUserAccess = randomUserAccess;
             invalidUserAccess.CreatedBy = GetRandomString();
             invalidUserAccess.UpdatedBy = GetRandomString();
-            invalidUserAccess.CreatedDate = now;
+            invalidUserAccess.CreatedDate = randomDateTime;
             invalidUserAccess.UpdatedDate = GetRandomDateTimeOffset();
 
             var invalidUserAccessException = new InvalidUserAccessException(
@@ -237,7 +238,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .ReturnsAsync(now);
+                    .ReturnsAsync(randomDateTime);
 
             // when
             ValueTask<UserAccess> addUserAccessTask =

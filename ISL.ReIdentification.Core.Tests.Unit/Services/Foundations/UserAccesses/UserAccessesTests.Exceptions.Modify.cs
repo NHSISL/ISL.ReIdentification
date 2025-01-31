@@ -129,7 +129,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            UserAccess randomUserAccess = CreateRandomUserAccess(randomDateTimeOffset);
+            string randomUserId = GetRandomString();
+            UserAccess randomUserAccess = CreateRandomUserAccess(randomDateTimeOffset, randomUserId);
             var dbUpdateConcurrencyException = new DbUpdateConcurrencyException();
 
             var lockedUserAccessException = new LockedUserAccessException(
@@ -179,7 +180,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            UserAccess someUserAccess = CreateRandomModifyUserAccess(randomDateTimeOffset);
+            string randomUserId = GetRandomString();
+            UserAccess someUserAccess = CreateRandomModifyUserAccess(randomDateTimeOffset, randomUserId);
             var serviceException = new Exception();
 
             var failedServiceUserAccessException =

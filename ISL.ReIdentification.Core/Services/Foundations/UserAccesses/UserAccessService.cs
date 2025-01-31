@@ -37,6 +37,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
         public ValueTask<UserAccess> AddUserAccessAsync(UserAccess userAccess) =>
         TryCatch(async () =>
         {
+            await ApplyAddAudit(userAccess);
             await ValidateUserAccessOnAddAsync(userAccess);
 
             return await this.reIdentificationStorageBroker.InsertUserAccessAsync(userAccess);
@@ -61,6 +62,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
         public ValueTask<UserAccess> ModifyUserAccessAsync(UserAccess userAccess) =>
         TryCatch(async () =>
         {
+            await ApplyModifyAudit(userAccess);
             await ValidateUserAccessOnModifyAsync(userAccess);
 
             var maybeUserAccess = await this.reIdentificationStorageBroker
@@ -81,10 +83,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
                 .SelectUserAccessByIdAsync(userAccessId);
 
             ValidateStorageUserAccess(maybeUserAccess, userAccessId);
-            var auditUser = await this.securityBroker.GetCurrentUserAsync();
-            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-            maybeUserAccess.UpdatedBy = auditUser.EntraUserId.ToString();
-            maybeUserAccess.UpdatedDate = auditDateTimeOffset;
+            await ApplyModifyAudit(maybeUserAccess);
 
             var updatedUserAccess = await this.reIdentificationStorageBroker
                 .UpdateUserAccessAsync(maybeUserAccess);
@@ -135,5 +134,23 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
 
             return organisations.Distinct().ToList();
         });
+
+        private async ValueTask ApplyAddAudit(UserAccess maybeUserAccess)
+        {
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
+            maybeUserAccess.CreatedBy = auditUser.EntraUserId.ToString();
+            maybeUserAccess.CreatedDate = auditDateTimeOffset;
+            maybeUserAccess.UpdatedBy = auditUser.EntraUserId.ToString();
+            maybeUserAccess.UpdatedDate = auditDateTimeOffset;
+        }
+
+        private async ValueTask ApplyModifyAudit(UserAccess maybeUserAccess)
+        {
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
+            maybeUserAccess.UpdatedBy = auditUser.EntraUserId.ToString();
+            maybeUserAccess.UpdatedDate = auditDateTimeOffset;
+        }
     }
 }
