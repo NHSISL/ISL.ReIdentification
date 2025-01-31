@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System.Security.Claims;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Securities;
 
@@ -12,8 +11,8 @@ namespace ISL.ReIdentification.Core.Brokers.Securities
     {
         ValueTask<EntraUser> GetCurrentUser();
         ValueTask<bool> IsCurrentUserAuthenticated();
-        ValueTask<bool> IsInRole(ClaimsPrincipal user, string roleName);
-        ValueTask<bool> HasClaimType(ClaimsPrincipal user, string claimType, string claimValue);
-        ValueTask<bool> HasClaimType(ClaimsPrincipal user, string claimType);
+        ValueTask<bool> IsInRole(string roleName);
+        ValueTask<bool> HasClaimType(string claimType, string claimValue);
+        ValueTask<bool> HasClaimType(string claimType);
     }
 }
