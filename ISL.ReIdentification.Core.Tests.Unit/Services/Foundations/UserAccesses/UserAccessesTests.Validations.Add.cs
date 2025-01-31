@@ -213,105 +213,23 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
         {
             // given
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
+            DateTimeOffset randomAuditDateTime = randomDateTime.AddSeconds(+1);
             EntraUser randomEntraUser = CreateRandomEntraUser();
+            EntraUser randomAuditEntraUser = CreateRandomEntraUser();
 
             UserAccess randomUserAccess =
                 CreateRandomModifyUserAccess(randomDateTime, randomEntraUser.EntraUserId.ToString());
 
             UserAccess invalidUserAccess = randomUserAccess;
-            invalidUserAccess.CreatedBy = GetRandomString();
-            invalidUserAccess.UpdatedBy = GetRandomString();
-            invalidUserAccess.CreatedDate = randomDateTime;
-            invalidUserAccess.UpdatedDate = GetRandomDateTimeOffset();
 
             var invalidUserAccessException = new InvalidUserAccessException(
                 message: "Invalid user access. Please correct the errors and try again.");
 
             invalidUserAccessException.AddData(
-                key: nameof(UserAccess.UpdatedBy),
-                values: $"Text is not the same as {nameof(UserAccess.CreatedBy)}");
-
-            invalidUserAccessException.AddData(
-                key: nameof(UserAccess.UpdatedDate),
-                values: $"Date is not the same as {nameof(UserAccess.CreatedDate)}");
-
-            var expectedUserAccessValidationException =
-                new UserAccessValidationException(
-                    message: "UserAccess validation error occurred, please fix errors and try again.",
-                    innerException: invalidUserAccessException);
-
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
-                    .ReturnsAsync(randomDateTime);
-
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
-
-            // when
-            ValueTask<UserAccess> addUserAccessTask =
-                this.userAccessService.AddUserAccessAsync(invalidUserAccess);
-
-            UserAccessValidationException actualUserAccessValidationException =
-                await Assert.ThrowsAsync<UserAccessValidationException>(
-                    testCode: addUserAccessTask.AsTask);
-
-            // then
-            actualUserAccessValidationException.Should().BeEquivalentTo(
-                expectedUserAccessValidationException);
-
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(2));
-
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
-                    Times.Once);
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogErrorAsync(It.Is(
-                    SameExceptionAs(expectedUserAccessValidationException))),
-                        Times.Once);
-
-            this.reIdentificationStorageBroker.Verify(broker =>
-                broker.InsertUserAccessAsync(It.IsAny<UserAccess>()),
-                    Times.Never);
-
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
-        }
-
-        [Theory]
-        [InlineData(1)]
-        [InlineData(-91)]
-        public async Task ShouldThrowValidationExceptionOnAddIfCreatedDateIsNotRecentAndLogItAsync(
-            int invalidSeconds)
-        {
-            // given
-            DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
-
-            UserAccess randomUserAccess =
-                CreateRandomModifyUserAccess(randomDateTime, randomEntraUser.EntraUserId.ToString());
-
-            DateTimeOffset now = randomDateTime;
-            DateTimeOffset startDate = now.AddSeconds(-90);
-            DateTimeOffset endDate = now.AddSeconds(0);
-            UserAccess invalidUserAccess = randomUserAccess;
-
-            DateTimeOffset invalidDate =
-                now.AddSeconds(invalidSeconds);
-
-            var invalidUserAccessException = new InvalidUserAccessException(
-                message: "Invalid user access. Please correct the errors and try again.");
-
-            invalidUserAccessException.AddData(
-            key: nameof(UserAccess.CreatedDate),
+                key: nameof(UserAccess.CreatedBy),
                 values:
-                    $"Date is not recent. Expected a value between " +
-                    $"{startDate} and {endDate} but found {invalidDate}");
+                    $"Expected value to be {randomAuditEntraUser.EntraUserId.ToString()} " +
+                    $"but found {randomEntraUser.EntraUserId.ToString()}.");
 
             var expectedUserAccessValidationException =
                 new UserAccessValidationException(
@@ -320,12 +238,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             this.dateTimeBrokerMock.SetupSequence(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .ReturnsAsync(now.AddSeconds(invalidSeconds))
-                    .ReturnsAsync(now);
+                    .ReturnsAsync(randomDateTime)
+                        .ReturnsAsync(randomAuditDateTime);
 
-            this.securityBrokerMock.Setup(broker =>
+            this.securityBrokerMock.SetupSequence(broker =>
                 broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+                    .ReturnsAsync(randomEntraUser)
+                        .ReturnsAsync(randomAuditEntraUser);
 
             // when
             ValueTask<UserAccess> addUserAccessTask =
@@ -341,11 +260,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(2));
+                    Times.Once);
 
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),
-                    Times.Once);
+                    Times.Exactly(2));
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(
