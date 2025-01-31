@@ -42,7 +42,7 @@ namespace ISL.ReIdentification.Core.Brokers.Securities
         /// <param name="claimType">The type of the claim.</param>
         /// <param name="claimValue">The value of the claim.</param>
         /// <returns>True if the user has the claim with the specified value; otherwise, false.</returns>
-        public async ValueTask<bool> HasClaimType(string claimType, string claimValue) =>
+        public async ValueTask<bool> HasClaimTypeAsync(string claimType, string claimValue) =>
             this.user.HasClaim(claimType, claimValue);
 
         /// <summary>
@@ -50,14 +50,14 @@ namespace ISL.ReIdentification.Core.Brokers.Securities
         /// </summary>
         /// <param name="claimType">The type of the claim.</param>
         /// <returns>True if the user has the claim; otherwise, false.</returns>
-        public async ValueTask<bool> HasClaimType(string claimType) =>
+        public async ValueTask<bool> HasClaimTypeAsync(string claimType) =>
             this.user.FindFirst(claimType) != null;
 
         /// <summary>
         /// Determines whether the current user is authenticated.
         /// </summary>
         /// <returns>True if the user is authenticated; otherwise, false.</returns>
-        public async ValueTask<bool> IsCurrentUserAuthenticated() =>
+        public async ValueTask<bool> IsCurrentUserAuthenticatedAsync() =>
             this.user.Identity?.IsAuthenticated ?? false;
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace ISL.ReIdentification.Core.Brokers.Securities
         /// </summary>
         /// <param name="roleName">The role name to check.</param>
         /// <returns>True if the user is in the specified role; otherwise, false.</returns>
-        public async ValueTask<bool> IsInRole(string roleName)
+        public async ValueTask<bool> IsInRoleAsync(string roleName)
         {
             var roles = this.user.FindAll(ClaimTypes.Role).Select(role => role.Value).ToList();
             return roles.Contains(roleName);
@@ -75,7 +75,7 @@ namespace ISL.ReIdentification.Core.Brokers.Securities
         /// Retrieves details of the current authenticated user based on claims.
         /// </summary>
         /// <returns>An <see cref="EntraUser"/> object containing user details.</returns>
-        public async ValueTask<EntraUser> GetCurrentUser()
+        public async ValueTask<EntraUser> GetCurrentUserAsync()
         {
             var entraUserIdString = this.user.FindFirst("oid")?.Value
                           ?? this.user.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value;

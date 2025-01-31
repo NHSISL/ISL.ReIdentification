@@ -59,7 +59,7 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
         TryCatch(async () =>
         {
             ValidateOnProcessIdentificationRequests(accessRequest);
-            EntraUser currentUser = await this.securityBroker.GetCurrentUser();
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
             accessRequest.IdentificationRequest.EntraUserId = currentUser.EntraUserId;
             accessRequest.IdentificationRequest.Email = currentUser.Email;
             accessRequest.IdentificationRequest.JobTitle = currentUser.JobTitle;
@@ -101,7 +101,7 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
                 await ConvertCsvIdentificationRequestToIdentificationRequest(
                     maybeAccessRequest);
 
-            EntraUser currentUser = await this.securityBroker.GetCurrentUser();
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             IdentificationRequest currentUserIdentificationRequest =
                 OverrideIdentificationRequestUserDetails(
