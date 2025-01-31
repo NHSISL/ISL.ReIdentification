@@ -144,7 +144,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            UserAccess invalidUserAccess = CreateRandomModifyUserAccess(randomDateTimeOffset);
+            string randomUserId = GetRandomString();
+            UserAccess invalidUserAccess = CreateRandomModifyUserAccess(randomDateTimeOffset, randomUserId);
             var inputCreatedByUpdatedByString = GetRandomStringWithLength(256);
             invalidUserAccess.GivenName = GetRandomStringWithLength(256);
             invalidUserAccess.Surname = GetRandomStringWithLength(256);
@@ -212,7 +213,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
         {
             // given
             DateTimeOffset randomDatTimeOffset = GetRandomDateTimeOffset();
-            UserAccess randomUserAccess = CreateRandomUserAccess(randomDatTimeOffset);
+            string randomUserId = GetRandomString();
+            UserAccess randomUserAccess = CreateRandomUserAccess(randomDatTimeOffset, randomUserId);
             var invalidUserAccess = randomUserAccess;
 
             var invalidUserAccessException = new InvalidUserAccessException(
@@ -260,10 +262,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            string randomUserId = GetRandomString();
             DateTimeOffset now = randomDateTimeOffset;
             DateTimeOffset startDate = now.AddSeconds(-90);
             DateTimeOffset endDate = now.AddSeconds(0);
-            UserAccess randomUserAccess = CreateRandomUserAccess(randomDateTimeOffset);
+            UserAccess randomUserAccess = CreateRandomUserAccess(randomDateTimeOffset, randomUserId);
             UserAccess invalidUserAccess = randomUserAccess;
             invalidUserAccess.UpdatedDate = randomDateTimeOffset.AddSeconds(invalidSeconds);
 
@@ -318,7 +321,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             // given
             int randomNegativeNumber = GetRandomNegativeNumber();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            UserAccess randomUserAccess = CreateRandomUserAccess(randomDateTimeOffset);
+            string randomUserId = GetRandomString();
+            UserAccess randomUserAccess = CreateRandomUserAccess(randomDateTimeOffset, randomUserId);
             UserAccess nonExistingUserAccess = randomUserAccess;
             nonExistingUserAccess.CreatedDate = randomDateTimeOffset.AddMinutes(randomNegativeNumber);
             UserAccess nullUserAccess = null;
@@ -375,7 +379,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             // given
             int randomNegativeNumber = GetRandomNegativeNumber();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            UserAccess randomUserAccess = CreateRandomModifyUserAccess(randomDateTimeOffset);
+            string randomUserId = GetRandomString();
+            UserAccess randomUserAccess = CreateRandomModifyUserAccess(randomDateTimeOffset, randomUserId);
             UserAccess invalidUserAccess = randomUserAccess;
             UserAccess storageUserAccess = invalidUserAccess.DeepClone();
             storageUserAccess.CreatedDate = randomDateTimeOffset.AddMinutes(randomNegativeNumber);
@@ -434,7 +439,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            UserAccess randomUserAccess = CreateRandomModifyUserAccess(randomDateTimeOffset);
+            string randomUserId = GetRandomString();
+            UserAccess randomUserAccess = CreateRandomModifyUserAccess(randomDateTimeOffset, randomUserId);
             UserAccess invalidUserAccess = randomUserAccess;
             UserAccess storageUserAccess = invalidUserAccess.DeepClone();
             invalidUserAccess.UpdatedDate = storageUserAccess.UpdatedDate;

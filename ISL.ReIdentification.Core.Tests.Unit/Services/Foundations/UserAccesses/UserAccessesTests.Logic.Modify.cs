@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
+using ISL.ReIdentification.Core.Models.Securities;
 using Moq;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
@@ -18,10 +19,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
         {
             // given
             DateTimeOffset randomDateOffset = GetRandomDateTimeOffset();
-            string randomUserId = GetRandomString();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
 
             UserAccess randomModifyUserAccess =
-                CreateRandomModifyUserAccess(randomDateOffset, randomUserId);
+                CreateRandomModifyUserAccess(randomDateOffset, userId: randomEntraUser.EntraUserId.ToString());
 
             UserAccess inputUserAccess = randomModifyUserAccess.DeepClone();
             UserAccess storageUserAccess = randomModifyUserAccess.DeepClone();
@@ -32,6 +33,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             this.reIdentificationStorageBroker.Setup(broker =>
                 broker.SelectUserAccessByIdAsync(inputUserAccess.Id))
@@ -50,6 +55,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Exactly(2));
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
                     Times.Once);
 
             this.reIdentificationStorageBroker.Verify(broker =>
