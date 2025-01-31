@@ -30,7 +30,7 @@ namespace ISL.ReIdentification.Core.Brokers.Securities
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SecurityBroker"/> class using an access token.
-        /// This constructor is intended for Azure Function usage.
+        /// This constructor is intended for Azure Function / non REST API usage.
         /// </summary>
         /// <param name="accessToken">A JWT access token containing user claims.</param>
         public SecurityBroker(string accessToken) =>
