@@ -19,14 +19,23 @@ export const useFileChange = (setError: React.Dispatch<React.SetStateAction<stri
                     let text = event.target?.result as string;
                     text = text.replace(/\r/g, "");
                     const rows = text.split("\n");
-                    const headers = rows.length === 1 ? [rows[0]] : rows[0].split(",");
+                    setHeaderColumns([]);
 
-                    if (headers.length <= 0 || (!hasHeaderRecord && /[a-zA-Z]/.test(rows[0]))) {
-                        setError(["The CSV file does not contain a valid header row."]);
-                        return;
+                    if (hasHeaderRecord) {
+                        const headers = rows.length === 1 ? [rows[0]] : rows[0].split(",");
+
+                        if (headers.length <= 0 ||
+                            (rows.length > 1 && !/[a-zA-Z]/.test(rows[0]))) {
+                            setError(["The CSV file does not contain a valid header row."]);
+                            return;
+                        }
+
+                        setHeaderColumns(headers);
+                    } else {
+                        const headers = rows.length === 1 ? [rows[1]] : rows[1].split(",");
+                        setHeaderColumns(headers);
                     }
 
-                    setHeaderColumns(headers);
                     const uint8Array = new TextEncoder().encode(text);
                     const base64String = btoa(String.fromCharCode(...uint8Array));
                     setCsvData(base64String);
