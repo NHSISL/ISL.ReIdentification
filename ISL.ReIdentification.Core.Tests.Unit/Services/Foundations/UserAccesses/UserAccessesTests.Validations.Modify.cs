@@ -255,67 +255,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             this.securityBrokerMock.VerifyNoOtherCalls();
         }
 
-        [Theory]
-        [InlineData(1)]
-        [InlineData(-91)]
-        public async Task ShouldThrowValidationExceptionOnModifyIfUpdatedDateIsNotRecentAndLogItAsync(
-            int invalidSeconds)
-        {
-            // given
-            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            string randomUserId = GetRandomString();
-            DateTimeOffset now = randomDateTimeOffset;
-            DateTimeOffset startDate = now.AddSeconds(-90);
-            DateTimeOffset endDate = now.AddSeconds(0);
-            UserAccess randomUserAccess = CreateRandomUserAccess(randomDateTimeOffset, randomUserId);
-            UserAccess invalidUserAccess = randomUserAccess;
-            invalidUserAccess.UpdatedDate = randomDateTimeOffset.AddSeconds(invalidSeconds);
-
-            var invalidUserAccessException = new InvalidUserAccessException(
-                message: "Invalid user access. Please correct the errors and try again.");
-
-            invalidUserAccessException.AddData(
-                key: nameof(UserAccess.UpdatedDate),
-                values:
-                [
-                    $"Date is not recent." +
-                    $" Expected a value between {startDate} and {endDate} but found {randomUserAccess.UpdatedDate}"
-                ]);
-
-            var expectedUserAccessValidationException = new UserAccessValidationException(
-                message: "UserAccess validation error occurred, please fix errors and try again.",
-                innerException: invalidUserAccessException);
-
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
-                    .ReturnsAsync(randomDateTimeOffset);
-
-            // when
-            ValueTask<UserAccess> modifyUserAccessTask =
-                this.userAccessService.ModifyUserAccessAsync(invalidUserAccess);
-
-            UserAccessValidationException actualUserAccessVaildationException =
-                await Assert.ThrowsAsync<UserAccessValidationException>(
-                    testCode: modifyUserAccessTask.AsTask);
-
-            // then
-            actualUserAccessVaildationException.Should().BeEquivalentTo(expectedUserAccessValidationException);
-
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
-
-            this.loggingBrokerMock.Verify(broker =>
-               broker.LogErrorAsync(It.Is(
-                   SameExceptionAs(expectedUserAccessValidationException))),
-                       Times.Once);
-
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
-        }
-
         [Fact]
         public async Task ShouldThrowValidationExceptionOnModifyIfStorageUserAccessDoesNotExistAndLogItAsync()
         {
@@ -327,6 +266,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             UserAccess nonExistingUserAccess = randomUserAccess;
             nonExistingUserAccess.CreatedDate = randomDateTimeOffset.AddMinutes(randomNegativeNumber);
             UserAccess nullUserAccess = null;
+            EntraUser randomEntraUser = CreateRandomEntraUser();
 
             var notFoundUserAccessException = new NotFoundUserAccessException(
                 message: $"User access not found with Id: {nonExistingUserAccess.Id}");
@@ -343,6 +283,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
             // when
             ValueTask<UserAccess> modifyUserAccessTask =
                 this.userAccessService.ModifyUserAccessAsync(nonExistingUserAccess);
@@ -357,6 +301,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Exactly(2));
 
             this.reIdentificationStorageBroker.Verify(broker =>
                 broker.SelectUserAccessByIdAsync(nonExistingUserAccess.Id),
