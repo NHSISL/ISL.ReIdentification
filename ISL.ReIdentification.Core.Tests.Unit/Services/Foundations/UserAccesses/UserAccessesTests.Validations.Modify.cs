@@ -452,7 +452,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             string randomUserId = GetRandomString();
-            UserAccess randomUserAccess = CreateRandomUserAccess(randomDateTimeOffset, randomUserId);
+            UserAccess randomUserAccess = CreateRandomModifyUserAccess(randomDateTimeOffset, randomUserId);
             UserAccess invalidUserAccess = randomUserAccess;
             UserAccess storageUserAccess = invalidUserAccess.DeepClone();
             invalidUserAccess.UpdatedDate = storageUserAccess.UpdatedDate;
@@ -463,7 +463,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             invalidUserAccessValidationException.AddData(
                 key: nameof(UserAccess.UpdatedDate),
-                values: $"Date is the same as {nameof(UserAccess.CreatedDate)}");
+                values: $"Date is the same as {nameof(UserAccess.UpdatedDate)}");
 
             var expectedUserAccessValidationException = new UserAccessValidationException(
                 message: "UserAccess validation error occurred, please fix errors and try again.",
