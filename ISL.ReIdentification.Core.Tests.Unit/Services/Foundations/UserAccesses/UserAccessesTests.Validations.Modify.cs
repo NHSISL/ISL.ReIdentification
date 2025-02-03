@@ -220,6 +220,15 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             string randomUserId = GetRandomString();
             UserAccess randomUserAccess = CreateRandomUserAccess(randomDatTimeOffset, randomUserId);
             var invalidUserAccess = randomUserAccess;
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDatTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             var invalidUserAccessException = new InvalidUserAccessException(
                 message: "Invalid user access. Please correct the errors and try again.");
@@ -246,6 +255,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Exactly(2));
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogErrorAsync(It.Is(
