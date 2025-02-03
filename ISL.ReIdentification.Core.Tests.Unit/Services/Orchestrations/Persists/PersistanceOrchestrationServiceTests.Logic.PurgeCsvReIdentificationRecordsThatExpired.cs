@@ -38,6 +38,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             {
                 csvIdentificationRequest.Data = Array.Empty<byte>();
                 csvIdentificationRequest.UpdatedDate = now;
+                csvIdentificationRequest.UpdatedBy = "System";
             }
 
             this.dateTimeBrokerMock.Setup(broker =>
