@@ -1,6 +1,5 @@
 import { Alert, Container } from "react-bootstrap"
 import BreadCrumbBase from "../components/bases/layouts/BreadCrumb/BreadCrumbBase"
-import UserAccessTableTest from "../components/userAccess/userAccessTableTest"
 import UserAccessTable from "../components/userAccess/userAccessTable"
 
 export const UserAccessPage = () => {

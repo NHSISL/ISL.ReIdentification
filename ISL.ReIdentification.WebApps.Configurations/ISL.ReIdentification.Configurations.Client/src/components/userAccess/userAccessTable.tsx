@@ -61,20 +61,20 @@ const UserAccessTable: FunctionComponent<UserAccessTableProps> = () => {
                 </Button>
             </InputGroup>
 
-            <Container fluid className="infiniteScrollContainer">
-                <InfiniteScroll loading={isLoading || showSpinner} hasNextPage={hasNextPage || false} loadMore={fetchNextPage}>
-                    <Card>
-                        <Card.Header>
-                            <div className="ms-auto">
-                                <SecuredComponent allowedRoles={securityPoints.userAccess.add}>
-                                    <Link to="/userAccess/newUser">
-                                        <Button><FontAwesomeIcon icon={faDatabase} className="me-2" /> Add New User</Button>
-                                    </Link>
-                                </SecuredComponent>
-                            </div>
-                        </Card.Header>
-                        <Card.Body>
 
+            <Card>
+                <Card.Header>
+                    <div className="ms-auto">
+                        <SecuredComponent allowedRoles={securityPoints.userAccess.add}>
+                            <Link to="/userAccess/newUser">
+                                <Button><FontAwesomeIcon icon={faDatabase} className="me-2" /> Add New User</Button>
+                            </Link>
+                        </SecuredComponent>
+                    </div>
+                </Card.Header>
+                <Card.Body>
+                    <Container fluid className="infiniteScrollContainer">
+                        <InfiniteScroll loading={isLoading || showSpinner} hasNextPage={hasNextPage || false} loadMore={fetchNextPage}>
                             <Table striped bordered hover variant="light">
                                 <thead>
                                     <tr>
@@ -86,7 +86,7 @@ const UserAccessTable: FunctionComponent<UserAccessTableProps> = () => {
                                 <tbody>
                                     {isLoading || showSpinner ? (
                                         <tr>
-                                            <td colSpan={6} className="text-center">
+                                            <td colSpan={3} className="text-center">
                                                 <SpinnerBase />
                                             </td>
                                         </tr>
@@ -95,6 +95,7 @@ const UserAccessTable: FunctionComponent<UserAccessTableProps> = () => {
                                             {userAccessRetrieved && userAccessRetrieved?.map(d => <tr key={d.id}>
                                                 <td>{d.displayName}</td>
                                                 <td>{d.email}</td>
+                                                <td>{d.entraUserId}</td>
                                                 <td>
                                                     <SecuredComponent allowedRoles={securityPoints.userAccess.edit}>
                                                         <Link to={`/userAccess/${d.entraUserId}`} >
@@ -120,10 +121,11 @@ const UserAccessTable: FunctionComponent<UserAccessTableProps> = () => {
                                     )}
                                 </tbody>
                             </Table>
-                        </Card.Body>
-                    </Card>
-                </InfiniteScroll>
-            </Container>
+                        </InfiniteScroll>
+                    </Container>
+                </Card.Body>
+            </Card>
+
         </>
     );
 };
