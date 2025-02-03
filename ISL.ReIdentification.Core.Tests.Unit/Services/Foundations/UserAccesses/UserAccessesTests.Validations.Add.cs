@@ -139,15 +139,16 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            string randomUserId = GetRandomString();
-            UserAccess invalidUserAccess = CreateRandomUserAccess(randomDateTimeOffset, randomUserId);
             var inputCreatedByUpdatedByString = GetRandomStringWithLength(256);
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            UserAccess invalidUserAccess =
+                CreateRandomUserAccess(randomDateTimeOffset, randomEntraUser.EntraUserId.ToString());
+
             invalidUserAccess.GivenName = GetRandomStringWithLength(256);
             invalidUserAccess.Surname = GetRandomStringWithLength(256);
             invalidUserAccess.Email = GetRandomStringWithLength(321);
             invalidUserAccess.OrgCode = GetRandomStringWithLength(16);
-            invalidUserAccess.CreatedBy = inputCreatedByUpdatedByString;
-            invalidUserAccess.UpdatedBy = inputCreatedByUpdatedByString;
 
             var invalidUserAccessException = new InvalidUserAccessException(
                 message: "Invalid user access. Please correct the errors and try again.");
@@ -160,14 +161,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
                 key: nameof(UserAccess.OrgCode),
                 values: $"Text exceed max length of {invalidUserAccess.OrgCode.Length - 1} characters");
 
-            invalidUserAccessException.AddData(
-                key: nameof(UserAccess.CreatedBy),
-                values: $"Text exceed max length of {invalidUserAccess.CreatedBy.Length - 1} characters");
-
-            invalidUserAccessException.AddData(
-                key: nameof(UserAccess.UpdatedBy),
-                values: $"Text exceed max length of {invalidUserAccess.UpdatedBy.Length - 1} characters");
-
             var expectedUserAccessValidationException =
                 new UserAccessValidationException(
                     message: "UserAccess validation error occurred, please fix errors and try again.",
@@ -176,6 +169,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             // when
             ValueTask<UserAccess> addUserAccessTask =
@@ -192,6 +189,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Exactly(2));
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
