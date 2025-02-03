@@ -58,6 +58,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
         private async ValueTask ValidateUserAccessOnModifyAsync(UserAccess userAccess)
         {
             ValidateUserAccessIsNotNull(userAccess);
+            EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(userAccess.Id), Parameter: nameof(UserAccess.Id)),
@@ -73,14 +74,17 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
                 (Rule: IsInvalidLength(userAccess.Email, 320), Parameter: nameof(UserAccess.Email)),
                 (Rule: IsInvalidLength(userAccess.OrgCode, 15), Parameter: nameof(UserAccess.OrgCode)),
 
+                (Rule: IsNotSame(
+                    first: auditUser.EntraUserId.ToString(),
+                    second: userAccess.UpdatedBy),
+                Parameter: nameof(UserAccess.UpdatedBy)),
+
                 (Rule: IsSameAs(
                     createdDate: userAccess.CreatedDate,
                     updatedDate: userAccess.UpdatedDate,
                     createdDateName: nameof(UserAccess.CreatedDate)),
 
-                Parameter: nameof(UserAccess.UpdatedDate)),
-
-                (Rule: await IsNotRecentAsync(userAccess.UpdatedDate), Parameter: nameof(UserAccess.UpdatedDate)));
+                Parameter: nameof(UserAccess.UpdatedDate)));
         }
 
         private static void ValidateUserAccessOnRemoveById(Guid userAccessId) =>

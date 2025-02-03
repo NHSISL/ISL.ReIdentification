@@ -63,6 +63,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
         public ValueTask<UserAccess> ModifyUserAccessAsync(UserAccess userAccess) =>
         TryCatch(async () =>
         {
+            ValidateUserAccessIsNotNull(userAccess);
             await ApplyModifyAudit(userAccess);
             await ValidateUserAccessOnModifyAsync(userAccess);
 
