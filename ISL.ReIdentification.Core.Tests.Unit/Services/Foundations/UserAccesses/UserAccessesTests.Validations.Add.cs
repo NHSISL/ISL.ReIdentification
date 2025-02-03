@@ -55,12 +55,20 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
         public async Task ShouldThrowValidationExceptionOnAddIfUserAccessIsInvalidAndLogItAsync(string invalidText)
         {
             // given
+            EntraUser randomInvalidEntraUser = CreateRandomInvalidEntraUser();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
             var invalidUserAccess = new UserAccess
             {
-                EntraUserId = Guid.Empty,
+                EntraUserId = randomInvalidEntraUser.EntraUserId,
                 Email = invalidText,
                 OrgCode = invalidText,
             };
+
+            this.securityBrokerMock.SetupSequence(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomInvalidEntraUser)
+                    .ReturnsAsync(randomEntraUser);
 
             var invalidUserAccessException =
                 new InvalidUserAccessException(
@@ -88,15 +96,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             invalidUserAccessException.AddData(
                 key: nameof(UserAccess.CreatedBy),
-                values: "Text is invalid");
+                values:
+                    $"Expected value to be {randomEntraUser.EntraUserId} " +
+                    $"but found {randomInvalidEntraUser.EntraUserId}.");
 
             invalidUserAccessException.AddData(
                 key: nameof(UserAccess.UpdatedDate),
                 values: "Date is invalid");
-
-            invalidUserAccessException.AddData(
-                key: nameof(UserAccess.UpdatedBy),
-                values: "Text is invalid");
 
             var expectedUserAccessValidationException =
                 new UserAccessValidationException(
@@ -118,6 +124,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Exactly(2));
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(

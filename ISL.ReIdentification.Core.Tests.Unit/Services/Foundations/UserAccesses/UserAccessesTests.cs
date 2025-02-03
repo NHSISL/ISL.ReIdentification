@@ -173,6 +173,23 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             return randomUserAccess;
         }
 
+        private EntraUser CreateRandomInvalidEntraUser()
+        {
+            return new EntraUser(
+                entraUserId: Guid.Empty,
+                givenName: GetRandomString(),
+                surname: GetRandomString(),
+                displayName: GetRandomString(),
+                email: GetRandomString(),
+                jobTitle: GetRandomString(),
+                roles: new List<string> { GetRandomString() },
+
+                claims: new List<System.Security.Claims.Claim>
+                {
+                    new System.Security.Claims.Claim(type: GetRandomString(), value: GetRandomString())
+                });
+        }
+
         private EntraUser CreateRandomEntraUser()
         {
             return new EntraUser(
