@@ -68,6 +68,7 @@ namespace ISL.ReIdentification.Core.Brokers.Securities
         public async ValueTask<bool> IsInRoleAsync(string roleName)
         {
             var roles = this.user.FindAll(ClaimTypes.Role).Select(role => role.Value).ToList();
+            
             return roles.Contains(roleName);
         }
 
