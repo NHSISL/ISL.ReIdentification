@@ -141,9 +141,9 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
         {
             var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
             var auditUser = await this.securityBroker.GetCurrentUserAsync();
-            maybeUserAccess.CreatedBy = auditUser.EntraUserId.ToString();
+            maybeUserAccess.CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
             maybeUserAccess.CreatedDate = auditDateTimeOffset;
-            maybeUserAccess.UpdatedBy = auditUser.EntraUserId.ToString();
+            maybeUserAccess.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
             maybeUserAccess.UpdatedDate = auditDateTimeOffset;
         }
 
@@ -151,7 +151,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
         {
             var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
             var auditUser = await this.securityBroker.GetCurrentUserAsync();
-            maybeUserAccess.UpdatedBy = auditUser.EntraUserId.ToString();
+            maybeUserAccess.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
             maybeUserAccess.UpdatedDate = auditDateTimeOffset;
         }
     }

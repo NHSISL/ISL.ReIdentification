@@ -97,8 +97,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             invalidUserAccessException.AddData(
                 key: nameof(UserAccess.CreatedBy),
                 values:
-                    $"Expected value to be {randomEntraUser.EntraUserId} " +
-                    $"but found {randomInvalidEntraUser.EntraUserId}.");
+                    $"Expected value to be '{randomEntraUser.EntraUserId}' " +
+                    $"but found '{randomInvalidEntraUser.EntraUserId}'.");
 
             invalidUserAccessException.AddData(
                 key: nameof(UserAccess.UpdatedDate),
@@ -239,8 +239,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             invalidUserAccessException.AddData(
                 key: nameof(UserAccess.CreatedBy),
                 values:
-                    $"Expected value to be {randomAuditEntraUser.EntraUserId.ToString()} " +
-                    $"but found {randomEntraUser.EntraUserId.ToString()}.");
+                    $"Expected value to be '{randomAuditEntraUser.EntraUserId.ToString()}' " +
+                    $"but found '{randomEntraUser.EntraUserId.ToString()}'.");
 
             var expectedUserAccessValidationException =
                 new UserAccessValidationException(

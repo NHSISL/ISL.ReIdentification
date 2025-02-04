@@ -161,7 +161,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
             DateTimeOffset second) => new
             {
                 Condition = first != second,
-                Message = $"Expected value to be {first} but found {second}."
+                Message = $"Expected value to be '{first}' but found '{second}'."
             };
 
         private static dynamic IsNotSame(
@@ -178,7 +178,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
             string second) => new
             {
                 Condition = first != second,
-                Message = $"Expected value to be {first} but found {second}."
+                Message = $"Expected value to be '{first}' but found '{second}'."
             };
 
         private static dynamic IsNotSame(
