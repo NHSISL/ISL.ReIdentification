@@ -9,10 +9,10 @@ namespace ISL.ReIdentification.Core.Brokers.Securities
 {
     public interface ISecurityBroker
     {
-        ValueTask<EntraUser> GetCurrentUser();
-        ValueTask<bool> IsCurrentUserAuthenticated();
-        ValueTask<bool> IsInRole(string roleName);
-        ValueTask<bool> HasClaimType(string claimType, string claimValue);
-        ValueTask<bool> HasClaimType(string claimType);
+        ValueTask<EntraUser> GetCurrentUserAsync();
+        ValueTask<bool> IsCurrentUserAuthenticatedAsync();
+        ValueTask<bool> IsInRoleAsync(string roleName);
+        ValueTask<bool> HasClaimTypeAsync(string claimType, string claimValue);
+        ValueTask<bool> HasClaimTypeAsync(string claimType);
     }
 }

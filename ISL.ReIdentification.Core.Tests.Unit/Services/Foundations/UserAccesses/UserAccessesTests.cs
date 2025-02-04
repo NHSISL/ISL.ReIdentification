@@ -9,10 +9,13 @@ using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Loggings;
+using ISL.ReIdentification.Core.Brokers.Securities;
 using ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Foundations.OdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
+using ISL.ReIdentification.Core.Models.Securities;
 using ISL.ReIdentification.Core.Services.Foundations.UserAccesses;
+using KellermanSoftware.CompareNetObjects;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Moq;
@@ -25,66 +28,47 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
     {
         private readonly Mock<IReIdentificationStorageBroker> reIdentificationStorageBroker;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
+        private readonly Mock<ISecurityBroker> securityBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly UserAccessService userAccessService;
+        private readonly ICompareLogic compareLogic;
 
         public UserAccessesTests()
         {
             this.reIdentificationStorageBroker = new Mock<IReIdentificationStorageBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
+            this.securityBrokerMock = new Mock<ISecurityBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
+            this.compareLogic = new CompareLogic();
 
             this.userAccessService = new UserAccessService(
-                reIdentificationStorageBroker.Object,
-                dateTimeBrokerMock.Object,
-                loggingBrokerMock.Object);
+                reIdentificationStorageBroker: reIdentificationStorageBroker.Object,
+                dateTimeBroker: dateTimeBrokerMock.Object,
+                securityBroker: securityBrokerMock.Object,
+                loggingBroker: loggingBrokerMock.Object);
+        }
+
+        private Expression<Func<UserAccess, bool>> SameUserAccessAs(UserAccess expectedUserAccess)
+        {
+            return actualUserAccess =>
+                this.compareLogic.Compare(expectedUserAccess, actualUserAccess)
+                    .AreEqual;
         }
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private static DateTimeOffset GetRandomPastDateTimeOffset()
-        {
-            DateTime now = DateTimeOffset.UtcNow.Date;
-            int randomDaysInPast = GetRandomNegativeNumber();
-            DateTime pastDateTime = now.AddDays(randomDaysInPast).Date;
-
-            return new DateTimeRange(earliestDate: pastDateTime, latestDate: now).GetValue();
-        }
-
-        private static DateTimeOffset GetRandomFutureDateTimeOffset()
-        {
-            DateTime futureStartDate = DateTimeOffset.UtcNow.AddDays(1).Date;
-            int randomDaysInFuture = GetRandomNumber();
-            DateTime futureEndDate = futureStartDate.AddDays(randomDaysInFuture).Date;
-
-            return new DateTimeRange(earliestDate: futureStartDate, latestDate: futureEndDate).GetValue();
-        }
-
         private static UserAccess CreateRandomUserAccess() =>
-            CreateRandomUserAccess(dateTimeOffset: GetRandomDateTimeOffset());
+            CreateRandomUserAccess(dateTimeOffset: GetRandomDateTimeOffset(), userId: GetRandomString());
 
-        private static UserAccess CreateRandomUserAccess(DateTimeOffset dateTimeOffset) =>
-            CreateUserAccessesFiller(dateTimeOffset).Create();
+        private static UserAccess CreateRandomUserAccess(DateTimeOffset dateTimeOffset, string userId) =>
+            CreateUserAccessesFiller(dateTimeOffset, userId).Create();
 
         private static List<UserAccess> CreateRandomUserAccesses()
         {
-            return CreateUserAccessesFiller(GetRandomDateTimeOffset())
+            return CreateUserAccessesFiller(dateTimeOffset: GetRandomDateTimeOffset(), userId: GetRandomString())
                 .Create(GetRandomNumber())
                 .ToList();
-        }
-
-        private static List<UserAccess> CreateValidUserAccesses(Guid entraUserId)
-        {
-            UserAccess currentActiveToUserAccess = CreateRandomUserAccess();
-
-            List<UserAccess> userAccesses = new List<UserAccess> {
-                currentActiveToUserAccess
-            };
-
-            userAccesses.ForEach(userAccess => userAccess.EntraUserId = entraUserId);
-
-            return userAccesses;
         }
 
         private static List<UserAccess> CreateUserAccesses(int count = 0)
@@ -180,25 +164,66 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
         private SqlException CreateSqlException() =>
             (SqlException)RuntimeHelpers.GetUninitializedObject(type: typeof(SqlException));
 
-        private static UserAccess CreateRandomModifyUserAccess(DateTimeOffset dateTimeOffset)
+        private static UserAccess CreateRandomModifyUserAccess(DateTimeOffset dateTimeOffset, string userId)
         {
             int randomDaysInThePast = GetRandomNegativeNumber();
-            UserAccess randomUserAccess = CreateRandomUserAccess(dateTimeOffset);
+            UserAccess randomUserAccess = CreateRandomUserAccess(dateTimeOffset, userId);
             randomUserAccess.CreatedDate = dateTimeOffset.AddDays(randomDaysInThePast);
 
             return randomUserAccess;
         }
 
-        private static Filler<UserAccess> CreateUserAccessesFiller(DateTimeOffset dateTimeOffset)
+        private EntraUser CreateRandomInvalidEntraUser()
         {
-            string user = Guid.NewGuid().ToString();
+            return new EntraUser(
+                entraUserId: Guid.Empty,
+                givenName: GetRandomString(),
+                surname: GetRandomString(),
+                displayName: GetRandomString(),
+                email: GetRandomString(),
+                jobTitle: GetRandomString(),
+                roles: new List<string> { GetRandomString() },
+
+                claims: new List<System.Security.Claims.Claim>
+                {
+                    new System.Security.Claims.Claim(type: GetRandomString(), value: GetRandomString())
+                });
+        }
+
+        private EntraUser CreateRandomEntraUser()
+        {
+            return new EntraUser(
+                entraUserId: Guid.NewGuid(),
+                givenName: GetRandomString(),
+                surname: GetRandomString(),
+                displayName: GetRandomString(),
+                email: GetRandomString(),
+                jobTitle: GetRandomString(),
+                roles: new List<string> { GetRandomString() },
+
+                claims: new List<System.Security.Claims.Claim>
+                {
+                    new System.Security.Claims.Claim(type: GetRandomString(), value: GetRandomString())
+                });
+        }
+
+        private static Filler<EntraUser> CreateRandomEntraUserFiller()
+        {
+            var filler = new Filler<EntraUser>();
+            filler.Setup();
+
+            return filler;
+        }
+
+        private static Filler<UserAccess> CreateUserAccessesFiller(DateTimeOffset dateTimeOffset, string userId)
+        {
             var filler = new Filler<UserAccess>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
-                .OnProperty(userAccess => userAccess.CreatedBy).Use(user)
-                .OnProperty(userAccess => userAccess.UpdatedBy).Use(user);
+                .OnProperty(userAccess => userAccess.CreatedBy).Use(userId)
+                .OnProperty(userAccess => userAccess.UpdatedBy).Use(userId);
 
             return filler;
         }

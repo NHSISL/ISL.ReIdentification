@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses.Exceptions;
+using ISL.ReIdentification.Core.Models.Securities;
 
 namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
 {
@@ -14,6 +15,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
         private async ValueTask ValidateUserAccessOnAddAsync(UserAccess userAccess)
         {
             ValidateUserAccessIsNotNull(userAccess);
+            EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(userAccess.Id), Parameter: nameof(UserAccess.Id)),
@@ -33,17 +35,18 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
                     first: userAccess.UpdatedBy,
                     second: userAccess.CreatedBy,
                     secondName: nameof(UserAccess.CreatedBy)),
-
                 Parameter: nameof(UserAccess.UpdatedBy)),
 
                 (Rule: IsNotSame(
-                    first: userAccess.UpdatedDate,
-                    second: userAccess.CreatedDate,
+                    first: auditUser.EntraUserId.ToString(),
+                    second: userAccess.CreatedBy),
+                Parameter: nameof(UserAccess.CreatedBy)),
+
+                (Rule: IsNotSame(
+                    first: userAccess.CreatedDate,
+                    second: userAccess.UpdatedDate,
                     secondName: nameof(UserAccess.CreatedDate)),
-
-                Parameter: nameof(UserAccess.UpdatedDate)),
-
-                (Rule: await IsNotRecentAsync(userAccess.CreatedDate), Parameter: nameof(UserAccess.CreatedDate)));
+                Parameter: nameof(UserAccess.UpdatedBy)));
         }
 
         private static void ValidateUserAccessOnRetrieveById(Guid userAccessId)
@@ -55,6 +58,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
         private async ValueTask ValidateUserAccessOnModifyAsync(UserAccess userAccess)
         {
             ValidateUserAccessIsNotNull(userAccess);
+            EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(userAccess.Id), Parameter: nameof(UserAccess.Id)),
@@ -70,14 +74,17 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
                 (Rule: IsInvalidLength(userAccess.Email, 320), Parameter: nameof(UserAccess.Email)),
                 (Rule: IsInvalidLength(userAccess.OrgCode, 15), Parameter: nameof(UserAccess.OrgCode)),
 
+                (Rule: IsNotSame(
+                    first: auditUser.EntraUserId.ToString(),
+                    second: userAccess.UpdatedBy),
+                Parameter: nameof(UserAccess.UpdatedBy)),
+
                 (Rule: IsSameAs(
                     createdDate: userAccess.CreatedDate,
                     updatedDate: userAccess.UpdatedDate,
                     createdDateName: nameof(UserAccess.CreatedDate)),
 
-                Parameter: nameof(UserAccess.UpdatedDate)),
-
-                (Rule: await IsNotRecentAsync(userAccess.UpdatedDate), Parameter: nameof(UserAccess.UpdatedDate)));
+                Parameter: nameof(UserAccess.UpdatedDate)));
         }
 
         private static void ValidateUserAccessOnRemoveById(Guid userAccessId) =>
@@ -94,23 +101,42 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
             }
         }
 
-        private static void ValidateAgainstStorageUserAccessOnModify(
+        private async ValueTask ValidateAgainstStorageUserAccessOnModifyAsync(
             UserAccess userAccess,
             UserAccess maybeUserAccess)
         {
+            DateTimeOffset currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+
             Validate(
                 (Rule: IsNotSame(
                     userAccess.CreatedDate,
                     maybeUserAccess.CreatedDate,
                     nameof(maybeUserAccess.CreatedDate)),
-
                 Parameter: nameof(UserAccess.CreatedDate)),
 
                 (Rule: IsSameAs(
                     userAccess.UpdatedDate,
                     maybeUserAccess.UpdatedDate,
                     nameof(maybeUserAccess.UpdatedDate)),
+                Parameter: nameof(UserAccess.UpdatedDate)));
+        }
 
+        private async ValueTask ValidateAgainstStorageUserAccessOnDeleteAsync(
+            UserAccess userAccess,
+            UserAccess maybeUserAccess)
+        {
+            DateTimeOffset currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+
+            Validate(
+                (Rule: IsNotSame(
+                    userAccess.CreatedDate,
+                    maybeUserAccess.CreatedDate,
+                    nameof(maybeUserAccess.CreatedDate)),
+                Parameter: nameof(UserAccess.CreatedDate)),
+
+                (Rule: IsNotSame(
+                    first: maybeUserAccess.UpdatedDate,
+                    second: userAccess.UpdatedDate),
                 Parameter: nameof(UserAccess.UpdatedDate)));
         }
 
@@ -151,11 +177,27 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
 
         private static dynamic IsNotSame(
             DateTimeOffset first,
+            DateTimeOffset second) => new
+            {
+                Condition = first != second,
+                Message = $"Expected value to be '{first}' but found '{second}'."
+            };
+
+        private static dynamic IsNotSame(
+            DateTimeOffset first,
             DateTimeOffset second,
             string secondName) => new
             {
                 Condition = first != second,
                 Message = $"Date is not the same as {secondName}"
+            };
+
+        private static dynamic IsNotSame(
+            string first,
+            string second) => new
+            {
+                Condition = first != second,
+                Message = $"Expected value to be '{first}' but found '{second}'."
             };
 
         private static dynamic IsNotSame(
@@ -166,6 +208,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
                 Condition = first != second,
                 Message = $"Text is not the same as {secondName}"
             };
+
 
         private static dynamic IsSameAs(
             DateTimeOffset createdDate,
