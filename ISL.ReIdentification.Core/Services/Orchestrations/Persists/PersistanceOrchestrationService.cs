@@ -170,8 +170,8 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
                 .RetrieveAllCsvIdentificationRequestsAsync();
 
             List<CsvIdentificationRequest> expiredCsvIdentificationRequests = csvIdentificationRequests
-               .Where(request => request.Data != null && request.Data.Length > 0 && request.CreatedDate < expiryDate)
-               .ToList();
+                .Where(request => request.Data != null && request.Data.Length > 0 && request.CreatedDate < expiryDate)
+                    .ToList();
 
             foreach (CsvIdentificationRequest csvIdentificationRequest in expiredCsvIdentificationRequests)
             {
@@ -180,7 +180,8 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
                 csvIdentificationRequest.UpdatedDate = dateTimeOffset;
                 csvIdentificationRequest.UpdatedBy = "System";
 
-                await this.csvIdentificationRequestService.ModifyCsvIdentificationRequestAsync(csvIdentificationRequest);
+                await this.csvIdentificationRequestService
+                    .ModifyCsvIdentificationRequestAsync(csvIdentificationRequest);
 
                 AccessAudit accessAudit = new AccessAudit
                 {
