@@ -155,7 +155,6 @@ internal class Program
         AccessToken accessToken = credential.GetTokenAsync(tokenRequestContext).Result;
         SecurityBroker securityBroker = new SecurityBroker(accessToken.Token);
 
-
         services.AddTransient<ISecurityBroker>(broker => securityBroker);
         services.AddTransient<ILoggingBroker, LoggingBroker>();
         services.AddTransient<IDateTimeBroker, DateTimeBroker>();

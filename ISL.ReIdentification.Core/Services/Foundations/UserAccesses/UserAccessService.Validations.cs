@@ -101,23 +101,42 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
             }
         }
 
-        private static void ValidateAgainstStorageUserAccessOnModify(
+        private async ValueTask ValidateAgainstStorageUserAccessOnModifyAsync(
             UserAccess userAccess,
             UserAccess maybeUserAccess)
         {
+            DateTimeOffset currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+
             Validate(
                 (Rule: IsNotSame(
                     userAccess.CreatedDate,
                     maybeUserAccess.CreatedDate,
                     nameof(maybeUserAccess.CreatedDate)),
-
                 Parameter: nameof(UserAccess.CreatedDate)),
 
                 (Rule: IsSameAs(
                     userAccess.UpdatedDate,
                     maybeUserAccess.UpdatedDate,
                     nameof(maybeUserAccess.UpdatedDate)),
+                Parameter: nameof(UserAccess.UpdatedDate)));
+        }
 
+        private async ValueTask ValidateAgainstStorageUserAccessOnDeleteAsync(
+            UserAccess userAccess,
+            UserAccess maybeUserAccess)
+        {
+            DateTimeOffset currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+
+            Validate(
+                (Rule: IsNotSame(
+                    userAccess.CreatedDate,
+                    maybeUserAccess.CreatedDate,
+                    nameof(maybeUserAccess.CreatedDate)),
+                Parameter: nameof(UserAccess.CreatedDate)),
+
+                (Rule: IsNotSame(
+                    first: maybeUserAccess.UpdatedDate,
+                    second: userAccess.UpdatedDate),
                 Parameter: nameof(UserAccess.UpdatedDate)));
         }
 

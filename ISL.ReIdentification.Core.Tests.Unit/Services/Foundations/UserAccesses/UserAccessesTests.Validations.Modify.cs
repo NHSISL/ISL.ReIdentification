@@ -404,7 +404,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Exactly(2));
 
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),
@@ -472,7 +472,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Exactly(2));
 
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),

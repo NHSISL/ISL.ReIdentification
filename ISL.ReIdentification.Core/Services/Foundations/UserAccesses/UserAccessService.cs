@@ -38,7 +38,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
         TryCatch(async () =>
         {
             ValidateUserAccessIsNotNull(userAccess);
-            await ApplyAddAudit(userAccess);
+            await ApplyAddAuditAsync(userAccess);
             await ValidateUserAccessOnAddAsync(userAccess);
 
             return await this.reIdentificationStorageBroker.InsertUserAccessAsync(userAccess);
@@ -64,14 +64,14 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
         TryCatch(async () =>
         {
             ValidateUserAccessIsNotNull(userAccess);
-            await ApplyModifyAudit(userAccess);
+            await ApplyModifyAuditAsync(userAccess);
             await ValidateUserAccessOnModifyAsync(userAccess);
 
             var maybeUserAccess = await this.reIdentificationStorageBroker
                 .SelectUserAccessByIdAsync(userAccess.Id);
 
             ValidateStorageUserAccess(maybeUserAccess, userAccess.Id);
-            ValidateAgainstStorageUserAccessOnModify(userAccess, maybeUserAccess);
+            await ValidateAgainstStorageUserAccessOnModifyAsync(userAccess, maybeUserAccess);
 
             return await this.reIdentificationStorageBroker.UpdateUserAccessAsync(userAccess);
         });
@@ -85,10 +85,12 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
                 .SelectUserAccessByIdAsync(userAccessId);
 
             ValidateStorageUserAccess(maybeUserAccess, userAccessId);
-            await ApplyModifyAudit(maybeUserAccess);
+            await ApplyModifyAuditAsync(maybeUserAccess);
 
             var updatedUserAccess = await this.reIdentificationStorageBroker
                 .UpdateUserAccessAsync(maybeUserAccess);
+
+            await ValidateAgainstStorageUserAccessOnDeleteAsync(updatedUserAccess, maybeUserAccess);
 
             return await this.reIdentificationStorageBroker.DeleteUserAccessAsync(updatedUserAccess);
         });
@@ -137,7 +139,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
             return organisations.Distinct().ToList();
         });
 
-        private async ValueTask ApplyAddAudit(UserAccess maybeUserAccess)
+        private async ValueTask ApplyAddAuditAsync(UserAccess maybeUserAccess)
         {
             var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
             var auditUser = await this.securityBroker.GetCurrentUserAsync();
@@ -147,7 +149,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
             maybeUserAccess.UpdatedDate = auditDateTimeOffset;
         }
 
-        private async ValueTask ApplyModifyAudit(UserAccess maybeUserAccess)
+        private async ValueTask ApplyModifyAuditAsync(UserAccess maybeUserAccess)
         {
             var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
             var auditUser = await this.securityBroker.GetCurrentUserAsync();
