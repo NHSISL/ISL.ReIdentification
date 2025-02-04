@@ -81,7 +81,6 @@ namespace ISL.ReIdentification.Core.Brokers.Securities
                           ?? this.user.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value;
 
             var entraUserId = Guid.TryParse(entraUserIdString, out var parsedGuid) ? parsedGuid : Guid.Empty;
-
             var givenName = this.user.FindFirst(ClaimTypes.GivenName)?.Value;
             var surname = this.user.FindFirst(ClaimTypes.Surname)?.Value;
             var displayName = this.user.FindFirst("displayName")?.Value;
@@ -110,8 +109,8 @@ namespace ISL.ReIdentification.Core.Brokers.Securities
         {
             var handler = new JwtSecurityTokenHandler();
             var jwtToken = handler.ReadJwtToken(token);
-
             var identity = new ClaimsIdentity(jwtToken.Claims, "jwt");
+            
             return new ClaimsPrincipal(identity);
         }
     }
