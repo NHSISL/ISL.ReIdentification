@@ -16,12 +16,24 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
     public partial class PersistanceOrchestrationServiceTests
     {
         [Fact]
-        public async Task ShouldPurgeCsvReIdentificationRecordsThatExpiredAsync()
+        public async Task ShouldPurgeCsvReIdentificationRecordsThatExpiredAndNotNullAsync()
         {
             // given
             DateTimeOffset now = DateTimeOffset.UtcNow;
             List<CsvIdentificationRequest> outputCsvIdentificationRequests = new List<CsvIdentificationRequest>();
             List<CsvIdentificationRequest> csvIdentificationRequests = CreateRandomCsvIdentificationRequests();
+
+            CsvIdentificationRequest invalidByteArrayCsvIdentificationRequest = CreateRandomCsvIdentificationRequest();
+            invalidByteArrayCsvIdentificationRequest.Data = Array.Empty<byte>();
+            csvIdentificationRequests.Add(invalidByteArrayCsvIdentificationRequest);
+
+            CsvIdentificationRequest invalidNullDataCsvIdentificationRequest = CreateRandomCsvIdentificationRequest();
+            invalidNullDataCsvIdentificationRequest.Data = null;
+            csvIdentificationRequests.Add(invalidNullDataCsvIdentificationRequest);
+
+            CsvIdentificationRequest invalidExpiredDateCsvIdentificationRequest = CreateRandomCsvIdentificationRequest();
+            invalidExpiredDateCsvIdentificationRequest.CreatedDate = now.AddMinutes(-expireAfterMinutes);
+            csvIdentificationRequests.Add(invalidExpiredDateCsvIdentificationRequest);
 
             List<CsvIdentificationRequest> expiredCsvIdentificationRequests =
                 CreateRandomExpiredCsvIdentificationRequests();
