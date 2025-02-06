@@ -28,7 +28,12 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
                 await this.apiBroker.GetUserAccessByIdAsync(inputUserAccess.Id);
 
             // then
-            actualUserAccess.Should().BeEquivalentTo(expectedUserAccess);
+            actualUserAccess.Should().BeEquivalentTo(expectedUserAccess, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
+
             await this.apiBroker.DeleteUserAccessByIdAsync(inputUserAccess.Id);
         }
 
@@ -121,7 +126,12 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             UserAccess actualUserAccess = await this.apiBroker.GetUserAccessByIdAsync(randomUserAccess.Id);
 
             // then
-            actualUserAccess.Should().BeEquivalentTo(updatedUserAccess);
+            actualUserAccess.Should().BeEquivalentTo(updatedUserAccess, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
+
             await this.apiBroker.DeleteUserAccessByIdAsync(actualUserAccess.Id);
         }
 
