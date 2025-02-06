@@ -4,7 +4,7 @@ import { AuthenticatedTemplate, UnauthenticatedTemplate, useMsal } from "@azure/
 import ReportsReasonPage from "./ReportsReasonPage";
 import ReportsLaunchPage from "./reportsLaunchPage";
 import axios, { AxiosError } from "axios";
-import { AuthenticationResult, InteractionRequiredAuthError, SilentRequest } from "@azure/msal-browser";
+import { AuthenticationResult, InteractionRequiredAuthError, RedirectRequest, SilentRequest } from "@azure/msal-browser";
 import { IReportEmbedConfiguration } from "embed";
 import ReportDeveloperTools from "./reportDeveloperTools";
 import { DeveloperEvents } from "../../types/DeveloperEvents";
@@ -47,7 +47,12 @@ const ReportsHome: FunctionComponent = () => {
         } catch (error) {
             if (error instanceof InteractionRequiredAuthError) {
                 // fallback to interaction when silent call fails
-                await instance.acquireTokenRedirect(request);
+                const redirectRequest: RedirectRequest = {
+                    ...request,
+                    redirectUri: window.location.href
+                };
+
+                await instance.acquireTokenRedirect(redirectRequest);
             } else {
                 console.log(error);
                 throw error; // rethrow the error after logging it
