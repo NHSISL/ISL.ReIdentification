@@ -36,6 +36,9 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Blob
         public async ValueTask CreateContainerAsync(string container) =>
             await this.storageAbstractionProvider.CreateContainerAsync(container);
 
+        public async ValueTask<List<string>> RetrieveAllContainersAsync() =>
+            await this.storageAbstractionProvider.RetrieveAllContainersAsync();
+
         public async ValueTask<List<string>> ListFilesInContainerAsync(string container) =>
             await this.storageAbstractionProvider.ListFilesInContainerAsync(container);
 
