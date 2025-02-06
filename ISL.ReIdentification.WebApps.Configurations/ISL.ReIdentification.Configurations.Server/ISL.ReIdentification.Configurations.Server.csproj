@@ -13,6 +13,7 @@
 		<PackageReference Include="Attrify" Version="0.0.0.2" />
 		<PackageReference Include="FluentAssertions" Version="7.0.0" />
 		<PackageReference Include="ISL.Providers.ReIdentification.Abstractions" Version="0.0.0.4" />
+		<PackageReference Include="ISL.Providers.ReIdentification.DemoData" Version="0.0.0.4" />
 		<PackageReference Include="ISL.Providers.ReIdentification.Necs" Version="0.0.0.4" />
 		<PackageReference Include="ISL.Providers.ReIdentification.OfflineFileSources" Version="0.0.0.4" />
 		<PackageReference Include="Microsoft.AspNetCore.OData" Version="9.1.3" />
