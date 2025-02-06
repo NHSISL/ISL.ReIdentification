@@ -1,8 +1,8 @@
 import { FunctionComponent, useMemo, useState } from "react";
 import { SpinnerBase } from "../bases/spinner/SpinnerBase";
-import { Button, Card, Container, InputGroup, Table } from "react-bootstrap";
+import { Alert, Button, Card, Container, InputGroup, Table } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDatabase, faRefresh } from "@fortawesome/free-solid-svg-icons";
+import { faCircleExclamation, faDatabase, faRefresh } from "@fortawesome/free-solid-svg-icons";
 import { userAccessViewService } from "../../services/views/userAccess/userAccessViewService";
 import { Link } from "react-router-dom";
 import securityPoints from "../../securityMatrix";
@@ -11,6 +11,7 @@ import SearchBase from "../bases/search/SearchBase";
 import { debounce } from "lodash";
 import InfiniteScroll from "../bases/pagers/InfiniteScroll";
 import InfiniteScrollLoader from "../bases/pagers/InfiniteScroll.Loader";
+import moment from "moment";
 
 type UserAccessTableProps = object;
 
@@ -54,7 +55,7 @@ const UserAccessTable: FunctionComponent<UserAccessTableProps> = () => {
     return (
         <>
             <InputGroup className="mb-3">
-                <SearchBase id="search" label="Search ods" value={searchTerm} placeholder="Search Table"
+                <SearchBase id="search" label="Search ods" value={searchTerm} placeholder="Search User Table"
                     onChange={(e) => { handleSearchChange(e.currentTarget.value) }} />
                 <Button variant="outline-secondary" onClick={handleRefresh}>
                     <FontAwesomeIcon icon={faRefresh} />
@@ -64,12 +65,13 @@ const UserAccessTable: FunctionComponent<UserAccessTableProps> = () => {
 
             <Card>
                 <Card.Header>
-                    <div className="ms-auto">
+                    <div className="d-flex justify-content-between align-items-center">
                         <SecuredComponent allowedRoles={securityPoints.userAccess.add}>
                             <Link to="/userAccess/newUser">
                                 <Button><FontAwesomeIcon icon={faDatabase} className="me-2" /> Add New User</Button>
                             </Link>
                         </SecuredComponent>
+                        <Alert variant="danger" className="p-2 ms-3 mb-0"><FontAwesomeIcon icon={faCircleExclamation} size="lg" />&nbsp; Any modification to data on this screen is audited.</Alert>
                     </div>
                 </Card.Header>
                 <Card.Body>
@@ -80,7 +82,8 @@ const UserAccessTable: FunctionComponent<UserAccessTableProps> = () => {
                                     <tr>
                                         <th>Display Name</th>
                                         <th>Email</th>
-                                        <th>Action(s)</th>
+                                        <th>Date Created</th>
+                                        <th className="text-center">Action(s)</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -91,16 +94,17 @@ const UserAccessTable: FunctionComponent<UserAccessTableProps> = () => {
                                             </td>
                                         </tr>
                                     ) : (
-                                        <>
+                                            <>
+                                               
                                             {userAccessRetrieved && userAccessRetrieved?.map(d => <tr key={d.id}>
                                                 <td>{d.displayName}</td>
                                                 <td>{d.email}</td>
-                                                <td>{d.entraUserId}</td>
-                                                <td>
+                                                <td>{moment(d.createdDate?.toString()).format("Do-MMM-yyyy")}</td>
+                                                <td className="text-center">
                                                     <SecuredComponent allowedRoles={securityPoints.userAccess.edit}>
                                                         <Link to={`/userAccess/${d.entraUserId}`} >
                                                             <Button size="sm">
-                                                                Edit
+                                                                Edit Access
                                                             </Button>
                                                         </Link>
                                                     </SecuredComponent>
@@ -108,7 +112,7 @@ const UserAccessTable: FunctionComponent<UserAccessTableProps> = () => {
                                             </tr>)}
 
                                             <tr>
-                                                <td colSpan={3} className="text-center">
+                                                <td colSpan={4} className="text-center">
                                                     <InfiniteScrollLoader
                                                         loading={isLoading || isFetchingNextPage}
                                                         spinner={<SpinnerBase />}
