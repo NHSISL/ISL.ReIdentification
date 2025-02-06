@@ -5,6 +5,8 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Azure.Core;
+using Azure.Identity;
 using ISL.Providers.Notifications.Abstractions;
 using ISL.Providers.Notifications.GovukNotify.Models;
 using ISL.Providers.Notifications.GovukNotify.Providers.Notifications;
@@ -22,6 +24,7 @@ using ISL.ReIdentification.Core.Brokers.Hashing;
 using ISL.ReIdentification.Core.Brokers.Identifiers;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Notifications;
+using ISL.ReIdentification.Core.Brokers.Securities;
 using ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Brokers.Notifications;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
@@ -147,6 +150,12 @@ internal class Program
 
     private static void AddBrokers(IServiceCollection services)
     {
+        var credential = new DefaultAzureCredential();
+        var tokenRequestContext = new TokenRequestContext(new[] { "https://graph.microsoft.com/.default" });
+        AccessToken accessToken = credential.GetTokenAsync(tokenRequestContext).Result;
+        SecurityBroker securityBroker = new SecurityBroker(accessToken.Token);
+
+        services.AddTransient<ISecurityBroker>(broker => securityBroker);
         services.AddTransient<ILoggingBroker, LoggingBroker>();
         services.AddTransient<IDateTimeBroker, DateTimeBroker>();
         services.AddTransient<IIdentifierBroker, IdentifierBroker>();
