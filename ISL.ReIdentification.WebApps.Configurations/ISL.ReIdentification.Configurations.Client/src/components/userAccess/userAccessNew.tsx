@@ -1,7 +1,7 @@
 import { Button, ButtonGroup, Card, CardBody, CardFooter, CardHeader, Container, Spinner } from "react-bootstrap"
 import BreadCrumbBase from "../bases/layouts/BreadCrumb/BreadCrumbBase"
 import EntraUserSearch from "../EntraUserSearch/entraUserSearch"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { entraUser } from "../../models/views/components/entraUsers/entraUsers"
 import OdsTree from "../odsData/odsTree"
 import { OdsData } from "../../models/odsData/odsData"
@@ -9,13 +9,22 @@ import { userAccessService } from "../../services/foundations/userAccessService"
 import { UserAccess } from "../../models/userAccess/userAccess"
 import { useNavigate } from "react-router-dom"
 import { toastError } from "../../brokers/toastBroker.error"
+import { odsDataService } from "../../services/foundations/odsDataAccessService"
 
 export const UserAccessNew = () => {
 
     const [selectedUser, setSelectedUser] = useState<entraUser | undefined>();
     const [selectedOdsRecords, setSelectedOdsRecords] = useState<OdsData[]>([]);
     const navigate = useNavigate();
-    const {mutateAsync, isPending, error} = userAccessService.useCreateUserAccess();
+    const { mutateAsync, isPending, error } = userAccessService.useCreateUserAccess();
+    const { data: odsRoot } = odsDataService.useRetrieveAllOdsData(`?filter=OrganisationCode eq 'Root'`);
+    const [rootId, setRootId] = useState("");
+
+    useEffect(() => {
+        if (odsRoot) {
+            setRootId(odsRoot[0].id);
+        }
+    }, [odsRoot]);
 
     const saveRecord = async () => {
         let ua : UserAccess;
@@ -68,8 +77,8 @@ export const UserAccessNew = () => {
                                     <CardHeader>
                                         Select Organisations {selectedUser.displayName} has access to:
                                     </CardHeader>
-                                    <CardBody>
-                                        <OdsTree rootName="Root" selectedRecords={selectedOdsRecords} setSelectedRecords={setSelectedOdsRecords}/>
+                                        <CardBody>
+                                            <OdsTree rootId={rootId} selectedRecords={selectedOdsRecords} setSelectedRecords={setSelectedOdsRecords} readonly={false} />
                                     </CardBody>
                                 </Card>
                                 </div>

@@ -1,4 +1,4 @@
-import { Button, Card, CardBody, CardFooter, CardHeader, Container, Spinner } from "react-bootstrap"
+import { Button, Card, CardBody, CardFooter, CardHeader, Col, Container, Row, Spinner } from "react-bootstrap"
 import { Link, useNavigate, useParams } from "react-router-dom"
 import BreadCrumbBase from "../bases/layouts/BreadCrumb/BreadCrumbBase"
 import OdsTree from "../odsData/odsTree";
@@ -9,6 +9,8 @@ import { UserAccess } from "../../models/userAccess/userAccess";
 import { odsDataService } from "../../services/foundations/odsDataAccessService";
 import { userAccessService } from "../../services/foundations/userAccessService";
 import { toastError } from "../../brokers/toastBroker.error";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export const UserAccessEdit = () => {
     const { entraUserId } = useParams();
@@ -19,7 +21,16 @@ export const UserAccessEdit = () => {
     const { data: rootRecord, isLoading: isOdsDataLoading } = odsDataService.useRetrieveAllOdsData(odsSearchString);
     const { mutateAsync: createUserAccess } = userAccessService.useCreateUserAccess();
     const { mutateAsync: deleteUserAccess } = userAccessService.useRemoveUserAccess();
+    const { data: odsRoot } = odsDataService.useRetrieveAllOdsData(`?filter=OrganisationCode eq 'Root'`);
+    const [rootId, setRootId] = useState("");
+
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (odsRoot) {
+            setRootId(odsRoot[0].id);
+        }
+    }, [odsRoot]);
 
     useEffect(() => {
         if (data && data?.length) {
@@ -66,6 +77,10 @@ export const UserAccessEdit = () => {
         }
     }
 
+    const removeOdsCode = (odsRecord: OdsData) => {
+        setSelectedOdsRecords([...selectedOdsRecords.filter(o => o.organisationCode != odsRecord.organisationCode)])
+    }
+
     return (
         <Container fluid className="mt-4">
             <section>
@@ -91,14 +106,37 @@ export const UserAccessEdit = () => {
                                     <div>Mail: {selectedUser.email}</div>
                                     <div>UPN: {selectedUser.userPrincipalName}</div>
                                     <div style={{ paddingTop: "10px" }}>
-                                        <Card>
-                                            <CardHeader>
-                                                Select Organisations {selectedUser.displayName} has access to:
-                                            </CardHeader>
-                                            <CardBody>
-                                                <OdsTree rootName="Root" selectedRecords={selectedOdsRecords} setSelectedRecords={setSelectedOdsRecords} />
-                                            </CardBody>
-                                        </Card>
+                                        <Row>
+                                            <Col>
+                                                <Card>
+                                                    <CardHeader>
+                                                        Select Organisations {selectedUser.displayName} has access to:
+                                                    </CardHeader>
+                                                        <CardBody>
+                                                            {rootId &&
+                                                                <OdsTree readonly={false} rootId={rootId} selectedRecords={selectedOdsRecords} setSelectedRecords={setSelectedOdsRecords} />
+                                                            }
+                                                    </CardBody>
+                                                </Card>
+                                            </Col>
+                                            <Col>
+                                                <Card>
+                                                    <CardHeader>
+                                                        (Readonly) Calculated Access:
+                                                        </CardHeader>
+                                                        <CardBody>
+                                                            {selectedOdsRecords.length === 0 && <div>none</div>}
+                                                            {selectedOdsRecords.map(r => <div>
+                                                                <FontAwesomeIcon icon={faTimes} color="red" onClick={() => removeOdsCode(r)} />
+                                                                    {!r.hasChildren && <span>{r.organisationName} ({r.organisationCode})</span>}
+                                                                    {/*{r.hasChildren && <OdsTree readonly={true} rootId={r.id} selectedRecords={[]} setSelectedRecords={() => { }} showRoot={true} />}*/}
+                                                                </div>
+                                                            )} 
+
+                                                        </CardBody>
+                                                </Card>
+                                            </Col>
+                                        </Row>
                                     </div>
                                 </>
                                 }

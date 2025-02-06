@@ -10,16 +10,17 @@ type OdsTreeElementProps = {
     addSelectedRecord: (orgCode: OdsData) => void,
     removeSelectedRecord: (orgCode: OdsData) => void,
     parentSelected: boolean,
-    selectedRecords: OdsData[]
+    selectedRecords: OdsData[],
+    readonly: boolean
 }
 
 
-export const OdsTreeElement: FunctionComponent<OdsTreeElementProps> = ({ node, addSelectedRecord, removeSelectedRecord, parentSelected, selectedRecords }) => {
+export const OdsTreeElement: FunctionComponent<OdsTreeElementProps> = ({ node, addSelectedRecord, removeSelectedRecord, parentSelected, selectedRecords, readonly }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [expandedId, setExpandedId] = useState("");
     const { data, isLoading } = odsDataService.useGetOdsChildren(expandedId);
     const [selected, setIsSelected] = useState(false);
-    const [selectedChildren, setSelectedChildren] = useState<OdsData[]>([]); 
+    const [selectedChildren, setSelectedChildren] = useState<OdsData[]>([]);
 
     const toggle = (id: string) => {
         if (isExpanded) {
@@ -31,14 +32,14 @@ export const OdsTreeElement: FunctionComponent<OdsTreeElementProps> = ({ node, a
         }
     }
 
-    useEffect(() => { 
-        setIsSelected(selectedRecords.filter((x : OdsData) => x.organisationCode == node.organisationCode).length > 0)
-    },[node, selectedRecords])
+    useEffect(() => {
+        setIsSelected(selectedRecords.filter((x: OdsData) => x.organisationCode == node.organisationCode).length > 0)
+    }, [node, selectedRecords])
 
     useEffect(() => {
         selectedRecords.forEach(selectedRecord => {
-            if(selectedRecord.odsHierarchy != node.odsHierarchy){
-                if(selectedRecord.odsHierarchy.startsWith(node.odsHierarchy)){
+            if (selectedRecord.odsHierarchy != node.odsHierarchy) {
+                if (selectedRecord.odsHierarchy.startsWith(node.odsHierarchy)) {
                     const nodeRef: HTMLInputElement = document.getElementById(node.id) as HTMLInputElement
                     if (nodeRef) {
                         nodeRef.indeterminate = true;
@@ -64,7 +65,7 @@ export const OdsTreeElement: FunctionComponent<OdsTreeElementProps> = ({ node, a
     }
 
     const processChildRemoves = (organisation: OdsData) => {
-        const next: OdsData[] = selectedChildren.filter((x : OdsData)=> x.organisationCode !== organisation.organisationCode);
+        const next: OdsData[] = selectedChildren.filter((x: OdsData) => x.organisationCode !== organisation.organisationCode);
         if (!next.length) {
             const nodeRef: HTMLInputElement = document.getElementById(node.id) as HTMLInputElement
             if (nodeRef) {
@@ -75,7 +76,20 @@ export const OdsTreeElement: FunctionComponent<OdsTreeElementProps> = ({ node, a
         removeSelectedRecord(organisation)
     }
 
-    return (<div style={{ paddingLeft: '30px' }}>
+    const disableCheck = () => {
+        let blockupdate = false;
+        selectedRecords.forEach(selectedRecord => {
+            if (selectedRecord.odsHierarchy != node.odsHierarchy) {
+                if (selectedRecord.odsHierarchy.startsWith(node.odsHierarchy)) {
+                    blockupdate = true;
+                }
+            }
+        });
+
+        return parentSelected || blockupdate;
+    }
+
+    return (<div style={{ paddingLeft: '20px' }}>
         <span style={{ width: "20px", display: "inline-block" }}>
             {node.hasChildren ?
                 <span onClick={() => { toggle(node.id) }} >
@@ -88,16 +102,19 @@ export const OdsTreeElement: FunctionComponent<OdsTreeElementProps> = ({ node, a
 
         <span>{node.organisationName}({node.organisationCode})</span>
         &nbsp;
-        <span><Form.Check inline onChange={processCheck} disabled={parentSelected} checked={selected || parentSelected } id={`${node.id}`} /></span>
+        {!readonly &&
+            <span>
+                <Form.Check inline data-foo-bar={node.odsHierarchy} onChange={processCheck} disabled={disableCheck()} checked={selected || parentSelected} id={`${node.id}`} /></span>}
         {isLoading && <FontAwesomeIcon icon={faSpinner} pulse />}
         {data && data.map((element: OdsData) => <span key={`${node.id}:${element.id}`}>
-            <OdsTreeElement 
-                    selectedRecords={selectedRecords} 
-                    node={element} 
-                    addSelectedRecord={processChildAdds} 
-                    removeSelectedRecord={processChildRemoves} 
-                    parentSelected={parentSelected || selected }
-                    ></OdsTreeElement>
+            <OdsTreeElement
+                selectedRecords={selectedRecords}
+                node={element}
+                addSelectedRecord={processChildAdds}
+                removeSelectedRecord={processChildRemoves}
+                parentSelected={parentSelected || selected}
+                readonly={readonly}
+            ></OdsTreeElement>
         </span>)}
     </div>)
 }
