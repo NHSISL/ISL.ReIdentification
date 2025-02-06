@@ -4,7 +4,6 @@ export const useFileChange = (setError: React.Dispatch<React.SetStateAction<stri
         const file = e.target.files?.[0];
         if (file) {
             const sizeInBytes = file.size;
-            const sizeInMB = (sizeInBytes / (1024 * 1024)).toFixed(2);
 
             if (sizeInBytes > 1024 * 1024) {
                 setError(["File size exceeds 1MB. Please upload a smaller file."]);
