@@ -10,6 +10,7 @@ using Force.DeepCloner;
 using ISL.ReIdentification.Core.Migrations;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Moq;
 using Valid8R;
 
@@ -132,7 +133,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
 
             outputIdentificationRequest.IdentificationItems.ForEach(item =>
             {
-                item.Identifier = $"{item.Identifier.PadLeft(10, '0')}I";
+                item.Identifier = string.IsNullOrEmpty(item.Identifier) ? item.Identifier : $"{item.Identifier.PadLeft(10, '0')}I";
                 item.IsReidentified = true;
             });
 
@@ -157,7 +158,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
 
             outputHasAccessIdentificationRequest.IdentificationItems.ForEach(item =>
             {
-                item.Identifier = $"{item.Identifier.PadLeft(10, '0')}I";
+                item.Identifier = string.IsNullOrEmpty(item.Identifier) ? item.Identifier : $"{item.Identifier.PadLeft(10, '0')}I";
                 item.IsReidentified = true;
             });
 
@@ -234,7 +235,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                     Id = randomGuid,
                     RequestId = randomIdentificationRequest.Id,
                     TransactionId = randomGuid,
-                    PseudoIdentifier = pseudoIdentifier,
+
+                    PseudoIdentifier = string.IsNullOrEmpty(pseudoIdentifier)
+                    ? pseudoIdentifier
+                    : pseudoIdentifier.PadLeft(10, '0'),
                     EntraUserId = randomIdentificationRequest.EntraUserId,
                     GivenName = randomIdentificationRequest.GivenName,
                     Surname = randomIdentificationRequest.Surname,
