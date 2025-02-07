@@ -110,7 +110,6 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
                                 name="PseudoCode"
                                 value={pseudoCode}
                                 maxLength={10}
-                                minLength={10}
                                 onChange={handlePseudoCodeChange}
                                 placeholder="Pseudo Number"
                                 required />

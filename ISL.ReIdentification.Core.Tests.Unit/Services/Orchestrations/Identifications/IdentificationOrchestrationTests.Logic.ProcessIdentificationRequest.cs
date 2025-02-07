@@ -132,7 +132,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
 
             outputIdentificationRequest.IdentificationItems.ForEach(item =>
             {
-                item.Identifier = $"{item.Identifier}I";
+                item.Identifier = $"{item.Identifier.PadLeft(10, '0')}I";
                 item.IsReidentified = true;
             });
 
@@ -157,7 +157,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
 
             outputHasAccessIdentificationRequest.IdentificationItems.ForEach(item =>
             {
-                item.Identifier = $"{item.Identifier}I";
+                item.Identifier = $"{item.Identifier.PadLeft(10, '0')}I";
                 item.IsReidentified = true;
             });
 
