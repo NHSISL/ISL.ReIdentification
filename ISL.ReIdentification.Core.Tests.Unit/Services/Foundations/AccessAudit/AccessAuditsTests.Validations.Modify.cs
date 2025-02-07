@@ -75,7 +75,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
 
             invalidAccessAuditException.AddData(
                 key: nameof(AccessAudit.EntraUserId),
-                values: "Id is invalid");
+                values: "Text is invalid");
 
             invalidAccessAuditException.AddData(
                 key: nameof(AccessAudit.AuditType),

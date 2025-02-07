@@ -119,7 +119,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
 
         private static List<UserAccess> CreateRandomUserAccesses()
         {
-            return CreateUserAccessesFiller(dateTimeOffset: GetRandomDateTimeOffset(), entraUserId: Guid.NewGuid())
+            return CreateUserAccessesFiller(
+                dateTimeOffset: GetRandomDateTimeOffset(),
+                entraUserId: GetRandomStringWithLengthOf(255))
                 .Create(GetRandomNumber()).ToList();
         }
 
@@ -127,7 +129,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
         {
             return new BulkUserAccess
             {
-                EntraUserId = Guid.NewGuid(),
+                EntraUserId = GetRandomStringWithLengthOf(255),
                 GivenName = GetRandomString(),
                 Surname = GetRandomString(),
                 DisplayName = GetRandomString(),
@@ -140,7 +142,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
 
         private static List<UserAccess> CreateRandomUserAccesses(
             DateTimeOffset dateTimeOffset,
-            Guid entraUserId,
+            string entraUserId,
             int? count = 0)
         {
             if (count == 0)
@@ -152,16 +154,18 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
         }
 
         private static UserAccess CreateRandomUserAccess() =>
-            CreateUserAccessesFiller(dateTimeOffset: GetRandomDateTimeOffset(), entraUserId: Guid.NewGuid()).Create();
+            CreateUserAccessesFiller(
+                dateTimeOffset: GetRandomDateTimeOffset(),
+                entraUserId: GetRandomStringWithLengthOf(255)).Create();
 
         private static UserAccess CreateRandomUserAccess(
             DateTimeOffset dateTimeOffset,
-            Guid entraUserId) =>
+            string entraUserId) =>
             CreateUserAccessesFiller(dateTimeOffset, entraUserId).Create();
 
         private static Filler<UserAccess> CreateUserAccessesFiller(
             DateTimeOffset dateTimeOffset,
-            Guid entraUserId)
+            string entraUserId)
         {
             string user = Guid.NewGuid().ToString();
             var filler = new Filler<UserAccess>();

@@ -11,7 +11,7 @@ namespace ISL.ReIdentification.Core.Models.Foundations.ReIdentifications
     {
         public Guid Id { get; set; }
         public List<IdentificationItem> IdentificationItems { get; set; }
-        public Guid EntraUserId { get; set; }
+        public string EntraUserId { get; set; }
         public string GivenName { get; set; }
         public string Surname { get; set; }
         public string DisplayName { get; set; }

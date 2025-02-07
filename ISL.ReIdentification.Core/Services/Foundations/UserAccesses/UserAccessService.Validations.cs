@@ -90,8 +90,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
         private static void ValidateUserAccessOnRemoveById(Guid userAccessId) =>
             Validate((Rule: IsInvalid(userAccessId), Parameter: nameof(UserAccess.Id)));
 
-        private static void ValidateOnRetrieveAllOrganisationUserHasAccessTo(Guid userAccessId) =>
-            Validate((Rule: IsInvalid(userAccessId), Parameter: nameof(UserAccess.Id)));
+        private static void ValidateOnRetrieveAllOrganisationUserHasAccessTo(string entraUserId) =>
+            Validate((Rule: IsInvalid(entraUserId), Parameter: nameof(UserAccess.EntraUserId)));
 
         private static void ValidateStorageUserAccess(UserAccess maybeUserAccess, Guid maybeId)
         {

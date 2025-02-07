@@ -13,7 +13,7 @@ namespace ISL.ReIdentification.Core.Models.Foundations.AccessAudits
         public Guid RequestId { get; set; }
         public Guid TransactionId { get; set; }
         public string PseudoIdentifier { get; set; }
-        public Guid EntraUserId { get; set; }
+        public string EntraUserId { get; set; }
         public string GivenName { get; set; }
         public string Surname { get; set; }
         public string Email { get; set; }

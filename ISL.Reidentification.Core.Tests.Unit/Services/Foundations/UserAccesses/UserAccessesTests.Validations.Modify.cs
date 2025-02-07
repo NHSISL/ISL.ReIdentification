@@ -56,7 +56,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
         public async Task ShouldThrowValidationExceptionOnModifyIfUserAccessIsInvalidAndLogItAsync(string invalidText)
         {
             // given
-            EntraUser randomInvalidEntraUser = CreateRandomInvalidEntraUser();
+            EntraUser randomInvalidEntraUser = CreateRandomInvalidEntraUser(entraUserId: invalidText);
             EntraUser randomEntraUser = CreateRandomEntraUser();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
 
@@ -71,7 +71,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             var invalidUserAccess = new UserAccess
             {
-                EntraUserId = Guid.Empty,
+                EntraUserId = invalidText,
                 Email = invalidText,
                 OrgCode = invalidText,
                 CreatedBy = string.Empty,
@@ -88,7 +88,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             invalidUserAccessException.AddData(
                 key: nameof(UserAccess.EntraUserId),
-                values: "Id is invalid");
+                values: "Text is invalid");
 
             invalidUserAccessException.AddData(
                 key: nameof(UserAccess.Email),

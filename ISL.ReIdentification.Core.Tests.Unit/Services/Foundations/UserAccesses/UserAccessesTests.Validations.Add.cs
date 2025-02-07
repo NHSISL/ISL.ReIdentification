@@ -55,12 +55,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
         public async Task ShouldThrowValidationExceptionOnAddIfUserAccessIsInvalidAndLogItAsync(string invalidText)
         {
             // given
-            EntraUser randomInvalidEntraUser = CreateRandomInvalidEntraUser();
+            EntraUser randomInvalidEntraUser = CreateRandomInvalidEntraUser(invalidText);
             EntraUser randomEntraUser = CreateRandomEntraUser();
 
             var invalidUserAccess = new UserAccess
             {
-                EntraUserId = randomInvalidEntraUser.EntraUserId,
+                EntraUserId = invalidText,
                 Email = invalidText,
                 OrgCode = invalidText,
             };
@@ -80,7 +80,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             invalidUserAccessException.AddData(
                 key: nameof(UserAccess.EntraUserId),
-                values: "Id is invalid");
+                values: "Text is invalid");
 
             invalidUserAccessException.AddData(
                 key: nameof(UserAccess.Email),

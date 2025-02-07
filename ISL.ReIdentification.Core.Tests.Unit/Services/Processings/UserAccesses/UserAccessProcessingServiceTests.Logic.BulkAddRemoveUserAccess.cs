@@ -21,7 +21,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
         {
             // given
             Guid randomId = Guid.NewGuid();
-            Guid randomEntraId = Guid.NewGuid();
+            string randomEntraId = GetRandomStringWithLengthOf(255);
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
 
             EntraUser currentUser = new EntraUser(

@@ -24,7 +24,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             // given
             OdsData randomOdsData = await PostRandomOdsDataAsync();
             PdsData pdsData = await PostPdsDataAsync(randomOdsData.OrganisationCode, randomOdsData.OrganisationName);
-            Guid securityOid = TestAuthHandler.SecurityOid;
+            string securityOid = TestAuthHandler.SecurityOid;
 
             UserAccess randomUserAccess =
                 await PostRandomUserAccessAsync(randomOdsData.OrganisationCode, securityOid);

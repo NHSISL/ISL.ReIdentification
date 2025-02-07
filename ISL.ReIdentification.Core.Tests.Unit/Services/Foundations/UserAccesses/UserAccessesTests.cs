@@ -173,10 +173,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             return randomUserAccess;
         }
 
-        private EntraUser CreateRandomInvalidEntraUser()
+        private EntraUser CreateRandomInvalidEntraUser(string entraUserId)
         {
             return new EntraUser(
-                entraUserId: Guid.Empty,
+                entraUserId: entraUserId,
                 givenName: GetRandomString(),
                 surname: GetRandomString(),
                 displayName: GetRandomString(),
@@ -193,7 +193,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
         private EntraUser CreateRandomEntraUser()
         {
             return new EntraUser(
-                entraUserId: Guid.NewGuid(),
+                entraUserId: GetRandomStringWithLengthOf(255),
                 givenName: GetRandomString(),
                 surname: GetRandomString(),
                 displayName: GetRandomString(),

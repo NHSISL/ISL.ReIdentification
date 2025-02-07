@@ -18,7 +18,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
         public async Task ShouldThrowCriticalDependencyExceptionOnRetrieveAllActiveOrganisationsUserHasAccessToAsync()
         {
             // given
-            Guid randomUserAccessId = Guid.NewGuid();
+            string randomUserAccessId = GetRandomStringWithLengthOf(255);
             SqlException sqlException = CreateSqlException();
 
             var failedUserAccessStorageException =
@@ -70,7 +70,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
         public async Task ShouldThrowServiceExceptionOnRetrieveAllActiveOrganisationsUserHasAccessToAsync()
         {
             // given
-            Guid randomUserAccessId = Guid.NewGuid();
+            string randomUserAccessId = GetRandomStringWithLengthOf(255);
             Exception serviceError = new Exception();
 
             var failedServiceUserAccessException = new FailedServiceUserAccessException(

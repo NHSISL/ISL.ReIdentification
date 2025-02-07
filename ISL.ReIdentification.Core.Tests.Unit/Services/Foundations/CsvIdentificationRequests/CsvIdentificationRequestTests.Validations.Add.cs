@@ -62,7 +62,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
             // given
             var invalidCsvIdentificationRequest = new CsvIdentificationRequest
             {
+                RequesterEntraUserId = invalidText,
                 RequesterEmail = invalidText,
+                RecipientEntraUserId = invalidText,
                 RecipientEmail = invalidText
             };
 
@@ -76,7 +78,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             invalidCsvIdentificationRequestException.AddData(
                 key: nameof(CsvIdentificationRequest.RequesterEntraUserId),
-                values: "Id is invalid");
+                values: "Text is invalid");
 
             invalidCsvIdentificationRequestException.AddData(
                 key: nameof(CsvIdentificationRequest.RequesterEmail),
@@ -84,7 +86,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             invalidCsvIdentificationRequestException.AddData(
                 key: nameof(CsvIdentificationRequest.RecipientEntraUserId),
-                values: "Id is invalid");
+                values: "Text is invalid");
 
             invalidCsvIdentificationRequestException.AddData(
                 key: nameof(CsvIdentificationRequest.RecipientEmail),

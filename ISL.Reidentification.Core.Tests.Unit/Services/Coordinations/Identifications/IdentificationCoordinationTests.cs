@@ -235,7 +235,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
         private static EntraUser CreateRandomEntraUser()
         {
-            Guid randomId = Guid.NewGuid();
+            string randomId = GetRandomStringWithLengthOf(255);
             string randomString = GetRandomString();
 
             EntraUser entraUser = new EntraUser(

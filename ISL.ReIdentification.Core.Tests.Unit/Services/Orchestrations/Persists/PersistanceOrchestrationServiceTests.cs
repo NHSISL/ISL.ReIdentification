@@ -191,7 +191,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             DateTimeOffset now)
         {
             string user = "System";
-            Guid entraUserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+            string entraUserId = "System";
             string purgedValue = "PURGED";
             string message = $"Purged on {now}";
             var filler = new Filler<AccessAudit>();

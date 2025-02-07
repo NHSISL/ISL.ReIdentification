@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -17,26 +16,26 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
         public async Task ShouldRetrieveAllActiveOrganisationsUserHasAccessToAsync()
         {
             // given
-            Guid randomId = Guid.NewGuid();
-            Guid inputId = randomId;
+            string randomEntraId = GetRandomStringWithLengthOf(255);
+            string inputEntraId = randomEntraId;
             List<string> randomOrganisations = GetRandomStringsWithLengthOf(10);
             List<string> inputOrganisations = randomOrganisations;
             List<string> storageOrganisations = inputOrganisations.DeepClone();
             List<string> expectedOrganisations = inputOrganisations.DeepClone();
 
             this.userAccessServiceMock.Setup(service =>
-                service.RetrieveAllActiveOrganisationsUserHasAccessToAsync(inputId))
+                service.RetrieveAllActiveOrganisationsUserHasAccessToAsync(inputEntraId))
                     .ReturnsAsync(storageOrganisations);
 
             // when
             List<string> actualOrganisations = await this.userAccessProcessingService
-                .RetrieveAllActiveOrganisationsUserHasAccessToAsync(inputId);
+                .RetrieveAllActiveOrganisationsUserHasAccessToAsync(inputEntraId);
 
             // then
             actualOrganisations.Should().BeEquivalentTo(expectedOrganisations);
 
             this.userAccessServiceMock.Verify(service =>
-                service.RetrieveAllActiveOrganisationsUserHasAccessToAsync(inputId),
+                service.RetrieveAllActiveOrganisationsUserHasAccessToAsync(inputEntraId),
                     Times.Once);
 
             this.userAccessServiceMock.VerifyNoOtherCalls();

@@ -12,7 +12,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification
         public Guid Id { get; set; }
         public Guid RequestId { get; set; }
         public string PseudoIdentifier { get; set; }
-        public Guid EntraUserId { get; set; }
+        public string EntraUserId { get; set; }
         public string GivenName { get; set; }
         public string Surname { get; set; }
         public string Email { get; set; }
