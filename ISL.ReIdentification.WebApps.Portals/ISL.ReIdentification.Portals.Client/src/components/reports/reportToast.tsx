@@ -12,13 +12,15 @@ type ReportToastProps = {
     hide: (hide: boolean) => void;
     clearList: () => void;
     reidentifications: ReIdRecord[];
+    reidentificationLoading: boolean;
     lastSelectedPseudo?: ReIdRecord;
     recordLoading: boolean;
     lastPseudos: string[];
+    launched: boolean;
 }
 
 const ReportToast: FunctionComponent<ReportToastProps> = (props) => {
-    const { position, hidden, hide, reidentifications, lastPseudos } = props;
+    const { position, hidden, hide, reidentifications, reidentificationLoading, lastPseudos, launched } = props;
     const [showNoAccessInfo, setShowNoAccessInfo] = useState(false);
     const [pageNumber, setPageNumber] = useState(0);
     const [showHistory, setShowHistory] = useState(false);
@@ -46,7 +48,7 @@ const ReportToast: FunctionComponent<ReportToastProps> = (props) => {
         return <Card bg="success" text="white" className="mb-1">
             <Card.Body>
                 <b>Pseudo:&nbsp;</b>
-                {reidRecord.pseudo}&nbsp;
+                {reidRecord.isHx ? reidRecord.pseudo : '--'}&nbsp;
                 <b>NHS:</b> {reidRecord.nhsnumber}&nbsp;&nbsp;
                 {clipboardAvailable &&
                     <CopyIcon content={reidRecord.nhsnumber || ""} resetTime={2000} />
@@ -87,7 +89,7 @@ const ReportToast: FunctionComponent<ReportToastProps> = (props) => {
         </>
     }
 
-    return <ToastContainer position={position || "bottom-end"} hidden={hidden || reidentifications.length === 0}>
+    return <ToastContainer position={position}  hidden={hidden || !launched}>
         <Toast onClose={() => hide(true)}>
             <Toast.Header>
                 <strong className="me-auto">Re-identifications</strong>
@@ -96,7 +98,7 @@ const ReportToast: FunctionComponent<ReportToastProps> = (props) => {
                 }
             </Toast.Header>
             <Toast.Body>
-                {lastPseudos.length === 1 && reidentifications.length > 0 && <>
+                {lastPseudos.length === 1 && <>
                     {getSingleRecordCard(reidentifications, lastPseudos[0])}
                 </>}
 
