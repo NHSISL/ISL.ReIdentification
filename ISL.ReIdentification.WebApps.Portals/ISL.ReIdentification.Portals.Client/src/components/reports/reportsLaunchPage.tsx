@@ -6,7 +6,7 @@ import { DeveloperEvents } from "../../types/DeveloperEvents";
 import { useParams } from "react-router-dom";
 import { PBIEvent, PBIIdentity, PBIValues } from "../../types/PBIEvent";
 import { useReidentification } from "../../hooks/useReidentification";
-import { Button, ButtonGroup, Modal, ProgressBar, Toast, ToastHeader } from "react-bootstrap";
+import { Button, ButtonGroup, Modal } from "react-bootstrap";
 import FakeReportPage from "./fakeReportPage";
 import { ToastContainer } from "react-toastify";
 import { ToastPosition } from "react-bootstrap/esm/ToastContainer";

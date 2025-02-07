@@ -3,7 +3,6 @@ import ReIdentificationBroker from '../../brokers/apiBroker.reidentification';
 import { AccessRequest } from '../../models/accessRequest/accessRequest';
 import { ReIdRecord } from '../../types/ReIdRecord';
 import { getPseudo, isHx } from '../../helpers/hxHelpers';
-import { toastError } from '../../brokers/toastBroker.error';
 import { toast } from 'react-toastify';
 
 export const reIdentificationService = {

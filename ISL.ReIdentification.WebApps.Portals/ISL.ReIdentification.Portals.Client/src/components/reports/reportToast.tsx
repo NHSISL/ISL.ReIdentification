@@ -20,7 +20,7 @@ type ReportToastProps = {
 }
 
 const ReportToast: FunctionComponent<ReportToastProps> = (props) => {
-    const { position, hidden, hide, reidentifications, reidentificationLoading, lastPseudos, launched } = props;
+    const { position, hidden, hide, reidentifications, lastPseudos, launched } = props;
     const [showNoAccessInfo, setShowNoAccessInfo] = useState(false);
     const [pageNumber, setPageNumber] = useState(0);
     const [showHistory, setShowHistory] = useState(false);
