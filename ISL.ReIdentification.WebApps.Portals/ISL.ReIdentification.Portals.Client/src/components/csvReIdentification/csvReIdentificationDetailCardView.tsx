@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState } from "react";
+import React, { FunctionComponent, useState, useRef, useEffect } from "react";
 import { Form, Button, Card, Spinner, Alert, OverlayTrigger, Tooltip, Modal } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
@@ -8,6 +8,7 @@ import { useMsal } from "@azure/msal-react";
 import UserAccessSearch from "../userAccessSearch/userAccessSearch";
 import { UserAccessView } from "../../models/views/components/userAccess/userAccessView";
 import { OverlayInjectedProps } from "react-bootstrap/esm/Overlay";
+import { useFileChange } from "../../hooks/useFileChange";
 
 const CsvReIdentificationDetailCardView: FunctionComponent = () => {
 
@@ -25,6 +26,15 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
     const [showHelpModal, setShowHelpModal] = useState<boolean>(false);
     const [reason, setReason] = useState<string>("");
     const account = useMsal();
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const { handleFileChange } = useFileChange(setError, setFileName, setHeaderColumns, setCsvData, hasHeaderRecord); // Use the custom hook
+
+    useEffect(() => {
+        if (fileInputRef.current?.files?.[0]) {
+            handleFileChange({ target: fileInputRef.current } as React.ChangeEvent<HTMLInputElement>);
+        }
+    }, [hasHeaderRecord]);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -76,47 +86,6 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
         });
     };
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setError([]);
-        const file = e.target.files?.[0];
-        if (file) {
-            const sizeInBytes = file.size;
-            const sizeInMB = (sizeInBytes / (1024 * 1024)).toFixed(2);
-            console.log(`File size: ${sizeInBytes} bytes (${sizeInMB} MB)`);
-
-            if (sizeInBytes > 1024 * 1024) {
-                setError(["File size exceeds 1MB. Please upload a smaller file."]);
-                return;
-            }
-
-            if (file.name.endsWith(".csv")) {
-                setFileName(file.name);
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    let text = event.target?.result as string;
-                    text = text.replace(/\r/g, "");
-                    const rows = text.split("\n");
-                    const headers = rows[0].split(",");
-
-                    if (headers.length <= 1) {
-                        setError(["The CSV file does not contain a valid header row."]);
-                        return;
-                    }
-
-                    setHeaderColumns(headers);
-                    const uint8Array = new TextEncoder().encode(text);
-                    const base64String = btoa(String.fromCharCode(...uint8Array));
-                    setCsvData(base64String);
-                };
-                reader.readAsText(file);
-            } else {
-                setError(["Please upload a valid .csv file."]);
-            }
-        } else {
-            setError(["No file selected. Please upload a .csv file."]);
-        }
-    };
-
     const handleHeaderColumnChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedColumn = e.target.value;
         setSelectedHeaderColumn(selectedColumn);
@@ -141,8 +110,11 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
             }
         }
     };
+
     const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setHasHeaderRecord(e.target.checked);
+        const newValue = e.target.checked;
+        setHasHeaderRecord(newValue);
+        setError([]);
     };
 
     const renderTooltip = (props: OverlayInjectedProps): React.ReactElement => (
@@ -155,9 +127,6 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
         <>
             {!savedSuccessfull ? (
                 <>
-
-
-
                     <Card.Header>
                         <Card.Title className="text-start">
                             <OverlayTrigger placement="right" overlay={renderTooltip}>
@@ -195,7 +164,8 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                                         onChange={handleFileChange}
                                         placeholder="Upload CSV"
                                         accept=".csv"
-                                        required />
+                                        required
+                                        ref={fileInputRef} />
 
                                 </div>
                                 <Form.Text className="text-muted">
@@ -307,10 +277,6 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
             </Modal>
         </>
     );
-
-    return <>
-        {error ? <Alert variant="danger">{error}</Alert> : <Alert variant="danger">Something went wrong.</Alert>}
-    </>;
 }
 
 export default CsvReIdentificationDetailCardView;
