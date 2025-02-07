@@ -15,10 +15,10 @@ type OdsDataViewServiceResponse = {
 
 export const odsDataViewService = {
     useGetAllOdsData: (searchTerm?: string): OdsDataViewServiceResponse => {
-        let query = `?$orderby=organisationCode desc`;
+        let query = ``;
 
         if (searchTerm) {
-            query = query + `&$filter=contains(OrganisationCode,'${searchTerm}') or contains(OrganisationName,'${searchTerm}')`;
+            query = query + `?$filter=contains(OrganisationCode,'${searchTerm}') or contains(OrganisationName,'${searchTerm}')`;
         }
 
         const response = odsDataService.useRetrieveAllOdsDataPages(query);
