@@ -316,11 +316,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             invalidUserAccessException.AddData(
                 key: nameof(UserAccess.UpdatedBy),
-                values: $"Text is not the same as '{nameof(UserAccess.CreatedBy)}'");
+                values: $"Text is not the same as {nameof(UserAccess.CreatedBy)}");
 
             invalidUserAccessException.AddData(
                 key: nameof(UserAccess.UpdatedDate),
-                values: $"Date is not the same as '{nameof(UserAccess.CreatedDate)}'");
+                values: $"Date is not the same as {nameof(UserAccess.CreatedDate)}");
 
             invalidUserAccessException.AddData(
                 key: nameof(UserAccess.CreatedDate),

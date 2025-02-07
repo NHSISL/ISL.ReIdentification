@@ -215,7 +215,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
             string secondName) => new
             {
                 Condition = first != second,
-                Message = $"Text is not the same as '{secondName}'"
+                Message = $"Text is not the same as {secondName}"
             };
 
 
