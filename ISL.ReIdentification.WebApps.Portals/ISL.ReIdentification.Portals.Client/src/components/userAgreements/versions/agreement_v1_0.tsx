@@ -1,10 +1,15 @@
+import { Alert } from "react-bootstrap"
 import { Agreement } from "../agreementCatalogue"
+import React from "react"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons"
 
 export const agreement_v1_0 = () => {
     return {
         type: "UserAgreement",
         version: "1.0",
-        text: <>
+        text: <div>
+            <Alert variant="danger"><FontAwesomeIcon icon={faCircleExclamation} className="me-2" /> By using this service, you acknowledge that a clinical safety assessment has not yet been completed, and you do so at your own risk. It is the responsibility of each user to use the system responsibly and exercise caution when relying on its outputs</Alert>
             <h5>1. Purpose</h5>
             <p>The re-identification service is designed to assist authorised healthcare professionals in securely re-identifying patients under their direct care and governance for the purpose of providing appropriate medical treatment, care, support, or follow-up</p>
 
@@ -17,6 +22,7 @@ export const agreement_v1_0 = () => {
                 <li>You acknowledge full responsibility for ensuring that your use of this service complies with all applicable laws, regulations, and ethical standards.</li>
                 <li>You will always keep passwords and other applicable access controls safe.</li>
                 <li>You will not share passwords with anyone else under any circumstances.</li>
+                <li>By using the copy and paste function, you acknowledge that copied content may be stored in your device's clipboard, which could be accessible by other applications; please be mindful of storing sensitive information.</li>
             </ul>
 
             <h5>3. Authorisation</h5>
@@ -55,6 +61,6 @@ export const agreement_v1_0 = () => {
 
             <h5>10. Changes to Terms and Conditions</h5>
             <p>The service provider reserves the right to update or modify these terms and conditions at any time. Continued use of the service constitutes acceptance of any changes.</p>
-        </>
+        </div>
     } as Agreement
 }
