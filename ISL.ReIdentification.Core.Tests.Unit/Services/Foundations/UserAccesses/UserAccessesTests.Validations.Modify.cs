@@ -9,6 +9,7 @@ using Force.DeepCloner;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses.Exceptions;
 using ISL.ReIdentification.Core.Models.Securities;
+using ISL.ReIdentification.Core.Services.Foundations.UserAccesses;
 using Moq;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
@@ -22,13 +23,27 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             UserAccess nullUserAccess = null;
             var nullUserAccessException = new NullUserAccessException(message: "User access is null.");
 
+            var userAccessServiceMock = new Mock<UserAccessService>(
+                reIdentificationStorageBroker.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            userAccessServiceMock.Setup(service =>
+                service.ApplyModifyAuditAsync(nullUserAccess))
+                    .ReturnsAsync(nullUserAccess);
+
             var expectedUserAccessValidationException =
                 new UserAccessValidationException(
                     message: "UserAccess validation error occurred, please fix errors and try again.",
                     innerException: nullUserAccessException);
 
             // when
-            ValueTask<UserAccess> modifyUserAccessTask = this.userAccessService.ModifyUserAccessAsync(nullUserAccess);
+            ValueTask<UserAccess> modifyUserAccessTask =
+                userAccessServiceMock.Object.ModifyUserAccessAsync(nullUserAccess);
 
             UserAccessValidationException actualUserAccessValidationException =
                 await Assert.ThrowsAsync<UserAccessValidationException>(
@@ -60,15 +75,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             EntraUser randomEntraUser = CreateRandomEntraUser();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
-                    .ReturnsAsync(randomDateTimeOffset);
-
-            this.securityBrokerMock.SetupSequence(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync((EntraUser)null)
-                        .ReturnsAsync(randomEntraUser);
-
             var invalidUserAccess = new UserAccess
             {
                 EntraUserId = invalidText,
@@ -77,6 +83,28 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
                 CreatedBy = string.Empty,
                 CreatedDate = randomDateTimeOffset,
             };
+
+            var userAccessServiceMock = new Mock<UserAccessService>(
+                reIdentificationStorageBroker.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            userAccessServiceMock.Setup(service =>
+                service.ApplyModifyAuditAsync(invalidUserAccess))
+                    .ReturnsAsync(invalidUserAccess);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.SetupSequence(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync((EntraUser)null)
+                        .ReturnsAsync(randomEntraUser);
 
             var invalidUserAccessException =
                 new InvalidUserAccessException(
@@ -121,7 +149,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             // when
             ValueTask<UserAccess> modifyUserAccessTask =
-                this.userAccessService.ModifyUserAccessAsync(invalidUserAccess);
+                userAccessServiceMock.Object.ModifyUserAccessAsync(invalidUserAccess);
 
             UserAccessValidationException actualUserAccessValidationException =
                 await Assert.ThrowsAsync<UserAccessValidationException>(
@@ -168,6 +196,19 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             invalidUserAccess.OrgCode = GetRandomStringWithLength(16);
             EntraUser randomEntraUser = CreateRandomEntraUser();
 
+            var userAccessServiceMock = new Mock<UserAccessService>(
+                reIdentificationStorageBroker.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            userAccessServiceMock.Setup(service =>
+                service.ApplyModifyAuditAsync(invalidUserAccess))
+                    .ReturnsAsync(invalidUserAccess);
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
@@ -194,7 +235,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             // when
             ValueTask<UserAccess> modifyUserAccessTask =
-                this.userAccessService.ModifyUserAccessAsync(invalidUserAccess);
+                userAccessServiceMock.Object.ModifyUserAccessAsync(invalidUserAccess);
 
             UserAccessValidationException actualUserAccessValidationException =
                 await Assert.ThrowsAsync<UserAccessValidationException>(
@@ -209,7 +250,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),
-                    Times.Exactly(2));
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -236,6 +277,19 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             var invalidUserAccess = randomUserAccess;
             EntraUser randomEntraUser = CreateRandomEntraUser();
 
+            var userAccessServiceMock = new Mock<UserAccessService>(
+                reIdentificationStorageBroker.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            userAccessServiceMock.Setup(service =>
+                service.ApplyModifyAuditAsync(invalidUserAccess))
+                    .ReturnsAsync(invalidUserAccess);
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDatTimeOffset);
@@ -257,7 +311,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             // when
             ValueTask<UserAccess> modifyUserAccessTask =
-                this.userAccessService.ModifyUserAccessAsync(invalidUserAccess);
+                userAccessServiceMock.Object.ModifyUserAccessAsync(invalidUserAccess);
 
             UserAccessValidationException actualUserAccessVaildationException =
                 await Assert.ThrowsAsync<UserAccessValidationException>(
@@ -272,7 +326,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),
-                    Times.Exactly(2));
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogErrorAsync(It.Is(
@@ -298,6 +352,19 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             UserAccess nullUserAccess = null;
             EntraUser randomEntraUser = CreateRandomEntraUser();
 
+            var userAccessServiceMock = new Mock<UserAccessService>(
+                reIdentificationStorageBroker.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            userAccessServiceMock.Setup(service =>
+                service.ApplyModifyAuditAsync(nonExistingUserAccess))
+                    .ReturnsAsync(nonExistingUserAccess);
+
             var notFoundUserAccessException = new NotFoundUserAccessException(
                 message: $"User access not found with Id: {nonExistingUserAccess.Id}");
 
@@ -319,7 +386,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             // when
             ValueTask<UserAccess> modifyUserAccessTask =
-                this.userAccessService.ModifyUserAccessAsync(nonExistingUserAccess);
+                userAccessServiceMock.Object.ModifyUserAccessAsync(nonExistingUserAccess);
 
             UserAccessValidationException actualUserAccessVaildationException =
                 await Assert.ThrowsAsync<UserAccessValidationException>(
@@ -368,6 +435,19 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             storageUserAccess.CreatedDate = randomDateTimeOffset.AddMinutes(randomNegativeNumber);
             storageUserAccess.UpdatedDate = randomDateTimeOffset.AddMinutes(randomNegativeNumber);
 
+            var userAccessServiceMock = new Mock<UserAccessService>(
+                reIdentificationStorageBroker.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            userAccessServiceMock.Setup(service =>
+                service.ApplyModifyAuditAsync(invalidUserAccess))
+                    .ReturnsAsync(invalidUserAccess);
+
             var invalidUserAccessException = new InvalidUserAccessException(
                 message: "Invalid user access. Please correct the errors and try again.");
 
@@ -393,7 +473,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             // when
             ValueTask<UserAccess> modifyUserAccessTask =
-                this.userAccessService.ModifyUserAccessAsync(invalidUserAccess);
+                userAccessServiceMock.Object.ModifyUserAccessAsync(invalidUserAccess);
 
             UserAccessValidationException actualUserAccessValidationException =
                 await Assert.ThrowsAsync<UserAccessValidationException>(
@@ -404,11 +484,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(2));
+                    Times.Once);
 
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),
-                    Times.Exactly(2));
+                    Times.Once);
 
             this.reIdentificationStorageBroker.Verify(broker =>
                 broker.SelectUserAccessByIdAsync(invalidUserAccess.Id),
@@ -436,6 +516,19 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             invalidUserAccess.UpdatedDate = storageUserAccess.UpdatedDate;
             EntraUser randomEntraUser = CreateRandomEntraUser();
 
+            var userAccessServiceMock = new Mock<UserAccessService>(
+                reIdentificationStorageBroker.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            userAccessServiceMock.Setup(service =>
+                service.ApplyModifyAuditAsync(invalidUserAccess))
+                    .ReturnsAsync(invalidUserAccess);
+
             var invalidUserAccessValidationException = new InvalidUserAccessException(
                 message: "Invalid user access. Please correct the errors and try again.");
 
@@ -461,7 +554,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             // when
             ValueTask<UserAccess> modifyUserAccessTask =
-                this.userAccessService.ModifyUserAccessAsync(invalidUserAccess);
+                userAccessServiceMock.Object.ModifyUserAccessAsync(invalidUserAccess);
 
             UserAccessValidationException actualUserAccessValidationException =
                 await Assert.ThrowsAsync<UserAccessValidationException>(

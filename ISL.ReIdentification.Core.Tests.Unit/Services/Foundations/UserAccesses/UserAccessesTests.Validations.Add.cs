@@ -279,13 +279,16 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
         public async Task ShouldThrowValidationExceptionOnAddIfAuditPropertiesIsNotTheSameAndLogItAsync()
         {
             // given
-            DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
-            DateTimeOffset randomAuditDateTime = randomDateTime.AddSeconds(+1);
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             EntraUser randomEntraUser = CreateRandomEntraUser();
-            EntraUser randomAuditEntraUser = CreateRandomEntraUser();
 
             UserAccess randomUserAccess =
-                CreateRandomModifyUserAccess(randomDateTime, randomEntraUser.EntraUserId.ToString());
+                CreateRandomModifyUserAccess(randomDateTimeOffset, randomEntraUser.EntraUserId.ToString());
+
+            randomUserAccess.CreatedBy = GetRandomString();
+            randomUserAccess.UpdatedBy = GetRandomString();
+            randomUserAccess.CreatedDate = GetRandomDateTimeOffset();
+            randomUserAccess.UpdatedDate = GetRandomDateTimeOffset();
 
             UserAccess invalidUserAccess = randomUserAccess;
 
@@ -308,23 +311,35 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             invalidUserAccessException.AddData(
                 key: nameof(UserAccess.CreatedBy),
                 values:
-                    $"Expected value to be '{randomAuditEntraUser.EntraUserId.ToString()}' " +
-                    $"but found '{randomEntraUser.EntraUserId.ToString()}'.");
+                    $"Expected value to be '{randomEntraUser.EntraUserId.ToString()}' " +
+                    $"but found '{randomUserAccess.CreatedBy}'.");
+
+            invalidUserAccessException.AddData(
+                key: nameof(UserAccess.UpdatedBy),
+                values: $"Text is not the same as '{nameof(UserAccess.CreatedBy)}'");
+
+            invalidUserAccessException.AddData(
+                key: nameof(UserAccess.UpdatedDate),
+                values: $"Date is not the same as '{nameof(UserAccess.CreatedDate)}'");
+
+            invalidUserAccessException.AddData(
+                key: nameof(UserAccess.CreatedDate),
+                values:
+                    $"Expected value to be '{randomDateTimeOffset}' " +
+                    $"but found '{randomUserAccess.CreatedDate}'.");
 
             var expectedUserAccessValidationException =
                 new UserAccessValidationException(
                     message: "UserAccess validation error occurred, please fix errors and try again.",
                     innerException: invalidUserAccessException);
 
-            this.dateTimeBrokerMock.SetupSequence(broker =>
+            this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .ReturnsAsync(randomDateTime)
-                        .ReturnsAsync(randomAuditDateTime);
+                    .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.SetupSequence(broker =>
+            this.securityBrokerMock.Setup(broker =>
                 broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser)
-                        .ReturnsAsync(randomAuditEntraUser);
+                    .ReturnsAsync(randomEntraUser);
 
             // when
             ValueTask<UserAccess> addUserAccessTask =
@@ -344,7 +359,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),
-                    Times.Exactly(2));
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(

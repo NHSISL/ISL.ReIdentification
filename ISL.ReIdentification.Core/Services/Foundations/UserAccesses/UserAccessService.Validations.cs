@@ -47,7 +47,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
                     first: userAccess.CreatedDate,
                     second: userAccess.UpdatedDate,
                     secondName: nameof(UserAccess.CreatedDate)),
-                Parameter: nameof(UserAccess.UpdatedBy)),
+                Parameter: nameof(UserAccess.UpdatedDate)),
 
                 (Rule: IsNotSame(
                     first: currentDateTimeOffset,
@@ -64,7 +64,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
         private async ValueTask ValidateUserAccessOnModifyAsync(UserAccess userAccess)
         {
             ValidateUserAccessIsNotNull(userAccess);
-            EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
+            DateTimeOffset currentDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
             Validate(
                 (Rule: IsInvalid(userAccess.Id), Parameter: nameof(UserAccess.Id)),
@@ -81,15 +82,19 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
                 (Rule: IsInvalidLength(userAccess.OrgCode, 15), Parameter: nameof(UserAccess.OrgCode)),
 
                 (Rule: IsNotSame(
-                    first: auditUser.EntraUserId.ToString(),
+                    first: currentUser.EntraUserId.ToString(),
                     second: userAccess.UpdatedBy),
                 Parameter: nameof(UserAccess.UpdatedBy)),
+
+                (Rule: IsNotSame(
+                    first: currentDateTimeOffset,
+                    second: userAccess.UpdatedDate),
+                Parameter: nameof(UserAccess.UpdatedDate)),
 
                 (Rule: IsSameAs(
                     createdDate: userAccess.CreatedDate,
                     updatedDate: userAccess.UpdatedDate,
                     createdDateName: nameof(UserAccess.CreatedDate)),
-
                 Parameter: nameof(UserAccess.UpdatedDate)));
         }
 
@@ -111,8 +116,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
             UserAccess userAccess,
             UserAccess maybeUserAccess)
         {
-            DateTimeOffset currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-
             Validate(
                 (Rule: IsNotSame(
                     userAccess.CreatedDate,
@@ -195,7 +198,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
             string secondName) => new
             {
                 Condition = first != second,
-                Message = $"Date is not the same as '{secondName}'"
+                Message = $"Date is not the same as {secondName}"
             };
 
         private static dynamic IsNotSame(
