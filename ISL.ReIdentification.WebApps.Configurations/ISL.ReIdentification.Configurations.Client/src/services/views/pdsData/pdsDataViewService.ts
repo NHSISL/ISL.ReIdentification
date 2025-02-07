@@ -19,10 +19,10 @@ export const pdsDataViewService = {
     },
 
     useGetAllPdsData: (searchTerm?: string): PdsDataViewServiceResponse => {
-        let query = `?$orderby=orgCode desc`;
+        let query = ``;
 
         if (searchTerm) {
-            query = query + `&$filter=contains(pseudoNhsNumber,'${searchTerm}') or contains(orgCode,'${searchTerm}') or contains(organisationName,'${searchTerm}')`;
+            query = query + `?$filter=contains(pseudoNhsNumber,'${searchTerm}')`;
         }
 
         const response = pdsDataService.useRetrieveAllPdsDataPages(query);
