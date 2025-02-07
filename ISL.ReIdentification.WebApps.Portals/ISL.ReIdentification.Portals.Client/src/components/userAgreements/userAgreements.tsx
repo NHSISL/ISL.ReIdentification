@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Button, Modal } from "react-bootstrap";
 import { AuthenticatedTemplate, useMsal } from "@azure/msal-react";
 import { userAgreementService } from "../../services/foundations/userAgreementService";
