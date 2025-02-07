@@ -30,6 +30,11 @@ const ReportsLaunchPage: FunctionComponent<ReportLaunchPageProps> = (props) => {
     const [promptForReid, setPromptForReid] = useState(false);
     const { reidentify, reidentifications, lastPseudo, clearList, isLoading } = useReidentification(reidReason);
 
+    const clearHistory = () => {
+        setLastSetOfPseudos([]);
+        clearList();
+    }
+
     const reIdBulk = () => {
         setPromptForReid(false)
         setLastSetOfPseudos(heldPseudosToReid);
@@ -140,7 +145,7 @@ const ReportsLaunchPage: FunctionComponent<ReportLaunchPageProps> = (props) => {
                 </Modal.Body>
             </Modal>
             <ReportToast
-                clearList={clearList}
+                clearList={clearHistory}
                 hidden={toastHidden} hide={hideToast}
                 lastSelectedPseudo={lastPseudo}
                 lastPseudos={lastSetOfPseudos}

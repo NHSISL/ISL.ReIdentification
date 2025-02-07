@@ -81,12 +81,17 @@ export const reIdentificationService = {
 
         }, [data, request]);
 
+        const cleardata = () => {
+            setData([]);
+        }
+
         return {
             submit: (identificationRequest: AccessRequest) => {
                 setRequest(identificationRequest);
             },
             loading,
-            data
+            data,
+            cleardata
         };
     },
 
