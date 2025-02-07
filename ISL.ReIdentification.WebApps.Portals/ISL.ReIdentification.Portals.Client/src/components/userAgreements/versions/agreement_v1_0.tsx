@@ -1,6 +1,5 @@
 import { Alert } from "react-bootstrap"
 import { Agreement } from "../agreementCatalogue"
-import React from "react"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons"
 
