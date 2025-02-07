@@ -11,7 +11,6 @@ import { queryClientGlobalOptions } from './brokers/apiBroker.globals';
 import { Home } from './pages/home';
 import { ConfigurationHome } from './pages/configuration/configurationHome';
 import { Lookups } from './pages/configuration/lookups';
-import { UserAccess } from './components/userAccess/userAccess';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { UserAccessNew } from './components/userAccess/userAccessNew';
 import "react-toastify/dist/ReactToastify.css";
@@ -24,6 +23,7 @@ import { ImpersonationContextDetailPage } from './pages/impersonationContextDeta
 import { OdsData } from './pages/odsData';
 import { PdsData } from './pages/pdsData';
 import { AccessAuditPage } from './pages/accesssAuditPage';
+import { UserAccessPage } from './pages/userAccessPage';
 
 function App({ instance }: any) {
 
@@ -47,7 +47,7 @@ function App({ instance }: any) {
                 },
                 {
                     path: "userAccess",
-                    element: <SecuredRoute allowedRoles={securityPoints.userAccess.view}><UserAccess /></SecuredRoute>
+                    element: <SecuredRoute allowedRoles={securityPoints.userAccess.view}><UserAccessPage /></SecuredRoute>
                 },
                 {
                     path: "userAccess/newUser",
