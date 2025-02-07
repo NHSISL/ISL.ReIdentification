@@ -24,11 +24,10 @@ export const userAccessViewService = {
     },
 
     useGetDistinctUsersOdata: (searchTerm?: string): UserAccessViewServiceResponse => {
-        let query = `?$orderby=surname desc`;
-        //let query = `?$apply=groupby((entraUserId,displayName,email))&$orderby=surname desc`;
+        let query = ``;
 
         if (searchTerm) {
-            query = query + `&$filter=contains(surname,'${searchTerm}') or contains(givenName,'${searchTerm}') or contains(email,'${searchTerm}')`;
+            query = query + `?$filter=contains(surname,'${searchTerm}') or contains(givenName,'${searchTerm}') or contains(email,'${searchTerm}')`;
         }
 
         const response = userAccessService.useRetrieveAllUserAccessPages(query);
