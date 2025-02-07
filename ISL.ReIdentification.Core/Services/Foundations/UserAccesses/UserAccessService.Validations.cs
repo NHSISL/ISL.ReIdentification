@@ -15,7 +15,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
         private async ValueTask ValidateUserAccessOnAddAsync(UserAccess userAccess)
         {
             ValidateUserAccessIsNotNull(userAccess);
-            EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
+            DateTimeOffset currentDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
             Validate(
                 (Rule: IsInvalid(userAccess.Id), Parameter: nameof(UserAccess.Id)),
@@ -38,7 +39,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
                 Parameter: nameof(UserAccess.UpdatedBy)),
 
                 (Rule: IsNotSame(
-                    first: auditUser.EntraUserId.ToString(),
+                    first: currentUser.EntraUserId.ToString(),
                     second: userAccess.CreatedBy),
                 Parameter: nameof(UserAccess.CreatedBy)),
 
@@ -46,7 +47,12 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
                     first: userAccess.CreatedDate,
                     second: userAccess.UpdatedDate,
                     secondName: nameof(UserAccess.CreatedDate)),
-                Parameter: nameof(UserAccess.UpdatedBy)));
+                Parameter: nameof(UserAccess.UpdatedBy)),
+
+                (Rule: IsNotSame(
+                    first: currentDateTimeOffset,
+                    second: userAccess.CreatedDate),
+                Parameter: nameof(UserAccess.CreatedDate)));
         }
 
         private static void ValidateUserAccessOnRetrieveById(Guid userAccessId)
@@ -189,7 +195,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
             string secondName) => new
             {
                 Condition = first != second,
-                Message = $"Date is not the same as {secondName}"
+                Message = $"Date is not the same as '{secondName}'"
             };
 
         private static dynamic IsNotSame(
@@ -206,7 +212,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
             string secondName) => new
             {
                 Condition = first != second,
-                Message = $"Text is not the same as {secondName}"
+                Message = $"Text is not the same as '{secondName}'"
             };
 
 
