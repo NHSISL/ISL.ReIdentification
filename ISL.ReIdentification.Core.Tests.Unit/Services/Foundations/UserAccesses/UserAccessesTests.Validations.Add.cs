@@ -128,7 +128,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
                 key: nameof(UserAccess.CreatedBy),
                 values: [
                     "Text is invalid",
-                    $"Expected value to be '{randomEntraUser.EntraUserId}' but found '{invalidText}'."
+                    $"Expected value to be '{randomEntraUser.EntraUserId}' but found '{invalidUserAccess.CreatedBy}'."
                 ]);
 
             invalidUserAccessException.AddData(

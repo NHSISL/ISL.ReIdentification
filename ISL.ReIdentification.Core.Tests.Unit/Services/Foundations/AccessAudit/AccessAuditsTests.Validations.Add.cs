@@ -8,6 +8,7 @@ using FluentAssertions;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits.Exceptions;
 using ISL.ReIdentification.Core.Models.Securities;
+using ISL.ReIdentification.Core.Services.Foundations.AccessAudits;
 using Moq;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
@@ -54,11 +55,37 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
         public async Task ShouldThrowValidationExceptionOnAddIfAccessAuditIsInvalidAndLogItAsync(string invalidText)
         {
             // given
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            DateTimeOffset startDate = randomDateTimeOffset.AddSeconds(-90);
+            DateTimeOffset endDate = randomDateTimeOffset.AddSeconds(0);
+
             var invalidAccessAudit = new AccessAudit
             {
                 PseudoIdentifier = invalidText,
                 Email = invalidText,
             };
+
+            var accessAuditServiceMock = new Mock<AccessAuditService>(
+                reIdentificationStorageBroker.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            accessAuditServiceMock.Setup(service =>
+                service.ApplyAddAuditAsync(invalidAccessAudit))
+                    .ReturnsAsync(invalidAccessAudit);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             var invalidAccessAuditException =
                 new InvalidAccessAuditException(
@@ -90,11 +117,20 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
 
             invalidAccessAuditException.AddData(
                 key: nameof(AccessAudit.CreatedDate),
-                values: "Date is invalid");
+                values:
+                [
+                    "Date is invalid",
+                    $"Date is not recent. Expected a value between " +
+                    $"{startDate} and {endDate} but found {invalidAccessAudit.CreatedDate}"
+                ]);
 
             invalidAccessAuditException.AddData(
                 key: nameof(AccessAudit.CreatedBy),
-                values: "Text is invalid");
+                values:
+                [
+                    "Text is invalid",
+                    $"Expected value to be '{randomEntraUser.EntraUserId}' but found '{invalidAccessAudit.CreatedBy}'."
+                ]);
 
             invalidAccessAuditException.AddData(
                 key: nameof(AccessAudit.UpdatedDate),
@@ -111,7 +147,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
 
             // when
             ValueTask<AccessAudit> addAccessAuditTask =
-                this.accessAuditService.AddAccessAuditAsync(invalidAccessAudit);
+                accessAuditServiceMock.Object.AddAccessAuditAsync(invalidAccessAudit);
 
             AccessAuditValidationException actualAccessAuditValidationException =
                 await Assert.ThrowsAsync<AccessAuditValidationException>(testCode: addAccessAuditTask.AsTask);
