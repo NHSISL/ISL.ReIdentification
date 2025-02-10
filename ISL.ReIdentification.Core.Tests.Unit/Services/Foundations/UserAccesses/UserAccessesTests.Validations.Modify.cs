@@ -345,12 +345,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             // given
             int randomNegativeNumber = GetRandomNegativeNumber();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            string randomUserId = GetRandomString();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomUserId = randomEntraUser.EntraUserId;
             UserAccess randomUserAccess = CreateRandomUserAccess(randomDateTimeOffset, randomUserId);
             UserAccess nonExistingUserAccess = randomUserAccess;
             nonExistingUserAccess.CreatedDate = randomDateTimeOffset.AddMinutes(randomNegativeNumber);
             UserAccess nullUserAccess = null;
-            EntraUser randomEntraUser = CreateRandomEntraUser();
 
             var userAccessServiceMock = new Mock<UserAccessService>(
                 reIdentificationStorageBroker.Object,
@@ -401,7 +401,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),
-                    Times.Exactly(2));
+                    Times.Once);
 
             this.reIdentificationStorageBroker.Verify(broker =>
                 broker.SelectUserAccessByIdAsync(nonExistingUserAccess.Id),
