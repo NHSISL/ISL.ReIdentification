@@ -80,8 +80,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
                 EntraUserId = invalidText,
                 Email = invalidText,
                 OrgCode = invalidText,
-                CreatedBy = string.Empty,
-                CreatedDate = randomDateTimeOffset,
+                CreatedBy = invalidText,
+                UpdatedBy = invalidText,
             };
 
             var userAccessServiceMock = new Mock<UserAccessService>(
@@ -101,10 +101,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.SetupSequence(broker =>
+            this.securityBrokerMock.Setup(broker =>
                 broker.GetCurrentUserAsync())
-                    .ReturnsAsync((EntraUser)null)
-                        .ReturnsAsync(randomEntraUser);
+                    .ReturnsAsync(randomEntraUser);
 
             var invalidUserAccessException =
                 new InvalidUserAccessException(
@@ -128,19 +127,31 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             invalidUserAccessException.AddData(
                 key: nameof(UserAccess.CreatedBy),
-                values: "Text is invalid");
+                values:
+                    [
+                        "Text is invalid",
+                    ]);
 
             invalidUserAccessException.AddData(
                 key: nameof(UserAccess.UpdatedBy),
                 values:
                     [
                         "Text is invalid",
-                        $"Expected value to be '{randomEntraUser.EntraUserId}' but found '{string.Empty}'."
+                        $"Expected value to be '{randomEntraUser.EntraUserId}' but found '{invalidText}'."
                     ]);
 
             invalidUserAccessException.AddData(
+                key: nameof(UserAccess.CreatedDate),
+                values: "Date is invalid");
+
+            invalidUserAccessException.AddData(
                 key: nameof(UserAccess.UpdatedDate),
-                values: "Date is the same as CreatedDate");
+                values:
+                    [
+                        "Date is invalid",
+                        $"Expected value to be '{randomDateTimeOffset}' but found '{invalidUserAccess.UpdatedDate}'.",
+                        "Date is the same as CreatedDate"
+                    ]);
 
             var expectedUserAccessValidationException =
                 new UserAccessValidationException(
@@ -165,7 +176,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),
-                    Times.Exactly(2));
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
