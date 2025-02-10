@@ -403,7 +403,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             invalidUserAccess.UpdatedDate = invalidDate;
 
             var invalidUserAccessException = new InvalidUserAccessException(
-                message: "Invalid access audit. Please correct the errors and try again.");
+                message: "Invalid user access. Please correct the errors and try again.");
 
             invalidUserAccessException.AddData(
             key: nameof(UserAccess.CreatedDate),
@@ -413,7 +413,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             var expectedUserAccessValidationException =
                 new UserAccessValidationException(
-                    message: "Access audit validation error occurred, please fix errors and try again.",
+                    message: "UserAccess validation error occurred, please fix errors and try again.",
                     innerException: invalidUserAccessException);
 
             var userAccessServiceMock = new Mock<UserAccessService>(
@@ -451,6 +451,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

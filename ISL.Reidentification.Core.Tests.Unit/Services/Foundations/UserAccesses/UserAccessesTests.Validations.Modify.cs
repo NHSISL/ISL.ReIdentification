@@ -193,6 +193,83 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             this.securityBrokerMock.VerifyNoOtherCalls();
         }
 
+        [Theory]
+        [InlineData(1)]
+        [InlineData(-91)]
+        public async Task ShouldThrowValidationExceptionOnModifyIfUpdatedDateIsNotRecentAndLogItAsync(
+            int invalidSeconds)
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+            DateTimeOffset startDate = randomDateTimeOffset.AddSeconds(-90);
+            DateTimeOffset endDate = randomDateTimeOffset.AddSeconds(0);
+            UserAccess randomUserAccess = CreateRandomUserAccess(randomDateTimeOffset, randomEntraUser.EntraUserId);
+            UserAccess invalidUserAccess = randomUserAccess;
+            invalidUserAccess.UpdatedDate = randomDateTimeOffset.AddSeconds(invalidSeconds);
+
+            var invalidUserAccessException = new InvalidUserAccessException(
+                message: "Invalid access audit. Please correct the errors and try again.");
+
+            invalidUserAccessException.AddData(
+                key: nameof(UserAccess.UpdatedDate),
+                values:
+                [
+                    $"Date is not recent." +
+                    $" Expected a value between {startDate} and {endDate} but found {randomUserAccess.UpdatedDate}"
+                ]);
+
+            var expectedUserAccessValidationException = new UserAccessValidationException(
+                message: "Access audit validation error occurred, please fix errors and try again.",
+                innerException: invalidUserAccessException);
+
+            var userAccessServiceMock = new Mock<UserAccessService>(
+                reIdentificationStorageBroker.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            userAccessServiceMock.Setup(service =>
+                service.ApplyModifyAuditAsync(invalidUserAccess))
+                    .ReturnsAsync(invalidUserAccess);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
+            // when
+            ValueTask<UserAccess> modifyUserAccessTask =
+                userAccessServiceMock.Object.ModifyUserAccessAsync(invalidUserAccess);
+
+            UserAccessValidationException actualUserAccessValidationException =
+                await Assert.ThrowsAsync<UserAccessValidationException>(
+                    testCode: modifyUserAccessTask.AsTask);
+
+            // then
+            actualUserAccessValidationException.Should().BeEquivalentTo(expectedUserAccessValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogErrorAsync(It.Is(
+                   SameExceptionAs(expectedUserAccessValidationException))),
+                       Times.Once);
+
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
+        }
+
         [Fact]
         public async Task ShouldThrowValidationExceptionOnModifyIfUserAccessHasInvalidLengthProperty()
         {
