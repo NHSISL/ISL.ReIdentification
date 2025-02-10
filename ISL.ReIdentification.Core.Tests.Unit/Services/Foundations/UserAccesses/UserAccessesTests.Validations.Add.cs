@@ -147,9 +147,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
                 key: nameof(UserAccess.UpdatedDate),
                 values: "Date is invalid");
 
-
-
-
             var expectedUserAccessValidationException =
                 new UserAccessValidationException(
                     message: "UserAccess validation error occurred, please fix errors and try again.",
@@ -380,7 +377,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
         }
-
 
         [Theory]
         [InlineData(1)]
