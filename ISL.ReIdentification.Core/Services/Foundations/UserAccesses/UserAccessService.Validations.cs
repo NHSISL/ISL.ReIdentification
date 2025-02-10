@@ -39,7 +39,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
                 Parameter: nameof(UserAccess.UpdatedBy)),
 
                 (Rule: IsNotSame(
-                    first: currentUser.EntraUserId.ToString(),
+                    first: currentUser.EntraUserId,
                     second: userAccess.CreatedBy),
                 Parameter: nameof(UserAccess.CreatedBy)),
 
@@ -79,7 +79,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
                 (Rule: IsInvalidLength(userAccess.OrgCode, 15), Parameter: nameof(UserAccess.OrgCode)),
 
                 (Rule: IsNotSame(
-                    first: currentUser.EntraUserId.ToString(),
+                    first: currentUser.EntraUserId,
                     second: userAccess.UpdatedBy),
                 Parameter: nameof(UserAccess.UpdatedBy)),
 

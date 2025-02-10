@@ -44,7 +44,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
                 Parameter: nameof(AccessAudit.PseudoIdentifier)),
 
                 (Rule: IsNotSame(
-                    first: currentUser.EntraUserId.ToString(),
+                    first: currentUser.EntraUserId,
                     second: accessAudit.CreatedBy),
                 Parameter: nameof(AccessAudit.CreatedBy)),
 
@@ -98,7 +98,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
                 Parameter: nameof(AccessAudit.PseudoIdentifier)),
 
                 (Rule: IsNotSame(
-                    first: currentUser.EntraUserId.ToString(),
+                    first: currentUser.EntraUserId,
                     second: accessAudit.UpdatedBy),
                 Parameter: nameof(AccessAudit.UpdatedBy)),
 
