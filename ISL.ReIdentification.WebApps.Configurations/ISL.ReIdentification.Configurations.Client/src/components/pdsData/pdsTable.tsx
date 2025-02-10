@@ -55,7 +55,7 @@ const PdsTable: FunctionComponent<PdsTableProps> = () => {
     return (
         <>
             <InputGroup className="mb-3">
-            <SearchBase id="search" label="Search pds" value={searchTerm} placeholder="Search PDS Table"
+            <SearchBase id="search" label="Search pds" value={searchTerm} placeholder="Search PDS Table By NHS Number"
                 onChange={(e) => { handleSearchChange(e.currentTarget.value) }} />
                 <Button variant="outline-secondary" onClick={handleRefresh}>
                     <FontAwesomeIcon icon={faRefresh} />

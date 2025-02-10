@@ -261,7 +261,11 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
                 var identificationItem = new IdentificationItem
                 {
                     HasAccess = false,
-                    Identifier = mappedItems[index].Identifier,
+
+                    Identifier = string.IsNullOrEmpty(mappedItems[index].Identifier) 
+                        ? mappedItems[index].Identifier 
+                        : mappedItems[index].Identifier.PadLeft(10, '0'),
+
                     IsReidentified = false,
                     Message = string.Empty,
                     RowNumber = accessRequest.CsvIdentificationRequest.HasHeaderRecord
