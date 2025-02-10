@@ -133,7 +133,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
 
             outputIdentificationRequest.IdentificationItems.ForEach(item =>
             {
-                item.Identifier = string.IsNullOrEmpty(item.Identifier) ? item.Identifier : $"{item.Identifier.PadLeft(10, '0')}I";
+                item.Identifier = string.IsNullOrEmpty(item.Identifier)
+                    ? item.Identifier
+                    : $"{item.Identifier.PadLeft(10, '0')}I";
+
                 item.IsReidentified = true;
             });
 
@@ -158,7 +161,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
 
             outputHasAccessIdentificationRequest.IdentificationItems.ForEach(item =>
             {
-                item.Identifier = string.IsNullOrEmpty(item.Identifier) ? item.Identifier : $"{item.Identifier.PadLeft(10, '0')}I";
+                item.Identifier = string.IsNullOrEmpty(item.Identifier)
+                    ? item.Identifier
+                    : $"{item.Identifier.PadLeft(10, '0')}I";
+
                 item.IsReidentified = true;
             });
 
@@ -228,7 +234,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             foreach (IdentificationItem item in randomIdentificationRequest.IdentificationItems)
             {
                 var pseudoIdentifier = randomIdentificationRequest.IdentificationItems
-                    .FirstOrDefault(identificationItem => identificationItem.RowNumber == item.RowNumber).Identifier;
+                    .FirstOrDefault(identificationItem => identificationItem.RowNumber == item.RowNumber)
+                        .Identifier;
 
                 AccessAudit successAccessAudit = new AccessAudit
                 {
@@ -237,8 +244,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                     TransactionId = randomGuid,
 
                     PseudoIdentifier = string.IsNullOrEmpty(pseudoIdentifier)
-                    ? pseudoIdentifier
-                    : pseudoIdentifier.PadLeft(10, '0'),
+                        ? pseudoIdentifier
+                        : pseudoIdentifier.PadLeft(10, '0'),
+
                     EntraUserId = randomIdentificationRequest.EntraUserId,
                     GivenName = randomIdentificationRequest.GivenName,
                     Surname = randomIdentificationRequest.Surname,

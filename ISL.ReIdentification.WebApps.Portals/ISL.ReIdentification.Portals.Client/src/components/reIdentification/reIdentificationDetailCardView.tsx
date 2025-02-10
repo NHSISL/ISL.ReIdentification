@@ -115,7 +115,7 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
                                 required />
                         </Form.Group>
                         <Form.Text className="text-muted">
-                            <small>Pseudo Numbers need to be 10 characters long and only contain numbers.</small>
+                            <small>Pseudo Numbers need to be a maximum of 10 characters long and only contain numbers.</small>
                         </Form.Text>
                         <br />
                         <br />
