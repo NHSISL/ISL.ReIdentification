@@ -295,7 +295,7 @@ namespace ISL.ReIdentification.Configurations.Server
             services.AddTransient<INotificationBroker, NotificationBroker>();
             services.AddTransient<IHashBroker, HashBroker>();
             services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
-            services.AddTransient<IReIdentificationBroker, ReIdentificationBroker>();
+            services.AddSingleton<IReIdentificationBroker, ReIdentificationBroker>();
         }
 
         private static void AddFoundationServices(IServiceCollection services)

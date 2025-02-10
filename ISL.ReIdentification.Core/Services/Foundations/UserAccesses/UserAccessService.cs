@@ -37,11 +37,10 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
         public ValueTask<UserAccess> AddUserAccessAsync(UserAccess userAccess) =>
         TryCatch(async () =>
         {
-            ValidateUserAccessIsNotNull(userAccess);
-            await ApplyAddAuditAsync(userAccess);
-            await ValidateUserAccessOnAddAsync(userAccess);
+            UserAccess userAccessWithAddAuditApplied = await ApplyAddAuditAsync(userAccess);
+            await ValidateUserAccessOnAddAsync(userAccessWithAddAuditApplied);
 
-            return await this.reIdentificationStorageBroker.InsertUserAccessAsync(userAccess);
+            return await this.reIdentificationStorageBroker.InsertUserAccessAsync(userAccessWithAddAuditApplied);
         });
 
         public ValueTask<IQueryable<UserAccess>> RetrieveAllUserAccessesAsync() =>
@@ -63,17 +62,16 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
         public ValueTask<UserAccess> ModifyUserAccessAsync(UserAccess userAccess) =>
         TryCatch(async () =>
         {
-            ValidateUserAccessIsNotNull(userAccess);
-            await ApplyModifyAuditAsync(userAccess);
-            await ValidateUserAccessOnModifyAsync(userAccess);
+            UserAccess userAccessWithModifyAuditApplied = await ApplyModifyAuditAsync(userAccess);
+            await ValidateUserAccessOnModifyAsync(userAccessWithModifyAuditApplied);
 
             var maybeUserAccess = await this.reIdentificationStorageBroker
-                .SelectUserAccessByIdAsync(userAccess.Id);
+                .SelectUserAccessByIdAsync(userAccessWithModifyAuditApplied.Id);
 
-            ValidateStorageUserAccess(maybeUserAccess, userAccess.Id);
-            await ValidateAgainstStorageUserAccessOnModifyAsync(userAccess, maybeUserAccess);
+            ValidateStorageUserAccess(maybeUserAccess, userAccessWithModifyAuditApplied.Id);
+            await ValidateAgainstStorageUserAccessOnModifyAsync(userAccessWithModifyAuditApplied, maybeUserAccess);
 
-            return await this.reIdentificationStorageBroker.UpdateUserAccessAsync(userAccess);
+            return await this.reIdentificationStorageBroker.UpdateUserAccessAsync(userAccessWithModifyAuditApplied);
         });
 
         public ValueTask<UserAccess> RemoveUserAccessByIdAsync(Guid userAccessId) =>
@@ -85,17 +83,17 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
                 .SelectUserAccessByIdAsync(userAccessId);
 
             ValidateStorageUserAccess(maybeUserAccess, userAccessId);
-            await ApplyModifyAuditAsync(maybeUserAccess);
+            UserAccess userAccessWithModifyAuditApplied = await ApplyModifyAuditAsync(maybeUserAccess);
 
             var updatedUserAccess = await this.reIdentificationStorageBroker
-                .UpdateUserAccessAsync(maybeUserAccess);
+                .UpdateUserAccessAsync(userAccessWithModifyAuditApplied);
 
-            await ValidateAgainstStorageUserAccessOnDeleteAsync(updatedUserAccess, maybeUserAccess);
+            await ValidateAgainstStorageUserAccessOnDeleteAsync(updatedUserAccess, userAccessWithModifyAuditApplied);
 
             return await this.reIdentificationStorageBroker.DeleteUserAccessAsync(updatedUserAccess);
         });
 
-        public ValueTask<List<string>> RetrieveAllActiveOrganisationsUserHasAccessToAsync(Guid entraUserId) =>
+        public ValueTask<List<string>> RetrieveAllActiveOrganisationsUserHasAccessToAsync(string entraUserId) =>
         TryCatch(async () =>
         {
             ValidateOnRetrieveAllOrganisationUserHasAccessTo(entraUserId);
@@ -139,22 +137,28 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
             return organisations.Distinct().ToList();
         });
 
-        private async ValueTask ApplyAddAuditAsync(UserAccess maybeUserAccess)
+        virtual internal async ValueTask<UserAccess> ApplyAddAuditAsync(UserAccess userAccess)
         {
+            ValidateUserAccessIsNotNull(userAccess);
             var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
             var auditUser = await this.securityBroker.GetCurrentUserAsync();
-            maybeUserAccess.CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
-            maybeUserAccess.CreatedDate = auditDateTimeOffset;
-            maybeUserAccess.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
-            maybeUserAccess.UpdatedDate = auditDateTimeOffset;
+            userAccess.CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            userAccess.CreatedDate = auditDateTimeOffset;
+            userAccess.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            userAccess.UpdatedDate = auditDateTimeOffset;
+
+            return userAccess;
         }
 
-        private async ValueTask ApplyModifyAuditAsync(UserAccess maybeUserAccess)
+        virtual internal async ValueTask<UserAccess> ApplyModifyAuditAsync(UserAccess userAccess)
         {
+            ValidateUserAccessIsNotNull(userAccess);
             var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
             var auditUser = await this.securityBroker.GetCurrentUserAsync();
-            maybeUserAccess.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
-            maybeUserAccess.UpdatedDate = auditDateTimeOffset;
+            userAccess.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            userAccess.UpdatedDate = auditDateTimeOffset;
+
+            return userAccess;
         }
     }
 }

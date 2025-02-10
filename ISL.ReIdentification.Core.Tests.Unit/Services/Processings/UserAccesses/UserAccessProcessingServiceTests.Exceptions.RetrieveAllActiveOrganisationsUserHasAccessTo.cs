@@ -20,7 +20,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
             Xeption dependencyValidationException)
         {
             // given
-            Guid someId = Guid.NewGuid();
+            string someId = GetRandomStringWithLengthOf(255);
 
             var expectedUserAccessProcessingDependencyValidationException =
                 new UserAccessProcessingDependencyValidationException(
@@ -28,7 +28,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.userAccessServiceMock.Setup(service =>
-                service.RetrieveAllActiveOrganisationsUserHasAccessToAsync(It.IsAny<Guid>()))
+                service.RetrieveAllActiveOrganisationsUserHasAccessToAsync(It.IsAny<string>()))
                     .ThrowsAsync(dependencyValidationException);
 
             // when
@@ -43,7 +43,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
             actualException.Should().BeEquivalentTo(expectedUserAccessProcessingDependencyValidationException);
 
             this.userAccessServiceMock.Verify(service =>
-                service.RetrieveAllActiveOrganisationsUserHasAccessToAsync(It.IsAny<Guid>()),
+                service.RetrieveAllActiveOrganisationsUserHasAccessToAsync(It.IsAny<string>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -61,14 +61,14 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
             Xeption dependencyException)
         {
             // given
-            Guid someId = Guid.NewGuid();
+            string someId = GetRandomStringWithLengthOf(255);
 
             var expectedUserAccessProcessingDependencyException = new UserAccessProcessingDependencyException(
                 message: "User access processing dependency error occurred, please try again.",
                 innerException: dependencyException.InnerException as Xeption);
 
             this.userAccessServiceMock.Setup(service =>
-                service.RetrieveAllActiveOrganisationsUserHasAccessToAsync(It.IsAny<Guid>()))
+                service.RetrieveAllActiveOrganisationsUserHasAccessToAsync(It.IsAny<string>()))
                     .ThrowsAsync(dependencyException);
 
             // when
@@ -82,7 +82,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
             actualException.Should().BeEquivalentTo(expectedUserAccessProcessingDependencyException);
 
             this.userAccessServiceMock.Verify(service =>
-                service.RetrieveAllActiveOrganisationsUserHasAccessToAsync(It.IsAny<Guid>()),
+                service.RetrieveAllActiveOrganisationsUserHasAccessToAsync(It.IsAny<string>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -98,7 +98,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
         public async Task ShouldThrowServiceExceptionOnRetrieveAllActiveOrganisationsUserHasAccessToAndLogItAsync()
         {
             // given
-            Guid someId = Guid.NewGuid();
+            string someId = GetRandomStringWithLengthOf(255);
 
             var serviceException = new Exception();
 
@@ -111,7 +111,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
                 innerException: failedUserAccessProcessingServiceException);
 
             this.userAccessServiceMock.Setup(service =>
-                service.RetrieveAllActiveOrganisationsUserHasAccessToAsync(It.IsAny<Guid>()))
+                service.RetrieveAllActiveOrganisationsUserHasAccessToAsync(It.IsAny<string>()))
                     .ThrowsAsync(serviceException);
 
             // when
@@ -125,7 +125,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
             actualException.Should().BeEquivalentTo(expectedUserAccessProcessingServiveException);
 
             this.userAccessServiceMock.Verify(service =>
-                service.RetrieveAllActiveOrganisationsUserHasAccessToAsync(It.IsAny<Guid>()),
+                service.RetrieveAllActiveOrganisationsUserHasAccessToAsync(It.IsAny<string>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

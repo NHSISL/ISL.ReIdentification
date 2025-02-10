@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -68,7 +67,7 @@ namespace ISL.ReIdentification.Core.Brokers.Securities
         public async ValueTask<bool> IsInRoleAsync(string roleName)
         {
             var roles = this.user.FindAll(ClaimTypes.Role).Select(role => role.Value).ToList();
-            
+
             return roles.Contains(roleName);
         }
 
@@ -81,7 +80,7 @@ namespace ISL.ReIdentification.Core.Brokers.Securities
             var entraUserIdString = this.user.FindFirst("oid")?.Value
                           ?? this.user.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value;
 
-            var entraUserId = Guid.TryParse(entraUserIdString, out var parsedGuid) ? parsedGuid : Guid.Empty;
+            var entraUserId = entraUserIdString;
             var givenName = this.user.FindFirst(ClaimTypes.GivenName)?.Value;
             var surname = this.user.FindFirst(ClaimTypes.Surname)?.Value;
             var displayName = this.user.FindFirst("displayName")?.Value;
@@ -111,7 +110,7 @@ namespace ISL.ReIdentification.Core.Brokers.Securities
             var handler = new JwtSecurityTokenHandler();
             var jwtToken = handler.ReadJwtToken(token);
             var identity = new ClaimsIdentity(jwtToken.Claims, "jwt");
-            
+
             return new ClaimsPrincipal(identity);
         }
     }

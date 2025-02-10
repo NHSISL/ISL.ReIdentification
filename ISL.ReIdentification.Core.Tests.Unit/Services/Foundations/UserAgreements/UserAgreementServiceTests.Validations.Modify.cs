@@ -78,7 +78,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
 
             invalidUserAgreementException.AddData(
                 key: nameof(UserAgreement.EntraUserId),
-                values: "Id is required");
+                values: "Text is required");
 
             invalidUserAgreementException.AddData(
                 key: nameof(UserAgreement.AgreementType),

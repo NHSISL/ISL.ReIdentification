@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
@@ -15,7 +14,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance
 {
     public class TestAuthHandler : AuthenticationHandler<CustomAuthenticationSchemeOptions>
     {
-        public static Guid SecurityOid = Guid.Parse("65b5ccfb-b501-4ad5-8dd7-2a33ff64eaa3");
+        public static string SecurityOid = "65b5ccfb-b501-4ad5-8dd7-2a33ff64eaa3";
         private static string givenName = "TestGivenName";
         private static string surname = "TesSurname";
         private static string displayName = "TestDisplayName";
