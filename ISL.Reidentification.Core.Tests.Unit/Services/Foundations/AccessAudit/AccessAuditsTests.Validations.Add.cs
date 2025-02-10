@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits.Exceptions;
+using ISL.ReIdentification.Core.Models.Securities;
 using Moq;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
@@ -142,7 +143,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            AccessAudit invalidAccessAudit = CreateRandomAccessAudit(dateTimeOffset: randomDateTimeOffset);
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            AccessAudit invalidAccessAudit = CreateRandomAccessAudit(
+                dateTimeOffset: randomDateTimeOffset,
+                userId: randomEntraUser.EntraUserId);
+
             var inputCreatedByUpdatedByString = GetRandomStringWithLengthOf(256);
             invalidAccessAudit.Email = GetRandomStringWithLengthOf(321);
             invalidAccessAudit.PseudoIdentifier = GetRandomStringWithLengthOf(11);
@@ -216,13 +222,17 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
         public async Task ShouldThrowValidationExceptionOnAddIfAuditPropertiesIsNotTheSameAndLogItAsync()
         {
             // given
-            DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
-            DateTimeOffset now = randomDateTime;
-            AccessAudit randomAccessAudit = CreateRandomAccessAudit(now);
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            AccessAudit randomAccessAudit = CreateRandomAccessAudit(
+                dateTimeOffset: randomDateTimeOffset,
+                userId: randomEntraUser.EntraUserId);
+
             AccessAudit invalidAccessAudit = randomAccessAudit;
             invalidAccessAudit.CreatedBy = GetRandomString();
             invalidAccessAudit.UpdatedBy = GetRandomString();
-            invalidAccessAudit.CreatedDate = now;
+            invalidAccessAudit.CreatedDate = randomDateTimeOffset;
             invalidAccessAudit.UpdatedDate = GetRandomDateTimeOffset();
 
             var invalidAccessAuditException = new InvalidAccessAuditException(
@@ -243,7 +253,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .ReturnsAsync(now);
+                    .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<AccessAudit> addAccessAuditTask =

@@ -8,6 +8,7 @@ using FluentAssertions;
 using Force.DeepCloner;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits.Exceptions;
+using ISL.ReIdentification.Core.Models.Securities;
 using Moq;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
@@ -150,7 +151,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            AccessAudit invalidAccessAudit = CreateRandomModifyAccessAudit(randomDateTimeOffset);
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            AccessAudit invalidAccessAudit = CreateRandomModifyAccessAudit(
+                dateTimeOffset: randomDateTimeOffset,
+                userId: randomEntraUser.EntraUserId);
+
             var inputCreatedByUpdatedByString = GetRandomStringWithLengthOf(256);
             invalidAccessAudit.PseudoIdentifier = GetRandomStringWithLengthOf(11);
             invalidAccessAudit.Email = GetRandomStringWithLengthOf(321);
@@ -219,8 +225,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
         public async Task ShouldThrowValidationExceptionOnModiyIfAccessAuditHasSameCreatedDateUpdatedDateAndLogItAsync()
         {
             // given
-            DateTimeOffset randomDatTimeOffset = GetRandomDateTimeOffset();
-            AccessAudit randomAccessAudit = CreateRandomAccessAudit(randomDatTimeOffset);
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            AccessAudit randomAccessAudit = CreateRandomAccessAudit(
+                dateTimeOffset: randomDateTimeOffset,
+                userId: randomEntraUser.EntraUserId);
+
             var invalidAccessAudit = randomAccessAudit;
 
             var invalidAccessAuditException = new InvalidAccessAuditException(
@@ -270,7 +281,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
             DateTimeOffset now = randomDateTimeOffset;
             DateTimeOffset startDate = now.AddSeconds(-90);
             DateTimeOffset endDate = now.AddSeconds(0);
-            AccessAudit randomAccessAudit = CreateRandomAccessAudit(randomDateTimeOffset);
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            AccessAudit randomAccessAudit = CreateRandomAccessAudit(
+                dateTimeOffset: randomDateTimeOffset,
+                userId: randomEntraUser.EntraUserId);
+
             AccessAudit invalidAccessAudit = randomAccessAudit;
             invalidAccessAudit.UpdatedDate = randomDateTimeOffset.AddSeconds(invalidSeconds);
 
@@ -324,7 +340,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
             // given
             int randomNegativeNumber = GetRandomNegativeNumber();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            AccessAudit randomAccessAudit = CreateRandomAccessAudit(randomDateTimeOffset);
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            AccessAudit randomAccessAudit = CreateRandomAccessAudit(
+                dateTimeOffset: randomDateTimeOffset,
+                userId: randomEntraUser.EntraUserId);
+
             AccessAudit nonExistingAccessAudit = randomAccessAudit;
             nonExistingAccessAudit.CreatedDate = randomDateTimeOffset.AddMinutes(randomNegativeNumber);
             AccessAudit nullAccessAudit = null;
@@ -380,7 +401,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
             // given
             int randomNegativeNumber = GetRandomNegativeNumber();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            AccessAudit randomAccessAudit = CreateRandomModifyAccessAudit(randomDateTimeOffset);
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            AccessAudit randomAccessAudit = CreateRandomModifyAccessAudit(
+                dateTimeOffset: randomDateTimeOffset,
+                userId: randomEntraUser.EntraUserId);
+
             AccessAudit invalidAccessAudit = randomAccessAudit;
             AccessAudit storageAccessAudit = invalidAccessAudit.DeepClone();
             storageAccessAudit.CreatedDate = randomDateTimeOffset.AddMinutes(randomNegativeNumber);
@@ -438,7 +464,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            AccessAudit randomAccessAudit = CreateRandomModifyAccessAudit(randomDateTimeOffset);
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            AccessAudit randomAccessAudit = CreateRandomModifyAccessAudit(
+                dateTimeOffset: randomDateTimeOffset,
+                userId: randomEntraUser.EntraUserId);
+
             AccessAudit invalidAccessAudit = randomAccessAudit;
             AccessAudit storageAccessAudit = invalidAccessAudit.DeepClone();
             invalidAccessAudit.UpdatedDate = storageAccessAudit.UpdatedDate;

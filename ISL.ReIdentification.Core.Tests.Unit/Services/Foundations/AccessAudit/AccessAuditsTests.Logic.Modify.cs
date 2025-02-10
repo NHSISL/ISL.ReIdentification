@@ -35,6 +35,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateOffset);
 
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
             this.reIdentificationStorageBroker.Setup(broker =>
                 broker.SelectAccessAuditByIdAsync(inputAccessAudit.Id))
                     .ReturnsAsync(storageAccessAudit);
