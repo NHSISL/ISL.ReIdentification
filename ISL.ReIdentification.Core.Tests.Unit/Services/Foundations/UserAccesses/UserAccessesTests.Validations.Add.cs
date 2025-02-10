@@ -96,11 +96,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
                 service.ApplyAddAuditAsync(invalidUserAccess))
                     .ReturnsAsync(invalidUserAccess);
 
-            this.dateTimeBrokerMock.SetupSequence(broker =>
+            this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.SetupSequence(broker =>
+            this.securityBrokerMock.Setup(broker =>
                 broker.GetCurrentUserAsync())
                     .ReturnsAsync(randomEntraUser);
 
