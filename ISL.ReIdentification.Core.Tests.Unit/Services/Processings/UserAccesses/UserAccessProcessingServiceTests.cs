@@ -122,7 +122,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
             return CreateUserAccessesFiller(
                 dateTimeOffset: GetRandomDateTimeOffset(),
                 entraUserId: GetRandomStringWithLengthOf(255))
-                .Create(GetRandomNumber()).ToList();
+                    .Create(GetRandomNumber()).ToList();
         }
 
         private static BulkUserAccess CreateRandomBulkUserAccess()
