@@ -64,7 +64,8 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             foreach (IdentificationItem item in identificationRequest.IdentificationItems)
             {
                 savedPseduoes.Add(
-                    item.RowNumber, string.IsNullOrEmpty(item.Identifier) 
+                    item.RowNumber, 
+                    string.IsNullOrEmpty(item.Identifier) 
                         ? item.Identifier 
                         : item.Identifier.PadLeft(10, '0'));
 
