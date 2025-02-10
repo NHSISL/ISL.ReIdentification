@@ -91,7 +91,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
         [EnableQuery(PageSize = 50)]
 #endif
 #if DEBUG
-        [EnableQuery(PageSize = 50)]
+        [EnableQuery(PageSize = 5000)]
 #endif
         public async ValueTask<ActionResult<IQueryable<UserAccess>>> Get()
         {
