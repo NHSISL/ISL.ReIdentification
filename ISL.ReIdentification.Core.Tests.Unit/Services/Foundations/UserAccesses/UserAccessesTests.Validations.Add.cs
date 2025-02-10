@@ -71,6 +71,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             // given
             EntraUser randomEntraUser = CreateRandomEntraUser();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            DateTimeOffset startDate = randomDateTimeOffset.AddSeconds(-90);
+            DateTimeOffset endDate = randomDateTimeOffset.AddSeconds(0);
 
             var invalidUserAccess = new UserAccess
             {
@@ -133,7 +135,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
                 key: nameof(UserAccess.CreatedDate),
                 values: [
                     "Date is invalid",
-                    $"Expected value to be '{randomDateTimeOffset}' but found '{invalidUserAccess.CreatedDate}'."
+                    $"Date is not recent. Expected a value between " +
+                    $"{startDate} and {endDate} but found {invalidUserAccess.CreatedDate}"
                 ]);
 
             invalidUserAccessException.AddData(
