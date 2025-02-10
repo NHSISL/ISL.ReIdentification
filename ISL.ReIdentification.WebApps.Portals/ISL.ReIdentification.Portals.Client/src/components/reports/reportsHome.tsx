@@ -193,7 +193,7 @@ const ReportsHome: FunctionComponent = () => {
             <ReportDeveloperTools
                 developerToolsLocation={showDeveloperTools}
                 setDeveloperToolsLocation={setShowDeveloperTools}
-                eventsList={developerEvents} />
+                eventsList={developerEvents} />            
         </Container>
     )
 }

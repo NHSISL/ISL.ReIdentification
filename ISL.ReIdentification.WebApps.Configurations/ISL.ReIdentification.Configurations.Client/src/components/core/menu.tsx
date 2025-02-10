@@ -39,12 +39,16 @@ const MenuComponent: React.FC = () => {
                 </SecuredComponent>
             </FeatureSwitch>
 
-            <ListGroup.Item
-                className={`bg-dark text-white ${activePath === '/accessAudit' ? 'active' : ''}`}
-                onClick={() => handleItemClick('/accessAudit')}>
-                <FontAwesomeIcon icon={faFontAwesomeLogoFull} className="me-2 fa-icon" />
-                <SecuredLink to="/accessAudit">Access Audit</SecuredLink>
-            </ListGroup.Item>
+            <FeatureSwitch feature={FeatureDefinitions.Configuration}>
+                <SecuredComponent allowedRoles={securityPoints.configuration.view}>
+                    <ListGroup.Item
+                        className={`bg-dark text-white ${activePath === '/accessAudit' ? 'active' : ''}`}
+                        onClick={() => handleItemClick('/accessAudit')}>
+                        <FontAwesomeIcon icon={faFontAwesomeLogoFull} className="me-2 fa-icon" />
+                        <SecuredLink to="/accessAudit">Access Audit</SecuredLink>
+                    </ListGroup.Item>
+                </SecuredComponent>
+            </FeatureSwitch>
 
             {/*<ListGroup.Item*/}
             {/*    className={`bg-dark text-white ${activePath === '/impersonationContext' ? 'active' : ''}`}*/}
@@ -53,26 +57,38 @@ const MenuComponent: React.FC = () => {
             {/*    <SecuredLink to="/impersonationContext">Impersonation Context</SecuredLink>*/}
             {/*</ListGroup.Item>*/}
 
-            <ListGroup.Item
-                className={`bg-dark text-white ${activePath === '/csvIdentificationRequest' ? 'active' : ''}`}
-                onClick={() => handleItemClick('/csvIdentificationRequest')}>
-                <FontAwesomeIcon icon={faIdBadge} className="me-2 fa-icon" />
-                <SecuredLink to="/csvIdentificationRequest">Csv Identification</SecuredLink>
-            </ListGroup.Item>
+            <FeatureSwitch feature={FeatureDefinitions.Configuration}>
+                <SecuredComponent allowedRoles={securityPoints.configuration.view}>
+                    <ListGroup.Item
+                        className={`bg-dark text-white ${activePath === '/csvIdentificationRequest' ? 'active' : ''}`}
+                        onClick={() => handleItemClick('/csvIdentificationRequest')}>
+                        <FontAwesomeIcon icon={faIdBadge} className="me-2 fa-icon" />
+                        <SecuredLink to="/csvIdentificationRequest">Csv Identification</SecuredLink>
+                    </ListGroup.Item>
+                </SecuredComponent>
+            </FeatureSwitch>
 
-            <ListGroup.Item
-                className={`bg-dark text-white ${activePath === '/pdsData' ? 'active' : ''}`}
-                onClick={() => handleItemClick('/pdsData')}>
-                <FontAwesomeIcon icon={faAddressBook} className="me-2 fa-icon" />
-                <SecuredLink to="/pdsData">PDS Data</SecuredLink>
-            </ListGroup.Item>
+            <FeatureSwitch feature={FeatureDefinitions.Configuration}>
+                <SecuredComponent allowedRoles={securityPoints.configuration.view}>
+                    <ListGroup.Item
+                        className={`bg-dark text-white ${activePath === '/pdsData' ? 'active' : ''}`}
+                        onClick={() => handleItemClick('/pdsData')}>
+                        <FontAwesomeIcon icon={faAddressBook} className="me-2 fa-icon" />
+                        <SecuredLink to="/pdsData">PDS Data</SecuredLink>
+                    </ListGroup.Item>
+                </SecuredComponent>
+            </FeatureSwitch>
 
-            <ListGroup.Item
-                className={`bg-dark text-white ${activePath === '/odsData' ? 'active' : ''}`}
-                onClick={() => handleItemClick('/odsData')}>
-                <FontAwesomeIcon icon={faUserDoctor} className="me-2 fa-icon" />
-                <SecuredLink to="/odsData">Ods Data</SecuredLink>
-            </ListGroup.Item>
+            <FeatureSwitch feature={FeatureDefinitions.Configuration}>
+                <SecuredComponent allowedRoles={securityPoints.configuration.view}>
+                    <ListGroup.Item
+                        className={`bg-dark text-white ${activePath === '/odsData' ? 'active' : ''}`}
+                        onClick={() => handleItemClick('/odsData')}>
+                        <FontAwesomeIcon icon={faUserDoctor} className="me-2 fa-icon" />
+                        <SecuredLink to="/odsData">Ods Data</SecuredLink>
+                    </ListGroup.Item>
+                    </SecuredComponent>
+            </FeatureSwitch>
 
             <FeatureSwitch feature={FeatureDefinitions.Configuration}>
                 <SecuredComponent allowedRoles={securityPoints.configuration.view}>

@@ -1,8 +1,8 @@
-import { Alert, Container } from "react-bootstrap"
-import BreadCrumbBase from "../bases/layouts/BreadCrumb/BreadCrumbBase"
-import UserAccessTable from "./userAccessTable"
+import { Container } from "react-bootstrap"
+import BreadCrumbBase from "../components/bases/layouts/BreadCrumb/BreadCrumbBase"
+import UserAccessTable from "../components/userAccess/userAccessTable"
 
-export const UserAccess = () => {
+export const UserAccessPage = () => {
     return (
         <Container fluid className="mt-4">
             <section>
@@ -12,10 +12,9 @@ export const UserAccess = () => {
                     currentLink="User Access">
                 </BreadCrumbBase>
                 <div className="mt-3">
-                    <h2>User Access</h2>
+                    <h3>User Access</h3>
                     <p>Use this screen to assign reidentification users to ODS organisations, this will allow an end user to reidentify patients that are registered to the ODS code and patients registered to all children ODS organisations.</p>
-                    <Alert variant="danger" className="p-2">Any modification to data on this screen is audited.</Alert>
-                    <UserAccessTable />
+                    <UserAccessTable/>
                 </div>
             </section>
         </Container>
