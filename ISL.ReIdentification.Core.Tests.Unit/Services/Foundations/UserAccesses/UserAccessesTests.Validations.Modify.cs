@@ -208,8 +208,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             UserAccess invalidUserAccess = randomUserAccess;
             invalidUserAccess.UpdatedDate = randomDateTimeOffset.AddSeconds(invalidSeconds);
 
-            var invalidUserAccessException = new InvalidUserAccessException(
-                message: "Invalid access audit. Please correct the errors and try again.");
+            var invalidUserAccessException =
+                new InvalidUserAccessException(
+                    message: "Invalid user access. Please correct the errors and try again.");
 
             invalidUserAccessException.AddData(
                 key: nameof(UserAccess.UpdatedDate),
@@ -219,9 +220,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
                     $" Expected a value between {startDate} and {endDate} but found {randomUserAccess.UpdatedDate}"
                 ]);
 
-            var expectedUserAccessValidationException = new UserAccessValidationException(
-                message: "Access audit validation error occurred, please fix errors and try again.",
-                innerException: invalidUserAccessException);
+            var expectedUserAccessValidationException =
+                new UserAccessValidationException(
+                    message: "UserAccess validation error occurred, please fix errors and try again.",
+                    innerException: invalidUserAccessException);
 
             var userAccessServiceMock = new Mock<UserAccessService>(
                 reIdentificationStorageBroker.Object,
@@ -257,6 +259,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
