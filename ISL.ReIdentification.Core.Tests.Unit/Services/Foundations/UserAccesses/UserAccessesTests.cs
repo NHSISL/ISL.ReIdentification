@@ -141,8 +141,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
         private static string GetRandomStringWithLengthOf(int length)
         {
             string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+            result = result.Length > length ? result.Substring(0, length) : result;
 
-            return result.Length > length ? result.Substring(0, length) : result;
+            return result;
         }
 
         private static string GetRandomString() =>
@@ -190,10 +191,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
                 });
         }
 
-        private EntraUser CreateRandomEntraUser()
+        private EntraUser CreateRandomEntraUser(string entraUserId = "")
         {
+            var userId = string.IsNullOrWhiteSpace(entraUserId) ? GetRandomStringWithLengthOf(255) : entraUserId;
+
             return new EntraUser(
-                entraUserId: GetRandomStringWithLengthOf(255),
+                entraUserId: userId,
                 givenName: GetRandomString(),
                 surname: GetRandomString(),
                 displayName: GetRandomString(),

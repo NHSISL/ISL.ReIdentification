@@ -187,14 +187,16 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            string randomUserId = GetRandomString();
+            EntraUser randomEntraUser = CreateRandomEntraUser(entraUserId: GetRandomStringWithLengthOf(256));
+            string randomUserId = randomEntraUser.EntraUserId;
             UserAccess invalidUserAccess = CreateRandomModifyUserAccess(randomDateTimeOffset, randomUserId);
-            var inputCreatedByUpdatedByString = GetRandomStringWithLength(256);
+            invalidUserAccess.EntraUserId = randomUserId;
             invalidUserAccess.GivenName = GetRandomStringWithLength(256);
             invalidUserAccess.Surname = GetRandomStringWithLength(256);
             invalidUserAccess.Email = GetRandomStringWithLength(321);
             invalidUserAccess.OrgCode = GetRandomStringWithLength(16);
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            invalidUserAccess.CreatedBy = randomUserId;
+            invalidUserAccess.UpdatedBy = randomUserId;
 
             var userAccessServiceMock = new Mock<UserAccessService>(
                 reIdentificationStorageBroker.Object,
@@ -221,12 +223,24 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
                 message: "Invalid user access. Please correct the errors and try again.");
 
             invalidUserAccessException.AddData(
+                key: nameof(UserAccess.EntraUserId),
+                values: $"Text exceed max length of {invalidUserAccess.EntraUserId.Length - 1} characters");
+
+            invalidUserAccessException.AddData(
                 key: nameof(UserAccess.Email),
                 values: $"Text exceed max length of {invalidUserAccess.Email.Length - 1} characters");
 
             invalidUserAccessException.AddData(
                 key: nameof(UserAccess.OrgCode),
                 values: $"Text exceed max length of {invalidUserAccess.OrgCode.Length - 1} characters");
+
+            invalidUserAccessException.AddData(
+                key: nameof(UserAccess.CreatedBy),
+                values: $"Text exceed max length of {invalidUserAccess.CreatedBy.Length - 1} characters");
+
+            invalidUserAccessException.AddData(
+                key: nameof(UserAccess.UpdatedBy),
+                values: $"Text exceed max length of {invalidUserAccess.UpdatedBy.Length - 1} characters");
 
             var expectedUserAccessException = new
                 UserAccessValidationException(
