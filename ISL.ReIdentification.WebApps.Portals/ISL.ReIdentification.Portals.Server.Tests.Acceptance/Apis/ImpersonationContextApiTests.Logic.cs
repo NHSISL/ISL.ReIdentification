@@ -61,7 +61,8 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             ImpersonationContext expectedImpersonationContext = randomImpersonationContext;
 
             // when
-            var actualImpersonationContext = await this.apiBroker.GetImpersonationContextByIdAsync(randomImpersonationContext.Id);
+            var actualImpersonationContext = await this.apiBroker
+                .GetImpersonationContextByIdAsync(randomImpersonationContext.Id);
 
             // then
             actualImpersonationContext.Should().BeEquivalentTo(expectedImpersonationContext);
@@ -73,11 +74,15 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
         {
             // given
             ImpersonationContext randomImpersonationContext = await PostRandomImpersonationContextAsync();
-            ImpersonationContext modifiedImpersonationContext = UpdateImpersonationContextWithRandomValues(randomImpersonationContext);
+
+            ImpersonationContext modifiedImpersonationContext =
+                UpdateImpersonationContextWithRandomValues(randomImpersonationContext);
 
             // when
             await this.apiBroker.PutImpersonationContextAsync(modifiedImpersonationContext);
-            var actualImpersonationContext = await this.apiBroker.GetImpersonationContextByIdAsync(randomImpersonationContext.Id);
+
+            var actualImpersonationContext = await this.apiBroker
+                .GetImpersonationContextByIdAsync(randomImpersonationContext.Id);
 
             // then
             actualImpersonationContext.Should().BeEquivalentTo(modifiedImpersonationContext);
