@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
+using ISL.ReIdentification.Core.Models.Securities;
 using Moq;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
@@ -18,9 +19,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
         {
             // given
             DateTimeOffset randomDateOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
 
-            AccessAudit randomModifyAccessAudit =
-                CreateRandomModifyAccessAudit(randomDateOffset);
+            AccessAudit randomModifyAccessAudit = CreateRandomModifyAccessAudit(
+                dateTimeOffset: randomDateOffset,
+                userId: randomEntraUser.EntraUserId);
 
             AccessAudit inputAccessAudit = randomModifyAccessAudit.DeepClone();
             AccessAudit storageAccessAudit = randomModifyAccessAudit.DeepClone();
@@ -49,7 +52,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Exactly(2));
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Exactly(2));
 
             this.reIdentificationStorageBroker.Verify(broker =>
                 broker.SelectAccessAuditByIdAsync(inputAccessAudit.Id),

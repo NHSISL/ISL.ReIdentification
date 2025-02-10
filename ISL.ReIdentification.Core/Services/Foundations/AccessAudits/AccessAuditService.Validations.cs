@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits.Exceptions;
+using ISL.ReIdentification.Core.Models.Securities;
 
 namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
 {
@@ -14,6 +15,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
         private async ValueTask ValidateAccessAuditOnAddAsync(AccessAudit accessAudit)
         {
             ValidateAccessAuditIsNotNull(accessAudit);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: await IsInvalidAsync(accessAudit.Id), Parameter: nameof(AccessAudit.Id)),
@@ -29,6 +31,10 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
                 (Rule: await IsInvalidAsync(accessAudit.UpdatedBy), Parameter: nameof(AccessAudit.UpdatedBy)),
                 (Rule: await IsInvalidAsync(accessAudit.CreatedDate), Parameter: nameof(AccessAudit.CreatedDate)),
                 (Rule: await IsInvalidAsync(accessAudit.UpdatedDate), Parameter: nameof(AccessAudit.UpdatedDate)),
+
+                (Rule: await IsInvalidLengthAsync(accessAudit.EntraUserId, 255),
+                Parameter: nameof(AccessAudit.EntraUserId)),
+
                 (Rule: await IsInvalidLengthAsync(accessAudit.AuditType, 255), Parameter: nameof(AccessAudit.AuditType)),
                 (Rule: await IsInvalidLengthAsync(accessAudit.CreatedBy, 255), Parameter: nameof(AccessAudit.CreatedBy)),
                 (Rule: await IsInvalidLengthAsync(accessAudit.UpdatedBy, 255), Parameter: nameof(AccessAudit.UpdatedBy)),
@@ -37,18 +43,21 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
                 (Rule: await IsInvalidLengthAsync(accessAudit.PseudoIdentifier, 10),
                 Parameter: nameof(AccessAudit.PseudoIdentifier)),
 
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId.ToString(),
+                    second: accessAudit.CreatedBy),
+                Parameter: nameof(AccessAudit.CreatedBy)),
+
                 (Rule: await IsNotSameAsync(
                     first: accessAudit.UpdatedBy,
                     second: accessAudit.CreatedBy,
                     secondName: nameof(AccessAudit.CreatedBy)),
-
                 Parameter: nameof(AccessAudit.UpdatedBy)),
 
                 (Rule: await IsNotSameAsync(
                     first: accessAudit.UpdatedDate,
                     second: accessAudit.CreatedDate,
                     secondName: nameof(AccessAudit.CreatedDate)),
-
                 Parameter: nameof(AccessAudit.UpdatedDate)),
 
                 (Rule: await IsNotRecentAsync(accessAudit.CreatedDate), Parameter: nameof(AccessAudit.CreatedDate)));
@@ -60,12 +69,13 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
         private async ValueTask ValidateAccessAuditOnModifyAsync(AccessAudit accessAudit)
         {
             ValidateAccessAuditIsNotNull(accessAudit);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: await IsInvalidAsync(accessAudit.Id), Parameter: nameof(AccessAudit.Id)),
                 (Rule: await IsInvalidAsync(accessAudit.RequestId), Parameter: nameof(AccessAudit.RequestId)),
                 (Rule: await IsInvalidAsync(accessAudit.EntraUserId), Parameter: nameof(AccessAudit.EntraUserId)),
-                
+
                 (Rule: await IsInvalidAsync(accessAudit.PseudoIdentifier),
                 Parameter: nameof(AccessAudit.PseudoIdentifier)),
 
@@ -75,19 +85,27 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
                 (Rule: await IsInvalidAsync(accessAudit.UpdatedBy), Parameter: nameof(AccessAudit.UpdatedBy)),
                 (Rule: await IsInvalidAsync(accessAudit.CreatedDate), Parameter: nameof(AccessAudit.CreatedDate)),
                 (Rule: await IsInvalidAsync(accessAudit.UpdatedDate), Parameter: nameof(AccessAudit.UpdatedDate)),
-                (Rule: await IsInvalidLengthAsync(accessAudit.AuditType, 255),Parameter: nameof(AccessAudit.AuditType)),
-                (Rule: await IsInvalidLengthAsync(accessAudit.CreatedBy, 255),Parameter: nameof(AccessAudit.CreatedBy)),
-                (Rule: await IsInvalidLengthAsync(accessAudit.UpdatedBy, 255),Parameter: nameof(AccessAudit.UpdatedBy)),
-                (Rule: await IsInvalidLengthAsync(accessAudit.Email, 320),Parameter: nameof(AccessAudit.Email)),
+
+                (Rule: await IsInvalidLengthAsync(accessAudit.EntraUserId, 255),
+                Parameter: nameof(AccessAudit.EntraUserId)),
+
+                (Rule: await IsInvalidLengthAsync(accessAudit.AuditType, 255), Parameter: nameof(AccessAudit.AuditType)),
+                (Rule: await IsInvalidLengthAsync(accessAudit.CreatedBy, 255), Parameter: nameof(AccessAudit.CreatedBy)),
+                (Rule: await IsInvalidLengthAsync(accessAudit.UpdatedBy, 255), Parameter: nameof(AccessAudit.UpdatedBy)),
+                (Rule: await IsInvalidLengthAsync(accessAudit.Email, 320), Parameter: nameof(AccessAudit.Email)),
 
                 (Rule: await IsInvalidLengthAsync(accessAudit.PseudoIdentifier, 10),
                 Parameter: nameof(AccessAudit.PseudoIdentifier)),
+
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId.ToString(),
+                    second: accessAudit.UpdatedBy),
+                Parameter: nameof(AccessAudit.UpdatedBy)),
 
                 (Rule: await IsSameAsAsync(
                     createdDate: accessAudit.CreatedDate,
                     updatedDate: accessAudit.UpdatedDate,
                     createdDateName: nameof(AccessAudit.CreatedDate)),
-
                 Parameter: nameof(AccessAudit.UpdatedDate)),
 
                 (Rule: await IsNotRecentAsync(accessAudit.UpdatedDate), Parameter: nameof(AccessAudit.UpdatedDate)));
@@ -166,6 +184,14 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
             {
                 Condition = first != second,
                 Message = $"Date is not the same as {secondName}"
+            };
+
+        private static dynamic IsNotSame(
+            string first,
+            string second) => new
+            {
+                Condition = first != second,
+                Message = $"Expected value to be '{first}' but found '{second}'."
             };
 
         private static async ValueTask<dynamic> IsNotSameAsync(
