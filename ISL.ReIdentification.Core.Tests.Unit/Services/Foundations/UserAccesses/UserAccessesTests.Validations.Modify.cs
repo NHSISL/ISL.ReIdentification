@@ -509,12 +509,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            string randomUserId = GetRandomString();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomUserId = randomEntraUser.EntraUserId;
             UserAccess randomUserAccess = CreateRandomModifyUserAccess(randomDateTimeOffset, randomUserId);
             UserAccess invalidUserAccess = randomUserAccess;
             UserAccess storageUserAccess = invalidUserAccess.DeepClone();
+            invalidUserAccess.CreatedDate = storageUserAccess.CreatedDate.AddMinutes(-GetRandomNumber());
             invalidUserAccess.UpdatedDate = storageUserAccess.UpdatedDate;
-            EntraUser randomEntraUser = CreateRandomEntraUser();
 
             var userAccessServiceMock = new Mock<UserAccessService>(
                 reIdentificationStorageBroker.Object,
@@ -531,6 +532,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             var invalidUserAccessValidationException = new InvalidUserAccessException(
                 message: "Invalid user access. Please correct the errors and try again.");
+
+            invalidUserAccessValidationException.AddData(
+                key: nameof(UserAccess.CreatedDate),
+                values: $"Date is not the same as {nameof(UserAccess.CreatedDate)}");
 
             invalidUserAccessValidationException.AddData(
                 key: nameof(UserAccess.UpdatedDate),
@@ -565,11 +570,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(2));
+                    Times.Once);
 
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),
-                    Times.Exactly(2));
+                    Times.Once);
 
             this.reIdentificationStorageBroker.Verify(broker =>
                 broker.SelectUserAccessByIdAsync(invalidUserAccess.Id),
