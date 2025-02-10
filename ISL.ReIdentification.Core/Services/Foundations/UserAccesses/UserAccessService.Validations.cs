@@ -16,7 +16,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
         {
             ValidateUserAccessIsNotNull(userAccess);
             EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
-            DateTimeOffset currentDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
             Validate(
                 (Rule: IsInvalid(userAccess.Id), Parameter: nameof(UserAccess.Id)),
@@ -50,10 +49,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
                     secondName: nameof(UserAccess.CreatedDate)),
                 Parameter: nameof(UserAccess.UpdatedDate)),
 
-                (Rule: IsNotSame(
-                    first: currentDateTimeOffset,
-                    second: userAccess.CreatedDate),
-                Parameter: nameof(UserAccess.CreatedDate)));
+                (Rule: await IsNotRecentAsync(userAccess.CreatedDate), Parameter: nameof(UserAccess.CreatedDate)));
         }
 
         private static void ValidateUserAccessOnRetrieveById(Guid userAccessId)
@@ -66,7 +62,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
         {
             ValidateUserAccessIsNotNull(userAccess);
             EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
-            DateTimeOffset currentDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
             Validate(
                 (Rule: IsInvalid(userAccess.Id), Parameter: nameof(UserAccess.Id)),
@@ -88,16 +83,13 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
                     second: userAccess.UpdatedBy),
                 Parameter: nameof(UserAccess.UpdatedBy)),
 
-                (Rule: IsNotSame(
-                    first: currentDateTimeOffset,
-                    second: userAccess.UpdatedDate),
-                Parameter: nameof(UserAccess.UpdatedDate)),
-
                 (Rule: IsSameAs(
                     createdDate: userAccess.CreatedDate,
                     updatedDate: userAccess.UpdatedDate,
                     createdDateName: nameof(UserAccess.CreatedDate)),
-                Parameter: nameof(UserAccess.UpdatedDate)));
+                Parameter: nameof(UserAccess.UpdatedDate)),
+
+                (Rule: await IsNotRecentAsync(userAccess.UpdatedDate), Parameter: nameof(UserAccess.UpdatedDate)));
         }
 
         private static void ValidateUserAccessOnRemoveById(Guid userAccessId) =>

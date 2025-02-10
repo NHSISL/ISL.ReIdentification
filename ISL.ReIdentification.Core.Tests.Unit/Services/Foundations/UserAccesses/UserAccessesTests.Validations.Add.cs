@@ -280,6 +280,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            DateTimeOffset startDate = randomDateTimeOffset.AddSeconds(-90);
+            DateTimeOffset endDate = randomDateTimeOffset.AddSeconds(0);
             EntraUser randomEntraUser = CreateRandomEntraUser();
 
             UserAccess randomUserAccess =
@@ -325,8 +327,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             invalidUserAccessException.AddData(
                 key: nameof(UserAccess.CreatedDate),
                 values:
-                    $"Expected value to be '{randomDateTimeOffset}' " +
-                    $"but found '{randomUserAccess.CreatedDate}'.");
+                    $"Date is not recent." +
+                    $" Expected a value between {startDate} and {endDate} but found {invalidUserAccess.CreatedDate}");
 
             var expectedUserAccessValidationException =
                 new UserAccessValidationException(
@@ -374,6 +376,96 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
+        }
+
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(-91)]
+        public async Task ShouldThrowValidationExceptionOnAddIfCreatedDateIsNotRecentAndLogItAsync(
+    int invalidSeconds)
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+            DateTimeOffset startDate = randomDateTimeOffset.AddSeconds(-90);
+            DateTimeOffset endDate = randomDateTimeOffset.AddSeconds(0);
+
+            UserAccess randomUserAccess =
+                CreateRandomUserAccess(randomDateTimeOffset, randomEntraUser.EntraUserId.ToString());
+
+            UserAccess invalidUserAccess = randomUserAccess;
+
+            DateTimeOffset invalidDate =
+                randomDateTimeOffset.AddSeconds(invalidSeconds);
+
+            invalidUserAccess.CreatedDate = invalidDate;
+            invalidUserAccess.UpdatedDate = invalidDate;
+
+            var invalidUserAccessException = new InvalidUserAccessException(
+                message: "Invalid access audit. Please correct the errors and try again.");
+
+            invalidUserAccessException.AddData(
+            key: nameof(UserAccess.CreatedDate),
+                values:
+                    $"Date is not recent. Expected a value between " +
+                    $"{startDate} and {endDate} but found {invalidDate}");
+
+            var expectedUserAccessValidationException =
+                new UserAccessValidationException(
+                    message: "Access audit validation error occurred, please fix errors and try again.",
+                    innerException: invalidUserAccessException);
+
+            var userAccessServiceMock = new Mock<UserAccessService>(
+                reIdentificationStorageBroker.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            userAccessServiceMock.Setup(service =>
+                service.ApplyAddAuditAsync(invalidUserAccess))
+                    .ReturnsAsync(invalidUserAccess);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
+            // when
+            ValueTask<UserAccess> addUserAccessTask =
+                userAccessServiceMock.Object.AddUserAccessAsync(invalidUserAccess);
+
+            UserAccessValidationException actualUserAccessValidationException =
+                await Assert.ThrowsAsync<UserAccessValidationException>(
+                    testCode: addUserAccessTask.AsTask);
+
+            // then
+            actualUserAccessValidationException.Should().BeEquivalentTo(
+                expectedUserAccessValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(
+                    SameExceptionAs(expectedUserAccessValidationException))),
+                        Times.Once);
+
+            this.reIdentificationStorageBroker.Verify(broker =>
+                broker.InsertUserAccessAsync(It.IsAny<UserAccess>()),
+                    Times.Never);
+
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
         }
     }
 }
