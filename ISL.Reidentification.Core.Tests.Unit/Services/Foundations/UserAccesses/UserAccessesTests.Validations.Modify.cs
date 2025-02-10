@@ -80,8 +80,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
                 EntraUserId = invalidText,
                 Email = invalidText,
                 OrgCode = invalidText,
-                CreatedBy = string.Empty,
-                CreatedDate = randomDateTimeOffset,
+                CreatedBy = invalidText,
+                UpdatedBy = invalidText,
             };
 
             var userAccessServiceMock = new Mock<UserAccessService>(
@@ -101,10 +101,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.SetupSequence(broker =>
+            this.securityBrokerMock.Setup(broker =>
                 broker.GetCurrentUserAsync())
-                    .ReturnsAsync((EntraUser)null)
-                        .ReturnsAsync(randomEntraUser);
+                    .ReturnsAsync(randomEntraUser);
 
             var invalidUserAccessException =
                 new InvalidUserAccessException(
@@ -128,19 +127,31 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             invalidUserAccessException.AddData(
                 key: nameof(UserAccess.CreatedBy),
-                values: "Text is invalid");
+                values:
+                    [
+                        "Text is invalid",
+                    ]);
 
             invalidUserAccessException.AddData(
                 key: nameof(UserAccess.UpdatedBy),
                 values:
                     [
                         "Text is invalid",
-                        $"Expected value to be '{randomEntraUser.EntraUserId}' but found '{string.Empty}'."
+                        $"Expected value to be '{randomEntraUser.EntraUserId}' but found '{invalidText}'."
                     ]);
 
             invalidUserAccessException.AddData(
+                key: nameof(UserAccess.CreatedDate),
+                values: "Date is invalid");
+
+            invalidUserAccessException.AddData(
                 key: nameof(UserAccess.UpdatedDate),
-                values: "Date is the same as CreatedDate");
+                values:
+                    [
+                        "Date is invalid",
+                        $"Expected value to be '{randomDateTimeOffset}' but found '{invalidUserAccess.UpdatedDate}'.",
+                        "Date is the same as CreatedDate"
+                    ]);
 
             var expectedUserAccessValidationException =
                 new UserAccessValidationException(
@@ -165,7 +176,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),
-                    Times.Exactly(2));
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -187,14 +198,16 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            string randomUserId = GetRandomString();
+            EntraUser randomEntraUser = CreateRandomEntraUser(entraUserId: GetRandomStringWithLengthOf(256));
+            string randomUserId = randomEntraUser.EntraUserId;
             UserAccess invalidUserAccess = CreateRandomModifyUserAccess(randomDateTimeOffset, randomUserId);
-            var inputCreatedByUpdatedByString = GetRandomStringWithLength(256);
+            invalidUserAccess.EntraUserId = randomUserId;
             invalidUserAccess.GivenName = GetRandomStringWithLength(256);
             invalidUserAccess.Surname = GetRandomStringWithLength(256);
             invalidUserAccess.Email = GetRandomStringWithLength(321);
             invalidUserAccess.OrgCode = GetRandomStringWithLength(16);
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            invalidUserAccess.CreatedBy = randomUserId;
+            invalidUserAccess.UpdatedBy = randomUserId;
 
             var userAccessServiceMock = new Mock<UserAccessService>(
                 reIdentificationStorageBroker.Object,
@@ -221,12 +234,24 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
                 message: "Invalid user access. Please correct the errors and try again.");
 
             invalidUserAccessException.AddData(
+                key: nameof(UserAccess.EntraUserId),
+                values: $"Text exceed max length of {invalidUserAccess.EntraUserId.Length - 1} characters");
+
+            invalidUserAccessException.AddData(
                 key: nameof(UserAccess.Email),
                 values: $"Text exceed max length of {invalidUserAccess.Email.Length - 1} characters");
 
             invalidUserAccessException.AddData(
                 key: nameof(UserAccess.OrgCode),
                 values: $"Text exceed max length of {invalidUserAccess.OrgCode.Length - 1} characters");
+
+            invalidUserAccessException.AddData(
+                key: nameof(UserAccess.CreatedBy),
+                values: $"Text exceed max length of {invalidUserAccess.CreatedBy.Length - 1} characters");
+
+            invalidUserAccessException.AddData(
+                key: nameof(UserAccess.UpdatedBy),
+                values: $"Text exceed max length of {invalidUserAccess.UpdatedBy.Length - 1} characters");
 
             var expectedUserAccessException = new
                 UserAccessValidationException(
@@ -272,10 +297,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
         {
             // given
             DateTimeOffset randomDatTimeOffset = GetRandomDateTimeOffset();
-            string randomUserId = GetRandomString();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomUserId = randomEntraUser.EntraUserId;
             UserAccess randomUserAccess = CreateRandomUserAccess(randomDatTimeOffset, randomUserId);
             var invalidUserAccess = randomUserAccess;
-            EntraUser randomEntraUser = CreateRandomEntraUser();
 
             var userAccessServiceMock = new Mock<UserAccessService>(
                 reIdentificationStorageBroker.Object,
@@ -345,12 +370,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             // given
             int randomNegativeNumber = GetRandomNegativeNumber();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            string randomUserId = GetRandomString();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomUserId = randomEntraUser.EntraUserId;
             UserAccess randomUserAccess = CreateRandomUserAccess(randomDateTimeOffset, randomUserId);
             UserAccess nonExistingUserAccess = randomUserAccess;
             nonExistingUserAccess.CreatedDate = randomDateTimeOffset.AddMinutes(randomNegativeNumber);
             UserAccess nullUserAccess = null;
-            EntraUser randomEntraUser = CreateRandomEntraUser();
 
             var userAccessServiceMock = new Mock<UserAccessService>(
                 reIdentificationStorageBroker.Object,
@@ -401,7 +426,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),
-                    Times.Exactly(2));
+                    Times.Once);
 
             this.reIdentificationStorageBroker.Verify(broker =>
                 broker.SelectUserAccessByIdAsync(nonExistingUserAccess.Id),
@@ -509,12 +534,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            string randomUserId = GetRandomString();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomUserId = randomEntraUser.EntraUserId;
             UserAccess randomUserAccess = CreateRandomModifyUserAccess(randomDateTimeOffset, randomUserId);
             UserAccess invalidUserAccess = randomUserAccess;
             UserAccess storageUserAccess = invalidUserAccess.DeepClone();
+            invalidUserAccess.CreatedDate = storageUserAccess.CreatedDate.AddMinutes(-GetRandomNumber());
             invalidUserAccess.UpdatedDate = storageUserAccess.UpdatedDate;
-            EntraUser randomEntraUser = CreateRandomEntraUser();
 
             var userAccessServiceMock = new Mock<UserAccessService>(
                 reIdentificationStorageBroker.Object,
@@ -531,6 +557,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             var invalidUserAccessValidationException = new InvalidUserAccessException(
                 message: "Invalid user access. Please correct the errors and try again.");
+
+            invalidUserAccessValidationException.AddData(
+                key: nameof(UserAccess.CreatedDate),
+                values: $"Date is not the same as {nameof(UserAccess.CreatedDate)}");
 
             invalidUserAccessValidationException.AddData(
                 key: nameof(UserAccess.UpdatedDate),
@@ -565,11 +595,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(2));
+                    Times.Once);
 
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),
-                    Times.Exactly(2));
+                    Times.Once);
 
             this.reIdentificationStorageBroker.Verify(broker =>
                 broker.SelectUserAccessByIdAsync(invalidUserAccess.Id),
