@@ -128,7 +128,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
                 key: nameof(UserAccess.CreatedBy),
                 values: [
                     "Text is invalid",
-                    $"Expected value to be '{randomEntraUser.EntraUserId}' but found '{invalidText}'."
+                    $"Expected value to be '{randomEntraUser.EntraUserId}' but found '{invalidUserAccess.CreatedBy}'."
                 ]);
 
             invalidUserAccessException.AddData(
@@ -195,8 +195,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             var inputCreatedByUpdatedByString = GetRandomStringWithLength(256);
             EntraUser randomEntraUser = CreateRandomEntraUser();
 
-            UserAccess invalidUserAccess =
-                CreateRandomUserAccess(randomDateTimeOffset, randomEntraUser.EntraUserId.ToString());
+            UserAccess invalidUserAccess = CreateRandomUserAccess(
+                dateTimeOffset: randomDateTimeOffset,
+                userId: randomEntraUser.EntraUserId);
 
             invalidUserAccess.GivenName = GetRandomStringWithLength(256);
             invalidUserAccess.Surname = GetRandomStringWithLength(256);
@@ -284,8 +285,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             DateTimeOffset endDate = randomDateTimeOffset.AddSeconds(0);
             EntraUser randomEntraUser = CreateRandomEntraUser();
 
-            UserAccess randomUserAccess =
-                CreateRandomModifyUserAccess(randomDateTimeOffset, randomEntraUser.EntraUserId.ToString());
+            UserAccess randomUserAccess = CreateRandomModifyUserAccess(
+                dateTimeOffset: randomDateTimeOffset,
+                userId: randomEntraUser.EntraUserId);
 
             randomUserAccess.CreatedBy = GetRandomString();
             randomUserAccess.UpdatedBy = GetRandomString();
@@ -313,7 +315,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             invalidUserAccessException.AddData(
                 key: nameof(UserAccess.CreatedBy),
                 values:
-                    $"Expected value to be '{randomEntraUser.EntraUserId.ToString()}' " +
+                    $"Expected value to be '{randomEntraUser.EntraUserId}' " +
                     $"but found '{randomUserAccess.CreatedBy}'.");
 
             invalidUserAccessException.AddData(
@@ -382,7 +384,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
         [InlineData(1)]
         [InlineData(-91)]
         public async Task ShouldThrowValidationExceptionOnAddIfCreatedDateIsNotRecentAndLogItAsync(
-    int invalidSeconds)
+            int invalidSeconds)
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
@@ -390,8 +392,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             DateTimeOffset startDate = randomDateTimeOffset.AddSeconds(-90);
             DateTimeOffset endDate = randomDateTimeOffset.AddSeconds(0);
 
-            UserAccess randomUserAccess =
-                CreateRandomUserAccess(randomDateTimeOffset, randomEntraUser.EntraUserId.ToString());
+            UserAccess randomUserAccess = CreateRandomUserAccess(
+                dateTimeOffset: randomDateTimeOffset,
+                userId: randomEntraUser.EntraUserId);
 
             UserAccess invalidUserAccess = randomUserAccess;
 

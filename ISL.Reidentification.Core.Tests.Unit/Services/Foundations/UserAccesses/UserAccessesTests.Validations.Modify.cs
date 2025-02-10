@@ -71,7 +71,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
         public async Task ShouldThrowValidationExceptionOnModifyIfUserAccessIsInvalidAndLogItAsync(string invalidText)
         {
             // given
-            EntraUser randomInvalidEntraUser = CreateRandomInvalidEntraUser(entraUserId: invalidText);
             EntraUser randomEntraUser = CreateRandomEntraUser();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             DateTimeOffset startDate = randomDateTimeOffset.AddSeconds(-90);
@@ -129,10 +128,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             invalidUserAccessException.AddData(
                 key: nameof(UserAccess.CreatedBy),
-                values:
-                    [
-                        "Text is invalid",
-                    ]);
+                values: "Text is invalid");
+
+            invalidUserAccessException.AddData(
+                key: nameof(UserAccess.CreatedDate),
+                values: "Date is invalid");
 
             invalidUserAccessException.AddData(
                 key: nameof(UserAccess.UpdatedBy),
@@ -141,10 +141,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
                         "Text is invalid",
                         $"Expected value to be '{randomEntraUser.EntraUserId}' but found '{invalidText}'."
                     ]);
-
-            invalidUserAccessException.AddData(
-                key: nameof(UserAccess.CreatedDate),
-                values: "Date is invalid");
 
             invalidUserAccessException.AddData(
                 key: nameof(UserAccess.UpdatedDate),
@@ -286,7 +282,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             EntraUser randomEntraUser = CreateRandomEntraUser(entraUserId: GetRandomStringWithLengthOf(256));
             string randomUserId = randomEntraUser.EntraUserId;
-            UserAccess invalidUserAccess = CreateRandomModifyUserAccess(randomDateTimeOffset, randomUserId);
+
+            UserAccess invalidUserAccess = CreateRandomModifyUserAccess(
+                dateTimeOffset: randomDateTimeOffset,
+                userId: randomEntraUser.EntraUserId);
+
             invalidUserAccess.EntraUserId = randomUserId;
             invalidUserAccess.GivenName = GetRandomStringWithLength(256);
             invalidUserAccess.Surname = GetRandomStringWithLength(256);
