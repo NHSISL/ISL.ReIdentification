@@ -65,8 +65,8 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             {
                 savedPseduoes.Add(
                     item.RowNumber, string.IsNullOrEmpty(item.Identifier) 
-                    ? item.Identifier 
-                    : item.Identifier.PadLeft(10, '0'));
+                        ? item.Identifier 
+                        : item.Identifier.PadLeft(10, '0'));
 
                 var now = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
                 var accessAuditId = await this.identifierBroker.GetIdentifierAsync();

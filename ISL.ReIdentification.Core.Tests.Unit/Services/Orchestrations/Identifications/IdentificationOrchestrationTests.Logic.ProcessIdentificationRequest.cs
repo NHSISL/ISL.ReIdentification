@@ -7,10 +7,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using ISL.ReIdentification.Core.Migrations;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Moq;
 using Valid8R;
 

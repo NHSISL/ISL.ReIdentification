@@ -263,8 +263,8 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
                     HasAccess = false,
 
                     Identifier = string.IsNullOrEmpty(mappedItems[index].Identifier) 
-                    ? mappedItems[index].Identifier 
-                    : mappedItems[index].Identifier.PadLeft(10, '0'),
+                        ? mappedItems[index].Identifier 
+                        : mappedItems[index].Identifier.PadLeft(10, '0'),
 
                     IsReidentified = false,
                     Message = string.Empty,
