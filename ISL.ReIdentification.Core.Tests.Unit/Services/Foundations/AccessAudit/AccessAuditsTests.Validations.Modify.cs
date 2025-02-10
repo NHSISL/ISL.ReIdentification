@@ -474,6 +474,27 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
             nonExistingAccessAudit.CreatedDate = randomDateTimeOffset.AddMinutes(randomNegativeNumber);
             AccessAudit nullAccessAudit = null;
 
+            var accessAuditServiceMock = new Mock<AccessAuditService>(
+                reIdentificationStorageBroker.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            accessAuditServiceMock.Setup(service =>
+                service.ApplyModifyAuditAsync(nonExistingAccessAudit))
+                    .ReturnsAsync(nonExistingAccessAudit);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
             var notFoundAccessAuditException = new NotFoundAccessAuditException(
                 message: $"Access audit not found with Id: {nonExistingAccessAudit.Id}");
 
@@ -491,7 +512,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
 
             // when
             ValueTask<AccessAudit> modifyAccessAuditTask =
-                this.accessAuditService.ModifyAccessAuditAsync(nonExistingAccessAudit);
+                accessAuditServiceMock.Object.ModifyAccessAuditAsync(nonExistingAccessAudit);
 
             AccessAuditValidationException actualAccessAuditVaildationException =
                 await Assert.ThrowsAsync<AccessAuditValidationException>(
@@ -502,6 +523,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
                     Times.Once);
 
             this.reIdentificationStorageBroker.Verify(broker =>
