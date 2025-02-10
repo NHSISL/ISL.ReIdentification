@@ -394,20 +394,43 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
             int invalidSeconds)
         {
             // given
-            DateTimeOffset randomDateTime =
-                GetRandomDateTimeOffset();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            DateTimeOffset startDate = randomDateTimeOffset.AddSeconds(-90);
+            DateTimeOffset endDate = randomDateTimeOffset.AddSeconds(0);
+            EntraUser randomEntraUser = CreateRandomEntraUser();
 
-            DateTimeOffset now = randomDateTime;
-            DateTimeOffset startDate = now.AddSeconds(-90);
-            DateTimeOffset endDate = now.AddSeconds(0);
-            AccessAudit randomAccessAudit = CreateRandomAccessAudit();
+            AccessAudit randomAccessAudit = CreateRandomAccessAudit(
+                dateTimeOffset: randomDateTimeOffset,
+                userId: randomEntraUser.EntraUserId);
+
             AccessAudit invalidAccessAudit = randomAccessAudit;
 
             DateTimeOffset invalidDate =
-                now.AddSeconds(invalidSeconds);
+                randomDateTimeOffset.AddSeconds(invalidSeconds);
 
             invalidAccessAudit.CreatedDate = invalidDate;
             invalidAccessAudit.UpdatedDate = invalidDate;
+
+            var accessAuditServiceMock = new Mock<AccessAuditService>(
+                reIdentificationStorageBroker.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            accessAuditServiceMock.Setup(service =>
+                service.ApplyAddAuditAsync(invalidAccessAudit))
+                    .ReturnsAsync(invalidAccessAudit);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             var invalidAccessAuditException = new InvalidAccessAuditException(
                 message: "Invalid access audit. Please correct the errors and try again.");
@@ -425,11 +448,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .ReturnsAsync(now);
+                    .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<AccessAudit> addAccessAuditTask =
-                this.accessAuditService.AddAccessAuditAsync(invalidAccessAudit);
+                accessAuditServiceMock.Object.AddAccessAuditAsync(invalidAccessAudit);
 
             AccessAuditValidationException actualAccessAuditValidationException =
                 await Assert.ThrowsAsync<AccessAuditValidationException>(
@@ -441,6 +464,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
