@@ -297,10 +297,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
         {
             // given
             DateTimeOffset randomDatTimeOffset = GetRandomDateTimeOffset();
-            string randomUserId = GetRandomString();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomUserId = randomEntraUser.EntraUserId;
             UserAccess randomUserAccess = CreateRandomUserAccess(randomDatTimeOffset, randomUserId);
             var invalidUserAccess = randomUserAccess;
-            EntraUser randomEntraUser = CreateRandomEntraUser();
 
             var userAccessServiceMock = new Mock<UserAccessService>(
                 reIdentificationStorageBroker.Object,
