@@ -36,9 +36,9 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Lookups
         TryCatch(async () =>
         {
             Lookup lookupWithAddAuditApplied = await ApplyAddAuditAsync(lookup);
-            await ValidateLookupOnAddAsync(lookup);
+            await ValidateLookupOnAddAsync(lookupWithAddAuditApplied);
 
-            return await this.reIdentificationStorageBroker.InsertLookupAsync(lookup);
+            return await this.reIdentificationStorageBroker.InsertLookupAsync(lookupWithAddAuditApplied);
         });
 
         public ValueTask<IQueryable<Lookup>> RetrieveAllLookupsAsync() =>
@@ -60,16 +60,19 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Lookups
         public ValueTask<Lookup> ModifyLookupAsync(Lookup lookup) =>
             TryCatch(async () =>
             {
-                Lookup lookupWithAddAuditApplied = await ApplyAddAuditAsync(lookup);
-                await ValidateLookupOnModifyAsync(lookup);
+                Lookup lookupWithModifiedAuditApplied = await ApplyModifyAuditAsync(lookup);
+                await ValidateLookupOnModifyAsync(lookupWithModifiedAuditApplied);
 
                 Lookup maybeLookup =
-                    await this.reIdentificationStorageBroker.SelectLookupByIdAsync(lookup.Id);
+                    await this.reIdentificationStorageBroker.SelectLookupByIdAsync(lookupWithModifiedAuditApplied.Id);
 
-                ValidateStorageLookup(maybeLookup, lookup.Id);
-                ValidateAgainstStorageLookupOnModify(inputLookup: lookup, storageLookup: maybeLookup);
+                ValidateStorageLookup(maybeLookup, lookupWithModifiedAuditApplied.Id);
 
-                return await this.reIdentificationStorageBroker.UpdateLookupAsync(lookup);
+                ValidateAgainstStorageLookupOnModify(
+                    inputLookup: lookupWithModifiedAuditApplied,
+                    storageLookup: maybeLookup);
+
+                return await this.reIdentificationStorageBroker.UpdateLookupAsync(lookupWithModifiedAuditApplied);
             });
 
         public ValueTask<Lookup> RemoveLookupByIdAsync(Guid lookupId) =>
