@@ -9,6 +9,7 @@ using Force.DeepCloner;
 using ISL.ReIdentification.Core.Models.Foundations.UserAgreements;
 using ISL.ReIdentification.Core.Models.Foundations.UserAgreements.Exceptions;
 using ISL.ReIdentification.Core.Models.Securities;
+using ISL.ReIdentification.Core.Services.Foundations.UserAgreements;
 using Moq;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreements
@@ -48,6 +49,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Never);
 
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Never);
+
             this.reIdentificationStorageBrokerMock.Verify(broker =>
                 broker.UpdateUserAgreementAsync(It.IsAny<UserAgreement>()),
                     Times.Never);
@@ -64,11 +69,41 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
         [InlineData(" ")]
         public async Task ShouldThrowValidationExceptionOnModifyIfUserAgreementIsInvalidAndLogItAsync(string invalidText)
         {
-            // given 
+            // given
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            DateTimeOffset startDate = randomDateTimeOffset.AddSeconds(-90);
+            DateTimeOffset endDate = randomDateTimeOffset.AddSeconds(0);
+
             var invalidUserAgreement = new UserAgreement
             {
+                EntraUserId = invalidText,
                 AgreementType = invalidText,
+                AgreementVersion = invalidText,
+                CreatedBy = invalidText,
+                UpdatedBy = invalidText,
             };
+
+            var userAgreementServiceMock = new Mock<UserAgreementService>(
+                this.reIdentificationStorageBrokerMock.Object,
+                this.dateTimeBrokerMock.Object,
+                this.securityBrokerMock.Object,
+                this.loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            userAgreementServiceMock.Setup(service =>
+                service.ApplyModifyAuditAsync(invalidUserAgreement))
+                    .ReturnsAsync(invalidUserAgreement);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             var invalidUserAgreementException =
                 new InvalidUserAgreementException(
@@ -138,6 +173,110 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
 
             this.reIdentificationStorageBrokerMock.Verify(broker =>
                 broker.UpdateUserAgreementAsync(It.IsAny<UserAgreement>()),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.reIdentificationStorageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfUserAgreementHasInvalidLengthProperty()
+        {
+            // given
+            EntraUser randomEntraUser = CreateRandomEntraUser(entraUserId: GetRandomStringWithLengthOf(256));
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            DateTimeOffset startDate = randomDateTimeOffset.AddSeconds(-90);
+            DateTimeOffset endDate = randomDateTimeOffset.AddSeconds(0);
+
+            UserAgreement invalidUserAgreement = CreateRandomUserAgreement(
+                dateTimeOffset: randomDateTimeOffset,
+                userId: randomEntraUser.EntraUserId);
+
+            invalidUserAgreement.EntraUserId = GetRandomStringWithLengthOf(256);
+            invalidUserAgreement.AgreementType = GetRandomStringWithLengthOf(256);
+            invalidUserAgreement.AgreementVersion = GetRandomStringWithLengthOf(51);
+            invalidUserAgreement.CreatedBy = randomEntraUser.EntraUserId;
+            invalidUserAgreement.UpdatedBy = randomEntraUser.EntraUserId;
+
+            var userAgreementServiceMock = new Mock<UserAgreementService>(
+                this.reIdentificationStorageBrokerMock.Object,
+                this.dateTimeBrokerMock.Object,
+                this.securityBrokerMock.Object,
+                this.loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            userAgreementServiceMock.Setup(service =>
+                service.ApplyModifyAuditAsync(invalidUserAgreement))
+                    .ReturnsAsync(invalidUserAgreement);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
+            var invalidUserAgreementException =
+                new InvalidUserAgreementException(
+                    message: "Invalid userAgreement. Please correct the errors and try again.");
+
+            invalidUserAgreementException.AddData(
+                key: nameof(UserAgreement.EntraUserId),
+                values: $"Text exceed max length of {invalidUserAgreement.EntraUserId.Length - 1} characters");
+
+            invalidUserAgreementException.AddData(
+                key: nameof(UserAgreement.AgreementType),
+                values: $"Text exceed max length of {invalidUserAgreement.AgreementType.Length - 1} characters");
+
+            invalidUserAgreementException.AddData(
+                key: nameof(UserAgreement.AgreementVersion),
+                values: $"Text exceed max length of {invalidUserAgreement.AgreementVersion.Length - 1} characters");
+
+            invalidUserAgreementException.AddData(
+                key: nameof(UserAgreement.CreatedBy),
+                values: $"Text exceed max length of {invalidUserAgreement.CreatedBy.Length - 1} characters");
+
+            invalidUserAgreementException.AddData(
+                key: nameof(UserAgreement.UpdatedBy),
+                values: $"Text exceed max length of {invalidUserAgreement.UpdatedBy.Length - 1} characters");
+
+            var expectedUserAgreementValidationException =
+                new UserAgreementValidationException(
+                    message: "UserAgreement validation errors occurred, please try again.",
+                    innerException: invalidUserAgreementException);
+
+            // when
+            ValueTask<UserAgreement> addUserAgreementTask =
+                userAgreementServiceMock.Object.ModifyUserAgreementAsync(invalidUserAgreement);
+
+            UserAgreementValidationException actualUserAgreementValidationException =
+                await Assert.ThrowsAsync<UserAgreementValidationException>(() =>
+                    addUserAgreementTask.AsTask());
+
+            // then
+            actualUserAgreementValidationException.Should()
+                .BeEquivalentTo(expectedUserAgreementValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once());
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedUserAgreementValidationException))),
+                        Times.Once);
+
+            this.reIdentificationStorageBrokerMock.Verify(broker =>
+                broker.InsertUserAgreementAsync(It.IsAny<UserAgreement>()),
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

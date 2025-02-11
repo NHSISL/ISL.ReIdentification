@@ -68,6 +68,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
             {
                 EntraUserId = invalidText,
                 AgreementType = invalidText,
+                AgreementVersion = invalidText,
                 CreatedBy = invalidText,
                 UpdatedBy = invalidText,
             };
@@ -107,6 +108,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
 
             invalidUserAgreementException.AddData(
                 key: nameof(UserAgreement.AgreementType),
+                values: "Text is required");
+
+            invalidUserAgreementException.AddData(
+                key: nameof(UserAgreement.AgreementVersion),
                 values: "Text is required");
 
             invalidUserAgreementException.AddData(
@@ -194,6 +199,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
 
             invalidUserAgreement.EntraUserId = GetRandomStringWithLengthOf(256);
             invalidUserAgreement.AgreementType = GetRandomStringWithLengthOf(256);
+            invalidUserAgreement.AgreementVersion = GetRandomStringWithLengthOf(51);
             invalidUserAgreement.CreatedBy = randomEntraUser.EntraUserId;
             invalidUserAgreement.UpdatedBy = randomEntraUser.EntraUserId;
 
@@ -225,6 +231,14 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
             invalidUserAgreementException.AddData(
                 key: nameof(UserAgreement.EntraUserId),
                 values: $"Text exceed max length of {invalidUserAgreement.EntraUserId.Length - 1} characters");
+
+            invalidUserAgreementException.AddData(
+                key: nameof(UserAgreement.AgreementType),
+                values: $"Text exceed max length of {invalidUserAgreement.AgreementType.Length - 1} characters");
+
+            invalidUserAgreementException.AddData(
+                key: nameof(UserAgreement.AgreementVersion),
+                values: $"Text exceed max length of {invalidUserAgreement.AgreementVersion.Length - 1} characters");
 
             invalidUserAgreementException.AddData(
                 key: nameof(UserAgreement.CreatedBy),
