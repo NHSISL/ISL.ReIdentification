@@ -39,14 +39,12 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Lookups
                     first: lookup.UpdatedBy,
                     second: lookup.CreatedBy,
                     secondName: nameof(Lookup.CreatedBy)),
-
                 Parameter: nameof(Lookup.UpdatedBy)),
 
                 (Rule: IsNotSame(
                     first: lookup.UpdatedDate,
                     second: lookup.CreatedDate,
                     secondName: nameof(Lookup.CreatedDate)),
-
                 Parameter: nameof(Lookup.UpdatedDate)),
 
                 (Rule: await IsNotRecentAsync(lookup.CreatedDate), Parameter: nameof(Lookup.CreatedDate)));

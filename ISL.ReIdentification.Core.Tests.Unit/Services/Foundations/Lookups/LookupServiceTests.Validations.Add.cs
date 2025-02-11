@@ -283,16 +283,49 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            DateTimeOffset startDate = randomDateTimeOffset.AddSeconds(-90);
+            DateTimeOffset endDate = randomDateTimeOffset.AddSeconds(0);
             EntraUser randomEntraUser = CreateRandomEntraUser();
-            Lookup randomLookup = CreateRandomLookup(randomDateTimeOffset, userId: randomEntraUser.EntraUserId);
+
+            Lookup randomLookup = CreateRandomLookup(
+                dateTimeOffset: randomDateTimeOffset,
+                userId: randomEntraUser.EntraUserId);
+
             Lookup invalidLookup = randomLookup;
             invalidLookup.CreatedBy = GetRandomString();
             invalidLookup.UpdatedBy = GetRandomString();
-            invalidLookup.CreatedDate = randomDateTimeOffset;
+            invalidLookup.CreatedDate = GetRandomDateTimeOffset();
             invalidLookup.UpdatedDate = GetRandomDateTimeOffset();
+
+            var lookupServiceMock = new Mock<LookupService>(
+                this.reIdentificationStorageBroker.Object,
+                this.dateTimeBrokerMock.Object,
+                this.securityBrokerMock.Object,
+                this.loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            lookupServiceMock.Setup(service =>
+                service.ApplyAddAuditAsync(invalidLookup))
+                    .ReturnsAsync(invalidLookup);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             var invalidLookupException = new InvalidLookupException(
                 message: "Invalid lookup. Please correct the errors and try again.");
+
+            invalidLookupException.AddData(
+                key: nameof(Lookup.CreatedBy),
+                values:
+                    $"Expected value to be '{randomEntraUser.EntraUserId}' " +
+                    $"but found '{invalidLookup.CreatedBy}'.");
 
             invalidLookupException.AddData(
                 key: nameof(Lookup.UpdatedBy),
@@ -302,18 +335,20 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
                 key: nameof(Lookup.UpdatedDate),
                 values: $"Date is not the same as {nameof(Lookup.CreatedDate)}");
 
+            invalidLookupException.AddData(
+                key: nameof(Lookup.CreatedDate),
+                values:
+                    $"Date is not recent." +
+                    $" Expected a value between {startDate} and {endDate} but found {invalidLookup.CreatedDate}");
+
             var expectedLookupValidationException =
                 new LookupValidationException(
                     message: "Lookup validation error occurred, please fix errors and try again.",
                     innerException: invalidLookupException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
-                    .ReturnsAsync(randomDateTimeOffset);
-
             // when
             ValueTask<Lookup> addLookupTask =
-                this.lookupService.AddLookupAsync(invalidLookup);
+                lookupServiceMock.Object.AddLookupAsync(invalidLookup);
 
             LookupValidationException actualLookupValidationException =
                 await Assert.ThrowsAsync<LookupValidationException>(
@@ -325,6 +360,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once());
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
