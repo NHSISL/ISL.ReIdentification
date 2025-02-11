@@ -74,8 +74,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Lookups
                 Parameter: nameof(Lookup.UpdatedBy)),
 
                 (Rule: IsSameAs(
-                    firstDate: lookup.UpdatedDate,
-                    secondDate: lookup.CreatedDate,
+                    firstDate: lookup.CreatedDate,
+                    secondDate: lookup.UpdatedDate,
                     secondDateName: nameof(Lookup.CreatedDate)),
                 Parameter: nameof(Lookup.UpdatedDate)),
 

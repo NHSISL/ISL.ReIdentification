@@ -102,7 +102,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
                     second: accessAudit.UpdatedBy),
                 Parameter: nameof(AccessAudit.UpdatedBy)),
 
-                (Rule: await IsSameAsAsync(
+                (Rule: IsSameAs(
                     createdDate: accessAudit.CreatedDate,
                     updatedDate: accessAudit.UpdatedDate,
                     createdDateName: nameof(AccessAudit.CreatedDate)),
@@ -142,7 +142,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
 
                 Parameter: nameof(AccessAudit.CreatedDate)),
 
-                (Rule: await IsSameAsAsync(
+                (Rule: await IsSameAs(
                     accessAudit.UpdatedDate,
                     maybeAccessAudit.UpdatedDate,
                     nameof(maybeAccessAudit.UpdatedDate)),
@@ -203,7 +203,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
                 Message = $"Text is not the same as {secondName}"
             };
 
-        private static async ValueTask<dynamic> IsSameAsAsync(
+        private static dynamic IsSameAs(
             DateTimeOffset createdDate,
             DateTimeOffset updatedDate,
             string createdDateName) => new

@@ -75,7 +75,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
             var invalidLookup = new Lookup
             {
                 GroupName = invalidText,
-                Name = invalidText
+                Name = invalidText,
+                CreatedBy = invalidText,
+                UpdatedBy = invalidText,
             };
 
             var lookupServiceMock = new Mock<LookupService>(
