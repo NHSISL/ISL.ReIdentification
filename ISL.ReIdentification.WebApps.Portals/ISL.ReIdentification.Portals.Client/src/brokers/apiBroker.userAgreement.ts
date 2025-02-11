@@ -11,7 +11,7 @@ class UserAgreementBroker {
             return false;
         }
 
-        const url = `${this.relativeUserAgreementUrl}?$filter=EntraUserId eq ${userId} and AgreementVersion eq '${userAgreementVersion}' and AgreementType eq '${agreementType}'`;
+        const url = `${this.relativeUserAgreementUrl}?$filter=EntraUserId eq '${userId}' and AgreementVersion eq '${userAgreementVersion}' and AgreementType eq '${agreementType}'`;
 
         return await this.apiBroker.GetAsync(url)
             .then(result => {
