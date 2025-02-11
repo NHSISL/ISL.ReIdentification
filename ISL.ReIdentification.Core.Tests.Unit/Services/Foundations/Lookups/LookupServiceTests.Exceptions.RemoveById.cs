@@ -65,9 +65,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -118,9 +119,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
                 broker.DeleteLookupAsync(It.IsAny<Lookup>()),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -165,9 +167,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
                     expectedLookupDependencyException))),
                         Times.Once);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -212,9 +215,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
                     expectedLookupServiceException))),
                         Times.Once);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

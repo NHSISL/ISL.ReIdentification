@@ -63,6 +63,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
                         Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
@@ -119,6 +120,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
                         Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
@@ -174,6 +176,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
                     Times.Never());
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
         }
@@ -227,6 +230,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
                         Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
@@ -278,6 +282,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
                         Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

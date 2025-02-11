@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.ReIdentification.Core.Models.Foundations.Lookups;
 using ISL.ReIdentification.Core.Models.Foundations.Lookups.Exceptions;
+using ISL.ReIdentification.Core.Models.Securities;
 using Moq;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
@@ -44,8 +45,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
                     expectedLookupValidationException))),
                         Times.Once);
 
-            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
         }
 
@@ -124,9 +126,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
                 broker.InsertLookupAsync(It.IsAny<Lookup>()),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -134,8 +137,14 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
             string randomString = GetRandomStringWithLengthOf(256);
-            var invalidLookup = CreateRandomLookup(dateTimeOffset: randomDateTimeOffset);
+
+            var invalidLookup = CreateRandomLookup(
+                dateTimeOffset: randomDateTimeOffset,
+                userId: randomEntraUser.EntraUserId);
+
             invalidLookup.GroupName = GetRandomStringWithLengthOf(221);
             invalidLookup.Name = GetRandomStringWithLengthOf(221);
             invalidLookup.CreatedBy = randomString;
@@ -190,6 +199,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
                 broker.InsertLookupAsync(It.IsAny<Lookup>()),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
         }
@@ -198,13 +209,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
         public async Task ShouldThrowValidationExceptionOnAddIfAuditPropertiesIsNotTheSameAndLogItAsync()
         {
             // given
-            DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
-            DateTimeOffset now = randomDateTime;
-            Lookup randomLookup = CreateRandomLookup(now);
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+            Lookup randomLookup = CreateRandomLookup(randomDateTimeOffset, userId: randomEntraUser.EntraUserId);
             Lookup invalidLookup = randomLookup;
             invalidLookup.CreatedBy = GetRandomString();
             invalidLookup.UpdatedBy = GetRandomString();
-            invalidLookup.CreatedDate = now;
+            invalidLookup.CreatedDate = randomDateTimeOffset;
             invalidLookup.UpdatedDate = GetRandomDateTimeOffset();
 
             var invalidLookupException = new InvalidLookupException(
@@ -225,7 +236,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .ReturnsAsync(now);
+                    .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<Lookup> addLookupTask =
@@ -253,6 +264,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
         }
@@ -323,6 +335,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
         }
