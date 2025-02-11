@@ -88,7 +88,7 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
 
         [HttpGet]
 #if !DEBUG
-        [EnableQuery(PageSize = 50)]
+        [EnableQuery(PageSize = 25)]
 #endif
 #if DEBUG
         [EnableQuery(PageSize = 5000)]
