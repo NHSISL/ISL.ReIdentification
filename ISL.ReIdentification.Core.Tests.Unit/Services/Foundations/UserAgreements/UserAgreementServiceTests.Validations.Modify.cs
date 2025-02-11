@@ -75,14 +75,15 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
             DateTimeOffset startDate = randomDateTimeOffset.AddSeconds(-90);
             DateTimeOffset endDate = randomDateTimeOffset.AddSeconds(0);
 
-            var invalidUserAgreement = new UserAgreement
-            {
-                EntraUserId = invalidText,
-                AgreementType = invalidText,
-                AgreementVersion = invalidText,
-                CreatedBy = invalidText,
-                UpdatedBy = invalidText,
-            };
+            UserAgreement invalidUserAgreement = CreateRandomUserAgreement(
+                dateTimeOffset: randomDateTimeOffset,
+                userId: randomEntraUser.EntraUserId);
+
+            invalidUserAgreement.EntraUserId = invalidText;
+            invalidUserAgreement.AgreementType = invalidText;
+            invalidUserAgreement.AgreementVersion = invalidText;
+            invalidUserAgreement.CreatedBy = invalidText;
+            invalidUserAgreement.UpdatedBy = invalidText;
 
             var userAgreementServiceMock = new Mock<UserAgreementService>(
                 this.reIdentificationStorageBrokerMock.Object,
@@ -122,6 +123,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
                 values: "Text is required");
 
             invalidUserAgreementException.AddData(
+                key: nameof(UserAgreement.AgreementVersion),
+                values: "Text is required");
+
+            invalidUserAgreementException.AddData(
                 key: nameof(UserAgreement.AgreementDate),
                 values: "Date is required");
 
@@ -134,16 +139,23 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
                 values: "Text is required");
 
             invalidUserAgreementException.AddData(
-                key: nameof(UserAgreement.UpdatedDate),
+                key: nameof(UserAgreement.UpdatedBy),
                 values:
-                new[] {
-                    "Date is required",
-                    $"Date is the same as {nameof(UserAgreement.CreatedDate)}"
-                });
+                    [
+                        "Text is invalid",
+                        $"Expected value to be '{randomEntraUser.EntraUserId}' but found " +
+                            $"'{invalidUserAgreement.UpdatedBy}'."
+                    ]);
 
             invalidUserAgreementException.AddData(
-                key: nameof(UserAgreement.UpdatedBy),
-                values: "Text is required");
+                key: nameof(UserAgreement.UpdatedDate),
+                values:
+                    [
+                        "Date is invalid",
+                        "Date is the same as CreatedDate",
+                        $"Date is not recent. Expected a value between {startDate} and {endDate} but found " +
+                        $"{invalidUserAgreement.UpdatedDate}"
+                    ]);
 
             var expectedUserAgreementValidationException =
                 new UserAgreementValidationException(
@@ -152,7 +164,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
 
             // when
             ValueTask<UserAgreement> modifyUserAgreementTask =
-                this.userAgreementService.ModifyUserAgreementAsync(invalidUserAgreement);
+                userAgreementServiceMock.Object.ModifyUserAgreementAsync(invalidUserAgreement);
 
             UserAgreementValidationException actualUserAgreementValidationException =
                 await Assert.ThrowsAsync<UserAgreementValidationException>(
@@ -190,7 +202,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
             DateTimeOffset startDate = randomDateTimeOffset.AddSeconds(-90);
             DateTimeOffset endDate = randomDateTimeOffset.AddSeconds(0);
 
-            UserAgreement invalidUserAgreement = CreateRandomUserAgreement(
+            UserAgreement invalidUserAgreement = CreateRandomModifyUserAgreement(
                 dateTimeOffset: randomDateTimeOffset,
                 userId: randomEntraUser.EntraUserId);
 
