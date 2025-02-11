@@ -388,20 +388,43 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
             int invalidSeconds)
         {
             // given
-            DateTimeOffset randomDateTime =
-                GetRandomDateTimeOffset();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            DateTimeOffset startDate = randomDateTimeOffset.AddSeconds(-90);
+            DateTimeOffset endDate = randomDateTimeOffset.AddSeconds(0);
+            EntraUser randomEntraUser = CreateRandomEntraUser();
 
-            DateTimeOffset now = randomDateTime;
-            DateTimeOffset startDate = now.AddSeconds(-90);
-            DateTimeOffset endDate = now.AddSeconds(0);
-            Lookup randomLookup = CreateRandomLookup();
+            Lookup randomLookup = CreateRandomLookup(
+                dateTimeOffset: randomDateTimeOffset,
+                userId: randomEntraUser.EntraUserId);
+
             Lookup invalidLookup = randomLookup;
 
             DateTimeOffset invalidDate =
-                now.AddSeconds(invalidSeconds);
+                randomDateTimeOffset.AddSeconds(invalidSeconds);
 
             invalidLookup.CreatedDate = invalidDate;
             invalidLookup.UpdatedDate = invalidDate;
+
+            var lookupServiceMock = new Mock<LookupService>(
+                this.reIdentificationStorageBroker.Object,
+                this.dateTimeBrokerMock.Object,
+                this.securityBrokerMock.Object,
+                this.loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            lookupServiceMock.Setup(service =>
+                service.ApplyAddAuditAsync(invalidLookup))
+                    .ReturnsAsync(invalidLookup);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             var invalidLookupException = new InvalidLookupException(
                 message: "Invalid lookup. Please correct the errors and try again.");
@@ -417,13 +440,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
                     message: "Lookup validation error occurred, please fix errors and try again.",
                     innerException: invalidLookupException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
-                    .ReturnsAsync(now);
-
             // when
             ValueTask<Lookup> addLookupTask =
-                this.lookupService.AddLookupAsync(invalidLookup);
+                lookupServiceMock.Object.AddLookupAsync(invalidLookup);
 
             LookupValidationException actualLookupValidationException =
                 await Assert.ThrowsAsync<LookupValidationException>(
@@ -435,6 +454,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
