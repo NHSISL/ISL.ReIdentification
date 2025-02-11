@@ -64,7 +64,7 @@ export const userAccessViewService = {
     },
 
     useGetAccessForUser: (entraId?: string) => {
-        const query = `?$filter=entraUserId eq ${entraId}`;
+        const query = `?$filter=entraUserId eq '${entraId}'`;
         return userAccessService.useRetrieveAllUserAccess(query);
     },
 };
