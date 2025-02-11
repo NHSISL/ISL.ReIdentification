@@ -144,7 +144,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
                         "Date is invalid",
                         "Date is the same as CreatedDate",
                         $"Date is not recent. Expected a value between {startDate} and {endDate} but found " +
-                        $"{invalidAccessAudit.UpdatedDate}"
+                            $"{invalidAccessAudit.UpdatedDate}"
                     ]);
 
             var expectedAccessAuditValidationException =

@@ -187,9 +187,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            EntraUser randomEntraUser = CreateRandomEntraUser(entraUserId: GetRandomStringWithLengthOf(256));
             Lookup invalidLookup = CreateRandomModifyLookup(randomDateTimeOffset, userId: randomEntraUser.EntraUserId);
-            var inputCreatedByUpdatedByString = GetRandomStringWithLengthOf(256);
+            var inputCreatedByUpdatedByString = randomEntraUser.EntraUserId;
             invalidLookup.GroupName = GetRandomStringWithLengthOf(221);
             invalidLookup.Name = GetRandomStringWithLengthOf(221);
             invalidLookup.CreatedBy = inputCreatedByUpdatedByString;
@@ -253,6 +253,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
