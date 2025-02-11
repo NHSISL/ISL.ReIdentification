@@ -142,7 +142,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
 
                 Parameter: nameof(AccessAudit.CreatedDate)),
 
-                (Rule: await IsSameAs(
+                (Rule: IsSameAs(
                     accessAudit.UpdatedDate,
                     maybeAccessAudit.UpdatedDate,
                     nameof(maybeAccessAudit.UpdatedDate)),
