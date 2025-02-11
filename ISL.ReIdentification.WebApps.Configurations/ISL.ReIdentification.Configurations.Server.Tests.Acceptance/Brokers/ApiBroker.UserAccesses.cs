@@ -32,7 +32,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Brokers
         {
             var results = await this.apiFactoryClient
                 .GetContentAsync<List<UserAccess>>($"{userAccessesRelativeUrl}/" +
-                    $"?$filter=entraUserId eq {entraUserId} and orgCode eq '{orgCode}'");
+                    $"?$filter=entraUserId eq '{entraUserId}' and orgCode eq '{orgCode}'");
 
             return results.FirstOrDefault();
         }

@@ -15,7 +15,7 @@ export function useReidentification(reason: string) {
     const [isLoading, setIsLoading] = useState(false);
     const [lastPseudo, setLastPseudo] = useState<ReIdRecord>();
     const { accounts } = useMsal();
-    const { submit, data } = reIdentificationService.useRequestReIdentification();
+    const { submit, data, cleardata } = reIdentificationService.useRequestReIdentification();
 
     const processRequest = async (request: TrackedAccessRequest) => {
         if (request.accessRequest.identificationRequest) {
@@ -58,6 +58,7 @@ export function useReidentification(reason: string) {
 
     function clearList() {
         setLastPseudo(undefined);
+        cleardata();
     }
 
     return { reidentify, reidentifications: data, lastPseudo, clearList, isLoading }

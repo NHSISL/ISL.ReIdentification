@@ -62,7 +62,7 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
         }
 
         [HttpGet]
-        [EnableQuery(PageSize = 25)]
+        [EnableQuery]
         public async ValueTask<ActionResult<IQueryable<AccessAudit>>> Get()
         {
             try

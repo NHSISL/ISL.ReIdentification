@@ -9,13 +9,13 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification
     public class CsvIdentificationRequest
     {
         public Guid Id { get; set; }
-        public Guid RequesterEntraUserId { get; set; } = Guid.Empty;
+        public string RequesterEntraUserId { get; set; } = string.Empty;
         public string RequesterFirstName { get; set; } = string.Empty;
         public string RequesterLastName { get; set; } = string.Empty;
         public string RequesterDisplayName { get; set; } = string.Empty;
         public string RequesterEmail { get; set; } = string.Empty;
         public string RequesterJobTitle { get; set; } = string.Empty;
-        public Guid RecipientEntraUserId { get; set; } = Guid.Empty;
+        public string RecipientEntraUserId { get; set; } = string.Empty;
         public string RecipientFirstName { get; set; } = string.Empty;
         public string RecipientLastName { get; set; } = string.Empty;
         public string RecipientDisplayName { get; set; } = string.Empty;

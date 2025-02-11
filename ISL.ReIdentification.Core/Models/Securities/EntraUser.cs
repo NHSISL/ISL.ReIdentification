@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 
@@ -11,7 +10,7 @@ namespace ISL.ReIdentification.Core.Models.Securities
     public class EntraUser
     {
         public EntraUser(
-            Guid entraUserId,
+            string entraUserId,
             string givenName,
             string surname,
             string displayName,
@@ -30,7 +29,7 @@ namespace ISL.ReIdentification.Core.Models.Securities
             Claims = claims;
         }
 
-        public Guid EntraUserId { get; private set; } = Guid.Empty;
+        public string EntraUserId { get; private set; } = string.Empty;
         public string GivenName { get; private set; } = string.Empty;
         public string Surname { get; private set; } = string.Empty;
         public string DisplayName { get; private set; } = string.Empty;

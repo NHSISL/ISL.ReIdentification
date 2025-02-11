@@ -17,6 +17,7 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Blob
         ValueTask DeleteFileAsync(string fileName, string container);
         ValueTask<string> GetDownloadLinkAsync(string fileName, string container, DateTimeOffset expiresOn);
         ValueTask CreateContainerAsync(string container);
+        ValueTask<List<string>> RetrieveAllContainersAsync();
         ValueTask<List<string>> ListFilesInContainerAsync(string container);
 
         ValueTask<string> CreateSasTokenAsync(

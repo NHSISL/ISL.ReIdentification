@@ -13,9 +13,10 @@
 		<PackageReference Include="Attrify" Version="0.0.0.2" />
 		<PackageReference Include="FluentAssertions" Version="7.0.0" />
 		<PackageReference Include="ISL.Providers.ReIdentification.Abstractions" Version="0.0.0.4" />
+		<PackageReference Include="ISL.Providers.ReIdentification.DemoData" Version="0.0.0.4" />
 		<PackageReference Include="ISL.Providers.ReIdentification.Necs" Version="0.0.0.4" />
 		<PackageReference Include="ISL.Providers.ReIdentification.OfflineFileSources" Version="0.0.0.4" />
-		<PackageReference Include="Microsoft.AspNetCore.OData" Version="9.1.1" />
+		<PackageReference Include="Microsoft.AspNetCore.OData" Version="9.1.3" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.0" />
 		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0" />
 		<PackageReference Include="Microsoft.AspNetCore.SpaProxy">
@@ -29,5 +30,11 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\ISL.ReIdentification.Core\ISL.ReIdentification.Core.csproj" />
 		<ProjectReference Include="..\ISL.ReIdentification.Configurations.Client\ISL.ReIdentification.Configurations.Client.esproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Update="appsettings.Development.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
 	</ItemGroup>
 </Project>

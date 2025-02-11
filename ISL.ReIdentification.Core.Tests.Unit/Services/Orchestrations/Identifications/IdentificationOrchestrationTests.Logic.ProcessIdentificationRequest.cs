@@ -24,11 +24,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             Guid randomGuid = Guid.NewGuid();
             int itemCount = GetRandomNumber();
             bool hasAccess = false;
-            var noAccessMessage = "User do not have access to the organisation(s) " +
+            var noAccessMessage = "User does not have access to the organisation(s) " +
                 "associated with patient.  Re-identification blocked.";
 
-            var accessMessage = "User have access to the organisation(s) " +
+            var accessMessage = "User does have access to the organisation(s) " +
                 "associated with patient.  Item will be submitted for re-identification.";
+
+            var auditType = "PDS Access";
 
             IdentificationRequest randomIdentificationRequest =
                CreateRandomIdentificationRequest(hasAccess, itemCount: itemCount);
@@ -84,6 +86,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                     Organisation = randomIdentificationRequest.Organisation,
                     HasAccess = hasAccess,
                     Message = item.HasAccess ? accessMessage : noAccessMessage,
+                    AuditType = auditType,
                     CreatedBy = "System",
                     CreatedDate = randomDateTimeOffset,
                     UpdatedBy = "System",
@@ -114,10 +117,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             string reIdentifiedIdentifier = randomString;
             bool hasAccess = true;
 
-            var noAccessMessage = "User do not have access to the organisation(s) " +
+            var noAccessMessage = "User does not have access to the organisation(s) " +
                 "associated with patient.  Re-identification blocked.";
 
-            var accessMessage = "User have access to the organisation(s) " +
+            var accessMessage = "User does have access to the organisation(s) " +
                 "associated with patient.  Item will be submitted for re-identification.";
 
             IdentificationRequest randomIdentificationRequest =
@@ -128,7 +131,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
 
             outputIdentificationRequest.IdentificationItems.ForEach(item =>
             {
-                item.Identifier = $"{item.Identifier}I";
+                item.Identifier = string.IsNullOrEmpty(item.Identifier)
+                    ? item.Identifier
+                    : $"{item.Identifier.PadLeft(10, '0')}I";
+
                 item.IsReidentified = true;
             });
 
@@ -153,7 +159,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
 
             outputHasAccessIdentificationRequest.IdentificationItems.ForEach(item =>
             {
-                item.Identifier = $"{item.Identifier}I";
+                item.Identifier = string.IsNullOrEmpty(item.Identifier)
+                    ? item.Identifier
+                    : $"{item.Identifier.PadLeft(10, '0')}I";
+
                 item.IsReidentified = true;
             });
 
@@ -202,6 +211,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                     Organisation = randomIdentificationRequest.Organisation,
                     HasAccess = item.HasAccess,
                     Message = item.HasAccess ? accessMessage : noAccessMessage,
+                    AuditType = "PDS Access",
                     CreatedBy = "System",
                     CreatedDate = randomDateTimeOffset,
                     UpdatedBy = "System",
@@ -222,14 +232,19 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             foreach (IdentificationItem item in randomIdentificationRequest.IdentificationItems)
             {
                 var pseudoIdentifier = randomIdentificationRequest.IdentificationItems
-                    .FirstOrDefault(identificationItem => identificationItem.RowNumber == item.RowNumber).Identifier;
+                    .FirstOrDefault(identificationItem => identificationItem.RowNumber == item.RowNumber)
+                        .Identifier;
 
                 AccessAudit successAccessAudit = new AccessAudit
                 {
                     Id = randomGuid,
                     RequestId = randomIdentificationRequest.Id,
                     TransactionId = randomGuid,
-                    PseudoIdentifier = pseudoIdentifier,
+
+                    PseudoIdentifier = string.IsNullOrEmpty(pseudoIdentifier)
+                        ? pseudoIdentifier
+                        : pseudoIdentifier.PadLeft(10, '0'),
+
                     EntraUserId = randomIdentificationRequest.EntraUserId,
                     GivenName = randomIdentificationRequest.GivenName,
                     Surname = randomIdentificationRequest.Surname,
@@ -237,6 +252,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                     Reason = randomIdentificationRequest.Reason,
                     Organisation = randomIdentificationRequest.Organisation,
                     HasAccess = item.HasAccess,
+                    AuditType = "NECS Access",
                     Message = $"Re-identification outcome: {item.Message}",
                     CreatedBy = "System",
                     CreatedDate = randomDateTimeOffset,

@@ -59,7 +59,7 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
         TryCatch(async () =>
         {
             ValidateOnProcessIdentificationRequests(accessRequest);
-            EntraUser currentUser = await this.securityBroker.GetCurrentUser();
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
             accessRequest.IdentificationRequest.EntraUserId = currentUser.EntraUserId;
             accessRequest.IdentificationRequest.Email = currentUser.Email;
             accessRequest.IdentificationRequest.JobTitle = currentUser.JobTitle;
@@ -101,7 +101,7 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
                 await ConvertCsvIdentificationRequestToIdentificationRequest(
                     maybeAccessRequest);
 
-            EntraUser currentUser = await this.securityBroker.GetCurrentUser();
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             IdentificationRequest currentUserIdentificationRequest =
                 OverrideIdentificationRequestUserDetails(
@@ -261,7 +261,11 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
                 var identificationItem = new IdentificationItem
                 {
                     HasAccess = false,
-                    Identifier = mappedItems[index].Identifier,
+
+                    Identifier = string.IsNullOrEmpty(mappedItems[index].Identifier) 
+                        ? mappedItems[index].Identifier 
+                        : mappedItems[index].Identifier.PadLeft(10, '0'),
+
                     IsReidentified = false,
                     Message = string.Empty,
                     RowNumber = accessRequest.CsvIdentificationRequest.HasHeaderRecord

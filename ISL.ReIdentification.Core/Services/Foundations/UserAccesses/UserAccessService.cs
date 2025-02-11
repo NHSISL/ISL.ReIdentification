@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Loggings;
+using ISL.ReIdentification.Core.Brokers.Securities;
 using ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Foundations.OdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
@@ -18,24 +19,28 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
     {
         private readonly IReIdentificationStorageBroker reIdentificationStorageBroker;
         private readonly IDateTimeBroker dateTimeBroker;
+        private readonly ISecurityBroker securityBroker;
         private readonly ILoggingBroker loggingBroker;
 
         public UserAccessService(
             IReIdentificationStorageBroker reIdentificationStorageBroker,
             IDateTimeBroker dateTimeBroker,
+            ISecurityBroker securityBroker,
             ILoggingBroker loggingBroker)
         {
             this.reIdentificationStorageBroker = reIdentificationStorageBroker;
             this.dateTimeBroker = dateTimeBroker;
+            this.securityBroker = securityBroker;
             this.loggingBroker = loggingBroker;
         }
 
         public ValueTask<UserAccess> AddUserAccessAsync(UserAccess userAccess) =>
         TryCatch(async () =>
         {
-            await ValidateUserAccessOnAddAsync(userAccess);
+            UserAccess userAccessWithAddAuditApplied = await ApplyAddAuditAsync(userAccess);
+            await ValidateUserAccessOnAddAsync(userAccessWithAddAuditApplied);
 
-            return await this.reIdentificationStorageBroker.InsertUserAccessAsync(userAccess);
+            return await this.reIdentificationStorageBroker.InsertUserAccessAsync(userAccessWithAddAuditApplied);
         });
 
         public ValueTask<IQueryable<UserAccess>> RetrieveAllUserAccessesAsync() =>
@@ -57,15 +62,16 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
         public ValueTask<UserAccess> ModifyUserAccessAsync(UserAccess userAccess) =>
         TryCatch(async () =>
         {
-            await ValidateUserAccessOnModifyAsync(userAccess);
+            UserAccess userAccessWithModifyAuditApplied = await ApplyModifyAuditAsync(userAccess);
+            await ValidateUserAccessOnModifyAsync(userAccessWithModifyAuditApplied);
 
             var maybeUserAccess = await this.reIdentificationStorageBroker
-                .SelectUserAccessByIdAsync(userAccess.Id);
+                .SelectUserAccessByIdAsync(userAccessWithModifyAuditApplied.Id);
 
-            ValidateStorageUserAccess(maybeUserAccess, userAccess.Id);
-            ValidateAgainstStorageUserAccessOnModify(userAccess, maybeUserAccess);
+            ValidateStorageUserAccess(maybeUserAccess, userAccessWithModifyAuditApplied.Id);
+            await ValidateAgainstStorageUserAccessOnModifyAsync(userAccessWithModifyAuditApplied, maybeUserAccess);
 
-            return await this.reIdentificationStorageBroker.UpdateUserAccessAsync(userAccess);
+            return await this.reIdentificationStorageBroker.UpdateUserAccessAsync(userAccessWithModifyAuditApplied);
         });
 
         public ValueTask<UserAccess> RemoveUserAccessByIdAsync(Guid userAccessId) =>
@@ -77,11 +83,17 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
                 .SelectUserAccessByIdAsync(userAccessId);
 
             ValidateStorageUserAccess(maybeUserAccess, userAccessId);
+            UserAccess userAccessWithModifyAuditApplied = await ApplyModifyAuditAsync(maybeUserAccess);
 
-            return await this.reIdentificationStorageBroker.DeleteUserAccessAsync(maybeUserAccess);
+            var updatedUserAccess = await this.reIdentificationStorageBroker
+                .UpdateUserAccessAsync(userAccessWithModifyAuditApplied);
+
+            await ValidateAgainstStorageUserAccessOnDeleteAsync(updatedUserAccess, userAccessWithModifyAuditApplied);
+
+            return await this.reIdentificationStorageBroker.DeleteUserAccessAsync(updatedUserAccess);
         });
 
-        public ValueTask<List<string>> RetrieveAllActiveOrganisationsUserHasAccessToAsync(Guid entraUserId) =>
+        public ValueTask<List<string>> RetrieveAllActiveOrganisationsUserHasAccessToAsync(string entraUserId) =>
         TryCatch(async () =>
         {
             ValidateOnRetrieveAllOrganisationUserHasAccessTo(entraUserId);
@@ -124,5 +136,29 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
 
             return organisations.Distinct().ToList();
         });
+
+        virtual internal async ValueTask<UserAccess> ApplyAddAuditAsync(UserAccess userAccess)
+        {
+            ValidateUserAccessIsNotNull(userAccess);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
+            userAccess.CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            userAccess.CreatedDate = auditDateTimeOffset;
+            userAccess.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            userAccess.UpdatedDate = auditDateTimeOffset;
+
+            return userAccess;
+        }
+
+        virtual internal async ValueTask<UserAccess> ApplyModifyAuditAsync(UserAccess userAccess)
+        {
+            ValidateUserAccessIsNotNull(userAccess);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
+            userAccess.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            userAccess.UpdatedDate = auditDateTimeOffset;
+
+            return userAccess;
+        }
     }
 }

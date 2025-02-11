@@ -28,7 +28,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             EntraUser outputEntraUser = CreateRandomEntraUser();
 
             this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUser())
+                broker.GetCurrentUserAsync())
                 .ReturnsAsync(outputEntraUser);
 
             this.accessOrchestrationServiceMock.Setup(service =>

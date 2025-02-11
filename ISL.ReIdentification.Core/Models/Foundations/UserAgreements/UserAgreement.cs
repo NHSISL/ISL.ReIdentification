@@ -9,7 +9,7 @@ namespace ISL.ReIdentification.Core.Models.Foundations.UserAgreements
     public class UserAgreement : IKey, IAudit
     {
         public Guid Id { get; set; }
-        public Guid EntraUserId { get; set; }
+        public string EntraUserId { get; set; }
         public string AgreementType { get; set; }
         public string AgreementVersion { get; set; }
         public DateTimeOffset AgreementDate { get; set; }

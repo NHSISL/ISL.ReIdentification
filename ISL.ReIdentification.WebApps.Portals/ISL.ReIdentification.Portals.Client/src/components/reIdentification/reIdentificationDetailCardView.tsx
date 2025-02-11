@@ -92,7 +92,7 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
                     <Card.Title className="text-start">
                         <OverlayTrigger placement="right" overlay={renderTooltip}>
                             <FontAwesomeIcon icon={faCircleInfo} className="text-primary" size="lg" />
-                        </OverlayTrigger>&nbsp;Reidentify Single Patient
+                        </OverlayTrigger>&nbsp;Re-Identify Single Patient
                     </Card.Title>
                 </Card.Header>
                 <Card.Body>
@@ -110,13 +110,12 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
                                 name="PseudoCode"
                                 value={pseudoCode}
                                 maxLength={10}
-                                minLength={10}
                                 onChange={handlePseudoCodeChange}
                                 placeholder="Pseudo Number"
                                 required />
                         </Form.Group>
                         <Form.Text className="text-muted">
-                            <small>Pseudo Numbers need to be 10 characters long and only contain numbers.</small>
+                            <small>Pseudo Numbers need to be a maximum of 10 characters long and only contain numbers.</small>
                         </Form.Text>
                         <br />
                         <br />
@@ -164,7 +163,9 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
 
     return <>
 
-        <Alert variant="danger" className="mb-0">Something went wrong, Please contact your administrator.</Alert> 
+        <Alert variant="danger" className="mb-0">
+            Something went wrong. Please contact <a href="mailto:isl.support@nhs.net">isl.support@nhs.net</a> for support.
+        </Alert>
     </>
 
 }

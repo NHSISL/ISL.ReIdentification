@@ -62,6 +62,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
             // given
             var invalidIdentificationRequest = new IdentificationRequest
             {
+                EntraUserId = invalidText,
                 GivenName = invalidText,
                 Surname = invalidText,
                 DisplayName = invalidText,
@@ -78,7 +79,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ReIdentifica
 
             invalidIdentificationRequestException.AddData(
                 key: nameof(IdentificationRequest.EntraUserId),
-                values: "Id is invalid");
+                values: "Text is invalid");
 
             invalidIdentificationRequestException.AddData(
                 key: nameof(IdentificationRequest.Email),
