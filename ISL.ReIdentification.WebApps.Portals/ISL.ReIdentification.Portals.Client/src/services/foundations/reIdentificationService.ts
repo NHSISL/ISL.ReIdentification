@@ -4,6 +4,7 @@ import { AccessRequest } from '../../models/accessRequest/accessRequest';
 import { ReIdRecord } from '../../types/ReIdRecord';
 import { getPseudo, isHx } from '../../helpers/hxHelpers';
 import { toast } from 'react-toastify';
+import { useQueryClient } from '@tanstack/react-query';
 
 export const reIdentificationService = {
     useRequestReIdentification: () => {
@@ -112,12 +113,19 @@ export const reIdentificationService = {
     useRequestReIdentificationImpersonation: () => {
         const broker = new ReIdentificationBroker();
         const [loading, setIsLoading] = useState(false);
+        const queryClient = useQueryClient();
+
         return {
             submit: (csvIdentificationRequest: AccessRequest) => {
                 setIsLoading(true);
-                return broker.PostReIdentificationImpersonationAsync(csvIdentificationRequest).finally(() => {
-                    setIsLoading(false);
-                })
+                return broker.PostReIdentificationImpersonationAsync(csvIdentificationRequest)
+                    .then((data) => {
+                        queryClient.invalidateQueries({ queryKey: ["ImpersonationContextGetAll"] });
+                        queryClient.invalidateQueries({ queryKey: ["ImpersonationContextById", { id: data.id }] });
+                    })
+                    .finally(() => {
+                        setIsLoading(false);
+                    });
             },
             loading
         };

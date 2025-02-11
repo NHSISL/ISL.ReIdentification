@@ -25,7 +25,6 @@ export const impersonationContextService = {
             }
         });
     },
-
     useRetrieveAllImpersonationContext: (query: string) => {
         const broker = new ImpersonationContextBroker();
 
@@ -35,7 +34,6 @@ export const impersonationContextService = {
             staleTime: Infinity
         });
     },
-
     useRetrieveAllImpersonationContextPages: (query: string) => {
         const broker = new ImpersonationContextBroker();
 

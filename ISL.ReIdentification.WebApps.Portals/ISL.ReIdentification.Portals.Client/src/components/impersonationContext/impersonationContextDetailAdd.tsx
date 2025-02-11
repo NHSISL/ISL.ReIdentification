@@ -8,6 +8,7 @@ import { UserAccessView } from "../../models/views/components/userAccess/userAcc
 import { lookupViewService } from "../../services/views/lookups/lookupViewService";
 import UserAccessSearch from "../userAccessSearch/userAccessSearch";
 import { AccessRequest } from "../../models/accessRequest/accessRequest";
+import { useNavigate } from "react-router-dom";
 
 interface Option {
     value: string;
@@ -29,6 +30,7 @@ const ImpersonationContextDetailAdd: FunctionComponent = () => {
     const { mappedLookups, isLoading } = lookupViewService.useGetAllLookups("", "Reasons");
     const [selectedLookupId, setSelectedLookupId] = useState<string>("");
     const account = useMsal();
+    const navigate = useNavigate()
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -239,7 +241,17 @@ const ImpersonationContextDetailAdd: FunctionComponent = () => {
                                 </>
                             ) : (
                                 <>
-                                    SENT - Need Some Copy here
+                                    <Alert variant="success" className="mb-0">
+                                        <h4>Project Approval Sent</h4>
+                                        <p>The recipient should receive an email with a link for to approve this request.</p>
+                                        <p>Please ensure the recipient checks their inbox and follows the instructions provided in the email to approve the file.</p>
+                                            <p>Alternatively, the recipient can launch the projects page in the portal and approve from there.</p>
+
+                                            To View your Projects Click&nbsp;
+                                            <span onClick={() => navigate('/project')} style={{ color: 'blue', cursor: 'pointer', textDecoration: 'underline' }}>
+                                                Here
+                                            </span>
+                                    </Alert>
                                 </>
                             )}
 

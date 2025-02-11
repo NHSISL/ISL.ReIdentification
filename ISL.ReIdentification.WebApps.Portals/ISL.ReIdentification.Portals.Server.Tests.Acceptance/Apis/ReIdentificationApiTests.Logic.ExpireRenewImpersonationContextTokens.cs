@@ -13,7 +13,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
 {
     public partial class ReIdentificationApiTests
     {
-        [Fact (Skip="Access to Storage keeps failing")]
+        [Fact]
         public async Task ShouldExpireRenewImpersonationContextTokensAsync()
         {
             // given

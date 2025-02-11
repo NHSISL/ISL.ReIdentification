@@ -1,4 +1,3 @@
-/// <reference path="apibroker.lookups.ts" />
 import { AccessRequest } from "../models/accessRequest/accessRequest";
 import ApiBroker from "./apiBroker";
 
