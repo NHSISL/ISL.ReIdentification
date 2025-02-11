@@ -20,9 +20,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             EntraUser randomEntraUser = CreateRandomEntraUser();
-
             Lookup randomLookup = CreateRandomLookup(randomDateTimeOffset, userId: randomEntraUser.EntraUserId);
-
             Lookup inputLookup = randomLookup;
             Lookup storageLookup = inputLookup;
             Lookup expectedLookup = storageLookup.DeepClone();
