@@ -196,6 +196,27 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
             invalidUserAgreement.UpdatedDate =
                 invalidUserAgreement.CreatedDate.AddDays(randomNumber);
 
+            var accessAuditServiceMock = new Mock<UserAgreementService>(
+                this.reIdentificationStorageBrokerMock.Object,
+                this.dateTimeBrokerMock.Object,
+                this.securityBrokerMock.Object,
+                this.loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            accessAuditServiceMock.Setup(service =>
+                service.ApplyAddAuditAsync(invalidUserAgreement))
+                    .ReturnsAsync(invalidUserAgreement);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
             var invalidUserAgreementException =
                 new InvalidUserAgreementException(
                     message: "Invalid userAgreement. Please correct the errors and try again.");
@@ -209,13 +230,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
                     message: "UserAgreement validation errors occurred, please try again.",
                     innerException: invalidUserAgreementException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
-                    .ReturnsAsync(randomDateTimeOffset);
-
             // when
             ValueTask<UserAgreement> addUserAgreementTask =
-                this.userAgreementService.AddUserAgreementAsync(invalidUserAgreement);
+                accessAuditServiceMock.Object.AddUserAgreementAsync(invalidUserAgreement);
 
             UserAgreementValidationException actualUserAgreementValidationException =
                 await Assert.ThrowsAsync<UserAgreementValidationException>(() =>
@@ -227,6 +244,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once());
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
