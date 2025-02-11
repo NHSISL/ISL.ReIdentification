@@ -4,8 +4,10 @@
 
 using System;
 using System.Threading.Tasks;
+using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Models.Foundations.UserAgreements;
 using ISL.ReIdentification.Core.Models.Foundations.UserAgreements.Exceptions;
+using ISL.ReIdentification.Core.Models.Securities;
 
 namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
 {
@@ -14,6 +16,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
         private async ValueTask ValidateUserAgreementOnAddAsync(UserAgreement userAgreement)
         {
             ValidateUserAgreementIsNotNull(userAgreement);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(userAgreement.Id), Parameter: nameof(UserAgreement.Id)),
@@ -24,12 +27,20 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
                 (Rule: IsInvalid(userAgreement.CreatedBy), Parameter: nameof(UserAgreement.CreatedBy)),
                 (Rule: IsInvalid(userAgreement.UpdatedDate), Parameter: nameof(UserAgreement.UpdatedDate)),
                 (Rule: IsInvalid(userAgreement.UpdatedBy), Parameter: nameof(UserAgreement.UpdatedBy)),
+                (Rule: IsInvalidLength(userAgreement.EntraUserId, 255), Parameter: nameof(UserAgreement.EntraUserId)),
+                (Rule: IsInvalidLength(userAgreement.CreatedBy, 255), Parameter: nameof(UserAgreement.CreatedBy)),
+                (Rule: IsInvalidLength(userAgreement.UpdatedBy, 255), Parameter: nameof(UserAgreement.UpdatedBy)),
 
                 (Rule: IsNotSame(
                     firstDate: userAgreement.UpdatedDate,
                     secondDate: userAgreement.CreatedDate,
                     secondDateName: nameof(UserAgreement.CreatedDate)),
                 Parameter: nameof(UserAgreement.UpdatedDate)),
+
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: userAgreement.CreatedBy),
+                Parameter: nameof(UserAccess.CreatedBy)),
 
                 (Rule: IsNotSame(
                     first: userAgreement.UpdatedBy,
@@ -43,6 +54,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
         private async ValueTask ValidateUserAgreementOnModifyAsync(UserAgreement userAgreement)
         {
             ValidateUserAgreementIsNotNull(userAgreement);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(userAgreement.Id), Parameter: nameof(UserAgreement.Id)),
@@ -53,6 +65,14 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
                 (Rule: IsInvalid(userAgreement.CreatedBy), Parameter: nameof(UserAgreement.CreatedBy)),
                 (Rule: IsInvalid(userAgreement.UpdatedDate), Parameter: nameof(UserAgreement.UpdatedDate)),
                 (Rule: IsInvalid(userAgreement.UpdatedBy), Parameter: nameof(UserAgreement.UpdatedBy)),
+                (Rule: IsInvalidLength(userAgreement.EntraUserId, 255), Parameter: nameof(UserAgreement.EntraUserId)),
+                (Rule: IsInvalidLength(userAgreement.CreatedBy, 255), Parameter: nameof(UserAgreement.CreatedBy)),
+                (Rule: IsInvalidLength(userAgreement.UpdatedBy, 255), Parameter: nameof(UserAgreement.UpdatedBy)),
+
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: userAgreement.UpdatedBy),
+                Parameter: nameof(UserAccess.UpdatedBy)),
 
                 (Rule: IsSame(
                     firstDate: userAgreement.UpdatedDate,
@@ -116,6 +136,15 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
             Message = "Text is required"
         };
 
+        private static dynamic IsInvalidLength(string text, int maxLength) => new
+        {
+            Condition = IsExceedingLength(text, maxLength),
+            Message = $"Text exceed max length of {maxLength} characters"
+        };
+
+        private static bool IsExceedingLength(string text, int maxLength) =>
+            (text ?? string.Empty).Length > maxLength;
+
         private static dynamic IsInvalid(DateTimeOffset date) => new
         {
             Condition = date == default,
@@ -147,6 +176,14 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
             {
                 Condition = firstId != secondId,
                 Message = $"Id is not the same as {secondIdName}"
+            };
+
+        private static dynamic IsNotSame(
+            string first,
+            string second) => new
+            {
+                Condition = first != second,
+                Message = $"Expected value to be '{first}' but found '{second}'."
             };
 
         private static dynamic IsNotSame(
