@@ -51,7 +51,7 @@ export const UserAgreementModal: React.FC<UserAgreementModalProps> = ({ viewOnly
                         <Modal.Title>User Agreement - Version {configuration?.activeAgreement}</Modal.Title>
                     </Modal.Header>
                     <Modal.Body className="scrollable-modal-body">
-                        <p>You must accept the following user agreement before you can use this application.</p>
+                        {!viewOnly && <p>You must accept the following user agreement before you can use this application.</p>}
                         {getAgreement(currentAgreementType, configuration.activeAgreement)}
                     </Modal.Body>
                     <Modal.Footer>
