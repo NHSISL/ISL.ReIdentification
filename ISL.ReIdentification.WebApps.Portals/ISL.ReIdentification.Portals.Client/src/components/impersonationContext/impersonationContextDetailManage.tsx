@@ -144,6 +144,10 @@ const ImpersonationContextDetailManage: FunctionComponent<ImpersonationContextDe
                             </>
                         )}
 
+                        {/*{ account.accounts[0].idTokenClaims?.oid?.toLowerCase() === data?.responsiblePersonEntraUserId.toLowerCase() && (*/}
+                        {/*    <Alert variant="danger">This request hasn't been approved by the selected responsible person. no action can be taken.</Alert>*/}
+                        {/*)}*/}
+
                         {account.accounts[0].idTokenClaims?.oid === data?.requesterEntraUserId && (
                             <>
                                 {data?.isApproved && !error && (
