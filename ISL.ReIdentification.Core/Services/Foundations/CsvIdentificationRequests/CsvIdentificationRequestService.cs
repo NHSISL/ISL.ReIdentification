@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Loggings;
+using ISL.ReIdentification.Core.Brokers.Securities;
 using ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 
@@ -16,15 +17,18 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
     {
         private readonly IReIdentificationStorageBroker reIdentificationStorageBroker;
         private readonly IDateTimeBroker dateTimeBroker;
+        private readonly ISecurityBroker securityBroker;
         private readonly ILoggingBroker loggingBroker;
 
         public CsvIdentificationRequestService(
             IReIdentificationStorageBroker reIdentificationStorageBroker,
             IDateTimeBroker dateTimeBroker,
+            ISecurityBroker securityBroker,
             ILoggingBroker loggingBroker)
         {
             this.reIdentificationStorageBroker = reIdentificationStorageBroker;
             this.dateTimeBroker = dateTimeBroker;
+            this.securityBroker= securityBroker;
             this.loggingBroker = loggingBroker;
         }
         public ValueTask<CsvIdentificationRequest> AddCsvIdentificationRequestAsync(

@@ -2,10 +2,12 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
+using ISL.ReIdentification.Core.Models.Securities;
 using Moq;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentificationRequests
@@ -16,10 +18,23 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
         public async Task ShouldAddCsvIdentificationRequestAsync()
         {
             //given
-            CsvIdentificationRequest randomCsvIdentificationRequest = CreateRandomCsvIdentificationRequest();
+            DateTimeOffset randomDateOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            CsvIdentificationRequest randomCsvIdentificationRequest = 
+                CreateRandomCsvIdentificationRequest();
+
             CsvIdentificationRequest inputCsvIdentificationRequest = randomCsvIdentificationRequest;
             CsvIdentificationRequest storageCsvIdentificationRequest = inputCsvIdentificationRequest.DeepClone();
             CsvIdentificationRequest expectedCsvIdentificationRequest = inputCsvIdentificationRequest.DeepClone();
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             this.reIdentificationStorageBroker.Setup(broker =>
                 broker.InsertCsvIdentificationRequestAsync(inputCsvIdentificationRequest))
@@ -34,14 +49,15 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Exactly(2));
 
             this.reIdentificationStorageBroker.Verify(broker =>
                 broker.InsertCsvIdentificationRequestAsync(inputCsvIdentificationRequest),
                     Times.Once);
 
-            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
