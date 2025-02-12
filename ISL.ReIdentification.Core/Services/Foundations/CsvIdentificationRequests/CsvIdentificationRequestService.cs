@@ -38,10 +38,10 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
             CsvIdentificationRequest csvIdentificationRequestWithAddAuditApplied =
                 await ApplyAddAuditAsync(csvIdentificationRequest);
 
-            await ValidateCsvIdentificationRequestOnAdd(csvIdentificationRequest);
+            await ValidateCsvIdentificationRequestOnAdd(csvIdentificationRequestWithAddAuditApplied);
 
             return await this.reIdentificationStorageBroker
-                .InsertCsvIdentificationRequestAsync(csvIdentificationRequest);
+                .InsertCsvIdentificationRequestAsync(csvIdentificationRequestWithAddAuditApplied);
         });
 
         public ValueTask<CsvIdentificationRequest> RetrieveCsvIdentificationRequestByIdAsync(
@@ -66,14 +66,14 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
             CsvIdentificationRequest csvIdentificationRequest) =>
         TryCatch(async () =>
         {
-            CsvIdentificationRequest CsvIdentificationRequestWithModifyAuditApplied =
+            CsvIdentificationRequest csvIdentificationRequestWithModifyAuditApplied =
                 await ApplyModifyAuditAsync(csvIdentificationRequest);
 
-            await ValidateCsvIdentificationRequestOnModify(csvIdentificationRequest);
+            await ValidateCsvIdentificationRequestOnModify(csvIdentificationRequestWithModifyAuditApplied);
 
             CsvIdentificationRequest maybeCsvIdentificationRequest =
                 await this.reIdentificationStorageBroker
-                    .SelectCsvIdentificationRequestByIdAsync(csvIdentificationRequest.Id);
+                    .SelectCsvIdentificationRequestByIdAsync(csvIdentificationRequestWithModifyAuditApplied.Id);
 
             ValidateStorageCsvIdentificationRequest(
                 maybeCsvIdentificationRequest,
