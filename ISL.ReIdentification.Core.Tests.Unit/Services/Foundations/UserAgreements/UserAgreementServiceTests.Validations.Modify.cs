@@ -75,15 +75,14 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
             DateTimeOffset startDate = randomDateTimeOffset.AddSeconds(-90);
             DateTimeOffset endDate = randomDateTimeOffset.AddSeconds(0);
 
-            UserAgreement invalidUserAgreement = CreateRandomUserAgreement(
-                dateTimeOffset: randomDateTimeOffset,
-                userId: randomEntraUser.EntraUserId);
-
-            invalidUserAgreement.EntraUserId = invalidText;
-            invalidUserAgreement.AgreementType = invalidText;
-            invalidUserAgreement.AgreementVersion = invalidText;
-            invalidUserAgreement.CreatedBy = invalidText;
-            invalidUserAgreement.UpdatedBy = invalidText;
+            UserAgreement invalidUserAgreement = new UserAgreement
+            {
+                EntraUserId = invalidText,
+                AgreementType = invalidText,
+                AgreementVersion = invalidText,
+                CreatedBy = invalidText,
+                UpdatedBy = invalidText,
+            };
 
             var userAgreementServiceMock = new Mock<UserAgreementService>(
                 this.reIdentificationStorageBrokerMock.Object,
@@ -142,7 +141,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
                 key: nameof(UserAgreement.UpdatedBy),
                 values:
                     [
-                        "Text is invalid",
+                        "Text is required",
                         $"Expected value to be '{randomEntraUser.EntraUserId}' but found " +
                             $"'{invalidUserAgreement.UpdatedBy}'."
                     ]);
@@ -151,7 +150,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
                 key: nameof(UserAgreement.UpdatedDate),
                 values:
                     [
-                        "Date is invalid",
+                        "Date is required",
                         "Date is the same as CreatedDate",
                         $"Date is not recent. Expected a value between {startDate} and {endDate} but found " +
                         $"{invalidUserAgreement.UpdatedDate}"
@@ -176,6 +175,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
