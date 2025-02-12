@@ -67,7 +67,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
         }
 
         [Fact]
-        public async Task ShouldThrowDependencyValidationExceptionOnAddIfOdsDataAlreadyExsitsAndLogItAsync()
+        public async Task ShouldThrowDependencyValidationExceptionOnAddIfOdsDataAlreadyExistsAndLogItAsync()
         {
             // given
             OdsData randomOdsData = CreateRandomOdsData();
@@ -88,8 +88,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
                     message: "OdsData dependency validation occurred, please try again.",
                     innerException: alreadyExistsOdsDataException);
 
-            this.reIdentificationStorageBroker.Setup(broker =>
-                broker.InsertOdsDataAsync(It.IsAny<OdsData>()))
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
                     .ThrowsAsync(duplicateKeyException);
 
             // when
@@ -104,15 +104,21 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
             actualOdsDataDependencyValidationException.Should()
                 .BeEquivalentTo(expectedOdsDataDependencyValidationException);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
             this.reIdentificationStorageBroker.Verify(broker =>
                 broker.InsertOdsDataAsync(It.IsAny<OdsData>()),
-                    Times.Once);
+                    Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedOdsDataDependencyValidationException))),
                         Times.Once);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
