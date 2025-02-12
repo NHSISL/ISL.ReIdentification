@@ -50,6 +50,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
                 broker.SelectAllOdsDatasAsync(),
                     Times.Once);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

@@ -57,6 +57,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
                     expectedOdsDataDependencyException))),
                         Times.Once);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
@@ -103,6 +105,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
                    expectedOdsDataServiceException))),
                         Times.Once);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

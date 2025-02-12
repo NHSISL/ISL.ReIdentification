@@ -53,8 +53,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
                 broker.DeleteOdsDataAsync(It.IsAny<OdsData>()),
                     Times.Never);
 
-            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }
