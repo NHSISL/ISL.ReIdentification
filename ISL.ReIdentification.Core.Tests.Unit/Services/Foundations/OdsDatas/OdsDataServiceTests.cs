@@ -74,6 +74,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
             int randomDaysInPast = GetRandomNegativeNumber();
             OdsData randomOdsData = CreateRandomOdsData(dateTimeOffset, odsId);
 
+            randomOdsData.CreatedDate =
+                randomOdsData.CreatedDate.AddDays(randomDaysInPast);
+
+
             return randomOdsData;
         }
 

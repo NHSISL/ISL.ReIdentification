@@ -27,7 +27,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
 
             OdsData inputOdsData = randomOdsData;
             OdsData storageOdsData = inputOdsData.DeepClone();
-            storageOdsData.UpdatedDate = randomOdsData.CreatedDate;
+            storageOdsData.UpdatedBy = randomEntraUser.EntraUserId;
             OdsData updatedOdsData = inputOdsData;
             OdsData expectedOdsData = updatedOdsData.DeepClone();
             Guid odsDataId = inputOdsData.Id;
