@@ -163,10 +163,10 @@ namespace ISL.ReIdentification.Core.Services.Foundations.OdsDatas
             ValidateOdsDataIsNotNull(odsData);
             var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
             var auditUser = await this.securityBroker.GetCurrentUserAsync();
-            odsData.OrganisationName = auditUser?.DisplayName.ToString() ?? string.Empty;
-            odsData.RelationshipWithParentStartDate = auditDateTimeOffset;
-            odsData.OrganisationCode = auditUser?.EntraUserId.ToString() ?? string.Empty;
-            odsData.RelationshipWithParentEndDate = auditDateTimeOffset;
+            odsData.CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            odsData.CreatedDate = auditDateTimeOffset;
+            odsData.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            odsData.UpdatedDate = auditDateTimeOffset;
 
             return odsData;
         }
@@ -176,9 +176,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.OdsDatas
             ValidateOdsDataIsNotNull(odsData);
             var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
             var auditUser = await this.securityBroker.GetCurrentUserAsync();
-            odsData.OrganisationCode = auditUser?.EntraUserId.ToString() ?? string.Empty;
-            odsData.OrganisationName = auditUser?.DisplayName.ToString() ?? string.Empty;
-            odsData.RelationshipWithParentStartDate = auditDateTimeOffset;
+            odsData.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            odsData.UpdatedDate = auditDateTimeOffset;
 
             return odsData;
         }

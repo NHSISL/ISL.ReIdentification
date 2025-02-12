@@ -20,11 +20,35 @@ namespace ISL.ReIdentification.Core.Services.Foundations.OdsDatas
             Validate(
                 (Rule: IsInvalid(odsData.Id), Parameter: nameof(OdsData.Id)),
                 (Rule: IsInvalid(odsData.OrganisationCode), Parameter: nameof(OdsData.OrganisationCode)),
-                
+                (Rule: IsInvalid(odsData.OrganisationName), Parameter: nameof(OdsData.OrganisationName)),
+                (Rule: IsInvalid(odsData.CreatedDate), Parameter: nameof(OdsData.CreatedDate)),
+                (Rule: IsInvalid(odsData.CreatedBy), Parameter: nameof(OdsData.CreatedBy)),
+                (Rule: IsInvalid(odsData.UpdatedDate), Parameter: nameof(OdsData.UpdatedDate)),
+                (Rule: IsInvalid(odsData.UpdatedBy), Parameter: nameof(OdsData.UpdatedBy)),
+
+                (Rule: IsInvalidLength(odsData.OrganisationCode, 15), Parameter: nameof(OdsData.OrganisationCode)),
+                (Rule: IsInvalidLength(odsData.OrganisationName, 220), Parameter: nameof(OdsData.OrganisationName)),
+                (Rule: IsInvalidLength(odsData.CreatedBy, 255), Parameter: nameof(OdsData.CreatedBy)),
+                (Rule: IsInvalidLength(odsData.UpdatedBy, 255), Parameter: nameof(OdsData.UpdatedBy)),
+
                 (Rule: IsNotSame(
                     first: currentUser.EntraUserId,
-                    second: odsData.OrganisationName),
-                Parameter: nameof(odsData.OrganisationName))
+                    second: odsData.CreatedBy),
+                Parameter: nameof(OdsData.CreatedBy)),
+
+                (Rule: IsNotSame(
+                    first: odsData.UpdatedBy,
+                    second: odsData.CreatedBy,
+                    secondName: nameof(OdsData.CreatedBy)),
+                Parameter: nameof(OdsData.UpdatedBy)),
+
+                (Rule: IsNotSame(
+                    first: odsData.UpdatedDate,
+                    second: odsData.CreatedDate,
+                    secondName: nameof(OdsData.CreatedDate)),
+                Parameter: nameof(OdsData.UpdatedDate)),
+
+                (Rule: await IsNotRecentAsync(odsData.CreatedDate), Parameter: nameof(OdsData.CreatedDate))
             );
         }
 
@@ -36,19 +60,32 @@ namespace ISL.ReIdentification.Core.Services.Foundations.OdsDatas
             Validate(
                 (Rule: IsInvalid(odsData.Id), Parameter: nameof(OdsData.Id)),
                 (Rule: IsInvalid(odsData.OrganisationCode), Parameter: nameof(OdsData.OrganisationCode)),
+                (Rule: IsInvalid(odsData.OrganisationName), Parameter: nameof(OdsData.OrganisationName)),
+                (Rule: IsInvalid(odsData.CreatedDate), Parameter: nameof(OdsData.CreatedDate)),
+                (Rule: IsInvalid(odsData.CreatedBy), Parameter: nameof(OdsData.CreatedBy)),
+                (Rule: IsInvalid(odsData.UpdatedDate), Parameter: nameof(OdsData.UpdatedDate)),
+                (Rule: IsInvalid(odsData.UpdatedBy), Parameter: nameof(OdsData.UpdatedBy)),
+
+                (Rule: IsInvalidLength(odsData.OrganisationCode, 15), Parameter: nameof(OdsData.OrganisationCode)),
+                (Rule: IsInvalidLength(odsData.OrganisationName, 220), Parameter: nameof(OdsData.OrganisationName)),
+                (Rule: IsInvalidLength(odsData.CreatedBy, 255), Parameter: nameof(OdsData.CreatedBy)),
+                (Rule: IsInvalidLength(odsData.UpdatedBy, 255), Parameter: nameof(OdsData.UpdatedBy)),
 
                 (Rule: IsNotSame(
-                        first: currentUser.EntraUserId,
-                        second: odsData.OrganisationName),
-                Parameter: nameof(odsData.OrganisationName)),
+                    first: currentUser.EntraUserId,
+                    second: odsData.UpdatedBy),
+                Parameter: nameof(OdsData.UpdatedBy)),
 
                 (Rule: IsSameAs(
-                    firstDate: odsData.RelationshipWithParentStartDate,
-                    secondDate: odsData.RelationshipWithParentEndDate,
-                    secondDateName: nameof(OdsData.RelationshipWithParentStartDate)),
-                Parameter: nameof(OdsData.RelationshipWithParentEndDate))
+                    firstDate: odsData.CreatedDate,
+                    secondDate: odsData.UpdatedDate,
+                    secondDateName: nameof(OdsData.CreatedDate)),
+                Parameter: nameof(OdsData.UpdatedDate)),
+
+                (Rule: await IsNotRecentAsync(odsData.UpdatedDate), Parameter: nameof(OdsData.UpdatedDate))
             );
         }
+
 
         public static void ValidateOdsDataId(Guid odsDataId) =>
             Validate((Rule: IsInvalid(odsDataId), Parameter: nameof(OdsData.Id)));
@@ -133,6 +170,36 @@ namespace ISL.ReIdentification.Core.Services.Foundations.OdsDatas
                 Condition = first != second,
                 Message = $"Date is not the same as {secondName}"
             };
+
+        private async ValueTask<dynamic> IsNotRecentAsync(DateTimeOffset date)
+        {
+            var (isNotRecent, startDate, endDate) = await IsDateNotRecentAsync(date);
+
+            return new
+            {
+                Condition = isNotRecent,
+                Message = $"Date is not recent. Expected a value between {startDate} and {endDate} but found {date}"
+            };
+        }
+
+        private async ValueTask<(bool IsNotRecent, DateTimeOffset StartDate, DateTimeOffset EndDate)>
+            IsDateNotRecentAsync(DateTimeOffset date)
+        {
+            int pastThreshold = 90;
+            int futureThreshold = 0;
+            DateTimeOffset currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+
+            if (currentDateTime == default)
+            {
+                return (false, default, default);
+            }
+
+            DateTimeOffset startDate = currentDateTime.AddSeconds(-pastThreshold);
+            DateTimeOffset endDate = currentDateTime.AddSeconds(futureThreshold);
+            bool isNotRecent = date < startDate || date > endDate;
+
+            return (isNotRecent, startDate, endDate);
+        }
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ISL.ReIdentification.Core.Models.Foundations.OdsDatas
 {
-    public class OdsData : IKey
+    public class OdsData : IKey, IAudit
     {
         public Guid Id { get; set; }
         public HierarchyId OdsHierarchy { get; set; }
@@ -16,5 +16,9 @@ namespace ISL.ReIdentification.Core.Models.Foundations.OdsDatas
         public DateTimeOffset? RelationshipWithParentStartDate { get; set; }
         public DateTimeOffset? RelationshipWithParentEndDate { get; set; }
         public bool HasChildren { get; set; }
+        public string CreatedBy { get; set; }
+        public DateTimeOffset CreatedDate { get; set; }
+        public string UpdatedBy { get; set; }
+        public DateTimeOffset UpdatedDate { get; set; }
     }
 }

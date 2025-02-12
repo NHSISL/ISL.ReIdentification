@@ -27,9 +27,14 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
 
             OdsData inputOdsData = randomOdsData;
             OdsData storageOdsData = inputOdsData.DeepClone();
+            storageOdsData.UpdatedDate = randomOdsData.CreatedDate;
             OdsData updatedOdsData = inputOdsData;
             OdsData expectedOdsData = updatedOdsData.DeepClone();
             Guid odsDataId = inputOdsData.Id;
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
 
             this.securityBrokerMock.Setup(broker =>
                 broker.GetCurrentUserAsync())
@@ -50,6 +55,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
             // then
             actualOdsData.Should().BeEquivalentTo(expectedOdsData);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Exactly(2));
+
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),
                     Times.Exactly(2));
@@ -62,6 +71,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
                 broker.UpdateOdsDataAsync(inputOdsData),
                     Times.Once);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
