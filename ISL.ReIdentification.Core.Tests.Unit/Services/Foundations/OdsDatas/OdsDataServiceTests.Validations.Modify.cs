@@ -193,6 +193,27 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
             OdsData nonExistOdsData = randomOdsData;
             OdsData nullOdsData = null;
 
+            var odsDataServiceMock = new Mock<OdsDataService>(
+                this.reIdentificationStorageBroker.Object,
+                this.dateTimeBrokerMock.Object,
+                this.securityBrokerMock.Object,
+                this.loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            odsDataServiceMock.Setup(service =>
+                service.ApplyModifyAuditAsync(nonExistOdsData))
+                    .ReturnsAsync(nonExistOdsData);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
             var notFoundOdsDataException =
                 new NotFoundOdsDataException(message: $"OdsData not found with Id: {nonExistOdsData.Id}");
 
@@ -207,7 +228,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
 
             // when 
             ValueTask<OdsData> modifyOdsDataTask =
-                this.odsDataService.ModifyOdsDataAsync(nonExistOdsData);
+                odsDataServiceMock.Object.ModifyOdsDataAsync(nonExistOdsData);
 
             OdsDataValidationException actualOdsDataValidationException =
                 await Assert.ThrowsAsync<OdsDataValidationException>(
@@ -221,11 +242,21 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
                 broker.SelectOdsDataByIdAsync(nonExistOdsData.Id),
                     Times.Once);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedOdsDataValidationException))),
                         Times.Once);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
