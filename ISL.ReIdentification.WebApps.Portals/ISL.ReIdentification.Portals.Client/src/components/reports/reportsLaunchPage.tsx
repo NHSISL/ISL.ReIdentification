@@ -49,7 +49,7 @@ const ReportsLaunchPage: FunctionComponent<ReportLaunchPageProps> = (props) => {
 
             if (activePage) {
                 const pages = await embedObject.getPages();
-                const pageToActivate = pages.filter((page: { displayName: string; }) => page.displayName === activePage)
+                const pageToActivate = pages.filter((page: { displayName: string }) => page.displayName === activePage && page.isVisible)
                 if (pageToActivate.length !== 1) {
                     addDeveloperEvent({ message: `Cannot find page: ${activePage}`, eventDetails: { detail: { availablePages: pages.map((p: { displayName: string; }) => p.displayName) } } })
                     return;
