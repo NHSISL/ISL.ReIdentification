@@ -4,8 +4,10 @@
 
 using System;
 using System.Threading.Tasks;
+using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests.Exceptions;
+using ISL.ReIdentification.Core.Models.Securities;
 
 namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationRequests
 {
@@ -15,62 +17,66 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
             CsvIdentificationRequest csvIdentificationRequest)
         {
             ValidateCsvIdentificationRequestIsNotNull(csvIdentificationRequest);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
-                (Rule: IsInvalid(csvIdentificationRequest.Id),
+                (Rule: await IsInvalidAsync(csvIdentificationRequest.Id),
                 Parameter: nameof(CsvIdentificationRequest.Id)),
 
-                (Rule: IsInvalid(csvIdentificationRequest.RequesterEntraUserId),
+                (Rule: await IsInvalidAsync(csvIdentificationRequest.RequesterEntraUserId),
                 Parameter: nameof(CsvIdentificationRequest.RequesterEntraUserId)),
 
-                (Rule: IsInvalid(csvIdentificationRequest.RequesterEmail),
+                (Rule: await IsInvalidAsync(csvIdentificationRequest.RequesterEmail),
                 Parameter: nameof(CsvIdentificationRequest.RequesterEmail)),
 
-                (Rule: IsInvalid(csvIdentificationRequest.RecipientEntraUserId),
+                (Rule: await IsInvalidAsync(csvIdentificationRequest.RecipientEntraUserId),
                 Parameter: nameof(CsvIdentificationRequest.RecipientEntraUserId)),
 
-                (Rule: IsInvalid(csvIdentificationRequest.RecipientEmail),
+                (Rule: await IsInvalidAsync(csvIdentificationRequest.RecipientEmail),
                 Parameter: nameof(CsvIdentificationRequest.RecipientEmail)),
 
-                (Rule: IsInvalid(csvIdentificationRequest.Filepath),
+                (Rule: await IsInvalidAsync(csvIdentificationRequest.Filepath),
                 Parameter: nameof(CsvIdentificationRequest.Filepath)),
 
-                (Rule: IsInvalid(csvIdentificationRequest.CreatedBy),
+                (Rule: await IsInvalidAsync(csvIdentificationRequest.CreatedBy),
                 Parameter: nameof(CsvIdentificationRequest.CreatedBy)),
 
-                (Rule: IsInvalid(csvIdentificationRequest.UpdatedBy),
+                (Rule: await IsInvalidAsync(csvIdentificationRequest.UpdatedBy),
                 Parameter: nameof(CsvIdentificationRequest.UpdatedBy)),
 
-                (Rule: IsInvalid(csvIdentificationRequest.CreatedDate),
+                (Rule: await IsInvalidAsync(csvIdentificationRequest.CreatedDate),
                 Parameter: nameof(CsvIdentificationRequest.CreatedDate)),
 
-                (Rule: IsInvalid(csvIdentificationRequest.UpdatedDate),
+                (Rule: await IsInvalidAsync(csvIdentificationRequest.UpdatedDate),
                 Parameter: nameof(CsvIdentificationRequest.UpdatedDate)),
 
-                (Rule: IsInvalidLength(csvIdentificationRequest.RequesterEmail, 320),
+                (Rule: await IsInvalidLengthAsync(csvIdentificationRequest.RequesterEmail, 320),
                 Parameter: nameof(CsvIdentificationRequest.RequesterEmail)),
 
-                (Rule: IsInvalidLength(csvIdentificationRequest.RecipientEmail, 320),
+                (Rule: await IsInvalidLengthAsync(csvIdentificationRequest.RecipientEmail, 320),
                 Parameter: nameof(CsvIdentificationRequest.RecipientEmail)),
 
-                (Rule: IsInvalidLength(csvIdentificationRequest.CreatedBy, 255),
+                (Rule: await IsInvalidLengthAsync(csvIdentificationRequest.CreatedBy, 255),
                 Parameter: nameof(CsvIdentificationRequest.CreatedBy)),
 
-                (Rule: IsInvalidLength(csvIdentificationRequest.UpdatedBy, 255),
+                (Rule: await IsInvalidLengthAsync(csvIdentificationRequest.UpdatedBy, 255),
                 Parameter: nameof(CsvIdentificationRequest.UpdatedBy)),
 
                 (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: csvIdentificationRequest.CreatedBy),
+                Parameter: nameof(CsvIdentificationRequest.CreatedBy)),
+
+                (Rule: await IsNotSameAsync(
                     first: csvIdentificationRequest.UpdatedBy,
                     second: csvIdentificationRequest.CreatedBy,
                     secondName: nameof(CsvIdentificationRequest.CreatedBy)),
-
                 Parameter: nameof(CsvIdentificationRequest.UpdatedBy)),
 
-                (Rule: IsNotSame(
-                    first: csvIdentificationRequest.CreatedDate,
-                    second: csvIdentificationRequest.UpdatedDate,
+                (Rule: await IsNotSameAsync(
+                    first: csvIdentificationRequest.UpdatedDate,
+                    second: csvIdentificationRequest.CreatedDate,
                     secondName: nameof(CsvIdentificationRequest.CreatedDate)),
-
                 Parameter: nameof(CsvIdentificationRequest.UpdatedDate)),
 
                 (Rule: await IsNotRecentAsync(csvIdentificationRequest.CreatedDate),
@@ -205,13 +211,40 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
             Message = "Date is invalid"
         };
 
+        private static async ValueTask<dynamic> IsInvalidAsync(Guid id) => new
+        {
+            Condition = id == Guid.Empty,
+            Message = "Id is invalid"
+        };
+
+        private static async ValueTask<dynamic> IsInvalidAsync(string name) => new
+        {
+            Condition = String.IsNullOrWhiteSpace(name),
+            Message = "Text is invalid"
+        };
+
+        private static async ValueTask<dynamic> IsInvalidAsync(DateTimeOffset date) => new
+        {
+            Condition = date == default,
+            Message = "Date is invalid"
+        };
+
         private static dynamic IsInvalidLength(string text, int maxLength) => new
         {
             Condition = IsExceedingLength(text, maxLength),
             Message = $"Text exceed max length of {maxLength} characters"
         };
 
+        private static async ValueTask<dynamic> IsInvalidLengthAsync(string text, int maxLength) => new
+        {
+            Condition = await IsExceedingLengthAsync(text, maxLength),
+            Message = $"Text exceed max length of {maxLength} characters"
+        };
+
         private static bool IsExceedingLength(string text, int maxLength) =>
+            (text ?? string.Empty).Length > maxLength;
+
+        private static async ValueTask<bool> IsExceedingLengthAsync(string text, int maxLength) =>
             (text ?? string.Empty).Length > maxLength;
 
         private static dynamic IsSame(
@@ -223,7 +256,42 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
                 Message = $"Date is the same as {secondDateName}"
             };
 
+        private static async ValueTask<dynamic> IsSameAsAsync(
+            DateTimeOffset createdDate,
+            DateTimeOffset updatedDate,
+            string createdDateName) => new
+            {
+                Condition = createdDate == updatedDate,
+                Message = $"Date is the same as {createdDateName}"
+            };
+
         private static dynamic IsNotSame(
+            DateTimeOffset first,
+            DateTimeOffset second,
+            string secondName) => new
+            {
+                Condition = first != second,
+                Message = $"Date is not the same as {secondName}"
+            };
+
+        private static dynamic IsNotSame(
+            string first,
+            string second) => new
+            {
+                Condition = first != second,
+                Message = $"Expected value to be '{first}' but found '{second}'."
+            };
+
+        private static async ValueTask<dynamic> IsNotSameAsync(
+            string first,
+            string second,
+            string secondName) => new
+            {
+                Condition = first != second,
+                Message = $"Text is not the same as {secondName}"
+            };
+
+        private static async ValueTask<dynamic> IsNotSameAsync(
             DateTimeOffset first,
             DateTimeOffset second,
             string secondName) => new

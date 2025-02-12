@@ -44,14 +44,19 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             //when
             CsvIdentificationRequest actualCsvIdentificationRequest =
-                await this.csvIdentificationRequestService.AddCsvIdentificationRequestAsync(inputCsvIdentificationRequest);
+                await this.csvIdentificationRequestService.AddCsvIdentificationRequestAsync(
+                    inputCsvIdentificationRequest);
 
             //then
             actualCsvIdentificationRequest.Should().BeEquivalentTo(expectedCsvIdentificationRequest);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Exactly(2));
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Exactly(2));
 
             this.reIdentificationStorageBroker.Verify(broker =>
                 broker.InsertCsvIdentificationRequestAsync(inputCsvIdentificationRequest),

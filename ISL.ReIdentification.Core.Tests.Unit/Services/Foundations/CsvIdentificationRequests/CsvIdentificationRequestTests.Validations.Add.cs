@@ -20,24 +20,30 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
         {
             // given
             CsvIdentificationRequest nullCsvIdentificationRequest = null;
-            var nullCsvIdentificationRequestException = new NullCsvIdentificationRequestException(message: "CSV Identification request is null.");
+
+            var nullCsvIdentificationRequestException = new NullCsvIdentificationRequestException(
+                message: "CSV identification request is null.");
 
             var expectedCsvIdentificationRequestValidationException =
                 new CsvIdentificationRequestValidationException(
-                    message: "CSV Identification request validation error occurred, please fix errors and try again.",
+                    message: "CSV identification request validation error occurred, please fix errors and try again.",
                     innerException: nullCsvIdentificationRequestException);
 
             // when
-            ValueTask<CsvIdentificationRequest> addCsvIdentificationRequestTask = this.csvIdentificationRequestService.AddCsvIdentificationRequestAsync(nullCsvIdentificationRequest);
+            ValueTask<CsvIdentificationRequest> addCsvIdentificationRequestTask = 
+                this.csvIdentificationRequestService.AddCsvIdentificationRequestAsync(nullCsvIdentificationRequest);
 
             CsvIdentificationRequestValidationException actualCsvIdentificationRequestValidationException =
-                await Assert.ThrowsAsync<CsvIdentificationRequestValidationException>(testCode: addCsvIdentificationRequestTask.AsTask);
+                await Assert.ThrowsAsync<CsvIdentificationRequestValidationException>(
+                    testCode: addCsvIdentificationRequestTask.AsTask);
 
             // then
-            actualCsvIdentificationRequestValidationException.Should().BeEquivalentTo(expectedCsvIdentificationRequestValidationException);
+            actualCsvIdentificationRequestValidationException.Should().BeEquivalentTo(
+                expectedCsvIdentificationRequestValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogErrorAsync(It.Is(SameExceptionAs(expectedCsvIdentificationRequestValidationException))), Times.Once());
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedCsvIdentificationRequestValidationException))), Times.Once());
 
             this.reIdentificationStorageBroker.Verify(broker =>
                 broker.InsertCsvIdentificationRequestAsync(It.IsAny<CsvIdentificationRequest>()),
@@ -135,7 +141,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
                 values:
                 [
                     "Text is invalid",
-                    $"Expected value to be '{randomEntraUser.EntraUserId}' but found '{invalidCsvIdentificationRequest.CreatedBy}'."
+                    $"Expected value to be '{randomEntraUser.EntraUserId}' " +
+                    $"but found '{invalidCsvIdentificationRequest.CreatedBy}'."
                 ]);
 
             invalidCsvIdentificationRequestException.AddData(
@@ -148,15 +155,17 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             var expectedCsvIdentificationRequestValidationException =
                 new CsvIdentificationRequestValidationException(
-                    message: "CSV Identification request validation error occurred, please fix errors and try again.",
+                    message: "CSV identification request validation error occurred, please fix errors and try again.",
                     innerException: invalidCsvIdentificationRequestException);
 
             // when
             ValueTask<CsvIdentificationRequest> addCsvIdentificationRequestTask =
-                csvIdentificationRequestServiceMock.Object.AddCsvIdentificationRequestAsync(invalidCsvIdentificationRequest);
+                csvIdentificationRequestServiceMock.Object.AddCsvIdentificationRequestAsync(
+                    invalidCsvIdentificationRequest);
 
             CsvIdentificationRequestValidationException actualCsvIdentificationRequestValidationException =
-                await Assert.ThrowsAsync<CsvIdentificationRequestValidationException>(testCode: addCsvIdentificationRequestTask.AsTask);
+                await Assert.ThrowsAsync<CsvIdentificationRequestValidationException>(
+                    testCode: addCsvIdentificationRequestTask.AsTask);
 
             // then
             actualCsvIdentificationRequestValidationException.Should()
@@ -252,7 +261,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             var expectedCsvIdentificationRequestValidationException =
                 new CsvIdentificationRequestValidationException(
-                    message: "CSV Identification request validation error occurred, please fix errors and try again.",
+                    message: "CSV identification request validation error occurred, please fix errors and try again.",
                     innerException: invalidCsvIdentificationRequestException);
 
             // when
@@ -357,7 +366,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             var expectedCsvIdentificationRequestValidationException =
                 new CsvIdentificationRequestValidationException(
-                    message: "CSV Identification request validation error occurred, please fix errors and try again.",
+                    message: "CSV identification request validation error occurred, please fix errors and try again.",
                     innerException: invalidCsvIdentificationRequestException);
 
             // when
@@ -452,7 +461,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             var expectedCsvIdentificationRequestValidationException =
                 new CsvIdentificationRequestValidationException(
-                    message: "CSV Identification request validation error occurred, please fix errors and try again.",
+                    message: "CSV identification request validation error occurred, please fix errors and try again.",
                     innerException: invalidCsvIdentificationRequestException);
 
             this.dateTimeBrokerMock.Setup(broker =>
