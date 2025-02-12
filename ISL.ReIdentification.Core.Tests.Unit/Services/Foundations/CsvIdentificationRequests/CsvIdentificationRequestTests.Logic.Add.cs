@@ -21,8 +21,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
             DateTimeOffset randomDateOffset = GetRandomDateTimeOffset();
             EntraUser randomEntraUser = CreateRandomEntraUser();
 
-            CsvIdentificationRequest randomCsvIdentificationRequest = 
-                CreateRandomCsvIdentificationRequest();
+            CsvIdentificationRequest randomCsvIdentificationRequest =
+                CreateRandomCsvIdentificationRequest(
+                    dateTimeOffset: randomDateOffset, 
+                    userId: randomEntraUser.EntraUserId);
 
             CsvIdentificationRequest inputCsvIdentificationRequest = randomCsvIdentificationRequest;
             CsvIdentificationRequest storageCsvIdentificationRequest = inputCsvIdentificationRequest.DeepClone();
@@ -49,7 +51,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(2));
+                    Times.Once);
 
             this.reIdentificationStorageBroker.Verify(broker =>
                 broker.InsertCsvIdentificationRequestAsync(inputCsvIdentificationRequest),
