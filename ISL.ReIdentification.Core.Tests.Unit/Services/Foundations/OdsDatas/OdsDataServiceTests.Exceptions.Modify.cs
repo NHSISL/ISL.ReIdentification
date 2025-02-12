@@ -260,8 +260,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
                     message: "OdsData service error occurred, contact support.",
                     innerException: failedOdsDataServiceException);
 
-            this.reIdentificationStorageBroker.Setup(broker =>
-                broker.SelectOdsDataByIdAsync(randomOdsData.Id))
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
                     .ThrowsAsync(serviceException);
 
             // when
@@ -276,9 +276,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
             actualOdsDataServiceException.Should()
                 .BeEquivalentTo(expectedOdsDataServiceException);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
             this.reIdentificationStorageBroker.Verify(broker =>
                 broker.SelectOdsDataByIdAsync(randomOdsData.Id),
-                    Times.Once);
+                    Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -289,6 +293,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
                 broker.UpdateOdsDataAsync(randomOdsData),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
