@@ -20,11 +20,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
         {
             // given
             CsvIdentificationRequest nullCsvIdentificationRequest = null;
-            var nullCsvIdentificationRequestException = new NullCsvIdentificationRequestException(message: "Access audit is null.");
+            var nullCsvIdentificationRequestException = new NullCsvIdentificationRequestException(message: "CSV Identification request is null.");
 
             var expectedCsvIdentificationRequestValidationException =
                 new CsvIdentificationRequestValidationException(
-                    message: "Access audit validation error occurred, please fix errors and try again.",
+                    message: "CSV Identification request validation error occurred, please fix errors and try again.",
                     innerException: nullCsvIdentificationRequestException);
 
             // when
@@ -64,9 +64,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             var invalidCsvIdentificationRequest = new CsvIdentificationRequest
             {
-                EntraUserId = invalidText,
-                PseudoIdentifier = invalidText,
-                Email = invalidText,
+                RequesterEntraUserId = invalidText,
+                RequesterEmail = invalidText,
+                RecipientEntraUserId = invalidText,
+                RecipientEmail = invalidText,
                 CreatedBy = invalidText,
                 UpdatedBy = invalidText,
             };
@@ -94,7 +95,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             var invalidCsvIdentificationRequestException =
                 new InvalidCsvIdentificationRequestException(
-                    message: "Invalid access audit. Please correct the errors and try again.");
+                    message: "Invalid CSV identification request. Please correct the errors and try again.");
 
             invalidCsvIdentificationRequestException.AddData(
                 key: nameof(CsvIdentificationRequest.Id),
@@ -147,7 +148,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             var expectedCsvIdentificationRequestValidationException =
                 new CsvIdentificationRequestValidationException(
-                    message: "Access audit validation error occurred, please fix errors and try again.",
+                    message: "CSV Identification request validation error occurred, please fix errors and try again.",
                     innerException: invalidCsvIdentificationRequestException);
 
             // when
@@ -196,10 +197,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
                 userId: randomEntraUser.EntraUserId);
 
             var inputCreatedByUpdatedByString = GetRandomStringWithLengthOf(256);
-            invalidCsvIdentificationRequest.EntraUserId = GetRandomStringWithLengthOf(256);
-            invalidCsvIdentificationRequest.Email = GetRandomStringWithLengthOf(321);
-            invalidCsvIdentificationRequest.PseudoIdentifier = GetRandomStringWithLengthOf(11);
-            invalidCsvIdentificationRequest.AuditType = GetRandomStringWithLengthOf(256);
+            invalidCsvIdentificationRequest.RequesterEmail = GetRandomStringWithLengthOf(321);
+            invalidCsvIdentificationRequest.RecipientEmail = GetRandomStringWithLengthOf(321);
             invalidCsvIdentificationRequest.CreatedBy = inputCreatedByUpdatedByString;
             invalidCsvIdentificationRequest.UpdatedBy = inputCreatedByUpdatedByString;
 
@@ -225,30 +224,26 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
                     .ReturnsAsync(randomEntraUser);
 
             var invalidCsvIdentificationRequestException = new InvalidCsvIdentificationRequestException(
-                message: "Invalid access audit. Please correct the errors and try again.");
+                message: "Invalid CSV identification request. Please correct the errors and try again.");
 
             invalidCsvIdentificationRequestException.AddData(
-                key: nameof(CsvIdentificationRequest.PseudoIdentifier),
-                values: $"Text exceed max length of {invalidCsvIdentificationRequest.PseudoIdentifier.Length - 1} characters");
+                key: nameof(CsvIdentificationRequest.RequesterEmail),
+                values: $"Text exceed max length of " +
+                    $"{invalidCsvIdentificationRequest.RequesterEmail.Length - 1} characters");
 
             invalidCsvIdentificationRequestException.AddData(
-                key: nameof(CsvIdentificationRequest.EntraUserId),
-                values: $"Text exceed max length of {invalidCsvIdentificationRequest.EntraUserId.Length - 1} characters");
+                key: nameof(CsvIdentificationRequest.RecipientEmail),
+                values: $"Text exceed max length of " +
+                    $"{invalidCsvIdentificationRequest.RecipientEmail.Length - 1} characters");
 
-            invalidCsvIdentificationRequestException.AddData(
-                key: nameof(CsvIdentificationRequest.Email),
-                values: $"Text exceed max length of {invalidCsvIdentificationRequest.Email.Length - 1} characters");
-
-            invalidCsvIdentificationRequestException.AddData(
-                key: nameof(CsvIdentificationRequest.AuditType),
-                values: $"Text exceed max length of {invalidCsvIdentificationRequest.AuditType.Length - 1} characters");
 
             invalidCsvIdentificationRequestException.AddData(
                 key: nameof(CsvIdentificationRequest.CreatedBy),
                 values:
                 [
                     $"Text exceed max length of {invalidCsvIdentificationRequest.CreatedBy.Length - 1} characters",
-                    $"Expected value to be '{randomEntraUser.EntraUserId}' but found '{invalidCsvIdentificationRequest.CreatedBy}'."
+                    $"Expected value to be '{randomEntraUser.EntraUserId}' " +
+                    $"but found '{invalidCsvIdentificationRequest.CreatedBy}'."
                 ]);
 
             invalidCsvIdentificationRequestException.AddData(
@@ -257,12 +252,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             var expectedCsvIdentificationRequestValidationException =
                 new CsvIdentificationRequestValidationException(
-                    message: "Access audit validation error occurred, please fix errors and try again.",
+                    message: "CSV Identification request validation error occurred, please fix errors and try again.",
                     innerException: invalidCsvIdentificationRequestException);
 
             // when
             ValueTask<CsvIdentificationRequest> addCsvIdentificationRequestTask =
-                csvIdentificationRequestServiceMock.Object.AddCsvIdentificationRequestAsync(invalidCsvIdentificationRequest);
+                csvIdentificationRequestServiceMock.Object.AddCsvIdentificationRequestAsync(
+                    invalidCsvIdentificationRequest);
 
             CsvIdentificationRequestValidationException actualCsvIdentificationRequestValidationException =
                 await Assert.ThrowsAsync<CsvIdentificationRequestValidationException>(
@@ -336,7 +332,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
                     .ReturnsAsync(randomEntraUser);
 
             var invalidCsvIdentificationRequestException = new InvalidCsvIdentificationRequestException(
-                message: "Invalid access audit. Please correct the errors and try again.");
+                message: "Invalid CSV identification request. Please correct the errors and try again.");
 
             invalidCsvIdentificationRequestException.AddData(
                 key: nameof(CsvIdentificationRequest.CreatedBy),
@@ -356,16 +352,18 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
                 key: nameof(CsvIdentificationRequest.CreatedDate),
                 values:
                     $"Date is not recent." +
-                    $" Expected a value between {startDate} and {endDate} but found {invalidCsvIdentificationRequest.CreatedDate}");
+                    $" Expected a value between {startDate} and {endDate} but found " +
+                    $"{invalidCsvIdentificationRequest.CreatedDate}");
 
             var expectedCsvIdentificationRequestValidationException =
                 new CsvIdentificationRequestValidationException(
-                    message: "Access audit validation error occurred, please fix errors and try again.",
+                    message: "CSV Identification request validation error occurred, please fix errors and try again.",
                     innerException: invalidCsvIdentificationRequestException);
 
             // when
             ValueTask<CsvIdentificationRequest> addCsvIdentificationRequestTask =
-                csvIdentificationRequestServiceMock.Object.AddCsvIdentificationRequestAsync(invalidCsvIdentificationRequest);
+                csvIdentificationRequestServiceMock.Object.AddCsvIdentificationRequestAsync(
+                    invalidCsvIdentificationRequest);
 
             CsvIdentificationRequestValidationException actualCsvIdentificationRequestValidationException =
                 await Assert.ThrowsAsync<CsvIdentificationRequestValidationException>(
@@ -444,7 +442,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
                     .ReturnsAsync(randomEntraUser);
 
             var invalidCsvIdentificationRequestException = new InvalidCsvIdentificationRequestException(
-                message: "Invalid access audit. Please correct the errors and try again.");
+                message: "Invalid CSV identification request. Please correct the errors and try again.");
 
             invalidCsvIdentificationRequestException.AddData(
             key: nameof(CsvIdentificationRequest.CreatedDate),
@@ -454,7 +452,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             var expectedCsvIdentificationRequestValidationException =
                 new CsvIdentificationRequestValidationException(
-                    message: "Access audit validation error occurred, please fix errors and try again.",
+                    message: "CSV Identification request validation error occurred, please fix errors and try again.",
                     innerException: invalidCsvIdentificationRequestException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -463,7 +461,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             // when
             ValueTask<CsvIdentificationRequest> addCsvIdentificationRequestTask =
-                csvIdentificationRequestServiceMock.Object.AddCsvIdentificationRequestAsync(invalidCsvIdentificationRequest);
+                csvIdentificationRequestServiceMock.Object.AddCsvIdentificationRequestAsync(
+                    invalidCsvIdentificationRequest);
 
             CsvIdentificationRequestValidationException actualCsvIdentificationRequestValidationException =
                 await Assert.ThrowsAsync<CsvIdentificationRequestValidationException>(

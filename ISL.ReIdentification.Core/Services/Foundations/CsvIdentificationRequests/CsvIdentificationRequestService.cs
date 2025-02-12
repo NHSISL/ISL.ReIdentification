@@ -96,5 +96,19 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
             return await this.reIdentificationStorageBroker
                 .DeleteCsvIdentificationRequestAsync(maybeCsvIdentificationRequest);
         });
+
+        virtual internal async ValueTask<CsvIdentificationRequest> ApplyAddAuditAsync(
+            CsvIdentificationRequest csvIdentificationRequest)
+        {
+            ValidateCsvIdentificationRequestIsNotNull(csvIdentificationRequest);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
+            csvIdentificationRequest.CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            csvIdentificationRequest.CreatedDate = auditDateTimeOffset;
+            csvIdentificationRequest.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            csvIdentificationRequest.UpdatedDate = auditDateTimeOffset;
+
+            return csvIdentificationRequest;
+        }
     }
 }
