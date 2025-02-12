@@ -9,7 +9,6 @@ using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Securities;
 using ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications;
-using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 
 namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationRequests
@@ -29,14 +28,14 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
         {
             this.reIdentificationStorageBroker = reIdentificationStorageBroker;
             this.dateTimeBroker = dateTimeBroker;
-            this.securityBroker= securityBroker;
+            this.securityBroker = securityBroker;
             this.loggingBroker = loggingBroker;
         }
         public ValueTask<CsvIdentificationRequest> AddCsvIdentificationRequestAsync(
             CsvIdentificationRequest csvIdentificationRequest) =>
         TryCatch(async () =>
         {
-            CsvIdentificationRequest csvIdentificationRequestWithAddAuditApplied = 
+            CsvIdentificationRequest csvIdentificationRequestWithAddAuditApplied =
                 await ApplyAddAuditAsync(csvIdentificationRequest);
 
             await ValidateCsvIdentificationRequestOnAdd(csvIdentificationRequest);
@@ -67,6 +66,9 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
             CsvIdentificationRequest csvIdentificationRequest) =>
         TryCatch(async () =>
         {
+            CsvIdentificationRequest CsvIdentificationRequestWithModifyAuditApplied =
+                await ApplyModifyAuditAsync(csvIdentificationRequest);
+
             await ValidateCsvIdentificationRequestOnModify(csvIdentificationRequest);
 
             CsvIdentificationRequest maybeCsvIdentificationRequest =
@@ -109,6 +111,18 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
             var auditUser = await this.securityBroker.GetCurrentUserAsync();
             csvIdentificationRequest.CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
             csvIdentificationRequest.CreatedDate = auditDateTimeOffset;
+            csvIdentificationRequest.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            csvIdentificationRequest.UpdatedDate = auditDateTimeOffset;
+
+            return csvIdentificationRequest;
+        }
+
+        virtual internal async ValueTask<CsvIdentificationRequest> ApplyModifyAuditAsync(
+            CsvIdentificationRequest csvIdentificationRequest)
+        {
+            ValidateCsvIdentificationRequestIsNotNull(csvIdentificationRequest);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
             csvIdentificationRequest.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
             csvIdentificationRequest.UpdatedDate = auditDateTimeOffset;
 
