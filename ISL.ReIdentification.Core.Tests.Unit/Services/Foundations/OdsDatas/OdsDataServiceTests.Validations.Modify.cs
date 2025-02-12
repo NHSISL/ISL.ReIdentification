@@ -5,9 +5,12 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using ISL.ReIdentification.Core.Models.Foundations.Lookups.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.OdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.OdsDatas.Exceptions;
 using ISL.ReIdentification.Core.Models.Securities;
+using ISL.ReIdentification.Core.Services.Foundations.Lookups;
+using ISL.ReIdentification.Core.Services.Foundations.OdsDatas;
 using Moq;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
@@ -47,6 +50,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
                 broker.UpdateOdsDataAsync(It.IsAny<OdsData>()),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
         }
@@ -58,10 +63,39 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
         public async Task ShouldThrowValidationExceptionOnModifyIfOdsDataIsInvalidAndLogItAsync(string invalidText)
         {
             // given 
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            DateTimeOffset startDate = randomDateTimeOffset.AddSeconds(-90);
+            DateTimeOffset endDate = randomDateTimeOffset.AddSeconds(0);
+
             var invalidOdsData = new OdsData
             {
-                OrganisationCode = invalidText
+                OrganisationCode = invalidText,
+                OrganisationName = invalidText,
+                CreatedBy = invalidText,
+                UpdatedBy = invalidText,
             };
+
+            var odsDataServiceMock = new Mock<OdsDataService>(
+                this.reIdentificationStorageBroker.Object,
+                this.dateTimeBrokerMock.Object,
+                this.securityBrokerMock.Object,
+                this.loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            odsDataServiceMock.Setup(service =>
+                service.ApplyModifyAuditAsync(invalidOdsData))
+                    .ReturnsAsync(invalidOdsData);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             var invalidOdsDataException =
                 new InvalidOdsDataException(
@@ -75,14 +109,44 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
                 key: nameof(OdsData.OrganisationCode),
                 values: "Text is invalid");
 
+            invalidOdsDataException.AddData(
+                key: nameof(OdsData.OrganisationName),
+                values: "Text is invalid");
+
+            invalidOdsDataException.AddData(
+                key: nameof(OdsData.CreatedDate),
+                values: "Date is invalid");
+
+            invalidOdsDataException.AddData(
+                key: nameof(OdsData.CreatedBy),
+                values: "Text is invalid");
+
+            invalidOdsDataException.AddData(
+                key: nameof(OdsData.UpdatedBy),
+                values:
+                    [
+                        "Text is invalid",
+                        $"Expected value to be '{randomEntraUser.EntraUserId}' but found '{invalidText}'."
+                    ]);
+
+            invalidOdsDataException.AddData(
+                key: nameof(OdsData.UpdatedDate),
+                values:
+                new[] {
+                    "Date is invalid",
+                    $"Date is the same as {nameof(OdsData.CreatedDate)}",
+                    $"Date is not recent. Expected a value between {startDate} and {endDate} but found " +
+                        $"{invalidOdsData.UpdatedDate}"
+                });
+
             var expectedOdsDataValidationException =
-                new OdsDataValidationException(
-                    message: "OdsData validation error occurred, please fix errors and try again.",
-                    innerException: invalidOdsDataException);
+               new OdsDataValidationException(
+                   message: "OdsData validation error occurred, please fix errors and try again.",
+                   innerException: invalidOdsDataException);
 
             // when
             ValueTask<OdsData> modifyOdsDataTask =
-                this.odsDataService.ModifyOdsDataAsync(invalidOdsData);
+                odsDataServiceMock.Object.ModifyOdsDataAsync(invalidOdsData);
 
             OdsDataValidationException actualOdsDataValidationException =
                 await Assert.ThrowsAsync<OdsDataValidationException>(
@@ -91,6 +155,14 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
             //then
             actualOdsDataValidationException.Should()
                 .BeEquivalentTo(expectedOdsDataValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -101,6 +173,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
                 broker.UpdateOdsDataAsync(It.IsAny<OdsData>()),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
         }
