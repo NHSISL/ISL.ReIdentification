@@ -148,8 +148,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
                     message: "OdsData dependency error occurred, contact support.",
                     innerException: failedOperationOdsDataException);
 
-            this.reIdentificationStorageBroker.Setup(broker =>
-                broker.SelectOdsDataByIdAsync(randomOdsData.Id))
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
                     .ThrowsAsync(databaseUpdateException);
 
             // when
@@ -164,9 +164,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
             actualOdsDataDependencyException.Should()
                 .BeEquivalentTo(expectedOdsDataDependencyException);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
             this.reIdentificationStorageBroker.Verify(broker =>
                 broker.SelectOdsDataByIdAsync(randomOdsData.Id),
-                    Times.Once);
+                    Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -177,6 +181,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
                 broker.UpdateOdsDataAsync(randomOdsData),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
@@ -198,8 +204,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
                     message: "OdsData dependency validation occurred, please try again.",
                     innerException: lockedOdsDataException);
 
-            this.reIdentificationStorageBroker.Setup(broker =>
-                broker.SelectOdsDataByIdAsync(randomOdsData.Id))
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
                     .ThrowsAsync(databaseUpdateConcurrencyException);
 
             // when
@@ -214,9 +220,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
             actualOdsDataDependencyValidationException.Should()
                 .BeEquivalentTo(expectedOdsDataDependencyValidationException);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
             this.reIdentificationStorageBroker.Verify(broker =>
                 broker.SelectOdsDataByIdAsync(randomOdsData.Id),
-                    Times.Once);
+                    Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -227,6 +237,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
                 broker.UpdateOdsDataAsync(randomOdsData),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
