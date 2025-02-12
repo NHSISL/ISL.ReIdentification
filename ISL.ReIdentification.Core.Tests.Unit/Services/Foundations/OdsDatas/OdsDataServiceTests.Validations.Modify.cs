@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.ReIdentification.Core.Models.Foundations.OdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.OdsDatas.Exceptions;
+using ISL.ReIdentification.Core.Models.Securities;
 using Moq;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
@@ -109,7 +110,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            OdsData randomOdsData = CreateRandomModifyOdsData(randomDateTimeOffset);
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            OdsData randomOdsData = CreateRandomModifyOdsData(
+                randomDateTimeOffset,
+                odsId: randomEntraUser.EntraUserId);
+
             OdsData nonExistOdsData = randomOdsData;
             OdsData nullOdsData = null;
 

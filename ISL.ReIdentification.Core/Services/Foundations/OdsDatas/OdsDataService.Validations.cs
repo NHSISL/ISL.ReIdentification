@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Foundations.OdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.OdsDatas.Exceptions;
+using ISL.ReIdentification.Core.Models.Securities;
 
 namespace ISL.ReIdentification.Core.Services.Foundations.OdsDatas
 {
@@ -14,19 +15,39 @@ namespace ISL.ReIdentification.Core.Services.Foundations.OdsDatas
         private async ValueTask ValidateOdsDataOnAddAsync(OdsData odsData)
         {
             ValidateOdsDataIsNotNull(odsData);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(odsData.Id), Parameter: nameof(OdsData.Id)),
-                (Rule: IsInvalid(odsData.OrganisationCode), Parameter: nameof(OdsData.OrganisationCode)));
+                (Rule: IsInvalid(odsData.OrganisationCode), Parameter: nameof(OdsData.OrganisationCode)),
+                
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: odsData.OrganisationName),
+                Parameter: nameof(odsData.OrganisationName))
+            );
         }
 
         private async ValueTask ValidateOdsDataOnModifyAsync(OdsData odsData)
         {
             ValidateOdsDataIsNotNull(odsData);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(odsData.Id), Parameter: nameof(OdsData.Id)),
-                (Rule: IsInvalid(odsData.OrganisationCode), Parameter: nameof(OdsData.OrganisationCode)));
+                (Rule: IsInvalid(odsData.OrganisationCode), Parameter: nameof(OdsData.OrganisationCode)),
+
+                (Rule: IsNotSame(
+                        first: currentUser.EntraUserId,
+                        second: odsData.OrganisationName),
+                Parameter: nameof(odsData.OrganisationName)),
+
+                (Rule: IsSameAs(
+                    firstDate: odsData.RelationshipWithParentStartDate,
+                    secondDate: odsData.RelationshipWithParentEndDate,
+                    secondDateName: nameof(OdsData.RelationshipWithParentStartDate)),
+                Parameter: nameof(OdsData.RelationshipWithParentEndDate))
+            );
         }
 
         public static void ValidateOdsDataId(Guid odsDataId) =>
@@ -79,12 +100,20 @@ namespace ISL.ReIdentification.Core.Services.Foundations.OdsDatas
         };
 
         private static dynamic IsSameAs(
-            DateTimeOffset firstDate,
-            DateTimeOffset secondDate,
+            DateTimeOffset? firstDate,
+            DateTimeOffset? secondDate,
             string secondDateName) => new
             {
                 Condition = firstDate == secondDate,
                 Message = $"Date is the same as {secondDateName}"
+            };
+
+        private static dynamic IsNotSame(
+            string first,
+            string second) => new
+            {
+                Condition = first != second,
+                Message = $"Expected value to be '{first}' but found '{second}'."
             };
 
         private static dynamic IsNotSame(

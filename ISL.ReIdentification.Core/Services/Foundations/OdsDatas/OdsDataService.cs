@@ -6,8 +6,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Loggings;
+using ISL.ReIdentification.Core.Brokers.Securities;
 using ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications;
+using ISL.ReIdentification.Core.Models.Foundations.Lookups;
 using ISL.ReIdentification.Core.Models.Foundations.OdsDatas;
 
 namespace ISL.ReIdentification.Core.Services.Foundations.OdsDatas
@@ -15,22 +18,29 @@ namespace ISL.ReIdentification.Core.Services.Foundations.OdsDatas
     public partial class OdsDataService : IOdsDataService
     {
         private readonly IReIdentificationStorageBroker reIdentificationStorageBroker;
+        private readonly IDateTimeBroker dateTimeBroker;
+        private readonly ISecurityBroker securityBroker;
         private readonly ILoggingBroker loggingBroker;
 
         public OdsDataService(
             IReIdentificationStorageBroker reIdentificationStorageBroker,
+            IDateTimeBroker dateTimeBroker,
+            ISecurityBroker securityBroker,
             ILoggingBroker loggingBroker)
         {
             this.reIdentificationStorageBroker = reIdentificationStorageBroker;
+            this.dateTimeBroker = dateTimeBroker;
+            this.securityBroker = securityBroker;
             this.loggingBroker = loggingBroker;
         }
 
         public ValueTask<OdsData> AddOdsDataAsync(OdsData odsData) =>
         TryCatch(async () =>
         {
-            await ValidateOdsDataOnAddAsync(odsData);
+            OdsData odsDataWithAddAuditApplied = await ApplyAddAuditAsync(odsData);
+            await ValidateOdsDataOnAddAsync(odsDataWithAddAuditApplied);
 
-            return await this.reIdentificationStorageBroker.InsertOdsDataAsync(odsData);
+            return await this.reIdentificationStorageBroker.InsertOdsDataAsync(odsDataWithAddAuditApplied);
         });
 
         public ValueTask<IQueryable<OdsData>> RetrieveAllOdsDatasAsync() =>
@@ -52,15 +62,19 @@ namespace ISL.ReIdentification.Core.Services.Foundations.OdsDatas
         public ValueTask<OdsData> ModifyOdsDataAsync(OdsData odsData) =>
         TryCatch(async () =>
         {
-            await ValidateOdsDataOnModifyAsync(odsData);
+            OdsData odsDataWithAddAuditApplied = await ApplyModifyAuditAsync(odsData);
+            await ValidateOdsDataOnModifyAsync(odsDataWithAddAuditApplied);
 
             OdsData maybeOdsData =
-                await this.reIdentificationStorageBroker.SelectOdsDataByIdAsync(odsData.Id);
+                await this.reIdentificationStorageBroker.SelectOdsDataByIdAsync(odsDataWithAddAuditApplied.Id);
 
-            ValidateStorageOdsData(maybeOdsData, odsData.Id);
-            ValidateAgainstStorageOdsDataOnModify(inputOdsData: odsData, storageOdsData: maybeOdsData);
+            ValidateStorageOdsData(maybeOdsData, odsDataWithAddAuditApplied.Id);
+            
+            ValidateAgainstStorageOdsDataOnModify(
+                inputOdsData: odsDataWithAddAuditApplied, 
+                storageOdsData: maybeOdsData);
 
-            return await this.reIdentificationStorageBroker.UpdateOdsDataAsync(odsData);
+            return await this.reIdentificationStorageBroker.UpdateOdsDataAsync(odsDataWithAddAuditApplied);
         });
 
         public ValueTask<OdsData> RemoveOdsDataByIdAsync(Guid odsDataId) =>
@@ -143,5 +157,30 @@ namespace ISL.ReIdentification.Core.Services.Foundations.OdsDatas
 
             return ancestors;
         });
+
+        virtual internal async ValueTask<OdsData> ApplyAddAuditAsync(OdsData odsData)
+        {
+            ValidateOdsDataIsNotNull(odsData);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
+            odsData.OrganisationName = auditUser?.DisplayName.ToString() ?? string.Empty;
+            odsData.RelationshipWithParentStartDate = auditDateTimeOffset;
+            odsData.OrganisationCode = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            odsData.RelationshipWithParentEndDate = auditDateTimeOffset;
+
+            return odsData;
+        }
+
+        virtual internal async ValueTask<OdsData> ApplyModifyAuditAsync(OdsData odsData)
+        {
+            ValidateOdsDataIsNotNull(odsData);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
+            odsData.OrganisationCode = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            odsData.OrganisationName = auditUser?.DisplayName.ToString() ?? string.Empty;
+            odsData.RelationshipWithParentStartDate = auditDateTimeOffset;
+
+            return odsData;
+        }
     }
 }

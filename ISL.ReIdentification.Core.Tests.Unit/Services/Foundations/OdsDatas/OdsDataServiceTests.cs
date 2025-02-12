@@ -7,9 +7,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Loggings;
+using ISL.ReIdentification.Core.Brokers.Securities;
 using ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Foundations.OdsDatas;
+using ISL.ReIdentification.Core.Models.Securities;
 using ISL.ReIdentification.Core.Services.Foundations.OdsDatas;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -22,16 +25,22 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
     public partial class OdsDataServiceTests
     {
         private readonly Mock<IReIdentificationStorageBroker> reIdentificationStorageBroker;
+        private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
+        private readonly Mock<ISecurityBroker> securityBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly IOdsDataService odsDataService;
 
         public OdsDataServiceTests()
         {
             this.reIdentificationStorageBroker = new Mock<IReIdentificationStorageBroker>();
+            this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
+            this.securityBrokerMock = new Mock<ISecurityBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
             this.odsDataService = new OdsDataService(
                 reIdentificationStorageBroker: this.reIdentificationStorageBroker.Object,
+                dateTimeBroker: this.dateTimeBrokerMock.Object,
+                securityBroker: this.securityBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
         }
 
@@ -60,17 +69,19 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private static OdsData CreateRandomModifyOdsData(DateTimeOffset dateTimeOffset)
+        private static OdsData CreateRandomModifyOdsData(DateTimeOffset dateTimeOffset , string odsId)
         {
             int randomDaysInPast = GetRandomNegativeNumber();
-            OdsData randomOdsData = CreateRandomOdsData(dateTimeOffset);
+            OdsData randomOdsData = CreateRandomOdsData(dateTimeOffset, odsId);
 
             return randomOdsData;
         }
 
         private static List<OdsData> CreateRandomOdsDatas()
         {
-            return CreateOdsDataFiller(dateTimeOffset: GetRandomDateTimeOffset())
+            return CreateOdsDataFiller(
+                dateTimeOffset: GetRandomDateTimeOffset(),
+                odsId: GetRandomStringWithLengthOf(255))
                 .Create(count: GetRandomNumber())
                     .ToList();
         }
@@ -87,7 +98,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
                 count = GetRandomNumber();
             }
 
-            List<OdsData> children = CreateOdsDataFiller(dateTimeOffset: GetRandomDateTimeOffset())
+            List<OdsData> children = CreateOdsDataFiller(
+                dateTimeOffset: GetRandomDateTimeOffset(),
+                odsId: GetRandomStringWithLengthOf(255))
                 .Create(count)
                     .ToList();
 
@@ -103,16 +116,20 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
         }
 
         private static OdsData CreateRandomOdsData() =>
-            CreateOdsDataFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
+            CreateOdsDataFiller(
+                dateTimeOffset: GetRandomDateTimeOffset(),
+                odsId: GetRandomStringWithLengthOf(255)).Create();
 
         private static OdsData CreateRandomParentOdsData() =>
-            CreateOdsDataFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
+            CreateOdsDataFiller(
+                dateTimeOffset: GetRandomDateTimeOffset(),
+                odsId: GetRandomStringWithLengthOf(255)).Create();
 
-        private static OdsData CreateRandomOdsData(DateTimeOffset dateTimeOffset) =>
-            CreateOdsDataFiller(dateTimeOffset).Create();
+        private static OdsData CreateRandomOdsData(DateTimeOffset dateTimeOffset, string odsId) =>
+            CreateOdsDataFiller(dateTimeOffset, odsId).Create();
 
         private static Filler<OdsData> CreateOdsDataFiller(
-            DateTimeOffset dateTimeOffset, HierarchyId hierarchyId = null)
+            DateTimeOffset dateTimeOffset, string odsId ,HierarchyId hierarchyId = null)
         {
             string user = Guid.NewGuid().ToString();
             var filler = new Filler<OdsData>();
@@ -127,9 +144,30 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
                 .OnType<DateTimeOffset?>().Use((DateTimeOffset?)default)
                 .OnProperty(odsData => odsData.OrganisationCode).Use(GetRandomStringWithLengthOf(15))
                 .OnProperty(odsData => odsData.OrganisationName).Use(GetRandomStringWithLengthOf(30))
-                .OnProperty(odsData => odsData.OdsHierarchy).Use(hierarchyId);
+                .OnProperty(odsData => odsData.OdsHierarchy).Use(hierarchyId)
+                .OnProperty(odsData => odsData.RelationshipWithParentStartDate).Use(dateTimeOffset)
+                .OnProperty(odsData => odsData.RelationshipWithParentEndDate).Use((dateTimeOffset));
 
             return filler;
+        }
+
+        private EntraUser CreateRandomEntraUser(string entraUserId = "")
+        {
+            var userId = string.IsNullOrWhiteSpace(entraUserId) ? GetRandomStringWithLengthOf(255) : entraUserId;
+
+            return new EntraUser(
+                entraUserId: userId,
+                givenName: GetRandomString(),
+                surname: GetRandomString(),
+                displayName: GetRandomString(),
+                email: GetRandomString(),
+                jobTitle: GetRandomString(),
+                roles: new List<string> { GetRandomString() },
+
+                claims: new List<System.Security.Claims.Claim>
+                {
+                    new System.Security.Claims.Claim(type: GetRandomString(), value: GetRandomString())
+                });
         }
     }
 }

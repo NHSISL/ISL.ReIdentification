@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
 using ISL.ReIdentification.Core.Models.Foundations.OdsDatas;
+using ISL.ReIdentification.Core.Models.Securities;
 using Moq;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
@@ -18,12 +19,21 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            OdsData randomOdsData = CreateRandomModifyOdsData(randomDateTimeOffset);
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            OdsData randomOdsData = CreateRandomModifyOdsData(
+                randomDateTimeOffset,
+                odsId: randomEntraUser.EntraUserId);
+
             OdsData inputOdsData = randomOdsData;
             OdsData storageOdsData = inputOdsData.DeepClone();
             OdsData updatedOdsData = inputOdsData;
             OdsData expectedOdsData = updatedOdsData.DeepClone();
             Guid odsDataId = inputOdsData.Id;
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             this.reIdentificationStorageBroker.Setup(broker =>
                 broker.SelectOdsDataByIdAsync(odsDataId))
@@ -40,6 +50,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
             // then
             actualOdsData.Should().BeEquivalentTo(expectedOdsData);
 
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Exactly(2));
+
             this.reIdentificationStorageBroker.Verify(broker =>
                 broker.SelectOdsDataByIdAsync(inputOdsData.Id),
                     Times.Once);
@@ -48,6 +62,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
                 broker.UpdateOdsDataAsync(inputOdsData),
                     Times.Once);
 
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
