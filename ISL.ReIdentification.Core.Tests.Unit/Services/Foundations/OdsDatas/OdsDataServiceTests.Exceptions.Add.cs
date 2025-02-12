@@ -144,8 +144,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
                     message: "OdsData dependency validation occurred, please try again.",
                     innerException: invalidOdsDataReferenceException);
 
-            this.reIdentificationStorageBroker.Setup(broker =>
-                broker.InsertOdsDataAsync(someOdsData))
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
                     .ThrowsAsync(foreignKeyConstraintConflictException);
 
             // when
@@ -160,15 +160,19 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
             actualOdsDataDependencyValidationException.Should()
                 .BeEquivalentTo(expectedOdsDataValidationException);
 
-            this.reIdentificationStorageBroker.Verify(broker =>
-                broker.InsertOdsDataAsync(someOdsData),
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
-
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedOdsDataValidationException))),
                         Times.Once);
+            this.reIdentificationStorageBroker.Verify(broker =>
+                broker.InsertOdsDataAsync(someOdsData),
+                    Times.Never());
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
         }
