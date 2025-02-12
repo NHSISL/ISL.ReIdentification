@@ -196,8 +196,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
                     message: "OdsData dependency error occurred, contact support.",
                     innerException: failedOperationOdsDataException);
 
-            this.reIdentificationStorageBroker.Setup(broker =>
-                broker.InsertOdsDataAsync(It.IsAny<OdsData>()))
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
                     .ThrowsAsync(databaseUpdateException);
 
             // when
@@ -212,9 +212,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.OdsDatas
             actualOdsDataDependencyException.Should()
                 .BeEquivalentTo(expectedOdsDataDependencyException);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
             this.reIdentificationStorageBroker.Verify(broker =>
                 broker.InsertOdsDataAsync(It.IsAny<OdsData>()),
-                    Times.Once);
+                    Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
