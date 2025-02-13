@@ -105,7 +105,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                     UpdatedDate = now
                 };
 
-                //await this.accessAuditService.AddAccessAuditAsync(accessAudit);
+                await this.accessAuditService.AddAccessAuditAsync(accessAudit);
 
                 if (item.HasAccess is false)
                 {
@@ -176,7 +176,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                     UpdatedDate = now
                 };
 
-                //await this.accessAuditService.AddAccessAuditAsync(accessAudit);
+                await this.accessAuditService.AddAccessAuditAsync(accessAudit);
                 record.Identifier = item.Identifier;
                 record.Message = item.Message;
                 record.IsReidentified = true;
