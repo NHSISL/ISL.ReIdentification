@@ -260,8 +260,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                     message: "PdsData service error occurred, contact support.",
                     innerException: failedPdsDataServiceException);
 
-            this.reIdentificationStorageBroker.Setup(broker =>
-                broker.SelectPdsDataByIdAsync(randomPdsData.Id))
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
                     .ThrowsAsync(serviceException);
 
             // when
@@ -276,9 +276,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
             actualPdsDataServiceException.Should()
                 .BeEquivalentTo(expectedPdsDataServiceException);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
             this.reIdentificationStorageBroker.Verify(broker =>
                 broker.SelectPdsDataByIdAsync(randomPdsData.Id),
-                    Times.Once);
+                    Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -289,8 +293,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                 broker.UpdatePdsDataAsync(randomPdsData),
                     Times.Never);
 
-            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
