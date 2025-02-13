@@ -46,7 +46,7 @@ export const ReIdReportHome = () => {
                                 </ol>
 
                                 <h5>Re-identification Popup</h5>
-                                <p>The re-identification service provices a URL that can be direct linked to from Power BI or
+                                <p>The re-identification service provides a URL that can be direct linked to from Power BI or
                                     Tableau this will provide a single record re-identification, this can either be launched
                                     in a new tab or hosted within a webview or iframe within the BI tool:</p>
                                 <ol>

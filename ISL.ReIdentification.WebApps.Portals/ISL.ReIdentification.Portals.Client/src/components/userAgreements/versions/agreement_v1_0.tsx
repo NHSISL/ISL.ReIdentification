@@ -8,9 +8,9 @@ export const agreement_v1_0 = () => {
         type: "UserAgreement",
         version: "1.0",
         text: <div>
-            <Alert variant="danger"><FontAwesomeIcon icon={faCircleExclamation} className="me-2" /> By using this service, you acknowledge that a clinical safety assessment has not yet been completed, and you do so at your own risk. It is the responsibility of each user to use the system responsibly and exercise caution when relying on its outputs</Alert>
+            <Alert variant="danger"><FontAwesomeIcon icon={faCircleExclamation} /> By using this service, you acknowledge that a clinical safety assessment has not yet been completed, and you do so at your own risk. It is the responsibility of each user to use the system responsibly and exercise caution when relying on its outputs.</Alert>
             <h5>1. Purpose</h5>
-            <p>The re-identification service is designed to assist authorised healthcare professionals in securely re-identifying patients under their direct care and governance for the purpose of providing appropriate medical treatment, care, support, or follow-up</p>
+            <p>The re-identification service is designed to assist authorised healthcare professionals in securely re-identifying patients under their direct care and governance for the purpose of providing appropriate medical treatment, care, support, or follow-up.</p>
 
             <h5>2. User Responsibility</h5>
             <p>When using this service, you confirm that:</p>
