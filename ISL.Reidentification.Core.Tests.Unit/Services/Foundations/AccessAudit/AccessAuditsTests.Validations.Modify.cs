@@ -134,7 +134,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
                 values:
                     [
                         "Text is invalid",
-                        $"Expected value to be '{randomEntraUser.EntraUserId}' but found '{invalidText}'."
+                        $"Expected value to be '{randomEntraUser.EntraUserId}' but found " +
+                            $"'{invalidAccessAudit.UpdatedBy}'."
                     ]);
 
             invalidAccessAuditException.AddData(
