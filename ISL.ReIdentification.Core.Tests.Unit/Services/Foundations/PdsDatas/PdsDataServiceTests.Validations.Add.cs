@@ -68,6 +68,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
 
             var invalidPdsData = new PdsData { 
                 PseudoNhsNumber = invalidText,
+                OrganisationName = invalidText,
                 OrgCode = invalidText,
                 CreatedBy = invalidText,
                 UpdatedBy = invalidText,
@@ -104,6 +105,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
 
             invalidPdsDataException.AddData(
                 key: nameof(PdsData.PseudoNhsNumber),
+                values: "Text is invalid");
+
+            invalidPdsDataException.AddData(
+                key: nameof(PdsData.OrganisationName),
                 values: "Text is invalid");
 
             invalidPdsDataException.AddData(
