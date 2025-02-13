@@ -61,6 +61,12 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
 
             var transactionId = await this.identifierBroker.GetIdentifierAsync();
 
+            await this.loggingBroker.LogInformationAsync(
+                $"Start ReId Check {await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync()}, TransactionId {transactionId}");
+
+            await this.loggingBroker.LogInformationAsync(
+                $"Start PDS Check {await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync()}, TransactionId {transactionId}");
+
             foreach (IdentificationItem item in identificationRequest.IdentificationItems)
             {
                 savedPseduoes.Add(
@@ -99,7 +105,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                     UpdatedDate = now
                 };
 
-                await this.accessAuditService.AddAccessAuditAsync(accessAudit);
+                //await this.accessAuditService.AddAccessAuditAsync(accessAudit);
 
                 if (item.HasAccess is false)
                 {
@@ -130,6 +136,12 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                 Organisation = identificationRequest.Organisation,
                 Reason = identificationRequest.Reason
             };
+
+            await this.loggingBroker.LogInformationAsync(
+              $"Completed PDS Request {await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync()}, TransactionId {transactionId}");
+
+            await this.loggingBroker.LogInformationAsync(
+               $"Start NECS Check {await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync()}, TransactionId {transactionId}");
 
             var reIdentifiedIdentificationRequest =
                 await this.reIdentificationService.ProcessReIdentificationRequest(
@@ -164,11 +176,17 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                     UpdatedDate = now
                 };
 
-                await this.accessAuditService.AddAccessAuditAsync(accessAudit);
+                //await this.accessAuditService.AddAccessAuditAsync(accessAudit);
                 record.Identifier = item.Identifier;
                 record.Message = item.Message;
                 record.IsReidentified = true;
             }
+
+            await this.loggingBroker.LogInformationAsync(
+               $"Completed NECS Request {await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync()}, TransactionId {transactionId}");
+
+            await this.loggingBroker.LogInformationAsync(
+                $"Completed ReID {await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync()}, TransactionId {transactionId}");
 
             return identificationRequest;
         });
