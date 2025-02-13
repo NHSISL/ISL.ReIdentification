@@ -18,8 +18,17 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications
                 .HasMaxLength(255)
                 .IsRequired();
 
-            builder.HasIndex(userAgreement => new { userAgreement.EntraUserId, userAgreement.AgreementType, userAgreement.AgreementVersion })
-                .IsUnique();
+            builder.Property(userAgreement => userAgreement.AgreementVersion)
+                .HasMaxLength(50)
+                .IsRequired();
+
+            builder.HasIndex(userAgreement => new
+            {
+                userAgreement.EntraUserId,
+                userAgreement.AgreementType,
+                userAgreement.AgreementVersion
+            })
+            .IsUnique();
 
             builder.Property(userAgreement => userAgreement.AgreementDate)
                 .IsRequired();
