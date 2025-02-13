@@ -2,10 +2,15 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using ISL.ReIdentification.Core.Models.Foundations.OdsDatas.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.PdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.PdsDatas.Exceptions;
+using ISL.ReIdentification.Core.Models.Securities;
+using ISL.ReIdentification.Core.Services.Foundations.OdsDatas;
+using ISL.ReIdentification.Core.Services.Foundations.PdsDatas;
 using Moq;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
@@ -43,8 +48,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                     expectedPdsDataValidationException))),
                         Times.Once);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBroker.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
         }
 
@@ -55,7 +61,38 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
         public async Task ShouldThrowValidationExceptionOnAddIfPdsDataIsInvalidAndLogItAsync(string invalidText)
         {
             // given
-            var invalidPdsData = new PdsData { PseudoNhsNumber = invalidText };
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            DateTimeOffset startDate = randomDateTimeOffset.AddSeconds(-90);
+            DateTimeOffset endDate = randomDateTimeOffset.AddSeconds(0);
+
+            var invalidPdsData = new PdsData { 
+                PseudoNhsNumber = invalidText,
+                OrgCode = invalidText,
+                CreatedBy = invalidText,
+                UpdatedBy = invalidText,
+            };
+
+            var pdsDataServiceMock = new Mock<PdsDataService>(
+                this.reIdentificationStorageBroker.Object,
+                this.dateTimeBrokerMock.Object,
+                this.securityBrokerMock.Object,
+                this.loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            pdsDataServiceMock.Setup(service =>
+                service.ApplyAddAuditAsync(invalidPdsData))
+                    .ReturnsAsync(invalidPdsData);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             var invalidPdsDataException =
                 new InvalidPdsDataException(
@@ -69,6 +106,36 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                 key: nameof(PdsData.PseudoNhsNumber),
                 values: "Text is invalid");
 
+            invalidPdsDataException.AddData(
+                key: nameof(PdsData.OrgCode),
+                values: "Text is invalid");
+
+            invalidPdsDataException.AddData(
+                key: nameof(PdsData.CreatedDate),
+                values:
+                [
+                    "Date is invalid",
+                                $"Date is not recent. Expected a value between " +
+                                    $"{startDate} and {endDate} but found {invalidPdsData.CreatedDate}"
+                ]);
+
+            invalidPdsDataException.AddData(
+                key: nameof(PdsData.CreatedBy),
+                values:
+                [
+                    "Text is invalid",
+                                $"Expected value to be '{randomEntraUser.EntraUserId}' but found " +
+                                    $"'{invalidPdsData.CreatedBy}'."
+                ]);
+
+            invalidPdsDataException.AddData(
+                key: nameof(PdsData.UpdatedDate),
+                values: "Date is invalid");
+
+            invalidPdsDataException.AddData(
+                key: nameof(PdsData.UpdatedBy),
+                values: "Text is invalid");
+
             var expectedPdsDataValidationException =
                 new PdsDataValidationException(
                     message: "PdsData validation error occurred, please fix errors and try again.",
@@ -76,7 +143,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
 
             // when
             ValueTask<PdsData> addPdsDataTask =
-                this.pdsDataService.AddPdsDataAsync(invalidPdsData);
+                pdsDataServiceMock.Object.AddPdsDataAsync(invalidPdsData);
 
             PdsDataValidationException actualPdsDataValidationException =
                 await Assert.ThrowsAsync<PdsDataValidationException>(
@@ -85,6 +152,14 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
             // then
             actualPdsDataValidationException.Should()
                 .BeEquivalentTo(expectedPdsDataValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once());
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once);
 
             this.reIdentificationStorageBroker.Verify(broker =>
                 broker.InsertPdsDataAsync(It.IsAny<PdsData>()),
@@ -95,8 +170,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                     expectedPdsDataValidationException))),
                         Times.Once);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBroker.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
         }
     }

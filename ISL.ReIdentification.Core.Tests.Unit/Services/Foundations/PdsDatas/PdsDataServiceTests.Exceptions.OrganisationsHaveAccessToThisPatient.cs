@@ -53,7 +53,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                 broker.SelectAllPdsDatasAsync(),
                     Times.Once);
 
-            this.dateTimeBroker.Verify(broker =>
+            this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                 Times.Never);
 
@@ -63,7 +63,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                         Times.Once);
 
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
-            this.dateTimeBroker.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -107,7 +107,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                 broker.SelectAllPdsDatasAsync(),
                     Times.Once);
 
-            this.dateTimeBroker.Verify(broker =>
+            this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                 Times.Never);
 
@@ -117,7 +117,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                         Times.Once);
 
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
-            this.dateTimeBroker.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

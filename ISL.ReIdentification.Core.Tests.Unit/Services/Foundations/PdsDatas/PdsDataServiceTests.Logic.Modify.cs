@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
 using ISL.ReIdentification.Core.Models.Foundations.PdsDatas;
+using ISL.ReIdentification.Core.Models.Securities;
 using Moq;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
@@ -18,12 +19,26 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            PdsData randomPdsData = CreateRandomModifyPdsData(randomDateTimeOffset);
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            PdsData randomPdsData = CreateRandomModifyPdsData(
+                randomDateTimeOffset, 
+                pdsId: randomEntraUser.EntraUserId);
+
             PdsData inputPdsData = randomPdsData;
             PdsData storagePdsData = inputPdsData.DeepClone();
+            storagePdsData.UpdatedBy = randomEntraUser.EntraUserId;
             PdsData updatedPdsData = inputPdsData;
             PdsData expectedPdsData = updatedPdsData.DeepClone();
             Guid pdsDataId = inputPdsData.Id;
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             this.reIdentificationStorageBroker.Setup(broker =>
                 broker.SelectPdsDataByIdAsync(pdsDataId))
@@ -40,6 +55,14 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
             // then
             actualPdsData.Should().BeEquivalentTo(expectedPdsData);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Exactly(2));
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Exactly(2));
+
             this.reIdentificationStorageBroker.Verify(broker =>
                 broker.SelectPdsDataByIdAsync(inputPdsData.Id),
                     Times.Once);
@@ -48,8 +71,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                 broker.UpdatePdsDataAsync(inputPdsData),
                     Times.Once);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
-            this.dateTimeBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

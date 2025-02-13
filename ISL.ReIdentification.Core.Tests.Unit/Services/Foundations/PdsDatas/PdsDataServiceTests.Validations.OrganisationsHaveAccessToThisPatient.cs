@@ -62,13 +62,14 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                 broker.SelectPdsDataByIdAsync(It.IsAny<Guid>()),
                     Times.Never);
 
-            this.dateTimeBroker.Verify(broker =>
+            this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                 Times.Never);
 
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBroker.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }
