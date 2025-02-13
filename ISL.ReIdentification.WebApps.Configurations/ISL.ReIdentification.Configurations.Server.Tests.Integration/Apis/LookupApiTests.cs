@@ -10,14 +10,13 @@ using Tynamix.ObjectFiller;
 namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis
 {
     [Collection(nameof(ApiTestCollection))]
-    public partial class ReIdentificationTests
+    public partial class LookupApiTests
     {
         private readonly ApiBroker apiBroker;
 
-        public ReIdentificationTests(ApiBroker apiBroker) =>
+        public LookupApiTests(ApiBroker apiBroker) =>
             this.apiBroker = apiBroker;
 
-        // Random Data Generators
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
@@ -51,7 +50,6 @@ namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis
             return randomPrefix + emailSuffix;
         }
 
-        // Lookup Helpers
         private static Lookup CreateRandomLookup() =>
             CreateRandomLookupFiller().Create();
 

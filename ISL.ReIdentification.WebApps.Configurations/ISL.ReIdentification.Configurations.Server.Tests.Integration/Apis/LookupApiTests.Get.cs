@@ -7,23 +7,21 @@ using ISL.ReIdentification.Configuration.Server.Tests.Integration.Models;
 
 namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis
 {
-    public partial class ReIdentificationTests
+    public partial class LookupApiTests
     {
         [Fact]
-        public async Task ShouldPutLookupAsync()
+        public async Task ShouldGetLookupAsync()
         {
             // given
             Lookup randomLookup = await PostRandomLookupAsync();
-            Lookup modifiedLookup = UpdateLookupWithRandomValues(randomLookup);
+            Lookup expectedLookup = randomLookup;
 
             // when
-            await this.apiBroker.PutLookupAsync(modifiedLookup);
             Lookup actualLookup = await this.apiBroker.GetLookupByIdAsync(randomLookup.Id);
 
             // then
-            actualLookup.Should().BeEquivalentTo(modifiedLookup);
+            actualLookup.Should().BeEquivalentTo(expectedLookup);
             await this.apiBroker.DeleteLookupByIdAsync(actualLookup.Id);
         }
     }
 }
-
