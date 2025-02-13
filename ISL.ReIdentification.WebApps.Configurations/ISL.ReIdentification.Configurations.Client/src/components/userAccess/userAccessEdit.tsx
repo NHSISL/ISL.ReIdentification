@@ -11,17 +11,20 @@ import { userAccessService } from "../../services/foundations/userAccessService"
 import { toastError } from "../../brokers/toastBroker.error";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import OdsSearch from "../odsData/odsSearch";
 
 export const UserAccessEdit = () => {
     const { entraUserId } = useParams();
     const [selectedOdsRecords, setSelectedOdsRecords] = useState<OdsData[]>([]);
+    const [selectedOrganisation, setSelectedOrganisation] = useState<OdsData | undefined>();
     const { data, isLoading: isUserAccessLoading } = userAccessViewService.useGetAccessForUser(entraUserId);
     const [selectedUser, setSelectedUser] = useState<UserAccess>();
     const [odsSearchString, setOdsSearchString] = useState("");
     const { data: rootRecord, isLoading: isOdsDataLoading } = odsDataService.useRetrieveAllOdsData(odsSearchString);
     const { mutateAsync: createUserAccess } = userAccessService.useCreateUserAccess();
     const { mutateAsync: deleteUserAccess } = userAccessService.useRemoveUserAccess();
-    const { data: odsRoot } = odsDataService.useRetrieveAllOdsData(`?filter=OrganisationCode eq 'Root'`);
+    const [searchString, setSearchString] = useState(`?filter=OrganisationCode eq 'Root'`);
+    const { data: odsRoot } = odsDataService.useRetrieveAllOdsData(searchString);
     const [rootId, setRootId] = useState("");
 
     const navigate = useNavigate();
@@ -31,6 +34,14 @@ export const UserAccessEdit = () => {
             setRootId(odsRoot[0].id);
         }
     }, [odsRoot]);
+
+    useEffect(() => {
+        if (!selectedOrganisation) {
+            setSearchString(`?filter=OrganisationCode eq 'Root'`);
+        } else {
+            setSearchString(`?filter=OrganisationCode eq '${selectedOrganisation?.organisationCode}'`);
+        }
+    }, [selectedOrganisation])
 
     useEffect(() => {
         if (data && data?.length) {
@@ -105,35 +116,43 @@ export const UserAccessEdit = () => {
                                     <div>Job Title: {selectedUser.jobTitle}</div>
                                     <div>Mail: {selectedUser.email}</div>
                                     <div>UPN: {selectedUser.userPrincipalName}</div>
+                                    {selectedOrganisation && <>{selectedOrganisation.organisationCode} </>}
                                     <div style={{ paddingTop: "10px" }}>
                                         <Row>
                                             <Col>
                                                 <Card>
-                                                    <CardHeader>
-                                                        Select Organisations {selectedUser.displayName} has access to:
-                                                    </CardHeader>
+                                                    <CardHeader>Search</CardHeader>
                                                         <CardBody>
-                                                            {rootId &&
-                                                                <OdsTree readonly={false} rootId={rootId} selectedRecords={selectedOdsRecords} setSelectedRecords={setSelectedOdsRecords} />
-                                                            }
+                                                            <OdsSearch selectedRecords={selectedOdsRecords} selectedOrganisation={selectedOrganisation} setSelectedOrganisation={(organisation: OdsData | undefined) => { setSelectedOrganisation(organisation) }} />
                                                     </CardBody>
                                                 </Card>
                                             </Col>
                                             <Col>
                                                 <Card>
                                                     <CardHeader>
-                                                        (Readonly) Calculated Access:
-                                                        </CardHeader>
-                                                        <CardBody>
-                                                            {selectedOdsRecords.length === 0 && <div>none</div>}
-                                                            {selectedOdsRecords.map(r => <div>
-                                                                <FontAwesomeIcon icon={faTimes} color="red" onClick={() => removeOdsCode(r)} />
-                                                                    {!r.hasChildren && <span>{r.organisationName} ({r.organisationCode})</span>}
-                                                                    {/*{r.hasChildren && <OdsTree readonly={true} rootId={r.id} selectedRecords={[]} setSelectedRecords={() => { }} showRoot={true} />}*/}
-                                                                </div>
-                                                            )} 
+                                                        Select Organisations {selectedUser.displayName} has access to:
+                                                    </CardHeader>
+                                                    <CardBody>
+                                                            {rootId &&
+                                                                <OdsTree readonly={false} rootId={rootId} selectedRecords={selectedOdsRecords} setSelectedRecords={setSelectedOdsRecords} showRoot={selectedOrganisation !== undefined} />
+                                                        }
+                                                    </CardBody>
+                                                </Card>
+                                            </Col>
+                                            <Col>
+                                                <Card>
+                                                    <CardHeader>
+                                                        Selected Records:
+                                                    </CardHeader>
+                                                    <CardBody>
+                                                        {selectedOdsRecords.length === 0 && <div>none</div>}
+                                                        {selectedOdsRecords.map(r => <div>
+                                                            <FontAwesomeIcon icon={faTimes} color="red" onClick={() => removeOdsCode(r)} />
+                                                            <span>{r.organisationName} ({r.organisationCode})</span>
+                                                        </div>
+                                                        )}
 
-                                                        </CardBody>
+                                                    </CardBody>
                                                 </Card>
                                             </Col>
                                         </Row>

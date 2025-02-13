@@ -1,9 +1,10 @@
-import { FunctionComponent, useEffect, useState } from "react";
+import { FunctionComponent, useEffect, useState, useRef } from "react";
 import { odsDataService } from "../../services/foundations/odsDataAccessService";
 import { OdsData } from "../../models/odsData/odsData";
 import { OdsTreeElement } from "./odsTreeElement";
 import { toastError } from "../../brokers/toastBroker.error";
-import { Spinner } from "react-bootstrap";
+import { Form, InputGroup, Spinner } from "react-bootstrap";
+import { Input } from "nhsuk-react-components";
 
 type OdsTreeProps = {
     rootId: string;
@@ -15,8 +16,9 @@ type OdsTreeProps = {
 
 const OdsTree: FunctionComponent<OdsTreeProps> = ({ rootId, selectedRecords, setSelectedRecords, readonly = false, showRoot = false }) => {
 
-    const { data: rootRecord, isLoading  } = odsDataService.useRetrieveAllOdsData(`?filter=Id eq ${rootId}`)
+    const { data: rootRecord, isLoading } = odsDataService.useRetrieveAllOdsData(`?filter=Id eq ${rootId}`)
     const { data } = odsDataService.useGetOdsChildren(rootId);
+    const tree = useRef<HTMLSpanElement>(null);
 
     const addSelectedRecord = (odsRecord: OdsData) => {
         setSelectedRecords([...selectedRecords, odsRecord]);
@@ -27,40 +29,46 @@ const OdsTree: FunctionComponent<OdsTreeProps> = ({ rootId, selectedRecords, set
     }
 
     useEffect(() => {
-        console.log("SR");
+        if (!tree.current) {
+            return
+        }
+        const indeterminate = tree.current.querySelectorAll<HTMLInputElement>('input:indeterminate');
 
-        const x = document.querySelectorAll('input:indeterminate');
+        for (let i = 0; i < indeterminate.length; i++) {
+            indeterminate[i].indeterminate = false;
+            if (!indeterminate[i].dataset)
+                continue;
+            let path = indeterminate[i].dataset.odsHierarchy;
+            if (!path) {
+                continue;
+            }
 
-        for (let i = 0; i < x.length; i++) {
-            x[i].indeterminate = false;
-            if (!x[i].dataset)
-                return
-            console.log(selectedRecords);
-            let path = x[i].dataset.fooBar;
-            console.log(path);
             if (selectedRecords.find(x => x.odsHierarchy.startsWith(path))) {
-                x[i].indeterminate = true;
+                indeterminate[i].indeterminate = true;
             } else {
-                x[i].indeterminate = false;
+                indeterminate[i].indeterminate = false;
             }
         }
-
-
-
-
-
     }, [selectedRecords]);
 
-    if (isLoading || !rootRecord)
-    {
+    if (isLoading || !rootRecord) {
         return <Spinner />
     }
 
+    const rootSelected = (): boolean => {
+        return selectedRecords.filter((x: OdsData) => x.organisationCode == rootRecord[0].organisationCode).length > 0
+    }
+
     return (
-        <>
-            {showRoot && <> { rootRecord[0].organisationName }({ rootRecord[0].organisationCode }) </>}
+        <div ref={tree}>
+            {showRoot && <Form>
+                <Form.Check data-ods-hierarchy={rootRecord[0].odsHierarchy} inline checked={rootSelected()} onChange={(e) => { e.target.checked ? addSelectedRecord(rootRecord[0]) : removeSelectedRecord(rootRecord[0]) }} />
+                <span>{rootRecord[0].organisationName}({rootRecord[0].organisationCode})</span>
+            </Form>
+            }
+
             {data && data.map((element: OdsData) => {
-                return <span key={element.id}>
+                return <span key={element.id} >
                     <OdsTreeElement
                         node={element}
                         addSelectedRecord={addSelectedRecord}
@@ -72,8 +80,9 @@ const OdsTree: FunctionComponent<OdsTreeProps> = ({ rootId, selectedRecords, set
                 </span>;
             }
             )}
-        </>
+        </div>
     );
 };
 
 export default OdsTree;
+

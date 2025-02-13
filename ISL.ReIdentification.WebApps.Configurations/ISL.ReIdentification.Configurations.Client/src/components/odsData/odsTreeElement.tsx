@@ -3,7 +3,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { OdsData } from "../../models/odsData/odsData";
 import { FunctionComponent, useEffect, useState } from "react";
 import { odsDataService } from "../../services/foundations/odsDataAccessService";
-import { Form } from "react-bootstrap";
+import { Form, InputGroup } from "react-bootstrap";
+import { Input } from "nhsuk-react-components";
 
 type OdsTreeElementProps = {
     node: OdsData,
@@ -13,7 +14,6 @@ type OdsTreeElementProps = {
     selectedRecords: OdsData[],
     readonly: boolean
 }
-
 
 export const OdsTreeElement: FunctionComponent<OdsTreeElementProps> = ({ node, addSelectedRecord, removeSelectedRecord, parentSelected, selectedRecords, readonly }) => {
     const [isExpanded, setIsExpanded] = useState(false);
@@ -90,21 +90,20 @@ export const OdsTreeElement: FunctionComponent<OdsTreeElementProps> = ({ node, a
     }
 
     return (<div style={{ paddingLeft: '20px' }}>
-        <span style={{ width: "20px", display: "inline-block" }}>
-            {node.hasChildren ?
-                <span onClick={() => { toggle(node.id) }} >
-                    {isExpanded ? <FontAwesomeIcon icon={faMinus} /> : <FontAwesomeIcon icon={faPlus} />}
+                <span style={{ width: "20px", display: "inline-block" }}>
+                    {node.hasChildren ?
+                        <span onClick={() => { toggle(node.id) }} >
+                            {isExpanded ? <FontAwesomeIcon icon={faMinus} /> : <FontAwesomeIcon icon={faPlus} />}
+                        </span>
+                        :
+                        <></>
+                    }
                 </span>
-                :
-                <></>
-            }
-        </span>
-
+                &nbsp;
+                {!readonly && <Form.Check inline data-ods-hierarchy={node.odsHierarchy} onChange={processCheck} disabled={disableCheck()} checked={selected || parentSelected} id={`${node.id}`} />}
+                &nbsp;
         <span>{node.organisationName}({node.organisationCode})</span>
-        &nbsp;
-        {!readonly &&
-            <span>
-                <Form.Check inline data-foo-bar={node.odsHierarchy} onChange={processCheck} disabled={disableCheck()} checked={selected || parentSelected} id={`${node.id}`} /></span>}
+
         {isLoading && <FontAwesomeIcon icon={faSpinner} pulse />}
         {data && data.map((element: OdsData) => <span key={`${node.id}:${element.id}`}>
             <OdsTreeElement
