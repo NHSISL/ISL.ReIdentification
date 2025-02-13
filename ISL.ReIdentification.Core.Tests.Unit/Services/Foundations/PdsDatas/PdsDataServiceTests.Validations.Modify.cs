@@ -70,6 +70,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
             var invalidPdsData = new PdsData
             {
                 PseudoNhsNumber = invalidText,
+                OrganisationName = invalidText,
                 OrgCode = invalidText,
                 CreatedBy = invalidText,
                 UpdatedBy = invalidText,
@@ -85,7 +86,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
             };
 
             pdsDataServiceMock.Setup(service =>
-                service.ApplyAddAuditAsync(invalidPdsData))
+                service.ApplyModifyAuditAsync(invalidPdsData))
                     .ReturnsAsync(invalidPdsData);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -108,10 +109,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                 key: nameof(PdsData.PseudoNhsNumber),
                 values: "Text is invalid");
 
-            var expectedPdsDataValidationException =
-                new PdsDataValidationException(
-                    message: "PdsData validation error occurred, please fix errors and try again.",
-                    innerException: invalidPdsDataException);
+            invalidPdsDataException.AddData(
+                key: nameof(PdsData.OrganisationName),
+                values: "Text is invalid");
 
             invalidPdsDataException.AddData(
                 key: nameof(PdsData.OrgCode),
@@ -119,29 +119,34 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
 
             invalidPdsDataException.AddData(
                 key: nameof(PdsData.CreatedDate),
-                values:
-                [
-                    "Date is invalid",
-                                $"Date is not recent. Expected a value between " +
-                                    $"{startDate} and {endDate} but found {invalidPdsData.CreatedDate}"
-                ]);
-
-            invalidPdsDataException.AddData(
-                key: nameof(PdsData.CreatedBy),
-                values:
-                [
-                    "Text is invalid",
-                                $"Expected value to be '{randomEntraUser.EntraUserId}' but found " +
-                                    $"'{invalidPdsData.CreatedBy}'."
-                ]);
-
-            invalidPdsDataException.AddData(
-                key: nameof(PdsData.UpdatedDate),
                 values: "Date is invalid");
 
             invalidPdsDataException.AddData(
-                key: nameof(PdsData.UpdatedBy),
+                key: nameof(PdsData.CreatedBy),
                 values: "Text is invalid");
+
+            invalidPdsDataException.AddData(
+                key: nameof(PdsData.UpdatedBy),
+                values:
+                    [
+                        "Text is invalid",
+                        $"Expected value to be '{randomEntraUser.EntraUserId}' but found '{invalidText}'."
+                    ]);
+
+            invalidPdsDataException.AddData(
+                key: nameof(PdsData.UpdatedDate),
+                values:
+                new[] {
+                    "Date is invalid",
+                    $"Date is the same as {nameof(PdsData.CreatedDate)}",
+                    $"Date is not recent. Expected a value between {startDate} and {endDate} but found " +
+                        $"{invalidPdsData.UpdatedDate}"
+                });
+
+            var expectedPdsDataValidationException =
+                new PdsDataValidationException(
+                    message: "PdsData validation error occurred, please fix errors and try again.",
+                    innerException: invalidPdsDataException);
 
             // when
             ValueTask<PdsData> modifyPdsDataTask =
