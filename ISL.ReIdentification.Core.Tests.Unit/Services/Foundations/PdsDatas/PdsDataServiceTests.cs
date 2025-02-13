@@ -7,12 +7,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Loggings;
+using ISL.ReIdentification.Core.Brokers.Securities;
 using ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Foundations.PdsDatas;
+using ISL.ReIdentification.Core.Models.Securities;
 using ISL.ReIdentification.Core.Services.Foundations.PdsDatas;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
@@ -22,19 +26,22 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
     public partial class PdsDataServiceTests
     {
         private readonly Mock<IReIdentificationStorageBroker> reIdentificationStorageBroker;
-        private readonly Mock<IDateTimeBroker> dateTimeBroker;
+        private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
+        private readonly Mock<ISecurityBroker> securityBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
-        private readonly PdsDataService pdsDataService;
+        private readonly IPdsDataService pdsDataService;
 
         public PdsDataServiceTests()
         {
             this.reIdentificationStorageBroker = new Mock<IReIdentificationStorageBroker>();
-            this.dateTimeBroker = new Mock<IDateTimeBroker>();
+            this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
+            this.securityBrokerMock = new Mock<ISecurityBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
             this.pdsDataService = new PdsDataService(
                 reIdentificationStorageBroker: this.reIdentificationStorageBroker.Object,
-                dateTimeBroker: this.dateTimeBroker.Object,
+                dateTimeBroker: this.dateTimeBrokerMock.Object,
+                securityBroker: this.securityBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
         }
 
@@ -77,29 +84,37 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
             return new DateTimeRange(earliestDate: futureStartDate, latestDate: futureEndDate).GetValue();
         }
 
-        private static PdsData CreateRandomModifyPdsData(DateTimeOffset dateTimeOffset)
+        private static PdsData CreateRandomModifyPdsData(DateTimeOffset dateTimeOffset, string pdsId)
         {
             int randomDaysInPast = GetRandomNegativeNumber();
-            PdsData PandomPdsData = CreateRandomPdsData(dateTimeOffset);
+            PdsData randomPdsData = CreateRandomPdsData(dateTimeOffset, pdsId);
 
-            return PandomPdsData;
+            randomPdsData.CreatedDate =
+                randomPdsData.CreatedDate.AddDays(randomDaysInPast);
+
+            return randomPdsData;
         }
 
         private static List<PdsData> CreateRandomPdsDatas()
         {
-            return CreatePdsDataFiller(dateTimeOffset: GetRandomDateTimeOffset())
+            return CreatePdsDataFiller(
+                dateTimeOffset: GetRandomDateTimeOffset(),
+                pdsId: GetRandomStringWithLengthOf(255))
                 .Create(count: GetRandomNumber())
                     .ToList();
         }
 
         private static PdsData CreateRandomPdsData() =>
-            CreatePdsDataFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
+            CreatePdsDataFiller(
+                dateTimeOffset: GetRandomDateTimeOffset(),
+                pdsId: GetRandomStringWithLengthOf(255)).Create();
 
-        private static PdsData CreateRandomPdsData(DateTimeOffset dateTimeOffset) =>
-            CreatePdsDataFiller(dateTimeOffset).Create();
+        private static PdsData CreateRandomPdsData(DateTimeOffset dateTimeOffset, string pdsId) =>
+            CreatePdsDataFiller(dateTimeOffset, pdsId).Create();
 
-        private static Filler<PdsData> CreatePdsDataFiller(DateTimeOffset dateTimeOffset)
+        private static Filler<PdsData> CreatePdsDataFiller(DateTimeOffset dateTimeOffset, string pdsId)
         {
+            //Hierarchy
             string user = Guid.NewGuid().ToString();
             var filler = new Filler<PdsData>();
 
@@ -107,9 +122,30 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.PdsDatas
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use((DateTimeOffset?)default)
                 .OnProperty(pdsData => pdsData.PseudoNhsNumber).Use(GetRandomStringWithLengthOf(10))
-                .OnProperty(pdsData => pdsData.OrgCode).Use(GetRandomStringWithLengthOf(15));
+                .OnProperty(pdsData => pdsData.OrgCode).Use(GetRandomStringWithLengthOf(15))
+                .OnProperty(odsData => odsData.CreatedBy).Use(pdsId)
+                .OnProperty(odsData => odsData.UpdatedBy).Use(pdsId);
 
             return filler;
+        }
+
+        private EntraUser CreateRandomEntraUser(string entraUserId = "")
+        {
+            var userId = string.IsNullOrWhiteSpace(entraUserId) ? GetRandomStringWithLengthOf(255) : entraUserId;
+
+            return new EntraUser(
+                entraUserId: userId,
+                givenName: GetRandomString(),
+                surname: GetRandomString(),
+                displayName: GetRandomString(),
+                email: GetRandomString(),
+                jobTitle: GetRandomString(),
+                roles: new List<string> { GetRandomString() },
+
+                claims: new List<System.Security.Claims.Claim>
+                {
+                    new System.Security.Claims.Claim(type: GetRandomString(), value: GetRandomString())
+                });
         }
     }
 }
