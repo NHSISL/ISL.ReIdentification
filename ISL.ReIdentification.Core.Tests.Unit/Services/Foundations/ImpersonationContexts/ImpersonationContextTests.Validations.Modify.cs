@@ -8,6 +8,7 @@ using FluentAssertions;
 using Force.DeepCloner;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts.Exceptions;
+using ISL.ReIdentification.Core.Models.Foundations.Lookups.Exceptions;
 using ISL.ReIdentification.Core.Models.Securities;
 using ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Services.Foundations.Lookups;
@@ -65,6 +66,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
             string invalidText)
         {
             //given
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            DateTimeOffset startDate = randomDateTimeOffset.AddSeconds(-90);
+            DateTimeOffset endDate = randomDateTimeOffset.AddSeconds(0);
+
             var invalidImpersonationContext = new ImpersonationContext
             {
                 RequesterEntraUserId = invalidText,
@@ -73,7 +79,30 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
                 ResponsiblePersonEmail = invalidText,
                 IdentifierColumn = invalidText,
                 ProjectName = invalidText,
+                CreatedBy = invalidText,
+                UpdatedBy = invalidText,
             };
+
+            var impersonationContextServiceMock = new Mock<ImpersonationContextService>(
+                this.reIdentificationStorageBroker.Object,
+                this.dateTimeBrokerMock.Object,
+                this.securityBrokerMock.Object,
+                this.loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            impersonationContextServiceMock.Setup(service =>
+                service.ApplyModifyAuditAsync(invalidImpersonationContext))
+                    .ReturnsAsync(invalidImpersonationContext);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             var invalidImpersonationContextException = new InvalidImpersonationContextException(
                 message: "Invalid impersonation context. Please correct the errors and try again.");
@@ -111,20 +140,26 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
                 values: "Text is invalid");
 
             invalidImpersonationContextException.AddData(
-                key: nameof(ImpersonationContext.UpdatedBy),
-                values: "Text is invalid");
-
-            invalidImpersonationContextException.AddData(
                 key: nameof(ImpersonationContext.CreatedDate),
                 values: "Date is invalid");
 
             invalidImpersonationContextException.AddData(
+                key: nameof(ImpersonationContext.UpdatedBy),
+                values:
+                    [
+                        "Text is invalid",
+                        $"Expected value to be '{randomEntraUser.EntraUserId}' but found '{invalidText}'."
+                    ]);
+
+            invalidImpersonationContextException.AddData(
                 key: nameof(ImpersonationContext.UpdatedDate),
-                new[]
-                    {
-                        "Date is invalid",
-                        $"Date is the same as {nameof(ImpersonationContext.CreatedDate)}"
-                    });
+                values:
+                new[] {
+                    "Date is invalid",
+                    $"Date is the same as {nameof(ImpersonationContext.CreatedDate)}",
+                    $"Date is not recent. Expected a value between {startDate} and {endDate} but found " +
+                        $"{invalidImpersonationContext.UpdatedDate}"
+                });
 
             var expectedImpersonationContextValidationException =
                 new ImpersonationContextValidationException(
@@ -133,7 +168,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
 
             // when
             ValueTask<ImpersonationContext> modifyImpersonationContextTask =
-                this.impersonationContextService.ModifyImpersonationContextAsync(invalidImpersonationContext);
+                impersonationContextServiceMock.Object.ModifyImpersonationContextAsync(invalidImpersonationContext);
 
             ImpersonationContextValidationException actualImpersonationContextValidationException =
                 await Assert.ThrowsAsync<ImpersonationContextValidationException>(
@@ -147,6 +182,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(
                     SameExceptionAs(expectedImpersonationContextValidationException))),
@@ -157,6 +196,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
         }

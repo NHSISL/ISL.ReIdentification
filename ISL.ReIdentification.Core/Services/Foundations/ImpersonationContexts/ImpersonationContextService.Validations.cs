@@ -151,24 +151,17 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts
 
                 (Rule: IsNotSame(
                     first: currentUser.EntraUserId,
-                    second: impersonationContext.CreatedBy),
-                Parameter: nameof(impersonationContext.CreatedBy)),
-
-                (Rule: IsNotSame(
-                    first: impersonationContext.UpdatedBy,
-                    second: impersonationContext.CreatedBy,
-                    secondName: nameof(ImpersonationContext.CreatedBy)),
+                    second: impersonationContext.UpdatedBy),
                 Parameter: nameof(ImpersonationContext.UpdatedBy)),
 
                 (Rule: IsSameAs(
-                    firstDate: impersonationContext.UpdatedDate, 
-                    secondDate: impersonationContext.CreatedDate,
-                    secondDateName: nameof(ImpersonationContext.CreatedDate)), 
+                    firstDate: impersonationContext.CreatedDate,
+                    secondDate: impersonationContext.UpdatedDate,
+                    secondDateName: nameof(ImpersonationContext.CreatedDate)),
                 Parameter: nameof(ImpersonationContext.UpdatedDate)),
 
                 (Rule: await IsNotRecentAsync(
-                    impersonationContext.UpdatedDate), 
-                Parameter: nameof(ImpersonationContext.UpdatedDate))
+                    impersonationContext.UpdatedDate), Parameter: nameof(ImpersonationContext.UpdatedDate))
             );
         }
 
