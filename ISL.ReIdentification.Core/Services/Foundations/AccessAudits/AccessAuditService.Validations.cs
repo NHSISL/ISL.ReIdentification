@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits.Exceptions;
@@ -66,9 +67,25 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
 
         private async ValueTask ValidateAccessAuditOnBulkAddAsync(List<AccessAudit> accessAudits)
         {
+            var exceptions = new List<Exception>();
+
             foreach (AccessAudit accessAudit in accessAudits)
             {
-                await ValidateAccessAuditOnAddAsync(accessAudit);
+                try
+                {
+                    await ValidateAccessAuditOnAddAsync(accessAudit);
+                }
+                catch (Exception exception)
+                {
+                    exceptions.Add(exception);
+                }
+            }
+
+            if (exceptions.Any())
+            {
+                throw new AggregateException(
+                    $"Unable to validate access for {exceptions.Count} audit access requests.",
+                    exceptions);
             }
         }
 
@@ -135,7 +152,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
         {
             if (accessAudits is null)
             {
-                throw new NullAccessAuditException("Access audit is null.");
+                throw new NullAccessAuditException("Access audit list is null.");
             }
         }
 

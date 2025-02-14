@@ -53,6 +53,10 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
             {
                 await returningNothingFunction();
             }
+            catch (NullAccessAuditException nullAccessAuditException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(nullAccessAuditException);
+            }
             catch (SqlException sqlException)
             {
                 var failedStorageAccessAuditException = new FailedStorageAccessAuditException(
@@ -61,6 +65,16 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
 
                 throw await CreateAndLogCriticalDependencyExceptionAsync(failedStorageAccessAuditException);
             }
+            catch (AggregateException aggregateException)
+            {
+                var failedServiceIdentificationRequestException =
+                    new FailedServiceAccessAuditException(
+                        message: "Failed service access audit error occurred, contact support.",
+                        innerException: aggregateException);
+
+                throw await CreateAndLogValidationExceptionAsync(failedServiceIdentificationRequestException);
+            }
+
             catch (Exception exception)
             {
                 var failedServiceAccessAuditException =
