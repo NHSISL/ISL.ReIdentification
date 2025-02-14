@@ -125,6 +125,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
                 accessAudit.CreatedDate = currentDateTimeOffsett;
                 accessAudit.UpdatedBy = currentUser?.EntraUserId;
                 accessAudit.UpdatedDate = currentDateTimeOffsett;
+                
                 return accessAudit;
             });
 
