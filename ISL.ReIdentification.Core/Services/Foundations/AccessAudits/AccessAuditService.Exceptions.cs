@@ -65,6 +65,34 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
 
                 throw await CreateAndLogCriticalDependencyExceptionAsync(failedStorageAccessAuditException);
             }
+            catch (DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistsAccessAuditException =
+                    new AlreadyExistsAccessAuditException(
+                        message: "Access audit already exists error occurred.",
+                        innerException: duplicateKeyException,
+                        data: duplicateKeyException.Data);
+
+                throw await CreateAndLogDependencyValidationExceptionAsync(alreadyExistsAccessAuditException);
+            }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedAccessAuditException =
+                    new LockedAccessAuditException(
+                        message: "Locked access audit record error occurred, please try again.",
+                        innerException: dbUpdateConcurrencyException);
+
+                throw await CreateAndLogDependencyValidationExceptionAsync(lockedAccessAuditException);
+            }
+            catch (DbUpdateException dbUpdateException)
+            {
+                var failedOperationAccessAuditException =
+                    new FailedOperationAccessAuditException(
+                        message: "Failed operation access audit error occurred, contact support.",
+                        innerException: dbUpdateException);
+
+                throw await CreateAndLogDependencyExceptionAsync(failedOperationAccessAuditException);
+            }
             catch (AggregateException aggregateException)
             {
                 var failedServiceIdentificationRequestException =

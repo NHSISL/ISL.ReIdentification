@@ -116,8 +116,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
         virtual internal async ValueTask<List<AccessAudit>> ApplyBulkAddAuditAsync(List<AccessAudit> accessAudits)
         {
             ValidateAccessAuditIsNotNull(accessAudits);
-            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
             var currentDateTimeOffsett = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             var accessAuditsWithAddAuditApplied = accessAudits.Select(accessAudit =>
             {
