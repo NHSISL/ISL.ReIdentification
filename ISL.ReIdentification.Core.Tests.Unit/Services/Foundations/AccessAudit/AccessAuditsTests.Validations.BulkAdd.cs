@@ -507,10 +507,26 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
                     $"Date is not recent. Expected a value between " +
                     $"{startDate} and {endDate} but found {invalidDate}");
 
+            var exceptions = new List<Exception>();
+
+            foreach (var invalidAccessAudit in invalidAccessAudits)
+            {
+                exceptions.Add(invalidAccessAuditException);
+            }
+
+            AggregateException aggregateException = new AggregateException(
+                    $"Unable to validate access for {exceptions.Count} audit access requests.",
+                    exceptions);
+
+            var failedServiceIdentificationRequestException =
+                new FailedServiceAccessAuditException(
+                    message: "Failed service access audit error occurred, contact support.",
+                    innerException: aggregateException);
+
             var expectedAccessAuditServiceException =
                 new AccessAuditServiceException(
-                    message: "Access audit validation error occurred, please fix errors and try again.",
-                    innerException: invalidAccessAuditException);
+                message: "Service error occurred, contact support.",
+                innerException: failedServiceIdentificationRequestException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
@@ -530,11 +546,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Exactly(invalidAccessAudits.Count));
 
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),
-                    Times.Once);
+                    Times.Exactly(invalidAccessAudits.Count));
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(
