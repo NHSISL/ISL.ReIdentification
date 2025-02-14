@@ -61,12 +61,14 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
 
             var transactionId = await this.identifierBroker.GetIdentifierAsync();
 
+            List<AccessAudit> permissionAudits = new List<AccessAudit>();
+
             foreach (IdentificationItem item in identificationRequest.IdentificationItems)
             {
                 savedPseduoes.Add(
-                    item.RowNumber, 
-                    string.IsNullOrEmpty(item.Identifier) 
-                        ? item.Identifier 
+                    item.RowNumber,
+                    string.IsNullOrEmpty(item.Identifier)
+                        ? item.Identifier
                         : item.Identifier.PadLeft(10, '0'));
 
                 var now = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
@@ -99,7 +101,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                     UpdatedDate = now
                 };
 
-                await this.accessAuditService.AddAccessAuditAsync(accessAudit);
+                permissionAudits.Add(accessAudit);
 
                 if (item.HasAccess is false)
                 {
@@ -107,6 +109,8 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                     item.Message = noAccessMessage;
                 }
             }
+
+            await this.accessAuditService.BulkAddAccessAuditAsync(permissionAudits);
 
             var hasAccessIdentificationItems =
                 identificationRequest.IdentificationItems
@@ -134,6 +138,8 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             var reIdentifiedIdentificationRequest =
                 await this.reIdentificationService.ProcessReIdentificationRequest(
                     hasAccessIdentificationRequest);
+
+            List<AccessAudit> reIdentifyAudits = new List<AccessAudit>();
 
             foreach (IdentificationItem item in reIdentifiedIdentificationRequest.IdentificationItems)
             {
@@ -164,11 +170,13 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                     UpdatedDate = now
                 };
 
-                await this.accessAuditService.AddAccessAuditAsync(accessAudit);
+                reIdentifyAudits.Add(accessAudit);
                 record.Identifier = item.Identifier;
                 record.Message = item.Message;
                 record.IsReidentified = true;
             }
+
+            await this.accessAuditService.BulkAddAccessAuditAsync(reIdentifyAudits);
 
             return identificationRequest;
         });

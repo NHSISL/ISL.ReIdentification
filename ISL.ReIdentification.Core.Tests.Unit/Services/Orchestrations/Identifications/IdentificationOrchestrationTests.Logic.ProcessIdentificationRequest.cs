@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -195,6 +196,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Exactly(itemCount * 2));
 
+            List<AccessAudit> pdsAccessAudits = new List<AccessAudit>();
+
             foreach (IdentificationItem item in randomIdentificationRequest.IdentificationItems)
             {
                 AccessAudit inputAccessAudit = new AccessAudit
@@ -218,16 +221,20 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                     UpdatedDate = randomDateTimeOffset
                 };
 
-                this.accessAuditServiceMock.Verify(service =>
-                    service.AddAccessAuditAsync(
-                        It.Is(Valid8.SameObjectAs<AccessAudit>(inputAccessAudit, testOutputHelper, ""))),
-                            Times.Once);
+                pdsAccessAudits.Add(inputAccessAudit);
             }
+
+            this.accessAuditServiceMock.Verify(service =>
+                service.BulkAddAccessAuditAsync(
+                    It.Is(Valid8.SameObjectAs<List<AccessAudit>>(pdsAccessAudits, testOutputHelper, ""))),
+                        Times.Once);
 
             this.reIdentificationServiceMock.Verify(service =>
                 service.ProcessReIdentificationRequest(It.Is(
                     SameIdentificationRequestAs(inputHasAccessIdentificationRequest))),
                         Times.Once);
+
+            List<AccessAudit> necsAccessAudits = new List<AccessAudit>();
 
             foreach (IdentificationItem item in randomIdentificationRequest.IdentificationItems)
             {
@@ -260,11 +267,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                     UpdatedDate = randomDateTimeOffset
                 };
 
-                this.accessAuditServiceMock.Verify(service =>
-                    service.AddAccessAuditAsync(
-                        It.Is(Valid8.SameObjectAs<AccessAudit>(successAccessAudit, testOutputHelper, ""))),
-                            Times.Once);
+                necsAccessAudits.Add(successAccessAudit);
             }
+
+            this.accessAuditServiceMock.Verify(service =>
+                service.BulkAddAccessAuditAsync(
+                    It.Is(Valid8.SameObjectAs<List<AccessAudit>>(necsAccessAudits, testOutputHelper, ""))),
+                        Times.Once);
 
             this.accessAuditServiceMock.VerifyNoOtherCalls();
             this.reIdentificationServiceMock.VerifyNoOtherCalls();
