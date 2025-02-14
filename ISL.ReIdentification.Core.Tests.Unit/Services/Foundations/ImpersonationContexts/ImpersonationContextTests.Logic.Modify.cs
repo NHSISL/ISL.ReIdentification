@@ -29,7 +29,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
 
             ImpersonationContext inputImpersonationContext = randomImpersonationContext;
             ImpersonationContext storageImpersonationContext = inputImpersonationContext.DeepClone();
-            storageImpersonationContext.UpdatedBy = randomEntraUser.EntraUserId;
+            storageImpersonationContext.UpdatedDate = randomImpersonationContext.CreatedDate;
             ImpersonationContext updatedImpersonationContext = inputImpersonationContext;
             ImpersonationContext expectedImpersonationContext = updatedImpersonationContext.DeepClone();
 

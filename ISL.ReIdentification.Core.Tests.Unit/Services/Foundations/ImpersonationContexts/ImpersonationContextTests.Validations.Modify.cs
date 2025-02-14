@@ -202,16 +202,15 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
         }
 
         [Fact]
-        public async Task
-            ShouldThrowValidationExceptionOnModifyIfImpersonationContextHasInvalidLengthPropertiesAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnModifyIfImpersonationContextHasInvalidLengthPropertiesAndLogItAsync()
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             EntraUser randomEntraUser = CreateRandomEntraUser(entraUserId: GetRandomStringWithLengthOf(256));
-            
+
             ImpersonationContext invalidImpersonationContext = CreateRandomImpersonationContext(
                 randomDateTimeOffset, impersonationContextId: randomEntraUser.EntraUserId);
-            
+
             var inputCreatedByUpdatedByString = randomEntraUser.EntraUserId;
             invalidImpersonationContext.RequesterEmail = GetRandomStringWithLengthOf(321);
             invalidImpersonationContext.ResponsiblePersonEmail = GetRandomStringWithLengthOf(321);

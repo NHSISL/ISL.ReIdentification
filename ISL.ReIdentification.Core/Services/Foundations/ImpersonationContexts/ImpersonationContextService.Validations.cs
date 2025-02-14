@@ -188,7 +188,24 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts
 
         private static void ValidateAgainstStorageImpersonationContextOnModify(
             ImpersonationContext inputImpersonationContext, ImpersonationContext storageImpersonationContext)
-        { }
+        {
+            Validate(
+                (Rule: IsNotSame(
+                    first: inputImpersonationContext.CreatedBy,
+                    second: storageImpersonationContext.CreatedBy,
+                    secondName: nameof(ImpersonationContext.CreatedBy)),
+                Parameter: nameof(ImpersonationContext.CreatedBy)),
+                (Rule: IsNotSame(
+                    first: inputImpersonationContext.CreatedDate,
+                    second: storageImpersonationContext.CreatedDate,
+                    secondName: nameof(ImpersonationContext.CreatedDate)),
+                Parameter: nameof(ImpersonationContext.CreatedDate)),
+                (Rule: IsSameAs(
+                    firstDate: inputImpersonationContext.UpdatedDate,
+                    secondDate: storageImpersonationContext.UpdatedDate,
+                    secondDateName: nameof(ImpersonationContext.UpdatedDate)),
+                Parameter: nameof(ImpersonationContext.UpdatedDate)));
+        }
 
         private static dynamic IsInvalid(Guid id) => new
         {
