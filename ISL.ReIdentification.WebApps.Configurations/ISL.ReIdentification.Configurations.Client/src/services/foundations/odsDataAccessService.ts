@@ -6,7 +6,7 @@ export const odsDataService = {
         const broker = new OdsDataBroker();
 
         return useQuery({
-            queryKey: ["OdsDataGetAll", { query: query }],
+            queryKey: ["OdsDataApiGetAll", { query: query }],
             queryFn: () => broker.GetAllOdsDataAsync(query),
             staleTime: Infinity
         });
