@@ -582,12 +582,17 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
             EntraUser randomEntraUser = CreateRandomEntraUser();
 
             ImpersonationContext randomImpersonationContext =
-                CreateRandomModifyImpersonationContext(randomDateTimeOffset, impersonationContextId: randomEntraUser.EntraUserId);
+                CreateRandomModifyImpersonationContext(
+                    randomDateTimeOffset, 
+                    impersonationContextId: randomEntraUser.EntraUserId);
 
             ImpersonationContext invalidImpersonationContext = randomImpersonationContext;
             ImpersonationContext storedImpersonationContext = randomImpersonationContext.DeepClone();
             storedImpersonationContext.CreatedBy = GetRandomString();
-            storedImpersonationContext.CreatedDate = storedImpersonationContext.CreatedDate.AddMinutes(GetRandomNegativeNumber());
+
+            storedImpersonationContext.CreatedDate = 
+                storedImpersonationContext.CreatedDate.AddMinutes(GetRandomNegativeNumber());
+
             Guid impersonationContextId = invalidImpersonationContext.Id;
 
             var impersonationContextServiceMock = new Mock<ImpersonationContextService>(
@@ -625,6 +630,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
             invalidImpersonationContextException.AddData(
                 key: nameof(ImpersonationContext.CreatedDate),
                 values: $"Date is not the same as {nameof(ImpersonationContext.CreatedDate)}");
+
+            invalidImpersonationContextException.AddData(
+                key: nameof(ImpersonationContext.UpdatedDate),
+                values: $"Date is the same as {nameof(ImpersonationContext.UpdatedDate)}");
 
             var expectedImpersonationContextValidationException =
                 new ImpersonationContextValidationException(

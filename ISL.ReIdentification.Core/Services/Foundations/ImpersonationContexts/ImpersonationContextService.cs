@@ -10,6 +10,7 @@ using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Securities;
 using ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
+using ISL.ReIdentification.Core.Models.Foundations.Lookups;
 
 namespace ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts
 {
@@ -63,28 +64,24 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts
 
         public ValueTask<ImpersonationContext> ModifyImpersonationContextAsync(
             ImpersonationContext impersonationContext) =>
-            TryCatch(async () =>
-            {
-                ImpersonationContext impersonationContextWithModifyAuditApplied = 
-                await ApplyModifyAuditAsync(impersonationContext);
+        TryCatch(async () =>
+        {
+            ImpersonationContext impersonationContextWithModifyAuditApplied = await ApplyModifyAuditAsync(impersonationContext);
+            await ValidateImpersonationContextOnModifyAsync(impersonationContextWithModifyAuditApplied);
 
-                await ValidateImpersonationContextOnModifyAsync(impersonationContextWithModifyAuditApplied);
+            ImpersonationContext maybeImpersonationContext = 
+                await this.reIdentificationStorageBroker.
+                    SelectImpersonationContextByIdAsync(impersonationContextWithModifyAuditApplied.Id);
+            
+            ValidateStorageImpersonationContext(maybeImpersonationContext, impersonationContext.Id);
 
-                ImpersonationContext maybeImpersonationContext =
-                    await this.reIdentificationStorageBroker.SelectImpersonationContextByIdAsync(
-                        impersonationContextWithModifyAuditApplied.Id);
+            ValidateAgainstStorageImpersonationContextOnModify(
+                inputImpersonationContext: impersonationContextWithModifyAuditApplied,
+                storageImpersonationContext: maybeImpersonationContext);
 
-                ValidateStorageImpersonationContext(
-                    maybeImpersonationContext, 
-                    impersonationContextWithModifyAuditApplied.Id);
-
-                ValidateAgainstStorageImpersonationContextOnModify(
-                    inputImpersonationContext: impersonationContextWithModifyAuditApplied,
-                    storageImpersonationContext: maybeImpersonationContext);
-
-                return await this.reIdentificationStorageBroker.UpdateImpersonationContextAsync(
-                    impersonationContextWithModifyAuditApplied);
-            });
+            return await this.reIdentificationStorageBroker.UpdateImpersonationContextAsync(
+                impersonationContextWithModifyAuditApplied);
+        });
 
         public ValueTask<ImpersonationContext> RemoveImpersonationContextByIdAsync(Guid impersonationContextId) =>
             TryCatch(async () =>
