@@ -71,7 +71,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
         }
 
         [Fact]
-        public async Task ShouldThrowDependencyValidationExceptionOnAddIfCsvIdentificationRequestAlreadyExistsAndLogItAsync()
+        public async Task 
+            ShouldThrowDependencyValidationExceptionOnAddIfCsvIdentificationRequestAlreadyExistsAndLogItAsync()
         {
             // given
             CsvIdentificationRequest someCsvIdentificationRequest = CreateRandomCsvIdentificationRequest();
@@ -88,7 +89,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             var expectedCsvIdentificationRequestDependencyValidationException =
                 new CsvIdentificationRequestDependencyValidationException(
-                    message: "CSV identification request dependency validation error occurred, fix errors and try again.",
+                    message: "CSV identification request dependency validation error occurred, " +
+                        "fix errors and try again.",
                     innerException: alreadyExistsCsvIdentificationRequestException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -99,9 +101,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
             ValueTask<CsvIdentificationRequest> addCsvIdentificationRequestTask =
                 this.csvIdentificationRequestService.AddCsvIdentificationRequestAsync(someCsvIdentificationRequest);
 
-            CsvIdentificationRequestDependencyValidationException actualCsvIdentificationRequestDependencyValidationException =
-                await Assert.ThrowsAsync<CsvIdentificationRequestDependencyValidationException>(
-                    testCode: addCsvIdentificationRequestTask.AsTask);
+            CsvIdentificationRequestDependencyValidationException 
+                actualCsvIdentificationRequestDependencyValidationException =
+                    await Assert.ThrowsAsync<CsvIdentificationRequestDependencyValidationException>(
+                        testCode: addCsvIdentificationRequestTask.AsTask);
 
             // then
             actualCsvIdentificationRequestDependencyValidationException.Should().BeEquivalentTo(
