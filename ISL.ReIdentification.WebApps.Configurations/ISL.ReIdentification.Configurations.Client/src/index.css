@@ -74,3 +74,8 @@ button {
     --bs-list-group-active-bg: #45B8AC !important;
     --bs-list-group-active-border-color: #45B8AC !important;
 }
+
+
+.form-check-input[type=checkbox] {
+    border: 1px solid black !important;
+}

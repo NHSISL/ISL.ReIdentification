@@ -2,7 +2,7 @@ import { FunctionComponent, useEffect, useState, useRef } from "react";
 import { odsDataService } from "../../services/foundations/odsDataAccessService";
 import { OdsData } from "../../models/odsData/odsData";
 import { OdsTreeElement } from "./odsTreeElement";
-import { Form, InputGroup, Spinner } from "react-bootstrap";
+import { Form, Spinner } from "react-bootstrap";
 
 type OdsTreeProps = {
     rootId: string;
@@ -16,7 +16,7 @@ const OdsTree: FunctionComponent<OdsTreeProps> = ({ rootId, selectedRecords, set
 
     const { data: rootRecord, isLoading } = odsDataService.useRetrieveAllOdsData(`?filter=Id eq ${rootId}`)
     const { data } = odsDataService.useGetOdsChildren(rootId);
-    const tree = useRef<HTMLSpanElement>(null);
+    const tree = useRef<HTMLDivElement>(null);
     const rootItem = useRef<HTMLInputElement>(null);
     const [rootItemDisabled, setRootItemDisabled] = useState(false)
 
@@ -38,7 +38,7 @@ const OdsTree: FunctionComponent<OdsTreeProps> = ({ rootId, selectedRecords, set
             indeterminate[i].indeterminate = false;
             if (!indeterminate[i].dataset)
                 continue;
-            let path = indeterminate[i].dataset.odsHierarchy;
+            const path = indeterminate[i].dataset.odsHierarchy;
             if (!path) {
                 continue;
             }
@@ -50,13 +50,13 @@ const OdsTree: FunctionComponent<OdsTreeProps> = ({ rootId, selectedRecords, set
             }
         }
 
-        if (rootItem && rootItem.current && selectedRecords.find(x => x.odsHierarchy.startsWith(rootRecord[0].odsHierarchy) && x.id !== rootRecord[0].id)) {
+        if (rootItem && rootItem.current && rootRecord && rootRecord[0] && selectedRecords.find(x => x.odsHierarchy.startsWith(rootRecord[0].odsHierarchy) && x.id !== rootRecord[0].id)) {
             rootItem.current.indeterminate = true;
             setRootItemDisabled(true);
         } else {
             setRootItemDisabled(false);
         }
-    }, [selectedRecords, rootId]);
+    }, [selectedRecords, rootId, rootRecord]);
 
 
     if (isLoading || !rootRecord) {
@@ -71,7 +71,21 @@ const OdsTree: FunctionComponent<OdsTreeProps> = ({ rootId, selectedRecords, set
     return (
         <div ref={tree}>
             {showRoot && <Form>
-                <Form.Check ref={rootItem} data-ods-hierarchy={rootRecord[0].odsHierarchy} disabled={rootItemDisabled}  inline checked={rootSelected()} onChange={(e) => { e.target.checked ? addSelectedRecord(rootRecord[0]) : removeSelectedRecord(rootRecord[0]) }} />
+
+                <Form.Check
+                    ref={rootItem}
+                    data-ods-hierarchy={rootRecord[0].odsHierarchy}
+                    disabled={rootItemDisabled}
+                    inline
+                    checked={rootSelected()}
+                    onChange={(e) => {
+                        if (e.target.checked) {
+                            addSelectedRecord(rootRecord[0]);
+                        } else {
+                            removeSelectedRecord(rootRecord[0]);
+                        }
+                    }} />
+
                 <span>{rootRecord[0].organisationName}({rootRecord[0].organisationCode})</span>
             </Form>
             }

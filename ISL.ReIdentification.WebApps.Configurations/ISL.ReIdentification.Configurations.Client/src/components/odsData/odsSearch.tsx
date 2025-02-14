@@ -12,7 +12,7 @@ type OdsSearchProps = {
 };
 
 const OdsSearch: FunctionComponent<OdsSearchProps> = (props) => {
-    const { selectedRecords, setSelectedOrganisation, selectedOrganisation } = props;
+    const { setSelectedOrganisation, selectedOrganisation } = props;
     
     const [searchTerm, setSearchTerm] = useState("");
     const { data, isLoading } = odsDataViewService.useGetAllOdsData(searchTerm)

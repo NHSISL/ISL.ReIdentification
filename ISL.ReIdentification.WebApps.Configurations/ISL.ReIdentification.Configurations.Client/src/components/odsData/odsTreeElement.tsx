@@ -3,8 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { OdsData } from "../../models/odsData/odsData";
 import { FunctionComponent, useEffect, useState } from "react";
 import { odsDataService } from "../../services/foundations/odsDataAccessService";
-import { Form, InputGroup } from "react-bootstrap";
-import { Input } from "nhsuk-react-components";
+import { Form } from "react-bootstrap";
 
 type OdsTreeElementProps = {
     node: OdsData,
