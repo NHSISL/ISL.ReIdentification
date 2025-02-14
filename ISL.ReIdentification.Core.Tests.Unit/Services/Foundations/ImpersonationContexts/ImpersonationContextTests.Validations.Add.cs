@@ -314,18 +314,17 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
                 message: "Invalid impersonation context. Please correct the errors and try again.");
 
             invalidImpersonationContextException.AddData(
-                key: nameof(ImpersonationContext.UpdatedBy),
-                values: $"Text is not the same as {nameof(ImpersonationContext.CreatedBy)}");
-
-            invalidImpersonationContextException.AddData(
-                key: nameof(ImpersonationContext.UpdatedDate),
-                values: $"Date is not the same as {nameof(ImpersonationContext.CreatedDate)}");
-
-            invalidImpersonationContextException.AddData(
                 key: nameof(ImpersonationContext.CreatedBy),
                 values:
                     $"Expected value to be '{randomEntraUser.EntraUserId}' " +
                     $"but found '{invalidImpersonationContext.CreatedBy}'.");
+
+            invalidImpersonationContextException.AddData(
+                key: nameof(ImpersonationContext.UpdatedBy),
+                values: $"Text is not the same as {nameof(ImpersonationContext.CreatedBy)}");
+            invalidImpersonationContextException.AddData(
+                key: nameof(ImpersonationContext.UpdatedDate),
+                values: $"Date is not the same as {nameof(ImpersonationContext.CreatedDate)}");
 
             invalidImpersonationContextException.AddData(
                 key: nameof(ImpersonationContext.CreatedDate),

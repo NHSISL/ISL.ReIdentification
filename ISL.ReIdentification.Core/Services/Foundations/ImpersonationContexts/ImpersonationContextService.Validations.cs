@@ -70,20 +70,25 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts
                 Parameter: nameof(ImpersonationContext.UpdatedBy)),
 
                 (Rule: IsNotSame(
-                    first: impersonationContext.UpdatedBy, 
-                    second: impersonationContext.CreatedBy,
-                    secondName: nameof(ImpersonationContext.CreatedBy)), 
-                    Parameter: nameof(ImpersonationContext.UpdatedBy)),
+                    first: currentUser.EntraUserId,
+                    second: impersonationContext.CreatedBy),
+                Parameter: nameof(impersonationContext.CreatedBy)),
 
                 (Rule: IsNotSame(
-                    first: impersonationContext.UpdatedDate, 
+                    first: impersonationContext.UpdatedBy,
+                    second: impersonationContext.CreatedBy,
+                    secondName: nameof(ImpersonationContext.CreatedBy)),
+                Parameter: nameof(ImpersonationContext.UpdatedBy)),
+
+                (Rule: IsNotSame(
+                    first: impersonationContext.UpdatedDate,
                     second: impersonationContext.CreatedDate,
-                    secondName: nameof(ImpersonationContext.CreatedDate)), 
-                    Parameter: nameof(ImpersonationContext.UpdatedDate)),
+                    secondName: nameof(ImpersonationContext.CreatedDate)),
+                Parameter: nameof(ImpersonationContext.UpdatedDate)),
 
                 (Rule: await IsNotRecentAsync(
                     impersonationContext.CreatedDate), 
-                    Parameter: nameof(ImpersonationContext.CreatedDate))
+                Parameter: nameof(ImpersonationContext.CreatedDate))
             );
         }
 
@@ -145,19 +150,25 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts
                 Parameter: nameof(ImpersonationContext.UpdatedBy)),
 
                 (Rule: IsNotSame(
-                    first: currentUser.EntraUserId, 
-                    second: impersonationContext.UpdatedBy),
-                    Parameter: nameof(ImpersonationContext.UpdatedBy)),
+                    first: currentUser.EntraUserId,
+                    second: impersonationContext.CreatedBy),
+                Parameter: nameof(impersonationContext.CreatedBy)),
+
+                (Rule: IsNotSame(
+                    first: impersonationContext.UpdatedBy,
+                    second: impersonationContext.CreatedBy,
+                    secondName: nameof(ImpersonationContext.CreatedBy)),
+                Parameter: nameof(ImpersonationContext.UpdatedBy)),
 
                 (Rule: IsSameAs(
                     firstDate: impersonationContext.UpdatedDate, 
                     secondDate: impersonationContext.CreatedDate,
                     secondDateName: nameof(ImpersonationContext.CreatedDate)), 
-                    Parameter: nameof(ImpersonationContext.UpdatedDate)),
+                Parameter: nameof(ImpersonationContext.UpdatedDate)),
 
                 (Rule: await IsNotRecentAsync(
                     impersonationContext.UpdatedDate), 
-                    Parameter: nameof(ImpersonationContext.UpdatedDate))
+                Parameter: nameof(ImpersonationContext.UpdatedDate))
             );
         }
 
