@@ -1,11 +1,15 @@
 export class UserAccessView {
     public id: string;
-    public userEmail: string;
     public displayName: string;
     public entraGuid: string;
-    public entraUpn: string;
-    public jobTitle: string;
+    public userPrincipalName: string;
+    public entraUserId: string;
+    public email: string;
+    public givenName: string;
+    public surname: string;
     public orgCodes: string[];
+    public orgCode: string;
+    public jobTitle: string;
     public activeFrom?: Date;
     public activeTo?: Date;
     public createdBy?: string;
@@ -15,12 +19,16 @@ export class UserAccessView {
 
     constructor(
         id: string,
-        userEmail: string,
         displayName: string,
         entraGuid: string,
-        entraUpn: string,
-        jobTitle: string,
+        userPrincipalName: string,
+        entraUserId: string,
+        email: string,
+        givenName: string,
+        surname: string,
         orgCodes: string[],
+        orgCode: string,
+        jobTitle: string,
         activeFrom?: Date,
         activeTo?: Date,
         createdBy?: string,
@@ -29,16 +37,20 @@ export class UserAccessView {
         updatedDate?: Date,
     ) {
         this.id = id;
-        this.userEmail = userEmail || "";
-        this.orgCodes = orgCodes || [];
         this.displayName = displayName;
         this.entraGuid = entraGuid;
-        this.entraUpn = entraUpn;
+        this.userPrincipalName = userPrincipalName;
+        this.entraUserId = entraUserId;
+        this.email = email;
+        this.givenName = givenName;
+        this.surname = surname;
+        this.orgCodes = orgCodes || [];
+        this.orgCode = orgCode;
         this.jobTitle = jobTitle;
         this.activeFrom = activeFrom;
         this.activeTo = activeTo;
         this.createdBy = createdBy !== undefined ? createdBy : '';
-        this.createdDate = createdDate ;
+        this.createdDate = createdDate;
         this.updatedBy = updatedBy !== undefined ? updatedBy : '';
         this.updatedDate = updatedDate;
     }

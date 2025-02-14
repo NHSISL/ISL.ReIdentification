@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -14,18 +13,23 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 {
     public partial class UserAccessesTests
     {
-        [Fact]
-        public async Task ShouldThrowValidationExceptionOnRetrieveAllActiveOrganisationsUserHasAccessToWhenArgsInvalidAsync()
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task
+            ShouldThrowValidationExceptionOnRetrieveAllActiveOrganisationsUserHasAccessToWhenArgsInvalidAsync(
+                string invalidText)
         {
             // given
-            Guid invalidUserAccessId = Guid.Empty;
+            string invalidUserAccessId = invalidText;
 
             var invalidUserAccessException = new InvalidUserAccessException(
                 message: "Invalid user access. Please correct the errors and try again.");
 
             invalidUserAccessException.AddData(
-                key: nameof(UserAccess.Id),
-                values: "Id is invalid");
+                key: nameof(UserAccess.EntraUserId),
+                values: "Text is invalid");
 
             var expectedUserAccessValidationException =
                 new UserAccessValidationException(
@@ -47,13 +51,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedUserAccessValidationException))), Times.Once());
 
-            this.reIdentificationStorageBroker.Verify(broker =>
-                broker.SelectUserAccessByIdAsync(invalidUserAccessId),
-                    Times.Never);
-
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

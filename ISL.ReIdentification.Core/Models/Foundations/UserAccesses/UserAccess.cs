@@ -9,7 +9,7 @@ namespace ISL.ReIdentification.Core.Models.Foundations.UserAccesses
     public class UserAccess : IKey, IAudit
     {
         public Guid Id { get; set; }
-        public Guid EntraUserId { get; set; }
+        public string EntraUserId { get; set; }
         public string GivenName { get; set; }
         public string Surname { get; set; }
         public string DisplayName { get; set; }

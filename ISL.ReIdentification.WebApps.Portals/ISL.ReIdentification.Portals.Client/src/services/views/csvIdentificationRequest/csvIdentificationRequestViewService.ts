@@ -16,7 +16,7 @@ type CsvIdentificationRequestViewServiceResponse = {
 export const csvIdentificationRequestViewService = {
     useGetAllCsvIdentificationRequestsByEntraId: (searchTerm?: string, entraId?: string): CsvIdentificationRequestViewServiceResponse => {
         let query = `?$orderby=createdDate desc`;
-        query = query + `&$filter=(RequesterEntraUserId eq ${entraId} or RecipientEntraUserId eq ${entraId})`;
+        query = query + `&$filter=(RequesterEntraUserId eq '${entraId}' or RecipientEntraUserId eq '${entraId}')`;
 
         if (searchTerm) {
             query = query + `&$filter=contains(RequesterFirstName,'${searchTerm}')`;

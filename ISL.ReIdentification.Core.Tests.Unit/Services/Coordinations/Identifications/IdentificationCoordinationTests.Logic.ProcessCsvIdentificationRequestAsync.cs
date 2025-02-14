@@ -64,7 +64,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 .ReturnsAsync(outputConversionAccessRequest);
 
             this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUser())
+                broker.GetCurrentUserAsync())
                     .ReturnsAsync(outputEntraUser);
 
             this.accessOrchestrationServiceMock.Setup(service =>
@@ -107,7 +107,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                     Times.Once);
 
             this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUser(),
+                broker.GetCurrentUserAsync(),
                     Times.Once);
 
             this.accessOrchestrationServiceMock.Verify(service =>

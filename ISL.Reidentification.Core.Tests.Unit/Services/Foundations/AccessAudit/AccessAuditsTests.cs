@@ -3,13 +3,16 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Loggings;
+using ISL.ReIdentification.Core.Brokers.Securities;
 using ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
+using ISL.ReIdentification.Core.Models.Securities;
 using ISL.ReIdentification.Core.Services.Foundations.AccessAudits;
 using Microsoft.Data.SqlClient;
 using Moq;
@@ -22,6 +25,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
     {
         private readonly Mock<IReIdentificationStorageBroker> reIdentificationStorageBroker;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
+        private readonly Mock<ISecurityBroker> securityBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly AccessAuditService accessAuditService;
 
@@ -29,12 +33,14 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
         {
             this.reIdentificationStorageBroker = new Mock<IReIdentificationStorageBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
+            this.securityBrokerMock = new Mock<ISecurityBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
             this.accessAuditService = new AccessAuditService(
-                reIdentificationStorageBroker.Object,
-                dateTimeBrokerMock.Object,
-                loggingBrokerMock.Object);
+                reIdentificationStorageBroker: reIdentificationStorageBroker.Object,
+                dateTimeBroker: dateTimeBrokerMock.Object,
+                securityBroker: securityBrokerMock.Object,
+                loggingBroker: loggingBrokerMock.Object);
         }
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
@@ -45,21 +51,25 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
 
         private static IQueryable<AccessAudit> CreateRandomAccessAudits()
         {
-            return CreateAccessAuditFiller(GetRandomDateTimeOffset())
+            return CreateAccessAuditFiller(GetRandomDateTimeOffset(), GetRandomStringWithLengthOf(255))
                 .Create(GetRandomNumber())
                 .AsQueryable();
         }
 
-        private static AccessAudit CreateRandomAccessAudit() =>
-            CreateRandomAccessAudit(dateTimeOffset: GetRandomDateTimeOffset());
+        private static AccessAudit CreateRandomAccessAudit()
+        {
+            return CreateRandomAccessAudit(
+                dateTimeOffset: GetRandomDateTimeOffset(),
+                userId: GetRandomStringWithLengthOf(255));
+        }
 
-        private static AccessAudit CreateRandomAccessAudit(DateTimeOffset dateTimeOffset) =>
-            CreateAccessAuditFiller(dateTimeOffset).Create();
+        private static AccessAudit CreateRandomAccessAudit(DateTimeOffset dateTimeOffset, string userId) =>
+            CreateAccessAuditFiller(dateTimeOffset, userId).Create();
 
-        private static AccessAudit CreateRandomModifyAccessAudit(DateTimeOffset dateTimeOffset)
+        private static AccessAudit CreateRandomModifyAccessAudit(DateTimeOffset dateTimeOffset, string userId)
         {
             int randomDaysInThePast = GetRandomNegativeNumber();
-            AccessAudit randomAccessAudit = CreateRandomAccessAudit(dateTimeOffset);
+            AccessAudit randomAccessAudit = CreateRandomAccessAudit(dateTimeOffset, userId);
             randomAccessAudit.CreatedDate = dateTimeOffset.AddDays(randomDaysInThePast);
 
             return randomAccessAudit;
@@ -81,9 +91,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
         private SqlException CreateSqlException() =>
             (SqlException)RuntimeHelpers.GetUninitializedObject(type: typeof(SqlException));
 
-        private static Filler<AccessAudit> CreateAccessAuditFiller(DateTimeOffset dateTimeOffset)
+        private static Filler<AccessAudit> CreateAccessAuditFiller(DateTimeOffset dateTimeOffset, string userId)
         {
-            string user = Guid.NewGuid().ToString();
             var filler = new Filler<AccessAudit>();
 
             filler.Setup()
@@ -91,8 +100,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(userAccess => userAccess.PseudoIdentifier).Use(GetRandomStringWithLengthOf(10))
                 .OnProperty(userAccess => userAccess.Email).Use(GetRandomStringWithLengthOf(320))
-                .OnProperty(userAccess => userAccess.CreatedBy).Use(user)
-                .OnProperty(userAccess => userAccess.UpdatedBy).Use(user);
+                .OnProperty(userAccess => userAccess.CreatedBy).Use(userId)
+                .OnProperty(userAccess => userAccess.UpdatedBy).Use(userId);
 
             return filler;
         }
@@ -102,6 +111,25 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
         {
             return actualException =>
                 actualException.SameExceptionAs(expectedException);
+        }
+
+        private EntraUser CreateRandomEntraUser(string entraUserId = "")
+        {
+            var userId = string.IsNullOrWhiteSpace(entraUserId) ? GetRandomStringWithLengthOf(255) : entraUserId;
+
+            return new EntraUser(
+                entraUserId: userId,
+                givenName: GetRandomString(),
+                surname: GetRandomString(),
+                displayName: GetRandomString(),
+                email: GetRandomString(),
+                jobTitle: GetRandomString(),
+                roles: new List<string> { GetRandomString() },
+
+                claims: new List<System.Security.Claims.Claim>
+                {
+                    new System.Security.Claims.Claim(type: GetRandomString(), value: GetRandomString())
+                });
         }
     }
 }

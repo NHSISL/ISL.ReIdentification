@@ -76,7 +76,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
             return await this.userAccessService.RemoveUserAccessByIdAsync(userAccessId);
         });
 
-        public ValueTask<List<string>> RetrieveAllActiveOrganisationsUserHasAccessToAsync(Guid entraUserId) =>
+        public ValueTask<List<string>> RetrieveAllActiveOrganisationsUserHasAccessToAsync(string entraUserId) =>
         TryCatch(async () =>
         {
             ValidateOnRetrieveAllActiveOrganisationsUserHasAccessTo(entraUserId);
@@ -105,7 +105,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
             }
 
             List<UserAccess> newUserAccess = new List<UserAccess>();
-            EntraUser user = await this.securityBroker.GetCurrentUser();
+            EntraUser user = await this.securityBroker.GetCurrentUserAsync();
             var existingOrgCodes = new HashSet<string>(existingUserAccess.Select(ua => ua.OrgCode));
 
             foreach (string orgCode in bulkUserAccess.OrgCodes)

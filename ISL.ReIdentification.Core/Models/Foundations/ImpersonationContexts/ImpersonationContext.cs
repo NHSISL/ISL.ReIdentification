@@ -10,13 +10,13 @@ namespace ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts
     public class ImpersonationContext : IKey, IAudit
     {
         public Guid Id { get; set; }
-        public Guid RequesterEntraUserId { get; set; } = Guid.Empty;
+        public string RequesterEntraUserId { get; set; } = string.Empty;
         public string RequesterFirstName { get; set; } = string.Empty;
         public string RequesterLastName { get; set; } = string.Empty;
         public string RequesterDisplayName { get; set; } = string.Empty;
         public string RequesterEmail { get; set; } = string.Empty;
         public string RequesterJobTitle { get; set; } = string.Empty;
-        public Guid ResponsiblePersonEntraUserId { get; set; } = Guid.Empty;
+        public string ResponsiblePersonEntraUserId { get; set; } = string.Empty;
         public string ResponsiblePersonFirstName { get; set; } = string.Empty;
         public string ResponsiblePersonLastName { get; set; } = string.Empty;
         public string ResponsiblePersonDisplayName { get; set; } = string.Empty;
@@ -29,13 +29,13 @@ namespace ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts
 
         [NotMapped]
         public string InboxSasToken { get; set; } = string.Empty;
-        
+
         [NotMapped]
         public string OutboxSasToken { get; set; } = string.Empty;
-        
+
         [NotMapped]
         public string ErrorsSasToken { get; set; } = string.Empty;
-        
+
         public bool IsApproved { get; set; }
         public string IdentifierColumn { get; set; } = string.Empty;
         public string CreatedBy { get; set; } = string.Empty;

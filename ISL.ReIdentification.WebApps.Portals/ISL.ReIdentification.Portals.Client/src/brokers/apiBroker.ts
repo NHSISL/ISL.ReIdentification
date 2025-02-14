@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { InteractionRequiredAuthError, PopupRequest, PublicClientApplication } from "@azure/msal-browser";
+import { InteractionRequiredAuthError, PopupRequest, PublicClientApplication, RedirectRequest } from "@azure/msal-browser";
 import { MsalConfig } from '../authConfig';
 
 class ApiBroker {
@@ -38,8 +38,12 @@ class ApiBroker {
             authResult = await this.msalInstance.acquireTokenSilent(request);
         } catch (error) {
             if (error instanceof InteractionRequiredAuthError) {
-                // fallback to interaction when silent call fails
-                await this.msalInstance.acquireTokenRedirect(request);
+                // fallback to interaction when silent call fails    
+                const redirectRequest: RedirectRequest = {
+                    ...request,
+                    redirectUri: window.location.href
+                };
+                await this.msalInstance.acquireTokenRedirect(redirectRequest);
             } else {
                 console.log(error);
                 throw error; // rethrow the error after logging it

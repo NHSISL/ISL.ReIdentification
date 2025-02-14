@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -43,7 +42,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             csvInputData.AppendLine($"{randomValue},{randomValue},{pseudoIdentifier}");
             csvExpectedData.AppendLine($"{randomValue},{randomValue},{nhsNumber}");
             int identifierIndexPosition = 2;
-            Guid securityOid = TestAuthHandler.SecurityOid;
+            string securityOid = TestAuthHandler.SecurityOid;
             CsvIdentificationRequest randomCsvIdentificationRequest = CreateRandomCsvIdentificationRequest();
             CsvIdentificationRequest inputCsvIdentificationRequest = randomCsvIdentificationRequest;
             inputCsvIdentificationRequest.HasHeaderRecord = hasHeader;

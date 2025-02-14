@@ -1,7 +1,7 @@
 import { faCircleInfo, faLeftLong, faRightLong, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { FunctionComponent, useState } from "react";
-import { Button, Card, CardBody, Col, Modal, Row, Spinner, Table, Toast, ToastContainer } from "react-bootstrap";
+import { Button, Card, CardBody, Col, Container, Modal, Row, Spinner, Table, Toast, ToastContainer } from "react-bootstrap";
 import { ToastPosition } from "react-bootstrap/esm/ToastContainer";
 import { ReIdRecord } from "../../types/ReIdRecord";
 import CopyIcon from "../core/copyIcon";
@@ -12,13 +12,15 @@ type ReportToastProps = {
     hide: (hide: boolean) => void;
     clearList: () => void;
     reidentifications: ReIdRecord[];
+    reidentificationLoading: boolean;
     lastSelectedPseudo?: ReIdRecord;
     recordLoading: boolean;
     lastPseudos: string[];
+    launched: boolean;
 }
 
 const ReportToast: FunctionComponent<ReportToastProps> = (props) => {
-    const { position, hidden, hide, reidentifications, lastPseudos } = props;
+    const { position, hidden, hide, reidentifications, lastPseudos, launched, clearList } = props;
     const [showNoAccessInfo, setShowNoAccessInfo] = useState(false);
     const [pageNumber, setPageNumber] = useState(0);
     const [showHistory, setShowHistory] = useState(false);
@@ -46,7 +48,7 @@ const ReportToast: FunctionComponent<ReportToastProps> = (props) => {
         return <Card bg="success" text="white" className="mb-1">
             <Card.Body>
                 <b>Pseudo:&nbsp;</b>
-                {reidRecord.pseudo}&nbsp;
+                {reidRecord.isHx ? reidRecord.pseudo : '--'}&nbsp;
                 <b>NHS:</b> {reidRecord.nhsnumber}&nbsp;&nbsp;
                 {clipboardAvailable &&
                     <CopyIcon content={reidRecord.nhsnumber || ""} resetTime={2000} />
@@ -87,7 +89,7 @@ const ReportToast: FunctionComponent<ReportToastProps> = (props) => {
         </>
     }
 
-    return <ToastContainer position={position || "bottom-end"} hidden={hidden || reidentifications.length === 0}>
+    return <ToastContainer position={position} hidden={hidden || !launched}>
         <Toast onClose={() => hide(true)}>
             <Toast.Header>
                 <strong className="me-auto">Re-identifications</strong>
@@ -96,64 +98,82 @@ const ReportToast: FunctionComponent<ReportToastProps> = (props) => {
                 }
             </Toast.Header>
             <Toast.Body>
-                {lastPseudos.length === 1 && reidentifications.length > 0 && <>
-                    {getSingleRecordCard(reidentifications, lastPseudos[0])}
-                </>}
+                <Container>
+                    <Row>
+                        {lastPseudos.length === 1 && <>
+                            {getSingleRecordCard(reidentifications, lastPseudos[0])}
+                        </>}
 
-                {lastPseudos.length > 1 && <>
-                    {getMultiRecordCard(lastPseudos, reidentifications)}
-                </>}
+                        {lastPseudos.length > 1 && <>
+                            {getMultiRecordCard(lastPseudos, reidentifications)}
+                        </>}
 
-                {showHistory &&
-                    <> <br />
-                        <Table size="sm" bordered>
-                            <tbody>
-                                {reidentifications.slice(pageNumber * itemsPerPage, (pageNumber * itemsPerPage) + itemsPerPage).map((ri) => <tr key={crypto.randomUUID()}>
-                                    <td>{ri.isHx ? ri.pseudo : "---"}</td>
-                                    {ri.loading ? <td>
-                                        <FontAwesomeIcon icon={faSpinner} pulse />
-                                    </td> : <>
-                                        {ri.hasAccess ? <>
-                                            <td>{ri.nhsnumber}</td><td><CopyIcon content={ri.nhsnumber || ""} resetTime={1000} />
-                                            </td>
-                                        </>
-                                            : <td colSpan={2}>
-                                                NO ACCESS <FontAwesomeIcon icon={faCircleInfo} color="red" onClick={() => setShowNoAccessInfo(true)} />
-                                            </td>}
-                                    </>
-                                    }
+                        {showHistory &&
+                            <> <br />
+                                <Table size="sm" bordered>
+                                    <tbody>
+                                        {reidentifications.slice(pageNumber * itemsPerPage, (pageNumber * itemsPerPage) + itemsPerPage).map((ri) => <tr key={crypto.randomUUID()}>
+                                            <td>{ri.isHx ? ri.pseudo : "---"}</td>
+                                            {ri.loading ? <td>
+                                                <FontAwesomeIcon icon={faSpinner} pulse />
+                                            </td> : <>
+                                                {ri.hasAccess ? <>
+                                                    <td>{ri.nhsnumber}</td><td><CopyIcon content={ri.nhsnumber || ""} resetTime={1000} />
+                                                    </td>
+                                                </>
+                                                    : <td colSpan={2}>
+                                                        NO ACCESS <FontAwesomeIcon icon={faCircleInfo} color="red" onClick={() => setShowNoAccessInfo(true)} />
+                                                    </td>}
+                                            </>
+                                            }
 
-                                </tr>)}
-                            </tbody>
-                        </Table>
-                        {reidentifications.length > itemsPerPage && <Row>
-                            <Col className="d-grid gap-2">
-                                <Button onClick={() => {
-                                    if (pageNumber !== 0)
-                                        setPageNumber(pageNumber - 1);
-                                }}>
-                                    <FontAwesomeIcon icon={faLeftLong} />
-                                </Button>
-                            </Col>
-                            <Col>
-                                <b>Page: {pageNumber + 1} of {Math.ceil(reidentifications.length / itemsPerPage)} </b>
-                            </Col>
-                            <Col className="d-grid gap-2">
-                                <Button onClick={() => {
-                                    if (pageNumber + 1 !== Math.ceil(reidentifications.length / itemsPerPage))
-                                        setPageNumber(pageNumber + 1)
-                                }}>
-                                    <FontAwesomeIcon icon={faRightLong} />
-                                </Button>
+                                        </tr>)}
+                                    </tbody>
+                                </Table>
+                                {reidentifications.length > itemsPerPage && <Row>
+                                    <Col className="d-grid gap-2">
+                                        <Button onClick={() => {
+                                            if (pageNumber !== 0)
+                                                setPageNumber(pageNumber - 1);
+                                        }}>
+                                            <FontAwesomeIcon icon={faLeftLong} />
+                                        </Button>
+                                    </Col>
+                                    <Col>
+                                        <b>Page: {pageNumber + 1} of {Math.ceil(reidentifications.length / itemsPerPage)} </b>
+                                    </Col>
+                                    <Col className="d-grid gap-2">
+                                        <Button onClick={() => {
+                                            if (pageNumber + 1 !== Math.ceil(reidentifications.length / itemsPerPage))
+                                                setPageNumber(pageNumber + 1)
+                                        }}>
+                                            <FontAwesomeIcon icon={faRightLong} />
+                                        </Button>
+                                    </Col>
+                                </Row>
+                                }
+                            </>
+                        }
+                    </Row>
+
+                    {showHistory && reidentifications.length > 0 &&
+                        <Row>
+                            <Col></Col>
+                            <Col className="d-grid">
+                                <Button size="sm" variant="outline-primary" onClick={() => {
+                                    setShowHistory(false);
+                                    clearList();
+                                }}
+                                >Clear History</Button>
                             </Col>
                         </Row>
-                        }
-                    </>
-                }
-                <br />
-                <div className="d-grid gap-2">
-                    <Button size="sm" onClick={() => setShowHistory(!showHistory)}>{showHistory ? 'Hide' : 'Show'} reidentification history</Button>
-                </div>
+                    }
+                    <Row className="mt-2">
+                        <Col className="d-grid">
+                            <Button size="sm" onClick={() => setShowHistory(!showHistory)}>{showHistory ? 'Hide' : 'Show'} reidentification history</Button>
+                        </Col>
+                    </Row>
+                </Container>
             </Toast.Body>
         </Toast>
         <Modal show={showNoAccessInfo} onHide={() => { setShowNoAccessInfo(false) }}>

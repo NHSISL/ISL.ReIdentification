@@ -47,8 +47,9 @@ namespace ISL.ReIdentification.Core.Migrations
                         .HasMaxLength(320)
                         .HasColumnType("nvarchar(320)");
 
-                    b.Property<Guid>("EntraUserId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("EntraUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("GivenName")
                         .HasColumnType("nvarchar(max)");
@@ -203,8 +204,9 @@ namespace ISL.ReIdentification.Core.Migrations
                         .HasMaxLength(320)
                         .HasColumnType("nvarchar(320)");
 
-                    b.Property<Guid>("RecipientEntraUserId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("RecipientEntraUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RecipientFirstName")
                         .HasColumnType("nvarchar(max)");
@@ -223,8 +225,9 @@ namespace ISL.ReIdentification.Core.Migrations
                         .HasMaxLength(320)
                         .HasColumnType("nvarchar(320)");
 
-                    b.Property<Guid>("RequesterEntraUserId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("RequesterEntraUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RequesterFirstName")
                         .HasColumnType("nvarchar(max)");
@@ -300,8 +303,9 @@ namespace ISL.ReIdentification.Core.Migrations
                         .HasMaxLength(320)
                         .HasColumnType("nvarchar(320)");
 
-                    b.Property<Guid>("RequesterEntraUserId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("RequesterEntraUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RequesterFirstName")
                         .HasColumnType("nvarchar(max)");
@@ -320,8 +324,9 @@ namespace ISL.ReIdentification.Core.Migrations
                         .HasMaxLength(320)
                         .HasColumnType("nvarchar(320)");
 
-                    b.Property<Guid>("ResponsiblePersonEntraUserId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("ResponsiblePersonEntraUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ResponsiblePersonFirstName")
                         .HasColumnType("nvarchar(max)");
@@ -478,8 +483,9 @@ namespace ISL.ReIdentification.Core.Migrations
                         .HasMaxLength(320)
                         .HasColumnType("nvarchar(320)");
 
-                    b.Property<Guid>("EntraUserId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("EntraUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("GivenName")
                         .HasColumnType("nvarchar(max)");
@@ -550,7 +556,9 @@ namespace ISL.ReIdentification.Core.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("AgreementVersion")
-                        .HasColumnType("nvarchar(450)");
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -560,8 +568,9 @@ namespace ISL.ReIdentification.Core.Migrations
                     b.Property<DateTimeOffset>("CreatedDate")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<Guid>("EntraUserId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("EntraUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
@@ -574,8 +583,7 @@ namespace ISL.ReIdentification.Core.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("EntraUserId", "AgreementType", "AgreementVersion")
-                        .IsUnique()
-                        .HasFilter("[AgreementVersion] IS NOT NULL");
+                        .IsUnique();
 
                     b.ToTable("UserAgreements");
                 });

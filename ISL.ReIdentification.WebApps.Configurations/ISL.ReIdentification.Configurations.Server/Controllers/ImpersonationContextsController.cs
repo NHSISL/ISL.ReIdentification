@@ -63,7 +63,12 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
 
         [InvisibleApi]
         [HttpGet]
-        [EnableQuery(PageSize = 25)]
+#if !DEBUG
+        [EnableQuery(PageSize = 50)]
+#endif
+#if DEBUG
+        [EnableQuery(PageSize = 5000)]
+#endif
         public async ValueTask<ActionResult<IQueryable<ImpersonationContext>>> Get()
         {
             try

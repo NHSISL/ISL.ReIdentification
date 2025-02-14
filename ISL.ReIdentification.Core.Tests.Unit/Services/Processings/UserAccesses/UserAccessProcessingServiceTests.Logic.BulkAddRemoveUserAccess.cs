@@ -21,7 +21,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
         {
             // given
             Guid randomId = Guid.NewGuid();
-            Guid randomEntraId = Guid.NewGuid();
+            string randomEntraId = GetRandomStringWithLengthOf(255);
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
 
             EntraUser currentUser = new EntraUser(
@@ -100,7 +100,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
                         .ReturnsAsync(randomId);
 
             this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUser())
+                broker.GetCurrentUserAsync())
                     .ReturnsAsync(currentUser);
 
             // when
@@ -126,7 +126,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
             }
 
             this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUser(),
+                broker.GetCurrentUserAsync(),
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>

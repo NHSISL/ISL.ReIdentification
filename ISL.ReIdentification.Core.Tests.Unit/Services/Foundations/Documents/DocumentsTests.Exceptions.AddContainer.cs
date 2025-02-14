@@ -3,8 +3,6 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.Providers.Storages.Abstractions.Models.Exceptions;
@@ -32,7 +30,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                 innerException: failedServiceDocumentException);
 
             this.blobStorageBrokerMock.Setup(broker =>
-                broker.CreateContainerAsync(someContainer))
+                broker.RetrieveAllContainersAsync())
                     .ThrowsAsync(someServiceException);
 
             // when
@@ -46,7 +44,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             actualDocumentServiceException.Should().BeEquivalentTo(expectedDocumentServiceException);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.CreateContainerAsync(someContainer),
+                broker.RetrieveAllContainersAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -70,7 +68,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                 innerException: dependencyException);
 
             this.blobStorageBrokerMock.Setup(broker =>
-                broker.CreateContainerAsync(someContainer))
+                broker.RetrieveAllContainersAsync())
                     .ThrowsAsync(dependencyException);
 
             // when
@@ -84,7 +82,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             actualDocumentDependencyException.Should().BeEquivalentTo(expectedDocumentDependencyException);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.CreateContainerAsync(someContainer),
+                broker.RetrieveAllContainersAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -111,7 +109,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                 innerException: storageProviderValidationException);
 
             this.blobStorageBrokerMock.Setup(broker =>
-                broker.CreateContainerAsync(someContainer))
+                broker.RetrieveAllContainersAsync())
                     .ThrowsAsync(storageProviderValidationException);
 
             // when
@@ -125,7 +123,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             actualDocumentServiceException.Should().BeEquivalentTo(expectedDocumentServiceException);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.CreateContainerAsync(someContainer),
+                broker.RetrieveAllContainersAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

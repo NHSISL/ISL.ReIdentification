@@ -19,15 +19,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
         public async Task ShouldRetrieveAllActiveOrganisationsUserHasAccessToAsync()
         {
             // given
-            Guid randomEntraUserId = Guid.NewGuid();
+            string randomEntraUserId = GetRandomStringWithLengthOf(255);
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            Guid inputEntraUserId = randomEntraUserId;
+            string inputEntraUserId = randomEntraUserId;
             List<UserAccess> validUserAccesses = CreateUserAccesses(count: GetRandomNumber());
             validUserAccesses.ForEach(userAccess => userAccess.EntraUserId = inputEntraUserId);
             List<UserAccess> invalidUserAccesses = CreateUserAccesses(count: GetRandomNumber());
-            List<UserAccess> storageUserAccess = new List<UserAccess>();
-            storageUserAccess.AddRange(validUserAccesses);
-            storageUserAccess.AddRange(invalidUserAccesses);
+            List<UserAccess> storageUserAccess = [.. validUserAccesses, .. invalidUserAccesses];
             List<OdsData> userOdsDatas = new List<OdsData>();
 
             foreach (var userAccess in storageUserAccess)
@@ -92,6 +90,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

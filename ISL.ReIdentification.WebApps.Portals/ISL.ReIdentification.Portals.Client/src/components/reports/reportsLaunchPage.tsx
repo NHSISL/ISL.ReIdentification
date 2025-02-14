@@ -2,13 +2,14 @@ import { IReportEmbedConfiguration } from "powerbi-client";
 import { PowerBIEmbed } from "powerbi-client-react";
 import { FunctionComponent, useState } from "react";
 import ReportToast from "./reportToast";
-import { ToastPosition } from "react-bootstrap/esm/ToastContainer";
 import { DeveloperEvents } from "../../types/DeveloperEvents";
 import { useParams } from "react-router-dom";
 import { PBIEvent, PBIIdentity, PBIValues } from "../../types/PBIEvent";
 import { useReidentification } from "../../hooks/useReidentification";
 import { Button, ButtonGroup, Modal } from "react-bootstrap";
 import FakeReportPage from "./fakeReportPage";
+import { ToastContainer } from "react-toastify";
+import { ToastPosition } from "react-bootstrap/esm/ToastContainer";
 
 type ReportLaunchPageProps = {
     reportConfig: IReportEmbedConfiguration
@@ -25,8 +26,14 @@ const ReportsLaunchPage: FunctionComponent<ReportLaunchPageProps> = (props) => {
     const { pseudoColumn } = useParams();
     const [heldPseudosToReid, setHeldPseudosToReid] = useState<string[]>([]);
     const [lastSetOfPseudos, setLastSetOfPseudos] = useState<string[]>([]);
+    const [launched, setLaunched] = useState(false);
     const [promptForReid, setPromptForReid] = useState(false);
     const { reidentify, reidentifications, lastPseudo, clearList, isLoading } = useReidentification(reidReason);
+
+    const clearHistory = () => {
+        setLastSetOfPseudos([]);
+        clearList();
+    }
 
     const reIdBulk = () => {
         setPromptForReid(false)
@@ -42,7 +49,11 @@ const ReportsLaunchPage: FunctionComponent<ReportLaunchPageProps> = (props) => {
 
             if (activePage) {
                 const pages = await embedObject.getPages();
-                const pageToActivate = pages.filter((page: { displayName: string; }) => page.displayName === activePage)
+
+                const pageToActivate = pages.filter(
+                    (page: { displayName: string, visibility: number }) => page.displayName.toLocaleLowerCase() === activePage.toLocaleLowerCase()
+                        && page.visibility === 0)
+
                 if (pageToActivate.length !== 1) {
                     addDeveloperEvent({ message: `Cannot find page: ${activePage}`, eventDetails: { detail: { availablePages: pages.map((p: { displayName: string; }) => p.displayName) } } })
                     return;
@@ -80,6 +91,7 @@ const ReportsLaunchPage: FunctionComponent<ReportLaunchPageProps> = (props) => {
                         return
                     }
 
+                    setLaunched(true);
                     //the psuedo could be contained in one of the following properties - so normalise all as strings
                     const normalisedPseudos = pseudos.map(x => {
                         if ((x as PBIIdentity).equals) {
@@ -137,13 +149,16 @@ const ReportsLaunchPage: FunctionComponent<ReportLaunchPageProps> = (props) => {
                 </Modal.Body>
             </Modal>
             <ReportToast
-                clearList={clearList}
+                clearList={clearHistory}
                 hidden={toastHidden} hide={hideToast}
                 lastSelectedPseudo={lastPseudo}
                 lastPseudos={lastSetOfPseudos}
                 recordLoading={isLoading}
                 position={toastPostion}
-                reidentifications={reidentifications} />
+                reidentificationLoading={true}
+                reidentifications={reidentifications}
+                launched={launched} />
+            <ToastContainer />
         </div>
     </>
 }
