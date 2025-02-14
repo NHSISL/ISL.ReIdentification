@@ -72,7 +72,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
                         message: "Failed service access audit error occurred, contact support.",
                         innerException: aggregateException);
 
-                throw await CreateAndLogValidationExceptionAsync(failedServiceIdentificationRequestException);
+                throw await CreateAndLogServiceExceptionAsync(failedServiceIdentificationRequestException);
             }
 
             catch (Exception exception)

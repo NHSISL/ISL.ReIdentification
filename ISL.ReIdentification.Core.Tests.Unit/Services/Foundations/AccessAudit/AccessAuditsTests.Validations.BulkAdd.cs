@@ -25,15 +25,15 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
             var nullAccessAuditException = new NullAccessAuditException(message: "Access audit list is null.");
 
             var expectedAccessAuditValidationException =
-                new AccessAuditValidationException(
+                new AccessAuditServiceException(
                     message: "Access audit validation error occurred, please fix errors and try again.",
                     innerException: nullAccessAuditException);
 
             // when
             ValueTask addAccessAuditTask = this.accessAuditService.BulkAddAccessAuditAsync(nullAccessAudit);
 
-            AccessAuditValidationException actualAccessAuditValidationException =
-                await Assert.ThrowsAsync<AccessAuditValidationException>(testCode: addAccessAuditTask.AsTask);
+            AccessAuditServiceException actualAccessAuditValidationException =
+                await Assert.ThrowsAsync<AccessAuditServiceException>(testCode: addAccessAuditTask.AsTask);
 
             // then
             actualAccessAuditValidationException.Should().BeEquivalentTo(expectedAccessAuditValidationException);
@@ -129,7 +129,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
                 [
                     "Date is invalid",
                     $"Date is not recent. Expected a value between " +
-                        $"{startDate} and {endDate} but found {randomDateTimeOffset}"
+                        $"{startDate} and {endDate} but found {invalidAccessAudits.FirstOrDefault().CreatedDate}"
                 ]);
 
             invalidAccessAuditException.AddData(
@@ -165,7 +165,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
                     message: "Failed service access audit error occurred, contact support.",
                     innerException: aggregateException);
 
-            var expectedAccessAuditValidationException =
+            var expectedAccessAuditServiceException =
                 new AccessAuditServiceException(
                 message: "Service error occurred, contact support.",
                 innerException: failedServiceIdentificationRequestException);
@@ -174,12 +174,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
             ValueTask addAccessAuditTask =
                 accessAuditServiceMock.Object.BulkAddAccessAuditAsync(invalidAccessAudits);
 
-            AccessAuditValidationException actualAccessAuditValidationException =
-                await Assert.ThrowsAsync<AccessAuditValidationException>(testCode: addAccessAuditTask.AsTask);
+            AccessAuditServiceException actualAccessAuditServiceException =
+                await Assert.ThrowsAsync<AccessAuditServiceException>(testCode: addAccessAuditTask.AsTask);
 
             // then
-            actualAccessAuditValidationException.Should()
-                .BeEquivalentTo(expectedAccessAuditValidationException);
+            actualAccessAuditServiceException.Should()
+                .BeEquivalentTo(expectedAccessAuditServiceException);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
@@ -191,7 +191,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
-                    expectedAccessAuditValidationException))),
+                    expectedAccessAuditServiceException))),
                         Times.Once);
 
             this.reIdentificationStorageBroker.Verify(broker =>
@@ -508,7 +508,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
                     $"{startDate} and {endDate} but found {invalidDate}");
 
             var expectedAccessAuditServiceException =
-                new AccessAuditValidationException(
+                new AccessAuditServiceException(
                     message: "Access audit validation error occurred, please fix errors and try again.",
                     innerException: invalidAccessAuditException);
 
