@@ -381,20 +381,43 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
             int invalidSeconds)
         {
             // given
-            DateTimeOffset randomDateTime =
-                GetRandomDateTimeOffset();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            DateTimeOffset startDate = randomDateTimeOffset.AddSeconds(-90);
+            DateTimeOffset endDate = randomDateTimeOffset.AddSeconds(0);
+            EntraUser randomEntraUser = CreateRandomEntraUser();
 
-            DateTimeOffset now = randomDateTime;
-            DateTimeOffset startDate = now.AddSeconds(-90);
-            DateTimeOffset endDate = now.AddSeconds(0);
-            ImpersonationContext randomImpersonationContext = CreateRandomImpersonationContext();
+            ImpersonationContext randomImpersonationContext = CreateRandomImpersonationContext(
+                dateTimeOffset: randomDateTimeOffset,
+                impersonationContextId: randomEntraUser.EntraUserId);
+                
             ImpersonationContext invalidImpersonationContext = randomImpersonationContext;
 
             DateTimeOffset invalidDate =
-                now.AddSeconds(invalidSeconds);
+                randomDateTimeOffset.AddSeconds(invalidSeconds);
 
             invalidImpersonationContext.CreatedDate = invalidDate;
             invalidImpersonationContext.UpdatedDate = invalidDate;
+
+            var impersonationServiceMock = new Mock<ImpersonationContextService>(
+                this.reIdentificationStorageBroker.Object,
+                this.dateTimeBrokerMock.Object,
+                this.securityBrokerMock.Object,
+                this.loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            impersonationServiceMock.Setup(service =>
+                service.ApplyAddAuditAsync(invalidImpersonationContext))
+                    .ReturnsAsync(invalidImpersonationContext);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             var invalidImpersonationContextException = new InvalidImpersonationContextException(
                 message: "Invalid impersonation context. Please correct the errors and try again.");
@@ -410,13 +433,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
                     message: "Impersonation context validation error occurred, please fix errors and try again.",
                     innerException: invalidImpersonationContextException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
-                    .ReturnsAsync(now);
-
             // when
             ValueTask<ImpersonationContext> addImpersonationContextTask =
-                this.impersonationContextService.AddImpersonationContextAsync(invalidImpersonationContext);
+                impersonationServiceMock.Object.AddImpersonationContextAsync(invalidImpersonationContext);
 
             ImpersonationContextValidationException actualImpersonationContextValidationException =
                 await Assert.ThrowsAsync<ImpersonationContextValidationException>(
@@ -430,6 +449,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(
                     SameExceptionAs(expectedImpersonationContextValidationException))),
@@ -440,6 +463,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
         }
