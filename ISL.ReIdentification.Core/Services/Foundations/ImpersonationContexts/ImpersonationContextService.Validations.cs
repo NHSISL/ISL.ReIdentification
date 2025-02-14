@@ -70,20 +70,14 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts
                 Parameter: nameof(ImpersonationContext.UpdatedBy)),
 
                 (Rule: IsNotSame(
-                    first: currentUser.EntraUserId, 
-                    second: impersonationContext.CreatedBy),
-                    Parameter: nameof(ImpersonationContext.CreatedBy)),
-
-                (Rule: IsNotSame(
                     first: impersonationContext.UpdatedBy, 
                     second: impersonationContext.CreatedBy,
                     secondName: nameof(ImpersonationContext.CreatedBy)), 
-                    Parameter: nameof(
-                        ImpersonationContext.UpdatedBy)),
+                    Parameter: nameof(ImpersonationContext.UpdatedBy)),
 
                 (Rule: IsNotSame(
-                    first: impersonationContext.CreatedDate, 
-                    second: impersonationContext.UpdatedDate,
+                    first: impersonationContext.UpdatedDate, 
+                    second: impersonationContext.CreatedDate,
                     secondName: nameof(ImpersonationContext.CreatedDate)), 
                     Parameter: nameof(ImpersonationContext.UpdatedDate)),
 
