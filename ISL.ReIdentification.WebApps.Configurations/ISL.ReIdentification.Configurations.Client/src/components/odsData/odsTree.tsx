@@ -2,9 +2,7 @@ import { FunctionComponent, useEffect, useState, useRef } from "react";
 import { odsDataService } from "../../services/foundations/odsDataAccessService";
 import { OdsData } from "../../models/odsData/odsData";
 import { OdsTreeElement } from "./odsTreeElement";
-import { toastError } from "../../brokers/toastBroker.error";
 import { Form, InputGroup, Spinner } from "react-bootstrap";
-import { Input } from "nhsuk-react-components";
 
 type OdsTreeProps = {
     rootId: string;
@@ -19,6 +17,8 @@ const OdsTree: FunctionComponent<OdsTreeProps> = ({ rootId, selectedRecords, set
     const { data: rootRecord, isLoading } = odsDataService.useRetrieveAllOdsData(`?filter=Id eq ${rootId}`)
     const { data } = odsDataService.useGetOdsChildren(rootId);
     const tree = useRef<HTMLSpanElement>(null);
+    const rootItem = useRef<HTMLInputElement>(null);
+    const [rootItemDisabled, setRootItemDisabled] = useState(false)
 
     const addSelectedRecord = (odsRecord: OdsData) => {
         setSelectedRecords([...selectedRecords, odsRecord]);
@@ -49,11 +49,20 @@ const OdsTree: FunctionComponent<OdsTreeProps> = ({ rootId, selectedRecords, set
                 indeterminate[i].indeterminate = false;
             }
         }
-    }, [selectedRecords]);
+
+        if (rootItem && rootItem.current && selectedRecords.find(x => x.odsHierarchy.startsWith(rootRecord[0].odsHierarchy) && x.id !== rootRecord[0].id)) {
+            rootItem.current.indeterminate = true;
+            setRootItemDisabled(true);
+        } else {
+            setRootItemDisabled(false);
+        }
+    }, [selectedRecords, rootId]);
+
 
     if (isLoading || !rootRecord) {
         return <Spinner />
     }
+   
 
     const rootSelected = (): boolean => {
         return selectedRecords.filter((x: OdsData) => x.organisationCode == rootRecord[0].organisationCode).length > 0
@@ -62,7 +71,7 @@ const OdsTree: FunctionComponent<OdsTreeProps> = ({ rootId, selectedRecords, set
     return (
         <div ref={tree}>
             {showRoot && <Form>
-                <Form.Check data-ods-hierarchy={rootRecord[0].odsHierarchy} inline checked={rootSelected()} onChange={(e) => { e.target.checked ? addSelectedRecord(rootRecord[0]) : removeSelectedRecord(rootRecord[0]) }} />
+                <Form.Check ref={rootItem} data-ods-hierarchy={rootRecord[0].odsHierarchy} disabled={rootItemDisabled}  inline checked={rootSelected()} onChange={(e) => { e.target.checked ? addSelectedRecord(rootRecord[0]) : removeSelectedRecord(rootRecord[0]) }} />
                 <span>{rootRecord[0].organisationName}({rootRecord[0].organisationCode})</span>
             </Form>
             }

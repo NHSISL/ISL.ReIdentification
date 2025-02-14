@@ -118,8 +118,8 @@ export const UserAccessEdit = () => {
                                     <div>UPN: {selectedUser.userPrincipalName}</div>
                                     {selectedOrganisation && <>{selectedOrganisation.organisationCode} </>}
                                     <div style={{ paddingTop: "10px" }}>
-                                        <Row>
-                                            <Col>
+                                            <Row>
+                                                <Col xl={3} className="mt-3">
                                                 <Card>
                                                     <CardHeader>Search</CardHeader>
                                                         <CardBody>
@@ -127,19 +127,19 @@ export const UserAccessEdit = () => {
                                                     </CardBody>
                                                 </Card>
                                             </Col>
-                                            <Col>
+                                                <Col xl={6} className="mt-3">
                                                 <Card>
                                                     <CardHeader>
-                                                        Select Organisations {selectedUser.displayName} has access to:
-                                                    </CardHeader>
-                                                    <CardBody>
+                                                        Organisations:
+                                                        </CardHeader>
+                                                        <CardBody className="text-nowrap">
                                                             {rootId &&
                                                                 <OdsTree readonly={false} rootId={rootId} selectedRecords={selectedOdsRecords} setSelectedRecords={setSelectedOdsRecords} showRoot={selectedOrganisation !== undefined} />
                                                         }
                                                     </CardBody>
                                                 </Card>
                                             </Col>
-                                            <Col>
+                                                <Col xl={3} className="mt-3">
                                                 <Card>
                                                     <CardHeader>
                                                         Selected Records:
@@ -148,6 +148,7 @@ export const UserAccessEdit = () => {
                                                         {selectedOdsRecords.length === 0 && <div>none</div>}
                                                         {selectedOdsRecords.map(r => <div>
                                                             <FontAwesomeIcon icon={faTimes} color="red" onClick={() => removeOdsCode(r)} />
+                                                            &nbsp;
                                                             <span>{r.organisationName} ({r.organisationCode})</span>
                                                         </div>
                                                         )}
