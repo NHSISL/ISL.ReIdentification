@@ -16,7 +16,7 @@ const OdsTree: FunctionComponent<OdsTreeProps> = ({ rootId, selectedRecords, set
 
     const { data: rootRecord, isLoading } = odsDataService.useRetrieveAllOdsData(`?filter=Id eq ${rootId}`)
     const { data } = odsDataService.useGetOdsChildren(rootId);
-    const tree = useRef<HTMLSpanElement>(null);
+    const tree = useRef<HTMLDivElement>(null);
     const rootItem = useRef<HTMLInputElement>(null);
     const [rootItemDisabled, setRootItemDisabled] = useState(false)
 
@@ -50,7 +50,7 @@ const OdsTree: FunctionComponent<OdsTreeProps> = ({ rootId, selectedRecords, set
             }
         }
 
-        if (rootItem && rootItem.current && selectedRecords.find(x => x.odsHierarchy.startsWith(rootRecord[0].odsHierarchy) && x.id !== rootRecord[0].id)) {
+        if (rootItem && rootItem.current && rootRecord && rootRecord[0] && selectedRecords.find(x => x.odsHierarchy.startsWith(rootRecord[0].odsHierarchy) && x.id !== rootRecord[0].id)) {
             rootItem.current.indeterminate = true;
             setRootItemDisabled(true);
         } else {
