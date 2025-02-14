@@ -7,10 +7,8 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts.Exceptions;
-using ISL.ReIdentification.Core.Models.Foundations.Lookups.Exceptions;
 using ISL.ReIdentification.Core.Models.Securities;
 using ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts;
-using ISL.ReIdentification.Core.Services.Foundations.Lookups;
 using Moq;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ImpersonationContexts
@@ -207,13 +205,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
                 dateTimeOffset: randomDateTimeOffset,
                 impersonationContextId: randomEntraUser.EntraUserId);
 
-            var username = GetRandomStringWithLengthOf(256);
             invalidImpersonationContext.RequesterEmail = GetRandomStringWithLengthOf(321);
             invalidImpersonationContext.ResponsiblePersonEmail = GetRandomStringWithLengthOf(321);
             invalidImpersonationContext.ProjectName = GetRandomStringWithLengthOf(256);
             invalidImpersonationContext.IdentifierColumn = GetRandomStringWithLengthOf(11);
-            invalidImpersonationContext.CreatedBy = username;
-            invalidImpersonationContext.UpdatedBy = username;
+            invalidImpersonationContext.CreatedBy = randomString;
+            invalidImpersonationContext.UpdatedBy = randomString;
 
             var impersonationContextServiceMock = new Mock<ImpersonationContextService>(
                 this.reIdentificationStorageBroker.Object,
