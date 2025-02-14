@@ -42,7 +42,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
             await this.reIdentificationStorageBroker.InsertBulkAccessAuditAsync(accessAuditsWithAddAuditApplied);
         });
 
-
         public ValueTask<AccessAudit> AddAccessAuditAsync(AccessAudit accessAudit) =>
         TryCatch(async () =>
         {
