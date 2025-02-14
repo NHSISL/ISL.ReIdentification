@@ -66,14 +66,18 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts
             ImpersonationContext impersonationContext) =>
         TryCatch(async () =>
         {
-            ImpersonationContext impersonationContextWithModifyAuditApplied = await ApplyModifyAuditAsync(impersonationContext);
+            ImpersonationContext impersonationContextWithModifyAuditApplied = 
+            await ApplyModifyAuditAsync(impersonationContext);
+            
             await ValidateImpersonationContextOnModifyAsync(impersonationContextWithModifyAuditApplied);
 
             ImpersonationContext maybeImpersonationContext = 
                 await this.reIdentificationStorageBroker.
                     SelectImpersonationContextByIdAsync(impersonationContextWithModifyAuditApplied.Id);
             
-            ValidateStorageImpersonationContext(maybeImpersonationContext, impersonationContext.Id);
+            ValidateStorageImpersonationContext(
+                maybeImpersonationContext, 
+                impersonationContextWithModifyAuditApplied.Id);
 
             ValidateAgainstStorageImpersonationContextOnModify(
                 inputImpersonationContext: impersonationContextWithModifyAuditApplied,
