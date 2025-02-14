@@ -161,7 +161,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             // when
             ValueTask<CsvIdentificationRequest> modifyCsvIdentificationRequestTask =
-                this.csvIdentificationRequestService.ModifyCsvIdentificationRequestAsync(
+                csvIdentificationRequestServiceMock.Object.ModifyCsvIdentificationRequestAsync(
                     invalidCsvIdentificationRequest);
 
             CsvIdentificationRequestValidationException actualCsvIdentificationRequestValidationException =
@@ -201,15 +201,18 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser(entraUserId: GetRandomStringWithLengthOf(256));
 
             var invalidCsvIdentificationRequest =
-                CreateRandomCsvIdentificationRequest(dateTimeOffset: randomDateTimeOffset);
+                CreateRandomCsvIdentificationRequest(
+                    dateTimeOffset: randomDateTimeOffset, 
+                    userId: randomEntraUser.EntraUserId);
 
-            var username = GetRandomStringWithLengthOf(256);
+            var inputCreatedByUpdatedByString = randomEntraUser.EntraUserId;
             invalidCsvIdentificationRequest.RequesterEmail = GetRandomStringWithLengthOf(321);
             invalidCsvIdentificationRequest.RecipientEmail = GetRandomStringWithLengthOf(321);
-            invalidCsvIdentificationRequest.CreatedBy = username;
-            invalidCsvIdentificationRequest.UpdatedBy = username;
+            invalidCsvIdentificationRequest.CreatedBy = inputCreatedByUpdatedByString;
+            invalidCsvIdentificationRequest.UpdatedBy = inputCreatedByUpdatedByString;
 
             var invalidCsvIdentificationRequestException =
                 new InvalidCsvIdentificationRequestException(
@@ -355,7 +358,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
             CsvIdentificationRequest invalidCsvIdentificationRequest = randomCsvIdentificationRequest;
             invalidCsvIdentificationRequest.UpdatedDate = randomDateTimeOffset.AddSeconds(invalidSeconds);
 
-            var csvIdentificationRequestMock = new Mock<CsvIdentificationRequestService>(
+            var csvIdentificationRequestServiceMock = new Mock<CsvIdentificationRequestService>(
                 reIdentificationStorageBroker.Object,
                 dateTimeBrokerMock.Object,
                 securityBrokerMock.Object,
@@ -364,7 +367,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
                 CallBase = true
             };
 
-            csvIdentificationRequestMock.Setup(service =>
+            csvIdentificationRequestServiceMock.Setup(service =>
                 service.ApplyModifyAuditAsync(invalidCsvIdentificationRequest))
                     .ReturnsAsync(invalidCsvIdentificationRequest);
 
@@ -402,7 +405,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             // when
             ValueTask<CsvIdentificationRequest> modifyCsvIdentificationRequestTask =
-                this.csvIdentificationRequestService.ModifyCsvIdentificationRequestAsync(
+                csvIdentificationRequestServiceMock.Object.ModifyCsvIdentificationRequestAsync(
                     invalidCsvIdentificationRequest);
 
             CsvIdentificationRequestValidationException actualCsvIdentificationRequestValidationException =
