@@ -18,35 +18,78 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts
             EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
-                (Rule: IsInvalid(impersonationContext.Id), Parameter: nameof(ImpersonationContext.Id)),
-                (Rule: IsInvalid(impersonationContext.RequesterEntraUserId), Parameter: nameof(ImpersonationContext.RequesterEntraUserId)),
-                (Rule: IsInvalid(impersonationContext.RequesterEmail), Parameter: nameof(ImpersonationContext.RequesterEmail)),
-                (Rule: IsInvalid(impersonationContext.ResponsiblePersonEntraUserId), Parameter: nameof(ImpersonationContext.ResponsiblePersonEntraUserId)),
-                (Rule: IsInvalid(impersonationContext.ResponsiblePersonEmail), Parameter: nameof(ImpersonationContext.ResponsiblePersonEmail)),
-                (Rule: IsInvalid(impersonationContext.IdentifierColumn), Parameter: nameof(ImpersonationContext.IdentifierColumn)),
-                (Rule: IsInvalid(impersonationContext.ProjectName), Parameter: nameof(ImpersonationContext.ProjectName)),
-                (Rule: IsInvalid(impersonationContext.CreatedBy), Parameter: nameof(ImpersonationContext.CreatedBy)),
-                (Rule: IsInvalid(impersonationContext.UpdatedBy), Parameter: nameof(ImpersonationContext.UpdatedBy)),
-                (Rule: IsInvalid(impersonationContext.CreatedDate), Parameter: nameof(ImpersonationContext.CreatedDate)),
-                (Rule: IsInvalid(impersonationContext.UpdatedDate), Parameter: nameof(ImpersonationContext.UpdatedDate)),
+                (Rule: IsInvalid(impersonationContext.Id), 
+                Parameter: nameof(ImpersonationContext.Id)),
 
-                (Rule: IsInvalidLength(impersonationContext.ProjectName, 255), Parameter: nameof(ImpersonationContext.ProjectName)),
-                (Rule: IsInvalidLength(impersonationContext.RequesterEmail, 320), Parameter: nameof(ImpersonationContext.RequesterEmail)),
-                (Rule: IsInvalidLength(impersonationContext.ResponsiblePersonEmail, 320), Parameter: nameof(ImpersonationContext.ResponsiblePersonEmail)),
-                (Rule: IsInvalidLength(impersonationContext.IdentifierColumn, 10), Parameter: nameof(ImpersonationContext.IdentifierColumn)),
-                (Rule: IsInvalidLength(impersonationContext.CreatedBy, 255), Parameter: nameof(ImpersonationContext.CreatedBy)),
-                (Rule: IsInvalidLength(impersonationContext.UpdatedBy, 255), Parameter: nameof(ImpersonationContext.UpdatedBy)),
+                (Rule: IsInvalid(impersonationContext.RequesterEntraUserId), 
+                Parameter: nameof(ImpersonationContext.RequesterEntraUserId)),
 
-                (Rule: IsNotSame(first: currentUser.EntraUserId, second: impersonationContext.CreatedBy),
+                (Rule: IsInvalid(impersonationContext.RequesterEmail), 
+                Parameter: nameof(ImpersonationContext.RequesterEmail)),
+
+                (Rule: IsInvalid(impersonationContext.ResponsiblePersonEntraUserId), 
+                Parameter: nameof(ImpersonationContext.ResponsiblePersonEntraUserId)),
+
+                (Rule: IsInvalid(impersonationContext.ResponsiblePersonEmail), 
+                Parameter: nameof(ImpersonationContext.ResponsiblePersonEmail)),
+
+                (Rule: IsInvalid(impersonationContext.IdentifierColumn), 
+                Parameter: nameof(ImpersonationContext.IdentifierColumn)),
+
+                (Rule: IsInvalid(impersonationContext.ProjectName), 
+                Parameter: nameof(ImpersonationContext.ProjectName)),
+
+                (Rule: IsInvalid(impersonationContext.CreatedBy), 
+                Parameter: nameof(ImpersonationContext.CreatedBy)),
+
+                (Rule: IsInvalid(impersonationContext.UpdatedBy), 
+                Parameter: nameof(ImpersonationContext.UpdatedBy)),
+
+                (Rule: IsInvalid(impersonationContext.CreatedDate), 
+                Parameter: nameof(ImpersonationContext.CreatedDate)),
+
+                (Rule: IsInvalid(impersonationContext.UpdatedDate), 
+                Parameter: nameof(ImpersonationContext.UpdatedDate)),
+
+                (Rule: IsInvalidLength(impersonationContext.ProjectName, 255), 
+                Parameter: nameof(ImpersonationContext.ProjectName)),
+
+                (Rule: IsInvalidLength(impersonationContext.RequesterEmail, 320), 
+                Parameter: nameof(ImpersonationContext.RequesterEmail)),
+
+                (Rule: IsInvalidLength(impersonationContext.ResponsiblePersonEmail, 320), 
+                Parameter: nameof(ImpersonationContext.ResponsiblePersonEmail)),
+
+                (Rule: IsInvalidLength(impersonationContext.IdentifierColumn, 10), 
+                Parameter: nameof(ImpersonationContext.IdentifierColumn)),
+
+                (Rule: IsInvalidLength(impersonationContext.CreatedBy, 255), 
+                Parameter: nameof(ImpersonationContext.CreatedBy)),
+
+                (Rule: IsInvalidLength(impersonationContext.UpdatedBy, 255), 
+                Parameter: nameof(ImpersonationContext.UpdatedBy)),
+
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId, 
+                    second: impersonationContext.CreatedBy),
                     Parameter: nameof(ImpersonationContext.CreatedBy)),
 
-                (Rule: IsNotSame(first: impersonationContext.UpdatedBy, second: impersonationContext.CreatedBy,
-                    secondName: nameof(ImpersonationContext.CreatedBy)), Parameter: nameof(ImpersonationContext.UpdatedBy)),
+                (Rule: IsNotSame(
+                    first: impersonationContext.UpdatedBy, 
+                    second: impersonationContext.CreatedBy,
+                    secondName: nameof(ImpersonationContext.CreatedBy)), 
+                    Parameter: nameof(
+                        ImpersonationContext.UpdatedBy)),
 
-                (Rule: IsNotSame(first: impersonationContext.CreatedDate, second: impersonationContext.UpdatedDate,
-                    secondName: nameof(ImpersonationContext.CreatedDate)), Parameter: nameof(ImpersonationContext.UpdatedDate)),
+                (Rule: IsNotSame(
+                    first: impersonationContext.CreatedDate, 
+                    second: impersonationContext.UpdatedDate,
+                    secondName: nameof(ImpersonationContext.CreatedDate)), 
+                    Parameter: nameof(ImpersonationContext.UpdatedDate)),
 
-                (Rule: await IsNotRecentAsync(impersonationContext.CreatedDate), Parameter: nameof(ImpersonationContext.CreatedDate))
+                (Rule: await IsNotRecentAsync(
+                    impersonationContext.CreatedDate), 
+                    Parameter: nameof(ImpersonationContext.CreatedDate))
             );
         }
 
@@ -56,32 +99,71 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts
             EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
-                (Rule: IsInvalid(impersonationContext.Id), Parameter: nameof(ImpersonationContext.Id)),
-                (Rule: IsInvalid(impersonationContext.RequesterEntraUserId), Parameter: nameof(ImpersonationContext.RequesterEntraUserId)),
-                (Rule: IsInvalid(impersonationContext.RequesterEmail), Parameter: nameof(ImpersonationContext.RequesterEmail)),
-                (Rule: IsInvalid(impersonationContext.ResponsiblePersonEntraUserId), Parameter: nameof(ImpersonationContext.ResponsiblePersonEntraUserId)),
-                (Rule: IsInvalid(impersonationContext.ResponsiblePersonEmail), Parameter: nameof(ImpersonationContext.ResponsiblePersonEmail)),
-                (Rule: IsInvalid(impersonationContext.IdentifierColumn), Parameter: nameof(ImpersonationContext.IdentifierColumn)),
-                (Rule: IsInvalid(impersonationContext.ProjectName), Parameter: nameof(ImpersonationContext.ProjectName)),
-                (Rule: IsInvalid(impersonationContext.CreatedBy), Parameter: nameof(ImpersonationContext.CreatedBy)),
-                (Rule: IsInvalid(impersonationContext.UpdatedBy), Parameter: nameof(ImpersonationContext.UpdatedBy)),
-                (Rule: IsInvalid(impersonationContext.CreatedDate), Parameter: nameof(ImpersonationContext.CreatedDate)),
-                (Rule: IsInvalid(impersonationContext.UpdatedDate), Parameter: nameof(ImpersonationContext.UpdatedDate)),
+                (Rule: IsInvalid(impersonationContext.Id), 
+                Parameter: nameof(ImpersonationContext.Id)),
 
-                (Rule: IsInvalidLength(impersonationContext.ProjectName, 255), Parameter: nameof(ImpersonationContext.ProjectName)),
-                (Rule: IsInvalidLength(impersonationContext.RequesterEmail, 320), Parameter: nameof(ImpersonationContext.RequesterEmail)),
-                (Rule: IsInvalidLength(impersonationContext.ResponsiblePersonEmail, 320), Parameter: nameof(ImpersonationContext.ResponsiblePersonEmail)),
-                (Rule: IsInvalidLength(impersonationContext.IdentifierColumn, 10), Parameter: nameof(ImpersonationContext.IdentifierColumn)),
-                (Rule: IsInvalidLength(impersonationContext.CreatedBy, 255), Parameter: nameof(ImpersonationContext.CreatedBy)),
-                (Rule: IsInvalidLength(impersonationContext.UpdatedBy, 255), Parameter: nameof(ImpersonationContext.UpdatedBy)),
+                (Rule: IsInvalid(impersonationContext.RequesterEntraUserId), 
+                Parameter: nameof(ImpersonationContext.RequesterEntraUserId)),
 
-                (Rule: IsNotSame(first: currentUser.EntraUserId, second: impersonationContext.UpdatedBy),
+                (Rule: IsInvalid(impersonationContext.RequesterEmail), 
+                Parameter: nameof(ImpersonationContext.RequesterEmail)),
+
+                (Rule: IsInvalid(impersonationContext.ResponsiblePersonEntraUserId), 
+                Parameter: nameof(ImpersonationContext.ResponsiblePersonEntraUserId)),
+
+                (Rule: IsInvalid(impersonationContext.ResponsiblePersonEmail), 
+                Parameter: nameof(ImpersonationContext.ResponsiblePersonEmail)),
+
+                (Rule: IsInvalid(impersonationContext.IdentifierColumn), 
+                Parameter: nameof(ImpersonationContext.IdentifierColumn)),
+
+                (Rule: IsInvalid(impersonationContext.ProjectName), 
+                Parameter: nameof(ImpersonationContext.ProjectName)),
+
+                (Rule: IsInvalid(impersonationContext.CreatedBy), 
+                Parameter: nameof(ImpersonationContext.CreatedBy)),
+
+                (Rule: IsInvalid(impersonationContext.UpdatedBy), 
+                Parameter: nameof(ImpersonationContext.UpdatedBy)),
+
+                (Rule: IsInvalid(impersonationContext.CreatedDate), 
+                Parameter: nameof(ImpersonationContext.CreatedDate)),
+
+                (Rule: IsInvalid(impersonationContext.UpdatedDate), 
+                Parameter: nameof(ImpersonationContext.UpdatedDate)),
+
+                (Rule: IsInvalidLength(impersonationContext.ProjectName, 255), 
+                Parameter: nameof(ImpersonationContext.ProjectName)),
+
+                (Rule: IsInvalidLength(impersonationContext.RequesterEmail, 320), 
+                Parameter: nameof(ImpersonationContext.RequesterEmail)),
+
+                (Rule: IsInvalidLength(impersonationContext.ResponsiblePersonEmail, 320), 
+                Parameter: nameof(ImpersonationContext.ResponsiblePersonEmail)),
+
+                (Rule: IsInvalidLength(impersonationContext.IdentifierColumn, 10), 
+                Parameter: nameof(ImpersonationContext.IdentifierColumn)),
+
+                (Rule: IsInvalidLength(impersonationContext.CreatedBy, 255), 
+                Parameter: nameof(ImpersonationContext.CreatedBy)),
+
+                (Rule: IsInvalidLength(impersonationContext.UpdatedBy, 255), 
+                Parameter: nameof(ImpersonationContext.UpdatedBy)),
+
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId, 
+                    second: impersonationContext.UpdatedBy),
                     Parameter: nameof(ImpersonationContext.UpdatedBy)),
 
-                (Rule: IsSameAs(firstDate: impersonationContext.UpdatedDate, secondDate: impersonationContext.CreatedDate,
-                    secondDateName: nameof(ImpersonationContext.CreatedDate)), Parameter: nameof(ImpersonationContext.UpdatedDate)),
+                (Rule: IsSameAs(
+                    firstDate: impersonationContext.UpdatedDate, 
+                    secondDate: impersonationContext.CreatedDate,
+                    secondDateName: nameof(ImpersonationContext.CreatedDate)), 
+                    Parameter: nameof(ImpersonationContext.UpdatedDate)),
 
-                (Rule: await IsNotRecentAsync(impersonationContext.UpdatedDate), Parameter: nameof(ImpersonationContext.UpdatedDate))
+                (Rule: await IsNotRecentAsync(
+                    impersonationContext.UpdatedDate), 
+                    Parameter: nameof(ImpersonationContext.UpdatedDate))
             );
         }
 
@@ -108,29 +190,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts
 
         private static void ValidateAgainstStorageImpersonationContextOnModify(
             ImpersonationContext inputImpersonationContext, ImpersonationContext storageImpersonationContext)
-        {
-            Validate(
-                (Rule: IsNotSame(
-                    first: inputImpersonationContext.CreatedBy,
-                    second: storageImpersonationContext.CreatedBy,
-                    secondName: nameof(ImpersonationContext.CreatedBy)),
-
-                Parameter: nameof(ImpersonationContext.CreatedBy)),
-
-                (Rule: IsNotSame(
-                    first: inputImpersonationContext.CreatedDate,
-                    second: storageImpersonationContext.CreatedDate,
-                    secondName: nameof(ImpersonationContext.CreatedDate)),
-
-                Parameter: nameof(ImpersonationContext.CreatedDate)),
-
-                (Rule: IsSameAs(
-                    firstDate: inputImpersonationContext.UpdatedDate,
-                    secondDate: storageImpersonationContext.UpdatedDate,
-                    secondDateName: nameof(ImpersonationContext.UpdatedDate)),
-
-                Parameter: nameof(ImpersonationContext.UpdatedDate)));
-        }
+        { }
 
         private static dynamic IsInvalid(Guid id) => new
         {

@@ -22,15 +22,15 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
             EntraUser randomEntraUser = CreateRandomEntraUser();
 
             ImpersonationContext randomImpersonationContext =
-                CreateRandomImpersonationContext(
+                CreateRandomModifyImpersonationContext(
                     randomDateTimeOffset,
                     impersonationContextId:
                     randomEntraUser.EntraUserId);
 
-            ImpersonationContext inputImpersonationContext = randomImpersonationContext.DeepClone();
-            ImpersonationContext storageImpersonationContext = randomImpersonationContext.DeepClone();
+            ImpersonationContext inputImpersonationContext = randomImpersonationContext;
+            ImpersonationContext storageImpersonationContext = inputImpersonationContext.DeepClone();
             storageImpersonationContext.UpdatedBy = randomEntraUser.EntraUserId;
-            ImpersonationContext updatedImpersonationContext = inputImpersonationContext.DeepClone();
+            ImpersonationContext updatedImpersonationContext = inputImpersonationContext;
             ImpersonationContext expectedImpersonationContext = updatedImpersonationContext.DeepClone();
 
             this.dateTimeBrokerMock.Setup(broker =>
