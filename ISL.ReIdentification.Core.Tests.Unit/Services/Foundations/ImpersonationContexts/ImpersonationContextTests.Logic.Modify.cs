@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
+using ISL.ReIdentification.Core.Models.Securities;
 using Moq;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ImpersonationContexts
@@ -17,9 +18,15 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
         public async Task ShouldModifyImpersonationContextAsync()
         {
             //given
-            DateTimeOffset randomDateOffset = GetRandomDateTimeOffset();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
 
-            ImpersonationContext randomImpersonationContext = CreateRandomModifyImpersonationContext(randomDateOffset);
+            ImpersonationContext randomImpersonationContext =
+                CreateRandomImpersonationContext(
+                    randomDateTimeOffset,
+                    impersonationContextId:
+                    randomEntraUser.EntraUserId);
+
             ImpersonationContext inputImpersonationContext = randomImpersonationContext.DeepClone();
             ImpersonationContext storageImpersonationContext = randomImpersonationContext.DeepClone();
             storageImpersonationContext.UpdatedDate = storageImpersonationContext.CreatedDate;
@@ -28,7 +35,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .ReturnsAsync(randomDateOffset);
+                    .ReturnsAsync(randomDateTimeOffset);
 
             this.reIdentificationStorageBroker.Setup(broker =>
                 broker.SelectImpersonationContextByIdAsync(inputImpersonationContext.Id))
