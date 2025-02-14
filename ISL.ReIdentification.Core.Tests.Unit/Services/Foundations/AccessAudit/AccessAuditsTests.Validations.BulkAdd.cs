@@ -343,12 +343,17 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
                 dateTimeOffset: randomDateTimeOffset,
                 userId: randomEntraUser.EntraUserId);
 
+            string createdBy = GetRandomString();
+            string updatedBy = GetRandomString();
+            DateTimeOffset createdDate = GetRandomDateTimeOffset();
+            DateTimeOffset updatedDate = GetRandomDateTimeOffset();
+
             foreach (var invalidAccessAudit in invalidAccessAudits)
             {
-                invalidAccessAudit.CreatedBy = GetRandomString();
-                invalidAccessAudit.UpdatedBy = GetRandomString();
-                invalidAccessAudit.CreatedDate = GetRandomDateTimeOffset();
-                invalidAccessAudit.UpdatedDate = GetRandomDateTimeOffset();
+                invalidAccessAudit.CreatedBy = createdBy;
+                invalidAccessAudit.UpdatedBy = updatedBy;
+                invalidAccessAudit.CreatedDate = createdDate;
+                invalidAccessAudit.UpdatedDate = updatedDate;
             }
 
             var accessAuditServiceMock = new Mock<AccessAuditService>(
@@ -379,7 +384,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
                 key: nameof(AccessAudit.CreatedBy),
                 values:
                     $"Expected value to be '{randomEntraUser.EntraUserId}' " +
-                    $"but found '{invalidAccessAudits.First().CreatedBy}'.");
+                    $"but found '{createdBy}'.");
 
             invalidAccessAuditException.AddData(
                 key: nameof(AccessAudit.UpdatedBy),
@@ -394,7 +399,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
                 values:
                     $"Date is not recent." +
                     $" Expected a value between {startDate} and {endDate} but " +
-                        $"found {invalidAccessAudits.First().CreatedDate}");
+                        $"found {createdDate}");
 
             var exceptions = new List<Exception>();
 
