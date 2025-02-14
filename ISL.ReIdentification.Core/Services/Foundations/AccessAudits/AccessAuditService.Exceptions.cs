@@ -18,6 +18,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
     {
         private delegate ValueTask<AccessAudit> ReturningAccessAuditFunction();
         private delegate ValueTask<IQueryable<AccessAudit>> ReturningAccessAuditsFunction();
+        private delegate ValueTask ReturningNothingFunction();
 
         private async ValueTask<IQueryable<AccessAudit>> TryCatch(
             ReturningAccessAuditsFunction returningAccessAuditsFunction)
@@ -44,6 +45,33 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
                 throw await CreateAndLogServiceExceptionAsync(failedServiceAccessAuditException);
             }
         }
+
+        private async ValueTask TryCatch(
+            ReturningNothingFunction returningNothingFunction)
+        {
+            try
+            {
+                await returningNothingFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedStorageAccessAuditException = new FailedStorageAccessAuditException(
+                    message: "Failed access audit storage error occurred, contact support.",
+                    innerException: sqlException);
+
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedStorageAccessAuditException);
+            }
+            catch (Exception exception)
+            {
+                var failedServiceAccessAuditException =
+                    new FailedServiceAccessAuditException(
+                        message: "Failed service access audit error occurred, contact support.",
+                        innerException: exception);
+
+                throw await CreateAndLogServiceExceptionAsync(failedServiceAccessAuditException);
+            }
+        }
+
         private async ValueTask<AccessAudit> TryCatch(ReturningAccessAuditFunction returningAccessAuditFunction)
         {
             try

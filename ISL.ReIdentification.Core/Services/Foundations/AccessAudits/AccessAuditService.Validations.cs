@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits.Exceptions;
@@ -63,6 +64,14 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
                 (Rule: await IsNotRecentAsync(accessAudit.CreatedDate), Parameter: nameof(AccessAudit.CreatedDate)));
         }
 
+        private async ValueTask ValidateAccessAuditOnBulkAddAsync(List<AccessAudit> accessAudits)
+        {
+            foreach (AccessAudit accessAudit in accessAudits)
+            {
+                await ValidateAccessAuditOnAddAsync(accessAudit);
+            }
+        }
+
         private async ValueTask ValidateAccessAuditOnRetrieveById(Guid accessAuditId) =>
             Validate((Rule: await IsInvalidAsync(accessAuditId), Parameter: nameof(AccessAudit.Id)));
 
@@ -117,6 +126,14 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
         private static void ValidateAccessAuditIsNotNull(AccessAudit accessAudit)
         {
             if (accessAudit is null)
+            {
+                throw new NullAccessAuditException("Access audit is null.");
+            }
+        }
+
+        private static void ValidateAccessAuditIsNotNull(List<AccessAudit> accessAudits)
+        {
+            if (accessAudits is null)
             {
                 throw new NullAccessAuditException("Access audit is null.");
             }
