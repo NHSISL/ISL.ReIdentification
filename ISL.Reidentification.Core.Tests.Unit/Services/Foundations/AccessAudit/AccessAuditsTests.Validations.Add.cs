@@ -125,7 +125,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
                 [
                     "Date is invalid",
                     $"Date is not recent. Expected a value between " +
-                    $"{startDate} and {endDate} but found {invalidAccessAudit.CreatedDate}"
+                        $"{startDate} and {endDate} but found {invalidAccessAudit.CreatedDate}"
                 ]);
 
             invalidAccessAuditException.AddData(
@@ -188,13 +188,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            EntraUser randomEntraUser = CreateRandomEntraUser(entraUserId: GetRandomStringWithLengthOf(256));
 
             AccessAudit invalidAccessAudit = CreateRandomAccessAudit(
                 dateTimeOffset: randomDateTimeOffset,
                 userId: randomEntraUser.EntraUserId);
 
-            var inputCreatedByUpdatedByString = GetRandomStringWithLengthOf(256);
+            var inputCreatedByUpdatedByString = randomEntraUser.EntraUserId;
             invalidAccessAudit.EntraUserId = GetRandomStringWithLengthOf(256);
             invalidAccessAudit.Email = GetRandomStringWithLengthOf(321);
             invalidAccessAudit.PseudoIdentifier = GetRandomStringWithLengthOf(11);
@@ -244,11 +244,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
 
             invalidAccessAuditException.AddData(
                 key: nameof(AccessAudit.CreatedBy),
-                values:
-                [
-                    $"Text exceed max length of {invalidAccessAudit.CreatedBy.Length - 1} characters",
-                    $"Expected value to be '{randomEntraUser.EntraUserId}' but found '{invalidAccessAudit.CreatedBy}'."
-                ]);
+                values: $"Text exceed max length of {invalidAccessAudit.CreatedBy.Length - 1} characters");
 
             invalidAccessAuditException.AddData(
                 key: nameof(AccessAudit.UpdatedBy),

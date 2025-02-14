@@ -1,11 +1,14 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Data.SqlClient;
-using Moq;
 using ISL.ReIdentification.Core.Models.Foundations.UserAgreements;
 using ISL.ReIdentification.Core.Models.Foundations.UserAgreements.Exceptions;
-using Xunit;
+using Microsoft.Data.SqlClient;
+using Moq;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreements
 {
@@ -53,9 +56,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
                     expectedUserAgreementDependencyException))),
                         Times.Once);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.reIdentificationStorageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -67,7 +71,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
 
             var failedUserAgreementServiceException =
                 new FailedUserAgreementServiceException(
-                    message: "Failed userAgreement service occurred, please contact support", 
+                    message: "Failed userAgreement service occurred, please contact support",
                     innerException: serviceException);
 
             var expectedUserAgreementServiceException =
@@ -100,9 +104,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
                    expectedUserAgreementServiceException))),
                         Times.Once);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.reIdentificationStorageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }
