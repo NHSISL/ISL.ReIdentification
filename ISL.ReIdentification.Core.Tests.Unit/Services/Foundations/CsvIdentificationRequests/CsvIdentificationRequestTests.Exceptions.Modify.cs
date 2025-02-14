@@ -150,7 +150,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             var expectedCsvIdentificationRequestDependencyValidationException =
                 new CsvIdentificationRequestDependencyValidationException(
-                    message: "CSV identification request dependency validation error occurred, fix errors and try again.",
+                    message: "CSV identification request dependency validation error occurred, " +
+                        "fix errors and try again.",
                     innerException: lockedCsvIdentificationRequestException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -159,11 +160,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             // when
             ValueTask<CsvIdentificationRequest> modifyCsvIdentificationRequestTask =
-                this.csvIdentificationRequestService.ModifyCsvIdentificationRequestAsync(randomCsvIdentificationRequest);
+                this.csvIdentificationRequestService.ModifyCsvIdentificationRequestAsync(
+                    randomCsvIdentificationRequest);
 
-            CsvIdentificationRequestDependencyValidationException actualCsvIdentificationRequestDependencyValidationException =
-                await Assert.ThrowsAsync<CsvIdentificationRequestDependencyValidationException>(
-                    testCode: modifyCsvIdentificationRequestTask.AsTask);
+            CsvIdentificationRequestDependencyValidationException 
+                actualCsvIdentificationRequestDependencyValidationException =
+                    await Assert.ThrowsAsync<CsvIdentificationRequestDependencyValidationException>(
+                        testCode: modifyCsvIdentificationRequestTask.AsTask);
 
             // then
             actualCsvIdentificationRequestDependencyValidationException.Should().BeEquivalentTo(
@@ -214,13 +217,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
                     message: "CSV identification request service error occurred, contact support.",
                     innerException: failedServiceCsvIdentificationRequestException);
 
-            this.reIdentificationStorageBroker.Setup(broker =>
-                broker.SelectCsvIdentificationRequestByIdAsync(randomCsvIdentificationRequest.Id))
-                    .ThrowsAsync(serviceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .ReturnsAsync(randomDateTimeOffset);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<CsvIdentificationRequest> modifyCsvIdentificationRequestTask =
@@ -233,10 +233,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
             // then
             actualCsvIdentificationRequestServiceException.Should().BeEquivalentTo(
                 expectedCsvIdentificationRequestServiceException);
-
-            this.reIdentificationStorageBroker.Verify(broker =>
-                broker.SelectCsvIdentificationRequestByIdAsync(randomCsvIdentificationRequest.Id),
-                    Times.Once());
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
