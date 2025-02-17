@@ -42,7 +42,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
             await this.reIdentificationStorageBroker.InsertBulkAccessAuditAsync(accessAuditsWithAddAuditApplied);
         });
 
-
         public ValueTask<AccessAudit> AddAccessAuditAsync(AccessAudit accessAudit) =>
         TryCatch(async () =>
         {
@@ -116,18 +115,16 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
         virtual internal async ValueTask<List<AccessAudit>> ApplyBulkAddAuditAsync(List<AccessAudit> accessAudits)
         {
             ValidateAccessAuditIsNotNull(accessAudits);
-            var currentDateTimeOffsett = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var currentDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
             EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
-            var accessAuditsWithAddAuditApplied = accessAudits.Select(accessAudit =>
+            foreach (var accessAudit in accessAudits)
             {
                 accessAudit.CreatedBy = currentUser?.EntraUserId;
-                accessAudit.CreatedDate = currentDateTimeOffsett;
+                accessAudit.CreatedDate = currentDateTimeOffset;
                 accessAudit.UpdatedBy = currentUser?.EntraUserId;
-                accessAudit.UpdatedDate = currentDateTimeOffsett;
-                
-                return accessAudit;
-            });
+                accessAudit.UpdatedDate = currentDateTimeOffset;
+            }
 
             return accessAudits;
         }
