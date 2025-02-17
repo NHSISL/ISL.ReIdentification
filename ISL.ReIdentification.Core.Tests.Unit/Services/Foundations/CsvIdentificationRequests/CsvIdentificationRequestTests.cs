@@ -53,12 +53,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
                 userId: GetRandomStringWithLengthOf(255));
         }
 
-        //private static CsvIdentificationRequest CreateRandomCsvIdentificationRequest()
-        //{
-        //    return CreateRandomCsvIdentificationRequest(
-        //        dateTimeOffset: GetRandomDateTimeOffset());
-        //}
-
         private static CsvIdentificationRequest CreateRandomCsvIdentificationRequest(
             DateTimeOffset dateTimeOffset, 
             string userId) =>
