@@ -63,6 +63,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
                 userId: GetRandomStringWithLengthOf(255));
         }
 
+        private List<AccessAudit> CreateRandomAccessAuditList(DateTimeOffset dateTimeOffset, string userId)
+        {
+            return Enumerable.Range(start: 0, count: GetRandomNumber())
+                .Select(selector: number => CreateRandomAccessAudit(dateTimeOffset, userId))
+                .ToList();
+        }
+
         private static AccessAudit CreateRandomAccessAudit(DateTimeOffset dateTimeOffset, string userId) =>
             CreateAccessAuditFiller(dateTimeOffset, userId).Create();
 
