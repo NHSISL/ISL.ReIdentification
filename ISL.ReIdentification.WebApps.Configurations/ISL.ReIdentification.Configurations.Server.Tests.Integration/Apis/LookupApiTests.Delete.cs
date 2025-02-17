@@ -2,8 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using FluentAssertions;
 using ISL.ReIdentification.Configuration.Server.Tests.Integration.Models;
+using RESTFulSense.Exceptions;
 
 namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis
 {
@@ -19,8 +19,8 @@ namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis
             await this.apiBroker.DeleteLookupByIdAsync(randomLookup.Id);
 
             // then
-            Lookup deletedLookup = await this.apiBroker.GetLookupByIdAsync(randomLookup.Id);
-            deletedLookup.Should().BeNull();
+            await Assert.ThrowsAsync<HttpResponseNotFoundException>(
+                async () => await this.apiBroker.GetLookupByIdAsync(randomLookup.Id));
         }
     }
 }

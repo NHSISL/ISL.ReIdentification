@@ -28,7 +28,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification
             new Claim(ClaimTypes.Email, Email),
             new Claim("jobTitle", JobTitle),
             new Claim(ClaimTypes.Name, "TestUser"),
-            new Claim(ClaimTypes.Role, "Administrators")
+            new Claim(ClaimTypes.Role, "ISL.Reidentification.Configuration.Administrators")
         };
 
         public TestAuthHandler(
