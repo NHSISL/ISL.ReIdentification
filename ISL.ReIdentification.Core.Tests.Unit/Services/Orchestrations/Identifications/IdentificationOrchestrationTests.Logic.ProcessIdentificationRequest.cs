@@ -51,10 +51,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                 broker.GetIdentifierAsync())
                     .ReturnsAsync(randomGuid);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
-                    .ReturnsAsync(randomDateTimeOffset);
-
             // when
             var actualIdentificationRequest =
                 await this.identificationOrchestrationService
@@ -66,10 +62,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             this.identifierBrokerMock.Verify(broker =>
                 broker.GetIdentifierAsync(),
                     Times.Exactly(itemCount + 1));
-
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(itemCount));
 
             List<AccessAudit> pdsAccessAudits = new List<AccessAudit>();
 
@@ -89,11 +81,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                     Organisation = randomIdentificationRequest.Organisation,
                     HasAccess = hasAccess,
                     Message = item.HasAccess ? accessMessage : noAccessMessage,
-                    AuditType = auditType,
-                    CreatedBy = "System",
-                    CreatedDate = randomDateTimeOffset,
-                    UpdatedBy = "System",
-                    UpdatedDate = randomDateTimeOffset
+                    AuditType = auditType
                 };
 
                 pdsAccessAudits.Add(inputAccessAudit);
@@ -198,7 +186,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(itemCount * 2));
+                    Times.Exactly(itemCount));
 
             List<AccessAudit> pdsAccessAudits = new List<AccessAudit>();
 
@@ -219,10 +207,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                     HasAccess = item.HasAccess,
                     Message = item.HasAccess ? accessMessage : noAccessMessage,
                     AuditType = "PDS Access",
-                    CreatedBy = "System",
-                    CreatedDate = randomDateTimeOffset,
-                    UpdatedBy = "System",
-                    UpdatedDate = randomDateTimeOffset
                 };
 
                 pdsAccessAudits.Add(inputAccessAudit);
@@ -264,11 +248,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                     Organisation = randomIdentificationRequest.Organisation,
                     HasAccess = item.HasAccess,
                     AuditType = "NECS Access",
-                    Message = $"Re-identification outcome: {item.Message}",
-                    CreatedBy = "System",
-                    CreatedDate = randomDateTimeOffset,
-                    UpdatedBy = "System",
-                    UpdatedDate = randomDateTimeOffset
+                    Message = $"Re-identification outcome: {item.Message}"
                 };
 
                 necsAccessAudits.Add(successAccessAudit);
