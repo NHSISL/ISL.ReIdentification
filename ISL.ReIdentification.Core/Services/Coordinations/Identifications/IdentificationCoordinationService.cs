@@ -234,6 +234,9 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
             return tokensAccessRequest;
         });
 
+        public ValueTask ImpersonationContextApprovalAsync(Guid impersonationContextId, bool isApproved) =>
+            throw new NotImplementedException();
+
         virtual async internal ValueTask<AccessRequest> ConvertCsvIdentificationRequestToIdentificationRequest(
             AccessRequest accessRequest)
         {

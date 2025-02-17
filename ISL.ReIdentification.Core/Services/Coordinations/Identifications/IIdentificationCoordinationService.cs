@@ -16,5 +16,6 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
         ValueTask<AccessRequest> PersistsImpersonationContextAsync(AccessRequest accessRequest);
         ValueTask<AccessRequest> ProcessImpersonationContextRequestAsync(AccessRequest accessRequest);
         ValueTask<AccessRequest> ExpireRenewImpersonationContextTokensAsync(Guid impersonationContextId);
+        ValueTask ImpersonationContextApprovalAsync(Guid impersonationContextId, bool isApproved);
     }
 }
