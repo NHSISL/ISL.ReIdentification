@@ -117,10 +117,6 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             {
                 return InternalServerError(userAgreementServiceException);
             }
-            catch (Exception ex)
-            {
-                throw;
-            }
         }
 
         [Authorize(Roles = "ISL.Reidentification.Portal.Administrators")]
