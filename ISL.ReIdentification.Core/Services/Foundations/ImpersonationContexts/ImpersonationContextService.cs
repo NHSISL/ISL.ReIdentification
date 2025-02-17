@@ -10,7 +10,6 @@ using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Securities;
 using ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
-using ISL.ReIdentification.Core.Models.Foundations.Lookups;
 
 namespace ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts
 {
