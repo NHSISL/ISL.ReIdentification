@@ -64,14 +64,14 @@ steps:
   displayName: 'Install client dependencies (Configurations Client)'
   inputs:
     command: 'install'
-    workingDir: 'ISL.ReIdentification.Configurations.Client'
+    workingDir: 'ISL.ReIdentification.WebApps.Configurations/ISL.ReIdentification.Configurations.Client'
 
 - task: Npm@1
   displayName: 'Build Configurations Client'
   inputs:
     command: 'custom'
     customCommand: 'run build'
-    workingDir: 'ISL.ReIdentification.Configurations.Client'
+    workingDir: 'ISL.ReIdentification.WebApps.Configurations/ISL.ReIdentification.Configurations.Client'
 
 - task: DotNetCoreCLI@2
   displayName: "Dotnet Publish Configuration"
