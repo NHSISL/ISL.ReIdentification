@@ -3,6 +3,7 @@ import ReIdentificationBroker from '../../brokers/apiBroker.reidentification';
 import { AccessRequest } from '../../models/accessRequest/accessRequest';
 import { ReIdRecord } from '../../types/ReIdRecord';
 import { getPseudo, isHx } from '../../helpers/hxHelpers';
+import { toast } from 'react-toastify';
 
 export const reIdentificationService = {
     useRequestReIdentification: () => {
@@ -68,6 +69,8 @@ export const reIdentificationService = {
                                 return [...data, ...itemsToCache]
 
                             })
+                        }).catch(() => {
+                            toast.error("Something has gone wrong", { position: "top-right", autoClose: 5000, closeOnClick:true });
                         }).finally(() => {
                             setIsLoading(false);
                         })
@@ -78,12 +81,17 @@ export const reIdentificationService = {
 
         }, [data, request]);
 
+        const cleardata = () => {
+            setData([]);
+        }
+
         return {
             submit: (identificationRequest: AccessRequest) => {
                 setRequest(identificationRequest);
             },
             loading,
-            data
+            data,
+            cleardata
         };
     },
 

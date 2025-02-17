@@ -1,5 +1,5 @@
-import React, { FunctionComponent, useState } from "react";
-import { Form, Button, Card, Spinner, Alert, OverlayTrigger, Tooltip, Modal } from "react-bootstrap";
+import React, { FunctionComponent, useState, useRef, useEffect } from "react";
+import { Form, Button, Card, Spinner, Alert, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 import { reIdentificationService } from "../../services/foundations/reIdentificationService";
@@ -8,6 +8,7 @@ import { useMsal } from "@azure/msal-react";
 import UserAccessSearch from "../userAccessSearch/userAccessSearch";
 import { UserAccessView } from "../../models/views/components/userAccess/userAccessView";
 import { OverlayInjectedProps } from "react-bootstrap/esm/Overlay";
+import { useFileChange } from "../../hooks/useFileChange";
 
 const CsvReIdentificationDetailCardView: FunctionComponent = () => {
 
@@ -22,9 +23,17 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
     const [savedSuccessfull, setSavedSuccessfull] = useState(false);
     const [fileName, setFileName] = useState<string>("");
     const [hasHeaderRecord, setHasHeaderRecord] = useState<boolean>(false);
-    const [showHelpModal, setShowHelpModal] = useState<boolean>(false);
     const [reason, setReason] = useState<string>("");
     const account = useMsal();
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const { handleFileChange } = useFileChange(setError, setFileName, setHeaderColumns, setCsvData, hasHeaderRecord);
+
+    useEffect(() => {
+        if (fileInputRef.current?.files?.[0]) {
+            handleFileChange({ target: fileInputRef.current } as React.ChangeEvent<HTMLInputElement>);
+        }
+    }, [hasHeaderRecord]);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -76,47 +85,6 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
         });
     };
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setError([]);
-        const file = e.target.files?.[0];
-        if (file) {
-            const sizeInBytes = file.size;
-            const sizeInMB = (sizeInBytes / (1024 * 1024)).toFixed(2);
-            console.log(`File size: ${sizeInBytes} bytes (${sizeInMB} MB)`);
-
-            if (sizeInBytes > 1024 * 1024) {
-                setError(["File size exceeds 1MB. Please upload a smaller file."]);
-                return;
-            }
-
-            if (file.name.endsWith(".csv")) {
-                setFileName(file.name);
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    let text = event.target?.result as string;
-                    text = text.replace(/\r/g, "");
-                    const rows = text.split("\n");
-                    const headers = rows[0].split(",");
-
-                    if (headers.length <= 1) {
-                        setError(["The CSV file does not contain a valid header row."]);
-                        return;
-                    }
-
-                    setHeaderColumns(headers);
-                    const uint8Array = new TextEncoder().encode(text);
-                    const base64String = btoa(String.fromCharCode(...uint8Array));
-                    setCsvData(base64String);
-                };
-                reader.readAsText(file);
-            } else {
-                setError(["Please upload a valid .csv file."]);
-            }
-        } else {
-            setError(["No file selected. Please upload a .csv file."]);
-        }
-    };
-
     const handleHeaderColumnChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedColumn = e.target.value;
         setSelectedHeaderColumn(selectedColumn);
@@ -131,9 +99,9 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                 const nextRow = rows[1].split(",");
                 const value = nextRow[index];
 
-                if (/^\d{10}$/.test(value)) {
+                if (/^\d{1,10}$/.test(value)) {
                     setError([]);
-                    setSuccess(`The value "${value}" in the next row at the selected column index is 10 digits long and is a valid Pseudo Identifier.`);
+                    setSuccess(`The value "${value}" in the next row at the selected column index is a valid Pseudo Identifier with up to 10 digits.`);
                 } else {
                     setSuccess("");
                     setError([`The value "${value}" in the next row for the selected column index is not a valid Pseudo Identifier, please follow the guidance in the help section.`]);
@@ -141,8 +109,11 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
             }
         }
     };
+
     const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setHasHeaderRecord(e.target.checked);
+        const newValue = e.target.checked;
+        setHasHeaderRecord(newValue);
+        setError([]);
     };
 
     const renderTooltip = (props: OverlayInjectedProps): React.ReactElement => (
@@ -155,9 +126,6 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
         <>
             {!savedSuccessfull ? (
                 <>
-
-
-
                     <Card.Header>
                         <Card.Title className="text-start">
                             <OverlayTrigger placement="right" overlay={renderTooltip}>
@@ -178,9 +146,6 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                             <UserAccessSearch selectUser={(userAccess) => { setSelectedUser(userAccess) }} labelText="Recipient Email Address" />
                             <Form.Group className="text-start">
                                 <Form.Label><strong>Upload CSV:</strong></Form.Label>
-                                <Button variant="link" onClick={() => setShowHelpModal(true)}>
-                                    <FontAwesomeIcon icon={faCircleInfo} className="text-primary" />
-                                </Button>
 
                                 <Form.Check
                                     type="checkbox"
@@ -195,7 +160,8 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                                         onChange={handleFileChange}
                                         placeholder="Upload CSV"
                                         accept=".csv"
-                                        required />
+                                        required
+                                        ref={fileInputRef} />
 
                                 </div>
                                 <Form.Text className="text-muted">
@@ -275,42 +241,8 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
 
                 </>
             )}
-
-            <Modal show={showHelpModal} onHide={() => setShowHelpModal(false)}>
-                <Modal.Header closeButton>
-                    <Modal.Title><FontAwesomeIcon icon={faCircleInfo} className="text-primary" /> CSV Help</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <p>
-                        The identifier column needs to be <i>10</i> digits.
-                        You can easily get your data in this format by applying a format in EXCEL and then saving the CSV file again if its not.
-                    </p>
-                    <p>
-                        <strong>Method 1: Using a Custom Number Format</strong>
-                        <ol>
-                            <li>Select the column that contains the numbers.</li>
-                            <li>Right-click on the selected column and choose Format Cells.</li>
-                            <li>In the Format Cells dialog box, go to the Number tab and choose Custom from the list on the left.</li>
-                            <li>
-                                In the Type field, enter the following format code 0000000000. This will ensure that all numbers in the column
-                                are displayed with 10 digits, padding with leading zeroes if necessary. Click OK.
-                            </li>
-                        </ol>
-                    </p>
-                    This method works well if the numbers are stored as numerical values but will display as <i>10</i> digits.
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShowHelpModal(false)}>
-                        Close
-                    </Button>
-                </Modal.Footer>
-            </Modal>
         </>
     );
-
-    return <>
-        {error ? <Alert variant="danger">{error}</Alert> : <Alert variant="danger">Something went wrong.</Alert>}
-    </>;
 }
 
 export default CsvReIdentificationDetailCardView;

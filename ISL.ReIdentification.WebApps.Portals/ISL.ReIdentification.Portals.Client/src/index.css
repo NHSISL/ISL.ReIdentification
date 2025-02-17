@@ -78,3 +78,9 @@ button {
     width: 90% !important;
     max-width: none !important;
 }
+
+
+.scrollable-modal-body {
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+}

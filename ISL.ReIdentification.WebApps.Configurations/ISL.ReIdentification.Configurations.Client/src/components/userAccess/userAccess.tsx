@@ -17,7 +17,6 @@ export const UserAccess = () => {
                     <Alert variant="danger" className="p-2">Any modification to data on this screen is audited.</Alert>
                     <UserAccessTable />
                 </div>
-               
             </section>
         </Container>
     )

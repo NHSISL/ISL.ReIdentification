@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
@@ -16,6 +17,9 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications
 
         public async ValueTask<AccessAudit> InsertAccessAuditAsync(AccessAudit accessAudit) =>
             await InsertAsync(accessAudit);
+
+        public async ValueTask InsertBulkAccessAuditAsync(IEnumerable<AccessAudit> accessAudits) =>
+            await BulkInsertAsync(accessAudits);
 
         public async ValueTask<IQueryable<AccessAudit>> SelectAllAccessAuditsAsync() =>
             await SelectAllAsync<AccessAudit>();

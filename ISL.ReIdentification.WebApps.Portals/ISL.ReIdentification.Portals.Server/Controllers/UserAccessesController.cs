@@ -93,7 +93,12 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
         }
 
         [HttpGet]
-        [EnableQuery(PageSize = 25)]
+#if !DEBUG
+        [EnableQuery(PageSize = 50)]
+#endif
+#if DEBUG
+        [EnableQuery(PageSize = 5000)]
+#endif
         public async ValueTask<ActionResult<IQueryable<UserAccess>>> Get()
         {
             try
@@ -145,10 +150,6 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             catch (UserAccessProcessingServiceException userAccessProcessingServiceException)
             {
                 return InternalServerError(userAccessProcessingServiceException);
-            }
-            catch (Exception ex)
-            {
-                throw;
             }
         }
 

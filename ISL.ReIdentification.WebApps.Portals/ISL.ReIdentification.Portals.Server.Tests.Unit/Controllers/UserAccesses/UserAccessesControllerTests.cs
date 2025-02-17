@@ -45,7 +45,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.UserAccesse
         {
             return new BulkUserAccess
             {
-                EntraUserId = Guid.NewGuid(),
+                EntraUserId = GetRandomStringWithLengthOf(255),
                 GivenName = GetRandomString(),
                 Surname = GetRandomString(),
                 DisplayName = GetRandomString(),

@@ -27,7 +27,12 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
                 await this.apiBroker.GetLookupByIdAsync(inputLookup.Id);
 
             // then
-            actualLookup.Should().BeEquivalentTo(expectedLookup);
+            actualLookup.Should().BeEquivalentTo(expectedLookup, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
+
             await this.apiBroker.DeleteLookupByIdAsync(actualLookup.Id);
         }
 
@@ -45,7 +50,13 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             foreach (Lookup expectedLookup in expectedLookups)
             {
                 Lookup actualLookup = actualLookups.Single(approval => approval.Id == expectedLookup.Id);
-                actualLookup.Should().BeEquivalentTo(expectedLookup);
+
+                actualLookup.Should().BeEquivalentTo(expectedLookup, options => options
+                    .Excluding(property => property.CreatedBy)
+                    .Excluding(property => property.CreatedDate)
+                    .Excluding(property => property.UpdatedBy)
+                    .Excluding(property => property.UpdatedDate));
+
                 await this.apiBroker.DeleteLookupByIdAsync(actualLookup.Id);
             }
         }
@@ -61,7 +72,12 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             Lookup actualLookup = await this.apiBroker.GetLookupByIdAsync(randomLookup.Id);
 
             // then
-            actualLookup.Should().BeEquivalentTo(expectedLookup);
+            actualLookup.Should().BeEquivalentTo(expectedLookup, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
+
             await this.apiBroker.DeleteLookupByIdAsync(actualLookup.Id);
         }
 
@@ -77,7 +93,12 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             Lookup actualLookup = await this.apiBroker.GetLookupByIdAsync(randomLookup.Id);
 
             // then
-            actualLookup.Should().BeEquivalentTo(modifiedLookup);
+            actualLookup.Should().BeEquivalentTo(modifiedLookup, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
+
             await this.apiBroker.DeleteLookupByIdAsync(actualLookup.Id);
         }
 

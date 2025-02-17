@@ -60,11 +60,16 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                 .FindAll(x => x.HasAccess == false).ToList();
 
             var transactionId = await this.identifierBroker.GetIdentifierAsync();
+            List<AccessAudit> permissionAudits = new List<AccessAudit>();
 
             foreach (IdentificationItem item in identificationRequest.IdentificationItems)
             {
-                savedPseduoes.Add(item.RowNumber, item.Identifier);
-                var now = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                savedPseduoes.Add(
+                    item.RowNumber,
+                    string.IsNullOrEmpty(item.Identifier)
+                        ? item.Identifier
+                        : item.Identifier.PadLeft(10, '0'));
+
                 var accessAuditId = await this.identifierBroker.GetIdentifierAsync();
 
                 var noAccessMessage = "User does not have access to the organisation(s) " +
@@ -87,14 +92,10 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                     Organisation = identificationRequest.Organisation,
                     HasAccess = item.HasAccess,
                     Message = item.HasAccess ? accessMessage : noAccessMessage,
-                    AuditType = "PDS Access",
-                    CreatedBy = "System",
-                    CreatedDate = now,
-                    UpdatedBy = "System",
-                    UpdatedDate = now
+                    AuditType = "PDS Access"
                 };
 
-                await this.accessAuditService.AddAccessAuditAsync(accessAudit);
+                permissionAudits.Add(accessAudit);
 
                 if (item.HasAccess is false)
                 {
@@ -102,6 +103,8 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                     item.Message = noAccessMessage;
                 }
             }
+
+            await this.accessAuditService.BulkAddAccessAuditAsync(permissionAudits);
 
             var hasAccessIdentificationItems =
                 identificationRequest.IdentificationItems
@@ -130,6 +133,8 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                 await this.reIdentificationService.ProcessReIdentificationRequest(
                     hasAccessIdentificationRequest);
 
+            List<AccessAudit> reIdentifyAudits = new List<AccessAudit>();
+
             foreach (IdentificationItem item in reIdentifiedIdentificationRequest.IdentificationItems)
             {
                 var record = identificationRequest.IdentificationItems
@@ -152,18 +157,16 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                     Organisation = identificationRequest.Organisation,
                     HasAccess = item.HasAccess,
                     Message = $"Re-identification outcome: {item.Message}",
-                    AuditType = "NECS Access",
-                    CreatedBy = "System",
-                    CreatedDate = now,
-                    UpdatedBy = "System",
-                    UpdatedDate = now
+                    AuditType = "NECS Access"
                 };
 
-                await this.accessAuditService.AddAccessAuditAsync(accessAudit);
+                reIdentifyAudits.Add(accessAudit);
                 record.Identifier = item.Identifier;
                 record.Message = item.Message;
                 record.IsReidentified = true;
             }
+
+            await this.accessAuditService.BulkAddAccessAuditAsync(reIdentifyAudits);
 
             return identificationRequest;
         });

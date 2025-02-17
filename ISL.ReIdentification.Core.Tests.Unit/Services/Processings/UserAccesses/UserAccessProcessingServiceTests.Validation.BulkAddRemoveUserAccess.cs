@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
@@ -60,7 +59,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
             // given
             var invalidUserAccess = new BulkUserAccess
             {
-                EntraUserId = Guid.Empty,
+                EntraUserId = invalidText,
                 GivenName = invalidText,
                 Surname = invalidText,
                 DisplayName = invalidText,
@@ -76,7 +75,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
 
             invalidUserAccessProcessingException.AddData(
                 key: nameof(BulkUserAccess.EntraUserId),
-                values: "Id is invalid");
+                values: "Text is invalid");
 
             invalidUserAccessProcessingException.AddData(
                 key: nameof(BulkUserAccess.Email),

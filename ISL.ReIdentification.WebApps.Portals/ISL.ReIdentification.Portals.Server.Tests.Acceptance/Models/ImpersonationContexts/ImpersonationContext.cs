@@ -9,13 +9,13 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.Impersonat
     public class ImpersonationContext
     {
         public Guid Id { get; set; }
-        public Guid RequesterEntraUserId { get; set; } = Guid.Empty;
+        public string RequesterEntraUserId { get; set; } = string.Empty;
         public string RequesterFirstName { get; set; } = string.Empty;
         public string RequesterLastName { get; set; } = string.Empty;
         public string RequesterDisplayName { get; set; } = string.Empty;
         public string RequesterEmail { get; set; } = string.Empty;
         public string RequesterJobTitle { get; set; } = string.Empty;
-        public Guid ResponsiblePersonEntraUserId { get; set; } = Guid.Empty;
+        public string ResponsiblePersonEntraUserId { get; set; } = string.Empty;
         public string ResponsiblePersonFirstName { get; set; } = string.Empty;
         public string ResponsiblePersonLastName { get; set; } = string.Empty;
         public string ResponsiblePersonDisplayName { get; set; } = string.Empty;

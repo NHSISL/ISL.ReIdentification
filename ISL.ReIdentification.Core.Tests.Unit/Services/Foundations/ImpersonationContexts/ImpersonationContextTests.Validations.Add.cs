@@ -53,12 +53,15 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnAddIfImpersonationContextIsInvalidAndLogItAsync(string invalidText)
+        public async Task ShouldThrowValidationExceptionOnAddIfImpersonationContextIsInvalidAndLogItAsync(
+            string invalidText)
         {
             // given
             var invalidImpersonationContext = new ImpersonationContext
             {
+                RequesterEntraUserId = invalidText,
                 RequesterEmail = invalidText,
+                ResponsiblePersonEntraUserId = invalidText,
                 ResponsiblePersonEmail = invalidText,
                 IdentifierColumn = invalidText,
                 ProjectName = invalidText,
@@ -74,7 +77,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
 
             invalidImpersonationContextException.AddData(
                 key: nameof(ImpersonationContext.RequesterEntraUserId),
-                values: "Id is invalid");
+                values: "Text is invalid");
 
             invalidImpersonationContextException.AddData(
                 key: nameof(ImpersonationContext.RequesterEmail),
@@ -82,7 +85,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
 
             invalidImpersonationContextException.AddData(
                 key: nameof(ImpersonationContext.ResponsiblePersonEntraUserId),
-                values: "Id is invalid");
+                values: "Text is invalid");
 
             invalidImpersonationContextException.AddData(
                 key: nameof(ImpersonationContext.ResponsiblePersonEmail),

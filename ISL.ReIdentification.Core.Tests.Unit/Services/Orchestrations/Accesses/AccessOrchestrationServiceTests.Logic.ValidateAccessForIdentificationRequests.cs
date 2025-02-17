@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -26,8 +25,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
                 this.loggingBrokerMock.Object)
             { CallBase = true };
 
-            Guid entraUserId = Guid.NewGuid();
-            Guid inputEntraUserId = entraUserId;
+            string entraUserId = GetRandomStringWithLength(255);
+            string inputEntraUserId = entraUserId;
             AccessRequest randomAccessRequest = CreateRandomAccessRequest();
             AccessRequest inputAccessRequest = randomAccessRequest.DeepClone();
             inputAccessRequest.IdentificationRequest.EntraUserId = entraUserId;
