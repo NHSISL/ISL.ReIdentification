@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Foundations.Lookups;
 using ISL.ReIdentification.Core.Models.Foundations.Lookups.Exceptions;
+using ISL.ReIdentification.Core.Models.Securities;
 
 namespace ISL.ReIdentification.Core.Services.Foundations.Lookups
 {
@@ -14,6 +15,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Lookups
         private async ValueTask ValidateLookupOnAddAsync(Lookup lookup)
         {
             ValidateLookupIsNotNull(lookup);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(lookup.Id), Parameter: nameof(Lookup.Id)),
@@ -29,17 +31,20 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Lookups
                 (Rule: IsInvalidLength(lookup.UpdatedBy, 255), Parameter: nameof(Lookup.UpdatedBy)),
 
                 (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: lookup.CreatedBy),
+                Parameter: nameof(Lookup.CreatedBy)),
+
+                (Rule: IsNotSame(
                     first: lookup.UpdatedBy,
                     second: lookup.CreatedBy,
                     secondName: nameof(Lookup.CreatedBy)),
-
                 Parameter: nameof(Lookup.UpdatedBy)),
 
                 (Rule: IsNotSame(
                     first: lookup.UpdatedDate,
                     second: lookup.CreatedDate,
                     secondName: nameof(Lookup.CreatedDate)),
-
                 Parameter: nameof(Lookup.UpdatedDate)),
 
                 (Rule: await IsNotRecentAsync(lookup.CreatedDate), Parameter: nameof(Lookup.CreatedDate)));
@@ -48,6 +53,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Lookups
         private async ValueTask ValidateLookupOnModifyAsync(Lookup lookup)
         {
             ValidateLookupIsNotNull(lookup);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(lookup.Id), Parameter: nameof(Lookup.Id)),
@@ -62,9 +68,14 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Lookups
                 (Rule: IsInvalidLength(lookup.CreatedBy, 255), Parameter: nameof(Lookup.CreatedBy)),
                 (Rule: IsInvalidLength(lookup.UpdatedBy, 255), Parameter: nameof(Lookup.UpdatedBy)),
 
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: lookup.UpdatedBy),
+                Parameter: nameof(Lookup.UpdatedBy)),
+
                 (Rule: IsSameAs(
-                    firstDate: lookup.UpdatedDate,
-                    secondDate: lookup.CreatedDate,
+                    firstDate: lookup.CreatedDate,
+                    secondDate: lookup.UpdatedDate,
                     secondDateName: nameof(Lookup.CreatedDate)),
                 Parameter: nameof(Lookup.UpdatedDate)),
 
@@ -146,6 +157,14 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Lookups
             {
                 Condition = firstDate == secondDate,
                 Message = $"Date is the same as {secondDateName}"
+            };
+
+        private static dynamic IsNotSame(
+            string first,
+            string second) => new
+            {
+                Condition = first != second,
+                Message = $"Expected value to be '{first}' but found '{second}'."
             };
 
         private static dynamic IsNotSame(

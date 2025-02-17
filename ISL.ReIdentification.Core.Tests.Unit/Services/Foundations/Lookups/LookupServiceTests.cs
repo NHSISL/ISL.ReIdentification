@@ -3,13 +3,16 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Loggings;
+using ISL.ReIdentification.Core.Brokers.Securities;
 using ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Foundations.Lookups;
+using ISL.ReIdentification.Core.Models.Securities;
 using ISL.ReIdentification.Core.Services.Foundations.Lookups;
 using Microsoft.Data.SqlClient;
 using Moq;
@@ -22,6 +25,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
     {
         private readonly Mock<IReIdentificationStorageBroker> reIdentificationStorageBroker;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
+        private readonly Mock<ISecurityBroker> securityBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly ILookupService lookupService;
 
@@ -29,11 +33,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
         {
             this.reIdentificationStorageBroker = new Mock<IReIdentificationStorageBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
+            this.securityBrokerMock = new Mock<ISecurityBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
             this.lookupService = new LookupService(
                 reIdentificationStorageBroker: this.reIdentificationStorageBroker.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
+                securityBroker: this.securityBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
         }
 
@@ -62,10 +68,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private static Lookup CreateRandomModifyLookup(DateTimeOffset dateTimeOffset)
+        private static Lookup CreateRandomModifyLookup(DateTimeOffset dateTimeOffset, string userId)
         {
             int randomDaysInPast = GetRandomNegativeNumber();
-            Lookup randomLookup = CreateRandomLookup(dateTimeOffset);
+            Lookup randomLookup = CreateRandomLookup(dateTimeOffset, userId);
 
             randomLookup.CreatedDate =
                 randomLookup.CreatedDate.AddDays(randomDaysInPast);
@@ -75,30 +81,53 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
 
         private static IQueryable<Lookup> CreateRandomLookups()
         {
-            return CreateLookupFiller(dateTimeOffset: GetRandomDateTimeOffset())
+            return CreateLookupFiller(
+                dateTimeOffset: GetRandomDateTimeOffset(),
+                userId: GetRandomStringWithLengthOf(255))
                 .Create(count: GetRandomNumber())
                     .AsQueryable();
         }
 
-        private static Lookup CreateRandomLookup() =>
-            CreateLookupFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
-
-        private static Lookup CreateRandomLookup(DateTimeOffset dateTimeOffset) =>
-            CreateLookupFiller(dateTimeOffset).Create();
-
-        private static Filler<Lookup> CreateLookupFiller(DateTimeOffset dateTimeOffset)
+        private static Lookup CreateRandomLookup()
         {
-            string user = Guid.NewGuid().ToString();
+            return CreateLookupFiller(
+                dateTimeOffset: GetRandomDateTimeOffset(),
+                userId: GetRandomStringWithLengthOf(255)).Create();
+        }
+
+        private static Lookup CreateRandomLookup(DateTimeOffset dateTimeOffset, string userId) =>
+            CreateLookupFiller(dateTimeOffset, userId).Create();
+
+        private static Filler<Lookup> CreateLookupFiller(DateTimeOffset dateTimeOffset, string userId)
+        {
             var filler = new Filler<Lookup>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnProperty(lookup => lookup.Name).Use(GetRandomStringWithLengthOf(220))
-                .OnProperty(lookup => lookup.Name).Use(GetRandomStringWithLengthOf(220))
-                .OnProperty(lookup => lookup.CreatedBy).Use(user)
-                .OnProperty(lookup => lookup.UpdatedBy).Use(user);
+                .OnProperty(lookup => lookup.CreatedBy).Use(userId)
+                .OnProperty(lookup => lookup.UpdatedBy).Use(userId);
 
             return filler;
+        }
+
+        private EntraUser CreateRandomEntraUser(string entraUserId = "")
+        {
+            var userId = string.IsNullOrWhiteSpace(entraUserId) ? GetRandomStringWithLengthOf(255) : entraUserId;
+
+            return new EntraUser(
+                entraUserId: userId,
+                givenName: GetRandomString(),
+                surname: GetRandomString(),
+                displayName: GetRandomString(),
+                email: GetRandomString(),
+                jobTitle: GetRandomString(),
+                roles: new List<string> { GetRandomString() },
+
+                claims: new List<System.Security.Claims.Claim>
+                {
+                    new System.Security.Claims.Claim(type: GetRandomString(), value: GetRandomString())
+                });
         }
     }
 }

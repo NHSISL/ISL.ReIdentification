@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
@@ -10,6 +11,7 @@ using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Securities;
 using ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
+using ISL.ReIdentification.Core.Models.Securities;
 
 namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
 {
@@ -31,6 +33,14 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
             this.securityBroker = securityBroker;
             this.loggingBroker = loggingBroker;
         }
+
+        public ValueTask BulkAddAccessAuditAsync(List<AccessAudit> accessAudits) =>
+        TryCatch(async () =>
+        {
+            List<AccessAudit> accessAuditsWithAddAuditApplied = await ApplyBulkAddAuditAsync(accessAudits);
+            await ValidateAccessAuditOnBulkAddAsync(accessAuditsWithAddAuditApplied);
+            await this.reIdentificationStorageBroker.InsertBulkAccessAuditAsync(accessAuditsWithAddAuditApplied);
+        });
 
         public ValueTask<AccessAudit> AddAccessAuditAsync(AccessAudit accessAudit) =>
         TryCatch(async () =>
@@ -100,6 +110,23 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
             accessAudit.UpdatedDate = auditDateTimeOffset;
 
             return accessAudit;
+        }
+
+        virtual internal async ValueTask<List<AccessAudit>> ApplyBulkAddAuditAsync(List<AccessAudit> accessAudits)
+        {
+            ValidateAccessAuditIsNotNull(accessAudits);
+            var currentDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
+
+            foreach (var accessAudit in accessAudits)
+            {
+                accessAudit.CreatedBy = currentUser?.EntraUserId;
+                accessAudit.CreatedDate = currentDateTimeOffset;
+                accessAudit.UpdatedBy = currentUser?.EntraUserId;
+                accessAudit.UpdatedDate = currentDateTimeOffset;
+            }
+
+            return accessAudits;
         }
 
         virtual internal async ValueTask<AccessAudit> ApplyModifyAuditAsync(AccessAudit accessAudit)

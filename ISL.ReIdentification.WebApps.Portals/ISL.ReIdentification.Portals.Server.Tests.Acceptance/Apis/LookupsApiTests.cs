@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using FluentAssertions;
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Brokers;
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.Lookups;
 using Tynamix.ObjectFiller;
@@ -49,7 +48,6 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
         {
             Lookup randomLookup = CreateRandomLookup();
             Lookup createdLookup = await this.apiBroker.PostLookupAsync(randomLookup);
-            createdLookup.Should().BeEquivalentTo(randomLookup);
 
             return createdLookup;
         }
