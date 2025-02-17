@@ -183,6 +183,9 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             DateTimeOffset expiresOn = currentDateTimeOffset
                 .AddMinutes(this.projectStorageConfiguration.TokenLifetimeMinutes);
 
+            // Call document service to retrieve all containers, if the container does now exist, call the below block of
+            // code to create folder structure
+
             if (!isPreviouslyApproved)
             {
                 await this.documentService.AddContainerAsync(container);

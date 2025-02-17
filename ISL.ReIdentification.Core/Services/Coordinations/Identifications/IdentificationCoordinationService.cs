@@ -213,18 +213,26 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
             AccessRequest retrievedImpersonationContext = await this.persistanceOrchestrationService
                 .RetrieveImpersonationContextByIdAsync(impersonationContextId);
 
-            bool isPreviouslyApproved = retrievedImpersonationContext.ImpersonationContext.IsApproved;
-
-            if (!isPreviouslyApproved)
+            // Add a check to ensure the ImpersonationContext is approved, if not return early?
+            if (retrievedImpersonationContext.ImpersonationContext.IsApproved == false)
             {
-                retrievedImpersonationContext.ImpersonationContext.IsApproved = true;
-
-                retrievedImpersonationContext.ImpersonationContext.UpdatedDate =
-                    await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-
-                await this.persistanceOrchestrationService
-                    .PersistImpersonationContextAsync(retrievedImpersonationContext);
+                throw InvalidAccessIdentificationCoordinationException(message: "Project not approved. " +
+                    "Please contact responsible person to approve this request.");
             }
+
+            // the below chunk will not be required as we will not be updating ImpersonationContext status in this method anymore?
+            //bool isPreviouslyApproved = retrievedImpersonationContext.ImpersonationContext.IsApproved;
+
+            //if (!isPreviouslyApproved)
+            //{
+            //    retrievedImpersonationContext.ImpersonationContext.IsApproved = true;
+
+            //    retrievedImpersonationContext.ImpersonationContext.UpdatedDate =
+            //        await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+
+            //    await this.persistanceOrchestrationService
+            //        .PersistImpersonationContextAsync(retrievedImpersonationContext);
+            //}
 
             AccessRequest tokensAccessRequest = await this.identificationOrchestrationService
                 .ExpireRenewImpersonationContextTokensAsync(retrievedImpersonationContext, isPreviouslyApproved);
@@ -232,6 +240,57 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
             await this.persistanceOrchestrationService.SendGeneratedTokensNotificationAsync(tokensAccessRequest);
 
             return tokensAccessRequest;
+        });
+
+        public ValueTask ImpersonationContextApprovalAsync(Guid impersonationContextId, bool isApproved) =>
+        TryCatch(async () =>
+        {
+            ValidateOnImpersonationContextApproval(impersonationContextId);
+
+            AccessRequest retrievedImpersonationContext = await this.persistanceOrchestrationService
+                .RetrieveImpersonationContextByIdAsync(impersonationContextId);
+
+            // validate retrievedImpersonationContext is not null
+            EntraUser currentEntraUser = await this.securityBroker.GetCurrentUser();
+
+            if (retrievedImpersonationContext.ImpersonationContext.ResponsiblePersonEntraUserId != currentEntraUser.EntraUserId
+                || !currentEntraUser.Claims.Any(claim => claim.Value == "ISL.Reidentification.Portal.Administrators"))
+            {
+                throw InvalidAccessIdentificationCoordinationException(message: "Invalid access. Please contact support.");
+            }
+
+            bool isPreviouslyApproved = retrievedImpersonationContext.ImpersonationContext.IsApproved;
+
+            if (isPreviouslyApproved == isApproved)
+            {
+                return;
+            }
+
+            // Add a check to ensure the ImpersonationContext is approved, if not return early?
+            retrievedImpersonationContext.ImpersonationContext.IsApproved = isApproved;
+
+            // the below chunk will not be required as we will not be updating ImpersonationContext status in this method anymore?
+
+
+
+            retrievedImpersonationContext.ImpersonationContext.UpdatedDate =
+                await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+
+            await this.persistanceOrchestrationService
+                .PersistImpersonationContextAsync(retrievedImpersonationContext);
+
+            if (isApproved == false)
+            {
+                AccessRequest tokensAccessRequest = await this.identificationOrchestrationService
+                    .ExpireRenewImpersonationContextTokensAsync(retrievedImpersonationContext, isPreviouslyApproved);
+
+                await this.persistanceOrchestrationService.SendApprovalNotificationAsync(tokensAccessRequest);
+
+                return;
+            }
+
+
+            await this.persistanceOrchestrationService.SendGeneratedTokensNotificationAsync(tokensAccessRequest);
         });
 
         virtual async internal ValueTask<AccessRequest> ConvertCsvIdentificationRequestToIdentificationRequest(
