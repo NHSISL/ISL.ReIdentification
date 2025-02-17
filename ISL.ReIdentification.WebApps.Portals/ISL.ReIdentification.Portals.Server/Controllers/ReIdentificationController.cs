@@ -149,7 +149,7 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
 
         [Authorize]
         [HttpPost("impersonationcontextapproval")]
-        public async ValueTask<ActionResult<AccessRequest>> PostImpersonationContextApprovalAsync(
+        public async ValueTask<ActionResult> PostImpersonationContextApprovalAsync(
             [FromBody] Guid impersonationContextId, bool isApproved)
         {
             try
