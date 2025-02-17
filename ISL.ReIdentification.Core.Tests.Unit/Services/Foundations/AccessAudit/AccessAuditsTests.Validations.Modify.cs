@@ -134,7 +134,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
                 values:
                     [
                         "Text is invalid",
-                        $"Expected value to be '{randomEntraUser.EntraUserId}' but found '{invalidText}'."
+                        $"Expected value to be '{randomEntraUser.EntraUserId}' but found " +
+                            $"'{invalidAccessAudit.UpdatedBy}'."
                     ]);
 
             invalidAccessAuditException.AddData(
@@ -144,7 +145,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
                         "Date is invalid",
                         "Date is the same as CreatedDate",
                         $"Date is not recent. Expected a value between {startDate} and {endDate} but found " +
-                        $"{invalidAccessAudit.UpdatedDate}"
+                            $"{invalidAccessAudit.UpdatedDate}"
                     ]);
 
             var expectedAccessAuditValidationException =
