@@ -50,6 +50,25 @@ steps:
   displayName: 'Publish Artifact - Portal'
   artifact: drop-frontend-portal
 
+# Install Node.js and build the Configurations client before publishing Configuration
+- task: NodeTool@0
+  displayName: 'Install Node.js'
+  inputs:
+    versionSpec: '16.x'
+
+- task: Npm@1
+  displayName: 'Install client dependencies (Configurations Client)'
+  inputs:
+    command: 'install'
+    workingDir: 'ISL.ReIdentification.Configurations.Client'
+
+- task: Npm@1
+  displayName: 'Build Configurations Client'
+  inputs:
+    command: 'custom'
+    customCommand: 'run build'
+    workingDir: 'ISL.ReIdentification.Configurations.Client'
+
 - task: DotNetCoreCLI@2
   displayName: "Dotnet Publish Configuration"
   inputs:
@@ -70,7 +89,6 @@ steps:
     command: 'build'
     projects: '**/ISL.ReIdentification.Functions.csproj'
     arguments: --output $(System.DefaultWorkingDirectory)/publish_output_reid_func --configuration Release
-
 
 - task: ArchiveFiles@2
   displayName: 'Archive files - Re-id Function'
