@@ -136,20 +136,18 @@ const ImpersonationContextDetailManage: FunctionComponent<ImpersonationContextDe
                                 ) : (
                                     <div className="mb-3">
                                         <p>You have been designated as the responsible person for this project. To enable the service to process files dropped into it, please confirm that this request is correct.</p>
-                                        <Button type="submit" variant="success" onClick={(e) => handleSubmit(e, impersonationIdentificationRequestId)}>
-                                            {!loading ? "Approve And Generate Tokens" : <Spinner animation="border" size="sm" />}
+                                        <Button variant="success" onClick={() => handleDeny(true)}>
+                                            {!isDenying ? "Accept Token Generation" : <Spinner animation="border" size="sm" />}
                                         </Button>
                                     </div>
                                 )}
                             </>
                         )}
 
-                        {/*{ account.accounts[0].idTokenClaims?.oid?.toLowerCase() === data?.responsiblePersonEntraUserId.toLowerCase() && (*/}
-                        {/*    <Alert variant="danger">This request hasn't been approved by the selected responsible person. no action can be taken.</Alert>*/}
-                        {/*)}*/}
 
                         {account.accounts[0].idTokenClaims?.oid === data?.requesterEntraUserId && (
                             <>
+
                                 {data?.isApproved && !error && (
                                     confirmReGenerate ? (
                                         <div className="mb-3">
@@ -164,11 +162,28 @@ const ImpersonationContextDetailManage: FunctionComponent<ImpersonationContextDe
                                     ) : (
                                         <ButtonGroup className="mb-3">
                                             <Button type="submit" onClick={handleReGenerateClick}>
-                                                {!loading ? "Re-Generate Tokens" : <Spinner animation="border" size="sm" />}
+                                                {!loading ? "Generate Tokens" : <Spinner animation="border" size="sm" />}
                                             </Button>
                                         </ButtonGroup>
                                     )
                                 )}
+
+                                {!data?.isApproved && !error && (
+                                    <Alert variant="warning" className="mt-3">
+                                        <p>
+                                            This project has not been approved by the responsible person, <strong>{data?.responsiblePersonDisplayName}</strong>.
+                                        </p>
+                                        <p>
+                                            As a result, you will not be able to generate tokens or proceed with any actions that require approval.
+                                            Please contact the responsible person to discuss the approval status of this project.
+                                        </p>
+                                        <p>
+                                            If you believe this is an error, ensure that the responsible person, <strong>{data?.responsiblePersonDisplayName}</strong>,
+                                            has reviewed and approved the project request. You can reach out to them via email at <strong>{data?.responsiblePersonEmail}</strong>.
+                                        </p>
+                                    </Alert>
+                                )}
+
                                 {errorStatus && <Alert variant="danger" className="mt-2">{errorStatus}</Alert>}
 
                                 {accessRequest && (
