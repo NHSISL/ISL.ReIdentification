@@ -207,7 +207,9 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             DateTimeOffset expiresOn = currentDateTimeOffset
                 .AddMinutes(this.projectStorageConfiguration.TokenLifetimeMinutes);
 
-            if (!isPreviouslyApproved)
+            List<string> retrievedContainers = await this.documentService.RetrieveAllContainersAsync();
+
+            if (!retrievedContainers.Contains(container))
             {
                 await this.documentService.AddContainerAsync(container);
                 await this.documentService.AddFolderAsync(container, this.projectStorageConfiguration.PickupFolder);

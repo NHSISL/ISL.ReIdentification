@@ -130,6 +130,12 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
             await this.blobStorageBroker.CreateContainerAsync(container);
         });
 
+        public ValueTask<List<string>> RetrieveAllContainersAsync() =>
+        TryCatch(async () =>
+        {
+            return await this.blobStorageBroker.RetrieveAllContainersAsync();
+        });
+
         public ValueTask AddFolderAsync(string container, string folder) =>
         TryCatch(async () =>
         {
