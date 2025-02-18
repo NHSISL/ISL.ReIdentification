@@ -112,8 +112,21 @@ namespace ISL.ReIdentification.Infrastructure.Services
 
                                 new TestTask
                                 {
-                                    Name = "Test"
-                                }
+                                    Name = "Test",
+                                    Run = "dotnet test --no-build --logger:\"trx;LogFileName=test-results.trx\" --logger \"console;verbosity=detailed\""
+                                },
+
+                                new GithubTask
+                                {
+                                    Name = "Upload Test Results",
+                                    If = "always()",
+                                    Uses = "actions/upload-artifact@v3",
+                                    With = new Dictionary<string, string>
+                                    {
+                                        { "name", "Test Results" },
+                                        { "path", "test-results.trx" }
+                                    }
+                                },
                             }
                         }
                     },
