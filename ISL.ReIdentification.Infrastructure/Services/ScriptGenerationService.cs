@@ -120,7 +120,7 @@ namespace ISL.ReIdentification.Infrastructure.Services
                                 {
                                     Name = "Upload Test Results",
                                     If = "always()",
-                                    Uses = "actions/upload-artifact@v3",
+                                    Uses = "actions/upload-artifact@v4",
                                     With = new Dictionary<string, string>
                                     {
                                         { "name", "Test Results" },
