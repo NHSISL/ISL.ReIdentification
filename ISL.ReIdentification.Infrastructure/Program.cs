@@ -16,6 +16,8 @@ namespace ISL.ReIdentification.Infrastructure
                 branchName: "main",
                 projectName: "ISL.ReIdentification.Core",
                 dotNetVersion: "9.0.100");
+
+            scriptGenerationService.GeneratePrLintScript(branchName: "main");
         }
     }
 }
