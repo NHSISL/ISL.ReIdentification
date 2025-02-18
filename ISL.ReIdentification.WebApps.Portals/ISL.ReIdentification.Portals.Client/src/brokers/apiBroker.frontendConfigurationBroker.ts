@@ -9,6 +9,7 @@ export type FrontendConfigurationResponse = {
     version: string,
     bannerColour: string,
     activeAgreement: string,
+    csvMaxReId: string,
 }
 
 export type FrontendConfiguration = {
@@ -20,6 +21,7 @@ export type FrontendConfiguration = {
     version: string,
     bannerColour: string,
     activeAgreement: string,
+    csvMaxReId: string,
 }
 
 class FrontendConfigurationBroker {
