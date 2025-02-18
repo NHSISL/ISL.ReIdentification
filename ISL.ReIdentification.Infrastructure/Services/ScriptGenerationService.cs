@@ -38,10 +38,6 @@ namespace ISL.ReIdentification.Infrastructure.Services
                 Jobs = new Dictionary<string, Job>
                 {
                     {
-                        "label",
-                        new LabelJobV2(runsOn: BuildMachines.UbuntuLatest)
-                    },
-                    {
                         "build",
                         new Job
                         {
@@ -98,6 +94,12 @@ namespace ISL.ReIdentification.Infrastructure.Services
 
                                 new GithubTask
                                 {
+                                    Name = "Drop Database If Exists",
+                                    Run = $"dotnet ef database drop --project {projectName}/{projectName}.csproj --startup-project {projectName}/{projectName}.csproj --force"
+                                },
+
+                                new GithubTask
+                                {
                                     Name = "Deploy Database",
                                     Run = $"dotnet ef database update --project {projectName}/{projectName}.csproj --startup-project {projectName}/{projectName}.csproj"
                                 },
@@ -125,6 +127,53 @@ namespace ISL.ReIdentification.Infrastructure.Services
             };
 
             string buildScriptPath = "../../../../.github/workflows/build.yml";
+            string directoryPath = Path.GetDirectoryName(buildScriptPath);
+
+            if (!Directory.Exists(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
+
+            adotNetClient.SerializeAndWriteToFile(
+                adoPipeline: githubPipeline,
+                path: buildScriptPath);
+        }
+
+        public void GeneratePrLintScript(string branchName)
+        {
+            var githubPipeline = new GithubPipeline
+            {
+                Name = "PR Linter",
+
+                OnEvents = new Events
+                {
+                    PullRequest = new PullRequestEvent
+                    {
+                        Types = ["opened", "edited", "synchronize", "reopened", "closed"],
+                        Branches = [branchName]
+                    }
+                },
+
+                Jobs = new Dictionary<string, Job>
+                {
+                    {
+                        "label",
+                        new LabelJobV2(runsOn: BuildMachines.UbuntuLatest)
+                        {
+                            Name = "Label",
+                        }
+                    },
+                    {
+                        "requireIssueOrTask",
+                        new RequireIssueOrTaskJob()
+                        {
+                            Name = "Require Issue Or Task Association",
+                        }
+                    },
+                }
+            };
+
+            string buildScriptPath = "../../../../.github/workflows/prLinter.yml";
             string directoryPath = Path.GetDirectoryName(buildScriptPath);
 
             if (!Directory.Exists(directoryPath))
