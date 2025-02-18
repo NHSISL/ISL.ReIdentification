@@ -28,6 +28,8 @@ jobs:
       run: dotnet build --no-restore
     - name: Install EF Tools
       run: dotnet tool install --global dotnet-ef
+    - name: Drop Database If Exists
+      run: dotnet ef database drop --project ISL.ReIdentification.Core/ISL.ReIdentification.Core.csproj --startup-project ISL.ReIdentification.Core/ISL.ReIdentification.Core.csproj --force
     - name: Deploy Database
       run: dotnet ef database update --project ISL.ReIdentification.Core/ISL.ReIdentification.Core.csproj --startup-project ISL.ReIdentification.Core/ISL.ReIdentification.Core.csproj
     - name: Test
