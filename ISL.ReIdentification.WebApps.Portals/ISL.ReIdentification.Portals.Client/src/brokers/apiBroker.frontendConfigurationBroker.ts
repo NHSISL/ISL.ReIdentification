@@ -9,6 +9,9 @@ export type FrontendConfigurationResponse = {
     version: string,
     bannerColour: string,
     activeAgreement: string,
+    reportMaxReId: string,
+    reportBreachThreshold: string,
+    csvMaxReId: string
 }
 
 export type FrontendConfiguration = {
@@ -20,6 +23,9 @@ export type FrontendConfiguration = {
     version: string,
     bannerColour: string,
     activeAgreement: string,
+    reportMaxReId: number,
+    reportBreechThreshold: number,
+    csvMaxReId: number
 }
 
 class FrontendConfigurationBroker {
@@ -33,6 +39,9 @@ class FrontendConfigurationBroker {
 
             const result: FrontendConfiguration = {
                 ...response,
+                reportMaxReId: parseInt(response.reportMaxReId),
+                reportBreechThreshold: parseInt(response.reportBreachThreshold),
+                csvMaxReId: parseInt(response.csvMaxReId),
                 scopes: response.scopes.split(',')
             }
 
