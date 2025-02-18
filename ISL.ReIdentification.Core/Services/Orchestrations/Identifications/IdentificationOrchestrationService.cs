@@ -66,7 +66,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                 $"Start ReId Check {await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync()}, TransactionId {transactionId}");
 
             await this.loggingBroker.LogInformationAsync(
-                    $"Start PDS Check {await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync()}, TransactionId {transactionId}");
+                $"Start PDS Check {await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync()}, TransactionId {transactionId}");
 
             foreach (IdentificationItem item in identificationRequest.IdentificationItems)
             {
