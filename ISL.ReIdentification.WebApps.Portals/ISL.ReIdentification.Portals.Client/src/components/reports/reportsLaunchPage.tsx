@@ -101,12 +101,12 @@ const ReportsLaunchPage: FunctionComponent<ReportLaunchPageProps> = (props) => {
             const uniquePseudos = formattedPseudos.filter((value, index, array) => array.indexOf(value) === index);
 
             const uniqueNewPseudosCount = uniquePseudos.filter(up => reidentifications.find(reidRecord => reidRecord.pseudo === up) === undefined).length;
-            console.log(uniqueNewPseudosCount);
+
             // more than 10 so we prompt the user asking if they intended to re-id large number:
             if (reidentifications.length + uniqueNewPseudosCount >= reportBreechThreshold && !largeNumberConfirmed) {
                 //cache them and ask the question.
                 setHeldPseudosToReid(uniquePseudos);
-                setReidentificationRequestCount(reidentifications.length + uniquePseudos.length);
+                setReidentificationRequestCount(reidentifications.length + uniqueNewPseudosCount);
                 setPromptForReid(true)
             } else {
                 setLastSetOfPseudos(uniquePseudos);
