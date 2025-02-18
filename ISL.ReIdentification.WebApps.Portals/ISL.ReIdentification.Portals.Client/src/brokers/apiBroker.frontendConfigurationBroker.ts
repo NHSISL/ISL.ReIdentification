@@ -45,7 +45,7 @@ class FrontendConfigurationBroker {
                 scopes: response.scopes.split(',')
             }
 
-            if (!result.clientId ) {
+            if (!result.clientId) {
                 throw new Error("ClientId not provided");
             }
 
@@ -55,6 +55,10 @@ class FrontendConfigurationBroker {
 
             if (!result.scopes.length) {
                 throw new Error("Scopes not provided");
+            }
+
+            if (!result.csvMaxReId) {
+                throw new Error("App configuration missing for FrontendConfiguration - csvMaxReId.");
             }
 
             return result;
