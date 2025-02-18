@@ -121,6 +121,9 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
 
             if (hasAccessIdentificationItems.Count() == 0)
             {
+                await this.loggingBroker.LogInformationAsync(
+                    $"Completed ReId {await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync()}, TransactionId {transactionId}");
+
                 return identificationRequest;
             }
 
@@ -184,8 +187,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                 $"Completed NECS Request {await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync()}, TransactionId {transactionId}");
 
             await this.loggingBroker.LogInformationAsync(
-                $"Completed ReID {await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync()}, TransactionId {transactionId}");
-
+                $"Completed ReId Check {await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync()}, TransactionId {transactionId}");
 
             return identificationRequest;
         });

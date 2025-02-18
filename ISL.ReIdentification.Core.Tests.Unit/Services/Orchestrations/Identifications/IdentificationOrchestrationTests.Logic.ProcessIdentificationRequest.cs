@@ -69,7 +69,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
 
             this.dateTimeBrokerMock.Verify(broker =>
                broker.GetCurrentDateTimeOffsetAsync(),
-                   Times.Exactly(3));
+                   Times.Exactly(4));
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogInformationAsync($"Start ReId Check {randomDateTimeOffset}, TransactionId {randomGuid}"),
@@ -81,6 +81,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogInformationAsync($"Completed PDS Request {randomDateTimeOffset}, TransactionId {randomGuid}"),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogInformationAsync($"Completed ReId Check {randomDateTimeOffset}, TransactionId {randomGuid}"),
                     Times.Once);
 
             List<AccessAudit> pdsAccessAudits = new List<AccessAudit>();
@@ -229,7 +233,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                  Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-              broker.LogInformationAsync($"Completed ReID {randomDateTimeOffset}, TransactionId {randomGuid}"),
+              broker.LogInformationAsync($"Completed ReId Check {randomDateTimeOffset}, TransactionId {randomGuid}"),
                  Times.Once);
 
             List<AccessAudit> pdsAccessAudits = new List<AccessAudit>();
