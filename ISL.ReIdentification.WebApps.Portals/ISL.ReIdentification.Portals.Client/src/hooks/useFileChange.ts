@@ -6,12 +6,11 @@ export const useFileChange = (
     setHeaderColumns: React.Dispatch<React.SetStateAction<string[]>>,
     setCsvData: React.Dispatch<React.SetStateAction<string | null>>,
     hasHeaderRecord: boolean,
-    csvMaxReId?: string
+    csvMaxReId?: number
 ) => {
     const handleFileChange = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
             const file = e.target.files?.[0];
-            const CSVReIdLimitValue = Number(csvMaxReId);
             setError([]);
 
             if (!file) {
@@ -61,8 +60,8 @@ export const useFileChange = (
                 setCsvData(btoa(data));
                 const rows = data.split("\n");
 
-                if (rows.length > CSVReIdLimitValue) {
-                    setError(["The CSV file contains more than the set " + CSVReIdLimitValue + " row limit for CSV upload."]);
+                if (csvMaxReId !== undefined && rows.length > csvMaxReId) {
+                    setError(["The CSV file contains more than the set " + csvMaxReId + " row limit for CSV upload."]);
                     return;
                 }
 
