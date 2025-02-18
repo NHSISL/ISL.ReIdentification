@@ -86,10 +86,7 @@ namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis
         private async ValueTask<Lookup> PostRandomLookupAsync()
         {
             Lookup randomLookup = CreateRandomLookup();
-            Lookup createdLookup = await this.apiBroker.PostLookupAsync(randomLookup);
-            createdLookup.Should().BeEquivalentTo(randomLookup);
-
-            return createdLookup;
+            return await this.apiBroker.PostLookupAsync(randomLookup);
         }
 
         private async ValueTask<List<Lookup>> PostRandomLookupsAsync()

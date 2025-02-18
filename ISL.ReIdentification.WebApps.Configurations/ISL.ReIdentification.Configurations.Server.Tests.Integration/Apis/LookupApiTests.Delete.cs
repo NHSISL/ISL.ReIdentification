@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using FluentAssertions;
 using ISL.ReIdentification.Configuration.Server.Tests.Integration.Models;
 using RESTFulSense.Exceptions;
 
@@ -19,8 +20,8 @@ namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis
             await this.apiBroker.DeleteLookupByIdAsync(randomLookup.Id);
 
             // then
-            await Assert.ThrowsAsync<HttpResponseNotFoundException>(
-                async () => await this.apiBroker.GetLookupByIdAsync(randomLookup.Id));
+            Func<Task> act = async () => await this.apiBroker.GetLookupByIdAsync(randomLookup.Id);
+            await act.Should().ThrowAsync<HttpResponseNotFoundException>();
         }
     }
 }
