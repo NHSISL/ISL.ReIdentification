@@ -25,7 +25,11 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
                 await this.apiBroker.PostImpersonationContextRequestAsync(inputAccessRequest);
 
             // then
-            actualAccessRequest.Should().BeEquivalentTo(expectedAccessRequest);
+            actualAccessRequest.Should().BeEquivalentTo(expectedAccessRequest, options => options
+                .Excluding(req => req.ImpersonationContext.CreatedBy)
+                .Excluding(req => req.ImpersonationContext.CreatedDate)
+                .Excluding(req => req.ImpersonationContext.UpdatedBy)
+                .Excluding(req => req.ImpersonationContext.UpdatedDate));
             await this.apiBroker.DeleteImpersonationContextByIdAsync(actualAccessRequest.ImpersonationContext.Id);
         }
 
@@ -33,19 +37,19 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
         public async Task ShouldPostImpersonationContextSendApprovedAsync()
         {
             // given
-            ImpersonationContext randomImpersonationContext = CreateRandomImpersonationContext();
-            ImpersonationContext existingImpersonationContext = randomImpersonationContext.DeepClone();
-            existingImpersonationContext.IsApproved = false;
-            await this.apiBroker.PostImpersonationContextAsync(existingImpersonationContext);
 
-            ImpersonationContext inputImpersonationContext =
-                UpdateImpersonationContextWithRandomValues(existingImpersonationContext);
+            ImpersonationContext originalContext = CreateRandomImpersonationContext();
+            originalContext.IsApproved = false;
+            await this.apiBroker.PostImpersonationContextAsync(originalContext);
 
-            inputImpersonationContext.IsApproved = true;
+            ImpersonationContext postedContext = 
+                await this.apiBroker.GetImpersonationContextByIdAsync(originalContext.Id);
+
+            postedContext.IsApproved = true;
 
             AccessRequest inputAccessRequest = new AccessRequest
             {
-                ImpersonationContext = inputImpersonationContext,
+                ImpersonationContext = postedContext,
             };
 
             AccessRequest expectedAccessRequest = inputAccessRequest.DeepClone();
@@ -55,7 +59,12 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
                 await this.apiBroker.PostImpersonationContextRequestAsync(inputAccessRequest);
 
             // then
-            actualAccessRequest.Should().BeEquivalentTo(expectedAccessRequest);
+            actualAccessRequest.Should().BeEquivalentTo(expectedAccessRequest, options => options
+                .Excluding(req => req.ImpersonationContext.CreatedBy)
+                .Excluding(req => req.ImpersonationContext.CreatedDate)
+                .Excluding(req => req.ImpersonationContext.UpdatedBy)
+                .Excluding(req => req.ImpersonationContext.UpdatedDate));
+
             await this.apiBroker.DeleteImpersonationContextByIdAsync(actualAccessRequest.ImpersonationContext.Id);
         }
 
@@ -63,19 +72,18 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
         public async Task ShouldPostImpersonationContextSendDeniedAsync()
         {
             // given
-            ImpersonationContext randomImpersonationContext = CreateRandomImpersonationContext();
-            ImpersonationContext existingImpersonationContext = randomImpersonationContext.DeepClone();
-            existingImpersonationContext.IsApproved = true;
-            await this.apiBroker.PostImpersonationContextAsync(existingImpersonationContext);
+            ImpersonationContext originalContext = CreateRandomImpersonationContext();
+            originalContext.IsApproved = true;
+            await this.apiBroker.PostImpersonationContextAsync(originalContext);
 
-            ImpersonationContext inputImpersonationContext =
-                UpdateImpersonationContextWithRandomValues(existingImpersonationContext);
+            ImpersonationContext postedContext = 
+                await this.apiBroker.GetImpersonationContextByIdAsync(originalContext.Id);
 
-            inputImpersonationContext.IsApproved = false;
+            postedContext.IsApproved = false;
 
             AccessRequest inputAccessRequest = new AccessRequest
             {
-                ImpersonationContext = inputImpersonationContext,
+                ImpersonationContext = postedContext,
             };
 
             AccessRequest expectedAccessRequest = inputAccessRequest.DeepClone();
@@ -85,7 +93,12 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
                 await this.apiBroker.PostImpersonationContextRequestAsync(inputAccessRequest);
 
             // then
-            actualAccessRequest.Should().BeEquivalentTo(expectedAccessRequest);
+            actualAccessRequest.Should().BeEquivalentTo(expectedAccessRequest, options => options
+                .Excluding(req => req.ImpersonationContext.CreatedBy)
+                .Excluding(req => req.ImpersonationContext.CreatedDate)
+                .Excluding(req => req.ImpersonationContext.UpdatedBy)
+                .Excluding(req => req.ImpersonationContext.UpdatedDate));
+
             await this.apiBroker.DeleteImpersonationContextByIdAsync(actualAccessRequest.ImpersonationContext.Id);
         }
     }
