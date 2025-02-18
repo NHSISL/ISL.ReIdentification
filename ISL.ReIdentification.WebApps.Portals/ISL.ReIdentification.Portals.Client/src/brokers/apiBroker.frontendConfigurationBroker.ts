@@ -58,7 +58,7 @@ class FrontendConfigurationBroker {
             }
 
             if (!result.csvMaxReId) {
-                throw new Error("App Configuration missing for FrontendConfiguration - csvMaxReId.");
+                throw new Error("App configuration missing for FrontendConfiguration - csvMaxReId.");
             }
 
             return result;
