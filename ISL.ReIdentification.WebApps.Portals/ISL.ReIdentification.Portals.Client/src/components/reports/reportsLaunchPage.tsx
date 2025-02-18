@@ -14,6 +14,7 @@ import { useFrontendConfiguration } from "../../hooks/useFrontendConfiguration";
 import { BreachDetails } from "../breachDetails/BreachDetails";
 import { IReportEmbedConfiguration } from "embed";
 import { ReportObject } from "../../types/ReportObject";
+import { toastInfo } from "../../brokers/toastBroker.info";
 
 
 type ReportLaunchPageProps = {
@@ -34,7 +35,7 @@ const ReportsLaunchPage: FunctionComponent<ReportLaunchPageProps> = (props) => {
     const [launched, setLaunched] = useState(false);
     const [promptForReid, setPromptForReid] = useState(false);
     const { reidentify, reidentifications, lastPseudo, clearList, isLoading } = useReidentification(reidReason);
-    const { reportBreechThreshold } = useFrontendConfiguration();
+    const { reportBreechThreshold, reportMaxReId } = useFrontendConfiguration();
     const [savedEmbedObject, setSavedEmbedObject] = useState<ReportObject>();
     const [largeNumberConfirmed, setLargeNumberConfirmed] = useState(false);
     const [reidentificationRequestCount, setReidentificationRequestCount] = useState(0);
@@ -56,6 +57,9 @@ const ReportsLaunchPage: FunctionComponent<ReportLaunchPageProps> = (props) => {
     const dataPointEventHandler = useCallback(async (event?: CustomEvent<PBIEvent>) => {
 
         if (event && event.detail.dataPoints[0] && reportBreechThreshold) {
+
+
+
             // pseudo data could be held in either an identity or value field.
             //const identityValues = ...event.detail.dataPoints.flatMap(x => x.identity);
             const dataFields = [...event.detail.dataPoints.flatMap(x => x.identity), ...event.detail.dataPoints.flatMap(x => x.values)]
@@ -82,6 +86,8 @@ const ReportsLaunchPage: FunctionComponent<ReportLaunchPageProps> = (props) => {
                 return
             }
 
+
+
             setLaunched(true);
             //the psuedo could be contained in one of the following properties - so normalise all as strings
             const normalisedPseudos = pseudos.map(x => {
@@ -102,6 +108,11 @@ const ReportsLaunchPage: FunctionComponent<ReportLaunchPageProps> = (props) => {
 
             const uniqueNewPseudosCount = uniquePseudos.filter(up => reidentifications.find(reidRecord => reidRecord.pseudo === up) === undefined).length;
 
+            if (uniqueNewPseudosCount > reportMaxReId) {
+                toastInfo(`Cannot reidentify more than ${reportMaxReId} patients in a single request. Select a smaller group of patients to see their NHS Numbers.`);
+                return;
+            }
+
             // more than 10 so we prompt the user asking if they intended to re-id large number:
             if (reidentifications.length + uniqueNewPseudosCount >= reportBreechThreshold && !largeNumberConfirmed) {
                 //cache them and ask the question.
@@ -115,7 +126,7 @@ const ReportsLaunchPage: FunctionComponent<ReportLaunchPageProps> = (props) => {
         } else {
             addDeveloperEvent({ message: "dataSelected: no datapoints found", eventDetails: event });
         }
-    }, [reidentifications, largeNumberConfirmed, reportBreechThreshold])
+    }, [reidentifications, largeNumberConfirmed, reportBreechThreshold, addDeveloperEvent, pseudoColumn, reidentify, reportMaxReId])
 
     useEffect(() => {
         if (savedEmbedObject) {
