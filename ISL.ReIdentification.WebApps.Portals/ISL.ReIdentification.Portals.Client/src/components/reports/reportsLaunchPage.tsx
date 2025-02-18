@@ -13,6 +13,7 @@ import { ToastPosition } from "react-bootstrap/esm/ToastContainer";
 import { useFrontendConfiguration } from "../../hooks/useFrontendConfiguration";
 import { BreachDetails } from "../breachDetails/BreachDetails";
 import { IReportEmbedConfiguration } from "embed";
+import { ReportObject } from "../../types/ReportObject";
 
 
 type ReportLaunchPageProps = {
@@ -34,7 +35,7 @@ const ReportsLaunchPage: FunctionComponent<ReportLaunchPageProps> = (props) => {
     const [promptForReid, setPromptForReid] = useState(false);
     const { reidentify, reidentifications, lastPseudo, clearList, isLoading } = useReidentification(reidReason);
     const { reportBreechThreshold } = useFrontendConfiguration();
-    const [savedEmbedObject, setSavedEmbedObject] = useState();
+    const [savedEmbedObject, setSavedEmbedObject] = useState<ReportObject>();
     const [largeNumberConfirmed, setLargeNumberConfirmed] = useState(false);
     const [reidentificationRequestCount, setReidentificationRequestCount] = useState(0);
     const [showGuidance, setShowGuidance] = useState(false);
