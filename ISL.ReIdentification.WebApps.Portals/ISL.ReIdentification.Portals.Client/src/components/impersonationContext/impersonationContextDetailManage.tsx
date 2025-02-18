@@ -28,7 +28,7 @@ const ImpersonationContextDetailManage: FunctionComponent<ImpersonationContextDe
     const [isRegenerating, setIsRegenerating] = useState(false);
     const [isDenying, setIsDenying] = useState(false);
 
-    const updateImpersonation = impersonationContextViewService.useUpdateImpersonationContext();
+    const updateImpersonation = reIdentificationService.useRequestReIdentificationImpersonationApproval();
 
     useEffect(() => {
         if (impersonationIdentificationRequestId) {
@@ -53,14 +53,9 @@ const ImpersonationContextDetailManage: FunctionComponent<ImpersonationContextDe
         setIsDenying(true);
         try {
             setAccessRequest(null);
-            await generateTokens(impersonationIdentificationRequestId);
 
-            const updatedImpersonationContext: ImpersonationContext = {
-                ...data!,
-                isApproved: isApproved,
-            };
-
-            await updateImpersonation.mutateAsync(updatedImpersonationContext);
+            await updateImpersonation
+                .submitApproval(impersonationIdentificationRequestId!, isApproved);
 
             setAccessRequest(null);
             setSuccess("");
