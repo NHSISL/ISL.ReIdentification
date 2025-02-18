@@ -9,6 +9,7 @@ import UserAccessSearch from "../userAccessSearch/userAccessSearch";
 import { UserAccessView } from "../../models/views/components/userAccess/userAccessView";
 import { OverlayInjectedProps } from "react-bootstrap/esm/Overlay";
 import { useFileChange } from "../../hooks/useFileChange";
+import { useFrontendConfiguration } from "../../hooks/useFrontendConfiguration";
 
 const CsvReIdentificationDetailCardView: FunctionComponent = () => {
 
@@ -26,14 +27,14 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
     const [reason, setReason] = useState<string>("");
     const account = useMsal();
     const fileInputRef = useRef<HTMLInputElement>(null);
-
-    const { handleFileChange } = useFileChange(setError, setFileName, setHeaderColumns, setCsvData, hasHeaderRecord);
+    const { configuration } = useFrontendConfiguration();
+    const { handleFileChange } = useFileChange(setError, setFileName, setHeaderColumns, setCsvData, hasHeaderRecord, configuration?.csvMaxReId);
 
     useEffect(() => {
         if (fileInputRef.current?.files?.[0]) {
             handleFileChange({ target: fileInputRef.current } as React.ChangeEvent<HTMLInputElement>);
         }
-    }, [hasHeaderRecord]);
+    }, [hasHeaderRecord, handleFileChange]);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -211,7 +212,7 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
 
                             {error && error.length > 0 && (
                                 <Alert variant="danger">
-                                    Something went wrong when saving, please see details below:
+                                    Something went wrong, please see details below:
                                     <ul>
                                         {error.map((errMsg, index) => (
                                             <li key={index}>{errMsg}</li>
