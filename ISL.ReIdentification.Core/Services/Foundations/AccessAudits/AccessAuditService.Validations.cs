@@ -3,6 +3,8 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits.Exceptions;
@@ -63,6 +65,30 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
                 (Rule: await IsNotRecentAsync(accessAudit.CreatedDate), Parameter: nameof(AccessAudit.CreatedDate)));
         }
 
+        private async ValueTask ValidateAccessAuditOnBulkAddAsync(List<AccessAudit> accessAudits)
+        {
+            var exceptions = new List<Exception>();
+
+            foreach (AccessAudit accessAudit in accessAudits)
+            {
+                try
+                {
+                    await ValidateAccessAuditOnAddAsync(accessAudit);
+                }
+                catch (Exception exception)
+                {
+                    exceptions.Add(exception);
+                }
+            }
+
+            if (exceptions.Any())
+            {
+                throw new AggregateException(
+                    $"Unable to validate access for {exceptions.Count} audit access requests.",
+                    exceptions);
+            }
+        }
+
         private async ValueTask ValidateAccessAuditOnRetrieveById(Guid accessAuditId) =>
             Validate((Rule: await IsInvalidAsync(accessAuditId), Parameter: nameof(AccessAudit.Id)));
 
@@ -119,6 +145,14 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
             if (accessAudit is null)
             {
                 throw new NullAccessAuditException("Access audit is null.");
+            }
+        }
+
+        private static void ValidateAccessAuditIsNotNull(List<AccessAudit> accessAudits)
+        {
+            if (accessAudits is null)
+            {
+                throw new NullAccessAuditException("Access audit list is null.");
             }
         }
 
