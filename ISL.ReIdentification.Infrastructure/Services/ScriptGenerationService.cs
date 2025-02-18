@@ -76,6 +76,12 @@ namespace ISL.ReIdentification.Infrastructure.Services
                                     }
                                 },
 
+                                new GithubTask
+                                {
+                                    Name = "Update .Net Workloads",
+                                    Run = "dotnet workload update"
+                                },
+
                                 new RestoreTask
                                 {
                                     Name = "Restore"
