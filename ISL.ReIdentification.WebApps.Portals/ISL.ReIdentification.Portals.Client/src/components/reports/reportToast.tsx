@@ -38,14 +38,14 @@ const ReportToast: FunctionComponent<ReportToastProps> = (props) => {
         }
 
         if (!reidRecord.hasAccess) {
-            return <Card bg="danger" text="white" className="mb-1">
+            return <Card bg="danger" text="white" className="mb-1" key={reidRecord.pseudo}>
                 <CardBody>
                     You do not have permissions to re-identify {reidRecord.pseudo}.
                 </CardBody>
             </Card>
         }
 
-        return <Card bg="success" text="white" className="mb-1">
+        return <Card bg="success" text="white" className="mb-1" key={reidRecord.pseudo}>
             <Card.Body>
                 <b>Pseudo:&nbsp;</b>
                 {reidRecord.isHx ? reidRecord.pseudo : '--'}&nbsp;
@@ -71,7 +71,7 @@ const ReportToast: FunctionComponent<ReportToastProps> = (props) => {
                     Re-id Records
                 </Modal.Header>
                 <Modal.Body>
-                    {listOfPseudos.map(ls => getSingleRecordCard(reIdRecords, ls))}
+                    {listOfPseudos.map(ls => <div key={ls}> {getSingleRecordCard(reIdRecords, ls)} </div>)}
                 </Modal.Body>
                 <Modal.Footer>
                     <CopyIcon iconText="Copy All" content={getNhsNumbers(listOfPseudos, reIdRecords)} resetTime={2000} />
@@ -85,7 +85,7 @@ const ReportToast: FunctionComponent<ReportToastProps> = (props) => {
         }
 
         return <>
-            {listOfPseudos.map(ls => getSingleRecordCard(reIdRecords, ls))}
+            {listOfPseudos.map((ls) => <div key={ls}>{getSingleRecordCard(reIdRecords, ls)}</div>)}
         </>
     }
 
