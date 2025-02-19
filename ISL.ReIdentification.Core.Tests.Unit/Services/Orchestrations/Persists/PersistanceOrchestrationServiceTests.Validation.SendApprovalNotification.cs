@@ -30,12 +30,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                     innerException: nullAccessRequestPersistanceOrchestrationException);
 
             // when
-            ValueTask sendGeneratedTokensNotificationTask = this.persistanceOrchestrationService
+            ValueTask sendApprovalNotificationTask = this.persistanceOrchestrationService
                 .SendApprovalNotificationAsync(invalidAccessRequest);
 
             PersistanceOrchestrationValidationException actualImpersonationContextValidationException =
                 await Assert.ThrowsAsync<PersistanceOrchestrationValidationException>(
-                    testCode: sendGeneratedTokensNotificationTask.AsTask);
+                    testCode: sendApprovalNotificationTask.AsTask);
 
             // then
             actualImpersonationContextValidationException.Should()
@@ -80,12 +80,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
                     innerException: invalidArgumentPersistanceOrchestrationException);
 
             // when
-            ValueTask sendGeneratedTokensNotificationTask = this.persistanceOrchestrationService
+            ValueTask sendApprovalNotificationTask = this.persistanceOrchestrationService
                 .SendApprovalNotificationAsync(invalidAccessRequest);
 
             PersistanceOrchestrationValidationException actualImpersonationContextValidationException =
                 await Assert.ThrowsAsync<PersistanceOrchestrationValidationException>(
-                    testCode: sendGeneratedTokensNotificationTask.AsTask);
+                    testCode: sendApprovalNotificationTask.AsTask);
 
             // then
             actualImpersonationContextValidationException.Should()
