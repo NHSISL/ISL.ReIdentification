@@ -108,7 +108,13 @@ namespace ISL.ReIdentification.Infrastructure.Services
                                 {
                                     If = "always()",
                                     Name = "Convert TRX to JUnit",
-                                    Run = "dotnet tool install -g trx2junit && trx2junit test-results/test-results.trx"
+
+                                    Run =
+                                        """
+                                            mkdir -p test-results
+                                            dotnet tool install -g trx2junit
+                                            trx2junit test-results/test-results.trx
+                                        """
                                 },
 
                                 new GithubTask
