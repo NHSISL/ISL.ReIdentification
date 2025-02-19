@@ -72,7 +72,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
                     Parameter: $"{nameof(CsvReIdentificationConfigurations)}.{nameof(CsvReIdentificationConfigurations.ExpireAfterMinutes)}"));
         }
 
-        private static void ValidateOnSendGeneratedTokensNotificationAsyncAsync(AccessRequest accessRequest)
+        private static void ValidateOnSendGeneratedTokensNotificationAsync(AccessRequest accessRequest)
         {
             ValidateAccessRequestIsNotNull(accessRequest);
         }
