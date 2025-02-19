@@ -101,7 +101,7 @@ namespace ISL.ReIdentification.Infrastructure.Services
                                 new TestTask
                                 {
                                     Name = "Test",
-                                    Run = "dotnet test --no-build --logger:\"trx;LogFileName=test-results.trx\" --logger \"console;verbosity=detailed\""
+                                    Run = "dotnet test --no-build --logger \"trx;LogFileName=test-results/test-results.trx\" --logger \"console;verbosity=detailed\""
                                 },
 
                                 new TestTask
@@ -119,7 +119,7 @@ namespace ISL.ReIdentification.Infrastructure.Services
                                     With = new Dictionary<string, string>
                                     {
                                         { "name", "Test Results" },
-                                        { "path", "test-results.xml" },
+                                        { "path", "test-results/test-results.xml" },
                                         { "reporter", "java-junit" },
                                     }
                                 },
