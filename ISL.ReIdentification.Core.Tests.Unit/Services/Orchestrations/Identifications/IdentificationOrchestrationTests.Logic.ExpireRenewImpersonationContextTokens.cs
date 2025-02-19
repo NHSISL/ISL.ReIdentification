@@ -106,7 +106,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
 
             // when
             AccessRequest actualAccessRequest = await service
-                .ExpireRenewImpersonationContextTokensAsync(inputAccessRequest, isPreviouslyApproved);
+                .ExpireRenewImpersonationContextTokensAsync(inputAccessRequest);
 
             // then
             actualAccessRequest.Should().BeEquivalentTo(expectedAccessRequest);

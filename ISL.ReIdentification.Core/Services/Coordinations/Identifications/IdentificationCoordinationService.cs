@@ -14,6 +14,7 @@ using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Securities;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
+using ISL.ReIdentification.Core.Models.Coordinations.Identifications.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
@@ -213,21 +214,14 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
             AccessRequest retrievedImpersonationContext = await this.persistanceOrchestrationService
                 .RetrieveImpersonationContextByIdAsync(impersonationContextId);
 
-            bool isPreviouslyApproved = retrievedImpersonationContext.ImpersonationContext.IsApproved;
-
-            if (!isPreviouslyApproved)
+            if (retrievedImpersonationContext.ImpersonationContext.IsApproved == false)
             {
-                retrievedImpersonationContext.ImpersonationContext.IsApproved = true;
-
-                retrievedImpersonationContext.ImpersonationContext.UpdatedDate =
-                    await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-
-                await this.persistanceOrchestrationService
-                    .PersistImpersonationContextAsync(retrievedImpersonationContext);
+                throw new InvalidAccessIdentificationCoordinationException(message: "Project not approved. " +
+                    "Please contact responsible person to approve this request.");
             }
 
             AccessRequest tokensAccessRequest = await this.identificationOrchestrationService
-                .ExpireRenewImpersonationContextTokensAsync(retrievedImpersonationContext, isPreviouslyApproved);
+                .ExpireRenewImpersonationContextTokensAsync(retrievedImpersonationContext);
 
             await this.persistanceOrchestrationService.SendGeneratedTokensNotificationAsync(tokensAccessRequest);
 
@@ -265,8 +259,8 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
                 {
                     HasAccess = false,
 
-                    Identifier = string.IsNullOrEmpty(mappedItems[index].Identifier) 
-                        ? mappedItems[index].Identifier 
+                    Identifier = string.IsNullOrEmpty(mappedItems[index].Identifier)
+                        ? mappedItems[index].Identifier
                         : mappedItems[index].Identifier.PadLeft(10, '0'),
 
                     IsReidentified = false,

@@ -17,9 +17,6 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
         ValueTask AddDocumentAsync(Stream input, string fileName, string container);
         ValueTask RetrieveDocumentByFileNameAsync(Stream output, string fileName, string container);
         ValueTask RemoveDocumentByFileNameAsync(string filename, string container);
-
-        ValueTask<AccessRequest> ExpireRenewImpersonationContextTokensAsync(
-            AccessRequest accessRequest,
-            bool isPreviouslyApproved);
+        ValueTask<AccessRequest> ExpireRenewImpersonationContextTokensAsync(AccessRequest accessRequest);
     }
 }

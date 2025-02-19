@@ -192,9 +192,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             return identificationRequest;
         });
 
-        public ValueTask<AccessRequest> ExpireRenewImpersonationContextTokensAsync(
-            AccessRequest accessRequest,
-            bool isPreviouslyApproved) =>
+        public ValueTask<AccessRequest> ExpireRenewImpersonationContextTokensAsync(AccessRequest accessRequest) =>
         TryCatch(async () =>
         {
             ValidateOnExpireRenewImpersonationContextTokensAsync(accessRequest);
@@ -207,7 +205,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             DateTimeOffset expiresOn = currentDateTimeOffset
                 .AddMinutes(this.projectStorageConfiguration.TokenLifetimeMinutes);
 
-            if (!isPreviouslyApproved)
+            if (true)
             {
                 await this.documentService.AddContainerAsync(container);
                 await this.documentService.AddFolderAsync(container, this.projectStorageConfiguration.PickupFolder);
