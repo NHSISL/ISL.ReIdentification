@@ -22,26 +22,24 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 9.0.100
-    - name: Update .Net Workloads
-      run: dotnet workload update
     - name: Restore
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
     - name: Install EF Tools
       run: dotnet tool install --global dotnet-ef
-    - name: Drop Database If Exists
-      run: dotnet ef database drop --project ISL.ReIdentification.Core/ISL.ReIdentification.Core.csproj --startup-project ISL.ReIdentification.Core/ISL.ReIdentification.Core.csproj --force
     - name: Deploy Database
       run: dotnet ef database update --project ISL.ReIdentification.Core/ISL.ReIdentification.Core.csproj --startup-project ISL.ReIdentification.Core/ISL.ReIdentification.Core.csproj
     - name: Test
       run: dotnet test --no-build --logger:"trx;LogFileName=test-results.trx" --logger "console;verbosity=detailed"
-    - name: Upload Test Results
-      if: always()
-      uses: actions/upload-artifact@v4
+    - name: Convert TRX to JUnit
+      run: dotnet tool install -g trx2junit && trx2junit test-results.trx
+    - name: Publish Test Results to GitHub
+      uses: dorny/test-reporter@v1
       with:
         name: Test Results
-        path: test-results.trx
+        path: test-results.xml
+        reporter: java-junit
     env:
       NOTIFICATIONCONFIGURATIONS__APIKEY: ${{ secrets.NOTIFICATIONCONFIGURATIONS__APIKEY }}
       NOTIFICATIONCONFIGURATIONS__CSVAPPROVEDREQUESTTEMPLATEID: ${{ secrets.NOTIFICATIONCONFIGURATIONS__CSVAPPROVEDREQUESTTEMPLATEID }}

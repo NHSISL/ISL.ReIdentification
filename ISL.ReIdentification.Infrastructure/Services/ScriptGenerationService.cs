@@ -76,12 +76,6 @@ namespace ISL.ReIdentification.Infrastructure.Services
                                     }
                                 },
 
-                                new GithubTask
-                                {
-                                    Name = "Update .Net Workloads",
-                                    Run = "dotnet workload update"
-                                },
-
                                 new RestoreTask
                                 {
                                     Name = "Restore"
@@ -100,12 +94,6 @@ namespace ISL.ReIdentification.Infrastructure.Services
 
                                 new GithubTask
                                 {
-                                    Name = "Drop Database If Exists",
-                                    Run = $"dotnet ef database drop --project {projectName}/{projectName}.csproj --startup-project {projectName}/{projectName}.csproj --force"
-                                },
-
-                                new GithubTask
-                                {
                                     Name = "Deploy Database",
                                     Run = $"dotnet ef database update --project {projectName}/{projectName}.csproj --startup-project {projectName}/{projectName}.csproj"
                                 },
@@ -116,15 +104,21 @@ namespace ISL.ReIdentification.Infrastructure.Services
                                     Run = "dotnet test --no-build --logger:\"trx;LogFileName=test-results.trx\" --logger \"console;verbosity=detailed\""
                                 },
 
+                                new TestTask
+                                {
+                                    Name = "Convert TRX to JUnit",
+                                    Run = "dotnet tool install -g trx2junit && trx2junit test-results.trx"
+                                },
+
                                 new GithubTask
                                 {
-                                    Name = "Upload Test Results",
-                                    If = "always()",
-                                    Uses = "actions/upload-artifact@v4",
+                                    Name = "Publish Test Results to GitHub",
+                                    Uses = "dorny/test-reporter@v1",
                                     With = new Dictionary<string, string>
                                     {
                                         { "name", "Test Results" },
-                                        { "path", "test-results.trx" }
+                                        { "path", "test-results.xml" },
+                                        { "reporter", "java-junit" },
                                     }
                                 },
                             }
