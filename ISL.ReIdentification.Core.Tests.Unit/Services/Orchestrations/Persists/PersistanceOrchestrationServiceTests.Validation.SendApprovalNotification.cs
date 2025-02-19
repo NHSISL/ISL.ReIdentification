@@ -55,5 +55,55 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task
+            ShouldThrowValidationExceptionOnSendApprovalNotificationWhenInvalidArgumentAndLogItAsync()
+        {
+            // given
+            AccessRequest randomAccessRequest = CreateRandomAccessRequest();
+            AccessRequest invalidAccessRequest = randomAccessRequest;
+            invalidAccessRequest.ImpersonationContext = null;
+
+            var invalidArgumentPersistanceOrchestrationException =
+                new InvalidArgumentPersistanceOrchestrationException(
+                    message: "Invalid argument persistance orchestration exception, " +
+                        "please correct the errors and try again.");
+
+            invalidArgumentPersistanceOrchestrationException.AddData(
+                key: "impersonationContext",
+                values: "AccessRequest is invalid");
+
+            var expectedPersistanceOrchestrationValidationException =
+                new PersistanceOrchestrationValidationException(
+                    message: "Persistance orchestration validation error occurred, please fix errors and try again.",
+                    innerException: invalidArgumentPersistanceOrchestrationException);
+
+            // when
+            ValueTask sendGeneratedTokensNotificationTask = this.persistanceOrchestrationService
+                .SendApprovalNotificationAsync(invalidAccessRequest);
+
+            PersistanceOrchestrationValidationException actualImpersonationContextValidationException =
+                await Assert.ThrowsAsync<PersistanceOrchestrationValidationException>(
+                    testCode: sendGeneratedTokensNotificationTask.AsTask);
+
+            // then
+            actualImpersonationContextValidationException.Should()
+                .BeEquivalentTo(expectedPersistanceOrchestrationValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedPersistanceOrchestrationValidationException))),
+                        Times.Once);
+
+            this.csvIdentificationRequestServiceMock.VerifyNoOtherCalls();
+            this.impersonationContextServiceMock.VerifyNoOtherCalls();
+            this.notificationServiceMock.VerifyNoOtherCalls();
+            this.accessAuditServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

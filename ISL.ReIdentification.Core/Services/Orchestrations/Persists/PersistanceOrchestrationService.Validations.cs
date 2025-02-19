@@ -82,7 +82,8 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
             ValidateAccessRequestIsNotNull(accessRequest);
 
             Validate(
-                (Rule: IsInvalid(accessRequest), Parameter: nameof(accessRequest)));
+                (Rule: IsInvalid(accessRequest.ImpersonationContext),
+                Parameter: nameof(accessRequest.ImpersonationContext)));
         }
 
         private static dynamic IsInvalid(Guid id) => new
