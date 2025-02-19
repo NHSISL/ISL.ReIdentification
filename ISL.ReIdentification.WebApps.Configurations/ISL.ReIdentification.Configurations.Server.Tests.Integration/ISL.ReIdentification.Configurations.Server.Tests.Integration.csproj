@@ -31,9 +31,10 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\ISL.Reidentification.Configurations.Server\ISL.ReIdentification.Configurations.Server.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+        <ProjectReference Include="..\ISL.Reidentification.Configurations.Client\ISL.ReIdentification.Configurations.Client.esproj" />
+        <ProjectReference Include="..\ISL.Reidentification.Configurations.Server\ISL.ReIdentification.Configurations.Server.csproj" />
+	</ItemGroup>
 
   <ItemGroup>
     <Using Include="Xunit" />
