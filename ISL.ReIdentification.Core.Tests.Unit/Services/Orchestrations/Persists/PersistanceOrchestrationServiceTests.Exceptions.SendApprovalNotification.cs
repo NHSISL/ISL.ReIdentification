@@ -63,5 +63,56 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(ReturningNothingDependencyExceptions))]
+        public async Task ShouldThrowDependencyOnSendApprovalNotificationAndLogItAsync(
+            Xeption dependencyException)
+        {
+            // given
+            AccessRequest someAccessRequest = CreateRandomAccessRequest();
+            someAccessRequest.ImpersonationContext.IsApproved = true;
+
+            this.notificationServiceMock.Setup(service =>
+                service.SendImpersonationApprovedNotificationAsync(someAccessRequest))
+                    .ThrowsAsync(dependencyException);
+
+            var expectedPersistanceOrchestrationDependencyException =
+                new PersistanceOrchestrationDependencyException(
+                    message: "Persistance orchestration dependency error occurred, " +
+                        "fix the errors and try again.",
+                    innerException: dependencyException.InnerException as Xeption);
+
+            // when
+            ValueTask sendApprovalNotificationTask = this.persistanceOrchestrationService
+                .SendApprovalNotificationAsync(someAccessRequest);
+
+            PersistanceOrchestrationDependencyException
+                actualPersistanceOrchestrationDependencyException =
+                    await Assert.ThrowsAsync<PersistanceOrchestrationDependencyException>(
+                        testCode: sendApprovalNotificationTask.AsTask);
+
+            // then
+            actualPersistanceOrchestrationDependencyException
+                .Should().BeEquivalentTo(expectedPersistanceOrchestrationDependencyException);
+
+            this.notificationServiceMock.Verify(service => service
+                .SendImpersonationApprovedNotificationAsync(It.Is(SameAccessRequestAs(someAccessRequest))),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
+                   expectedPersistanceOrchestrationDependencyException))),
+                       Times.Once);
+
+            this.csvIdentificationRequestServiceMock.VerifyNoOtherCalls();
+            this.impersonationContextServiceMock.VerifyNoOtherCalls();
+            this.notificationServiceMock.VerifyNoOtherCalls();
+            this.accessAuditServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
