@@ -63,14 +63,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
         public async Task ShouldThrowValidationExceptionOnExpireRenewTokensIfImpersonationContextNotApprovedLogItAsync()
         {
             // given
-            DateTimeOffset randomDateTimeOffset = GetRandomFutureDateTimeOffset();
             AccessRequest randomAccessRequest = CreateRandomAccessRequest();
             randomAccessRequest.IdentificationRequest = null;
             randomAccessRequest.CsvIdentificationRequest = null;
             Guid inputImpersonationContextId = randomAccessRequest.ImpersonationContext.Id;
             AccessRequest retrievedAccessRequest = randomAccessRequest.DeepClone();
             retrievedAccessRequest.ImpersonationContext.IsApproved = false;
-            AccessRequest approvedAccessRequest = retrievedAccessRequest.DeepClone();
 
             var invalidAccessIdentificationCoordinationException =
                 new InvalidAccessIdentificationCoordinationException(message: "Project not approved. " +

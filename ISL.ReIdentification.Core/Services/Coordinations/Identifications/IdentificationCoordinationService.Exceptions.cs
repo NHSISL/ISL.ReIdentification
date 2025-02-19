@@ -27,6 +27,10 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
             {
                 throw await CreateAndLogValidationExceptionAsync(nullAccessRequestException);
             }
+            catch (InvalidAccessIdentificationCoordinationException invalidAccessIdentificationCoordinationException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(invalidAccessIdentificationCoordinationException);
+            }
             catch (AccessOrchestrationValidationException accessOrchestrationValidationException)
             {
                 throw await CreateAndLogDependencyValidationExceptionAsync(
