@@ -87,7 +87,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
                     .Use(() => GetRandomStringWithLengthOf(255))
 
                 .OnProperty(impersonationContext => impersonationContext.ProjectName)
-                    .Use(() => GetRandomStringWithLengthOf(255))
+                    .Use(() => $"{GetRandomStringWithLengthOf(240)}-{Guid.NewGuid()}")
 
                 .OnProperty(impersonationContext => impersonationContext.IdentifierColumn)
                     .Use(() => GetRandomStringWithLengthOf(10))
