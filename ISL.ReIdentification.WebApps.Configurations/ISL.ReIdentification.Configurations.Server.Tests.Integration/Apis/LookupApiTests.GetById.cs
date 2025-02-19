@@ -10,7 +10,7 @@ namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis
     public partial class LookupApiTests
     {
         [Fact]
-        public async Task ShouldGetLookupByIdAsync()
+        public async Task ShouldGetLookupAsync()
         {
             // given
             Lookup randomLookup = await PostRandomLookupAsync();

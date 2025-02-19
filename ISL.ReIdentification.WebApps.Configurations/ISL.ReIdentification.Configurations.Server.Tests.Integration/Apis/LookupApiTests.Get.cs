@@ -10,18 +10,37 @@ namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis
     public partial class LookupApiTests
     {
         [Fact]
-        public async Task ShouldGetLookupAsync()
+        public async Task ShouldGetAllLookupsAsync()
         {
             // given
-            Lookup randomLookup = await PostRandomLookupAsync();
-            Lookup expectedLookup = randomLookup;
+            List<Lookup> randomLookups = await PostRandomLookupsAsync();
+            List<Lookup> expectedLookups = randomLookups;
 
             // when
-            Lookup actualLookup = await this.apiBroker.GetLookupByIdAsync(randomLookup.Id);
+            List<Lookup> actualLookups = await this.apiBroker.GetAllLookupsAsync();
 
             // then
-            actualLookup.Should().BeEquivalentTo(expectedLookup);
-            await this.apiBroker.DeleteLookupByIdAsync(actualLookup.Id);
+            actualLookups.Should().NotBeNull();
+
+            foreach (Lookup expectedLookup in expectedLookups)
+            {
+                Lookup actualLookup = actualLookups
+                    .Single(lookup => lookup.Id == expectedLookup.Id);
+
+                actualLookup.Should().BeEquivalentTo(
+                    expectedLookup,
+                    options => options
+                        .Excluding(property => property.CreatedBy)
+                        .Excluding(property => property.CreatedDate)
+                        .Excluding(property => property.UpdatedBy)
+                        .Excluding(property => property.UpdatedDate));
+            }
+
+            // cleanup
+            foreach (Lookup createdLookup in expectedLookups)
+            {
+                await this.apiBroker.DeleteLookupByIdAsync(createdLookup.Id);
+            }
         }
     }
 }

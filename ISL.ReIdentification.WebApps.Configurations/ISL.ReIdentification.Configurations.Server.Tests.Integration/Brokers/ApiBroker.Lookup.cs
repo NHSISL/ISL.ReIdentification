@@ -13,8 +13,8 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification
         public async ValueTask<Lookup> PostLookupAsync(Lookup lookup) =>
             await this.apiFactoryClient.PostContentAsync(lookupsRelativeUrl, lookup);
 
-        public async ValueTask<IQueryable<Lookup>> GetAllLookupsAsync() =>
-            await this.apiFactoryClient.GetContentAsync<IQueryable<Lookup>>(lookupsRelativeUrl);
+        public async ValueTask<List<Lookup>> GetAllLookupsAsync() =>
+            await this.apiFactoryClient.GetContentAsync<List<Lookup>>(lookupsRelativeUrl);
 
         public async ValueTask<Lookup> GetLookupByIdAsync(Guid lookupId) =>
             await this.apiFactoryClient.GetContentAsync<Lookup>($"{lookupsRelativeUrl}/{lookupId}");
