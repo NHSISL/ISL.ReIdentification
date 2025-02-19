@@ -31,15 +31,14 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             {
                 this.notificationServiceMock.Verify(service => service
                     .SendImpersonationApprovedNotificationAsync(It.Is(SameAccessRequestAs(inputAccessRequest))),
-                    Times.Once);
+                        Times.Once);
             }
             else
             {
                 this.notificationServiceMock.Verify(service => service
                     .SendImpersonationDeniedNotificationAsync(It.Is(SameAccessRequestAs(inputAccessRequest))),
-                    Times.Once);
+                        Times.Once);
             }
-
 
             this.csvIdentificationRequestServiceMock.VerifyNoOtherCalls();
             this.impersonationContextServiceMock.VerifyNoOtherCalls();
