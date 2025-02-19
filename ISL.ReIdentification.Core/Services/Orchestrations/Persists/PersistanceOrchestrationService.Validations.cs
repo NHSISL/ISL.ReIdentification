@@ -77,6 +77,14 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
             ValidateAccessRequestIsNotNull(accessRequest);
         }
 
+        private static void ValidateOnSendApprovalNotificationAsync(AccessRequest accessRequest)
+        {
+            ValidateAccessRequestIsNotNull(accessRequest);
+
+            Validate(
+                (Rule: IsInvalid(accessRequest), Parameter: nameof(accessRequest)));
+        }
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,
