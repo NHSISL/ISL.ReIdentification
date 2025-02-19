@@ -28,6 +28,7 @@ export function useReidentification(reason: string) {
     const reidentify = async (pseudoNumbers: string[]) => {
         const acc = accounts[0];
 
+
         const identificationItems = pseudoNumbers.map((ps): IdentificationItem => {
             return {
                 rowNumber: crypto.randomUUID(),
