@@ -106,14 +106,24 @@ namespace ISL.ReIdentification.Infrastructure.Services
 
                                 new TestTask
                                 {
+                                    Name = "List All Files After Test Run",
+                                    Run = "ls -R"
+                                },
+
+                                new TestTask
+                                {
                                     If = "always()",
                                     Name = "Convert TRX to JUnit",
 
                                     Run =
                                         """
-                                            mkdir -p test-results
-                                            dotnet tool install -g trx2junit
-                                            trx2junit test-results/test-results.trx
+                                        dotnet tool install -g trx2junit
+                                        if [ -f test-results/test-results.trx ]; then
+                                          trx2junit test-results/test-results.trx
+                                        else
+                                          echo "No test-results.trx file found!"
+                                          exit 1
+                                        fi
                                         """
                                 },
 
