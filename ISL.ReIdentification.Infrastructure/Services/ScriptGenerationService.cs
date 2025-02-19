@@ -106,12 +106,14 @@ namespace ISL.ReIdentification.Infrastructure.Services
 
                                 new TestTask
                                 {
+                                    If = "always()",
                                     Name = "Convert TRX to JUnit",
                                     Run = "dotnet tool install -g trx2junit && trx2junit test-results.trx"
                                 },
 
                                 new GithubTask
                                 {
+                                    If = "always()",
                                     Name = "Publish Test Results to GitHub",
                                     Uses = "dorny/test-reporter@v1",
                                     With = new Dictionary<string, string>
