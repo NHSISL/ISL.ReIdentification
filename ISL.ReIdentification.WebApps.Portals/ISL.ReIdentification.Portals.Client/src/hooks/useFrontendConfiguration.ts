@@ -17,7 +17,7 @@ export function useFrontendConfiguration() {
         if (query && query.data) {
             setConfiguration(query.data);
         }
-    },[query.data]);
+    },[query,query.data]);
         
     return { configuration, ...configuration }
 }
