@@ -25,7 +25,6 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
                 await this.apiBroker.PostImpersonationContextRequestAsync(inputAccessRequest);
 
             // then
-
             actualAccessRequest.Should().BeEquivalentTo(
                 expectedAccessRequest, 
                 options => options
@@ -41,7 +40,6 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
         public async Task ShouldPostImpersonationContextSendApprovedAsync()
         {
             // given
-
             ImpersonationContext originalContext = CreateRandomImpersonationContext();
             originalContext.IsApproved = false;
             await this.apiBroker.PostImpersonationContextAsync(originalContext);
