@@ -192,9 +192,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             return identificationRequest;
         });
 
-        public ValueTask<AccessRequest> ExpireRenewImpersonationContextTokensAsync(
-            AccessRequest accessRequest,
-            bool isPreviouslyApproved) =>
+        public ValueTask<AccessRequest> ExpireRenewImpersonationContextTokensAsync(AccessRequest accessRequest) =>
         TryCatch(async () =>
         {
             ValidateOnExpireRenewImpersonationContextTokensAsync(accessRequest);
