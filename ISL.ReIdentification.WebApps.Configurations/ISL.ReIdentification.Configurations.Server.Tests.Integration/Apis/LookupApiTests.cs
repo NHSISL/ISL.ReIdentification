@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using FluentAssertions;
 using ISL.ReIdentification.Configuration.Server.Tests.Integration.Models;
 using ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification.Brokers;
 using Tynamix.ObjectFiller;
