@@ -113,6 +113,37 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
             {
                 throw await CreateAndLogValidationExceptionAsync(invalidAccessIdentificationCoordinationException);
             }
+            catch (AccessOrchestrationValidationException accessOrchestrationValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    accessOrchestrationValidationException);
+            }
+            catch (AccessOrchestrationDependencyValidationException accessOrchestrationDependencyValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    accessOrchestrationDependencyValidationException);
+            }
+            catch (PersistanceOrchestrationValidationException persistanceOrchestrationValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    persistanceOrchestrationValidationException);
+            }
+            catch (PersistanceOrchestrationDependencyValidationException
+                persistanceOrchestrationDependencyValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    persistanceOrchestrationDependencyValidationException);
+            }
+            catch (IdentificationOrchestrationValidationException identificationOrchestrationValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    identificationOrchestrationValidationException);
+            }
+            catch (IdentificationOrchestrationDependencyValidationException identificationOrchestrationDependencyValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    identificationOrchestrationDependencyValidationException);
+            }
         }
 
         private async ValueTask<IdentificationCoordinationValidationException>
