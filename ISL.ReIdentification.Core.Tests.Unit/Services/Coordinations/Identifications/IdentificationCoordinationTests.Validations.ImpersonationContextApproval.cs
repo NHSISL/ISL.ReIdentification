@@ -38,7 +38,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
             // when
             ValueTask impersonationContextApprovalTask = this.identificationCoordinationService
-                .ImpersonationContextApprovalAsync(invalidImpersonationContextId, true);
+                .ImpersonationContextApprovalAsync(invalidImpersonationContextId, It.IsAny<bool>());
 
             IdentificationCoordinationValidationException actualIdentificationCoordinationValidationException =
                 await Assert.ThrowsAsync<IdentificationCoordinationValidationException>(
@@ -88,7 +88,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
             // when
             ValueTask impersonationContextApprovalTask = this.identificationCoordinationService
-                .ImpersonationContextApprovalAsync(inputImpersonationContextId, true);
+                .ImpersonationContextApprovalAsync(inputImpersonationContextId, It.IsAny<bool>());
 
             IdentificationCoordinationValidationException actualIdentificationCoordinationValidationException =
                 await Assert.ThrowsAsync<IdentificationCoordinationValidationException>(

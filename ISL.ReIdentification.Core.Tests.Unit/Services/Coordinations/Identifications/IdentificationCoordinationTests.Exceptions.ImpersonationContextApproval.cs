@@ -33,7 +33,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
             // when
             ValueTask impersonationContextApprovalTask = this.identificationCoordinationService
-                .ImpersonationContextApprovalAsync(someImpersonationContextId, true);
+                .ImpersonationContextApprovalAsync(someImpersonationContextId, It.IsAny<bool>());
 
             IdentificationCoordinationDependencyValidationException
                 actualIdentificationCoordinationDependencyValidationException =
@@ -80,7 +80,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
             // when
             ValueTask impersonationContextApprovalTask = this.identificationCoordinationService
-                .ImpersonationContextApprovalAsync(someImpersonationContextId, true);
+                .ImpersonationContextApprovalAsync(someImpersonationContextId, It.IsAny<bool>());
 
             IdentificationCoordinationDependencyException
                 actualIdentificationCoordinationDependencyException =
@@ -126,7 +126,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
             // when
             ValueTask impersonationContextApprovalTask = this.identificationCoordinationService
-                .ImpersonationContextApprovalAsync(someImpersonationContextId, true);
+                .ImpersonationContextApprovalAsync(someImpersonationContextId, It.IsAny<bool>());
 
             IdentificationCoordinationServiceException
                 actualIdentificationCoordinationServiceException =
