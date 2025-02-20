@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Brokers;
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.ImpersonationContexts;
 using Tynamix.ObjectFiller;
+using Xunit.Abstractions;
 
 namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
 {
@@ -15,9 +16,13 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
     public partial class ImpersonationContextsApiTests
     {
         private readonly ApiBroker apiBroker;
+        private readonly ITestOutputHelper output;
 
-        public ImpersonationContextsApiTests(ApiBroker apiBroker) =>
+        public ImpersonationContextsApiTests(ApiBroker apiBroker, ITestOutputHelper output)
+        {
             this.apiBroker = apiBroker;
+            this.output = output;
+        }
 
         private static ImpersonationContext CreateRandomImpersonationContext() =>
            CreateRandomImpersonationContextFiller().Create();

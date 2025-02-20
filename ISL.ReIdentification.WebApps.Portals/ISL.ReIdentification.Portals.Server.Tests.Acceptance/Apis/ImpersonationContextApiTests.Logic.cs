@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -75,8 +76,14 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             // given
             ImpersonationContext randomImpersonationContext = await PostRandomImpersonationContextAsync();
 
+            Console.WriteLine($"Setup value: {randomImpersonationContext.ProjectName}");
+            output.WriteLine($"Setup value: {randomImpersonationContext.ProjectName}");
+
             ImpersonationContext modifiedImpersonationContext =
                 UpdateImpersonationContextWithRandomValues(randomImpersonationContext);
+
+            Console.WriteLine($"Setup value: {modifiedImpersonationContext.ProjectName}");
+            output.WriteLine($"Setup value: {modifiedImpersonationContext.ProjectName}");
 
             // when
             await this.apiBroker.PutImpersonationContextAsync(modifiedImpersonationContext);
