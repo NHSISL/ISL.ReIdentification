@@ -170,7 +170,7 @@ const ReportsLaunchPage: FunctionComponent<ReportLaunchPageProps> = (props) => {
                 />
             }
             <Modal show={promptForReid} size="lg">
-                <Modal.Header><h4>Large number of reidentifiation requests detected</h4></Modal.Header>
+                <Modal.Header><h4>Large number of reidentification requests detected</h4></Modal.Header>
                 <Modal.Body>
                     <p>We have identified that you have requested the reidentification of <b>{reidentificationRequestCount}</b> patients this session.</p>
                     <p>Please confirm that you have a legitimate reason to re-identify this number of patients.</p>
