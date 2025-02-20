@@ -235,7 +235,47 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
         });
 
         public ValueTask ImpersonationContextApprovalAsync(Guid impersonationContextId, bool isApproved) =>
-            throw new NotImplementedException();
+        TryCatch(async () =>
+        {
+            ValidateOnImpersonationContextApproval(impersonationContextId);
+
+            AccessRequest retrievedImpersonationContext = await this.persistanceOrchestrationService
+                .RetrieveImpersonationContextByIdAsync(impersonationContextId);
+
+            EntraUser currentEntraUser = await this.securityBroker.GetCurrentUserAsync();
+
+            ValidateUserAccessOnImpersonationContextApproval(
+                retrievedImpersonationContext.ImpersonationContext.ResponsiblePersonEntraUserId,
+                currentEntraUser.EntraUserId);
+
+            bool isPreviouslyApproved = retrievedImpersonationContext.ImpersonationContext.IsApproved;
+
+            if (isPreviouslyApproved == isApproved)
+            {
+                return;
+            }
+
+            retrievedImpersonationContext.ImpersonationContext.IsApproved = isApproved;
+
+            retrievedImpersonationContext.ImpersonationContext.UpdatedDate =
+                await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+
+            AccessRequest updatedImpersonationContext = await this.persistanceOrchestrationService
+                .PersistImpersonationContextAsync(retrievedImpersonationContext);
+
+            if (isApproved == false)
+            {
+                AccessRequest tokensAccessRequest = await this.identificationOrchestrationService
+                    .ExpireRenewImpersonationContextTokensAsync(retrievedImpersonationContext, isPreviouslyApproved);
+
+                await this.persistanceOrchestrationService.SendApprovalNotificationAsync(tokensAccessRequest);
+
+                return;
+            }
+
+            await this.persistanceOrchestrationService
+                .SendApprovalNotificationAsync(updatedImpersonationContext);
+        });
 
         virtual async internal ValueTask<AccessRequest> ConvertCsvIdentificationRequestToIdentificationRequest(
             AccessRequest accessRequest)
@@ -265,8 +305,8 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
                 {
                     HasAccess = false,
 
-                    Identifier = string.IsNullOrEmpty(mappedItems[index].Identifier) 
-                        ? mappedItems[index].Identifier 
+                    Identifier = string.IsNullOrEmpty(mappedItems[index].Identifier)
+                        ? mappedItems[index].Identifier
                         : mappedItems[index].Identifier.PadLeft(10, '0'),
 
                     IsReidentified = false,
