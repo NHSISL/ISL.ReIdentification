@@ -16,7 +16,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public async Task ShouldUpdateApprovalStatusImpersonationContextApprovalAsync(bool isApproved)
+        public async Task ShouldUpdateApprovalStatusOnImpersonationContextApprovalAsync(bool isApproved)
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomFutureDateTimeOffset();
@@ -44,8 +44,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                     .ReturnsAsync(retrievedAccessRequest);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                    broker.GetCurrentDateTimeOffsetAsync())
-                        .ReturnsAsync(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                     .ReturnsAsync(randomDateTimeOffset);
 
             this.persistanceOrchestrationServiceMock.Setup(service =>
                 service.PersistImpersonationContextAsync(It.Is(SameAccessRequestAs(updatedAccessRequest))))
@@ -74,8 +74,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                    broker.GetCurrentDateTimeOffsetAsync(),
-                        Times.Once);
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
 
             this.persistanceOrchestrationServiceMock.Verify(service =>
                 service.PersistImpersonationContextAsync(It.Is(SameAccessRequestAs(updatedAccessRequest))),
@@ -100,6 +100,69 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                     service.SendApprovalNotificationAsync(It.Is(SameAccessRequestAs(tokensAccessRequest))),
                         Times.Once);
             }
+
+            this.persistanceOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.accessOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.identificationOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task ShouldReturnEarlyOnImpersonationContextApprovalIfStatusSameAsync(bool isApproved)
+        {
+            // given
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+            EntraUser currentEntraUser = randomEntraUser;
+            AccessRequest randomAccessRequest = CreateRandomAccessRequest();
+            randomAccessRequest.IdentificationRequest = null;
+            randomAccessRequest.CsvIdentificationRequest = null;
+            randomAccessRequest.ImpersonationContext.ResponsiblePersonEntraUserId = currentEntraUser.EntraUserId;
+            Guid inputImpersonationContextId = randomAccessRequest.ImpersonationContext.Id;
+            AccessRequest retrievedAccessRequest = randomAccessRequest.DeepClone();
+            retrievedAccessRequest.ImpersonationContext.IsApproved = isApproved;
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(currentEntraUser);
+
+            this.persistanceOrchestrationServiceMock.Setup(service =>
+                service.RetrieveImpersonationContextByIdAsync(inputImpersonationContextId))
+                    .ReturnsAsync(retrievedAccessRequest);
+
+            // when
+            await this.identificationCoordinationService
+                .ImpersonationContextApprovalAsync(inputImpersonationContextId, isApproved);
+
+            // then
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once);
+
+            this.persistanceOrchestrationServiceMock.Verify(service =>
+                service.RetrieveImpersonationContextByIdAsync(inputImpersonationContextId),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Never);
+
+            this.persistanceOrchestrationServiceMock.Verify(service =>
+                service.PersistImpersonationContextAsync(It.IsAny<AccessRequest>()),
+                    Times.Never);
+
+            this.persistanceOrchestrationServiceMock.Verify(service =>
+                service.SendApprovalNotificationAsync(It.IsAny<AccessRequest>()),
+                    Times.Never);
+
+            this.identificationOrchestrationServiceMock.Verify(service =>
+                service.ExpireRenewImpersonationContextTokensAsync(
+                    It.IsAny<AccessRequest>(),
+                    true),
+                        Times.Never);
 
             this.persistanceOrchestrationServiceMock.VerifyNoOtherCalls();
             this.accessOrchestrationServiceMock.VerifyNoOtherCalls();
