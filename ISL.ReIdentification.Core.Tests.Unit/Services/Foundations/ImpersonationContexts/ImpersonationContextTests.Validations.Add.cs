@@ -133,7 +133,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
                 [
                     "Date is invalid",
                     $"Date is not recent. Expected a value between " +
-                    $"{startDate} and {endDate} but found {invalidImpersonationContext.CreatedDate}"
+                        $"{startDate} and {endDate} but found {invalidImpersonationContext.CreatedDate}"
                 ]);
 
             invalidImpersonationContextException.AddData(
@@ -142,7 +142,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
                 [
                     "Text is invalid",
                     $"Expected value to be '{randomEntraUser.EntraUserId}' but found " +
-                    $"'{invalidImpersonationContext.CreatedBy}'."
+                        $"'{invalidImpersonationContext.CreatedBy}'."
                 ]);
 
             invalidImpersonationContextException.AddData(
@@ -355,7 +355,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
                 key: nameof(ImpersonationContext.CreatedBy),
                 values:
                     $"Expected value to be '{randomEntraUser.EntraUserId}' " +
-                    $"but found '{invalidImpersonationContext.CreatedBy}'.");
+                        $"but found '{invalidImpersonationContext.CreatedBy}'.");
 
             invalidImpersonationContextException.AddData(
                 key: nameof(ImpersonationContext.UpdatedBy),
@@ -369,7 +369,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
                 values:
                     $"Date is not recent." +
                     $" Expected a value between {startDate} and {endDate} but found " +
-                    $"{invalidImpersonationContext.CreatedDate}");
+                        $"{invalidImpersonationContext.CreatedDate}");
 
             var expectedImpersonationContextValidationException =
                 new ImpersonationContextValidationException(
