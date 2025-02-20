@@ -74,7 +74,6 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
             DateTime now = DateTime.UtcNow;
             var filler = new Filler<ImpersonationContext>();
             var projectName = $"{Guid.NewGuid()}-{GetRandomStringWithLengthOf(255)}".Substring(0, 255);
-            Console.WriteLine($"Filler value: {projectName}");
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)

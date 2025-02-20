@@ -76,14 +76,8 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             // given
             ImpersonationContext randomImpersonationContext = await PostRandomImpersonationContextAsync();
 
-            Console.WriteLine($"Setup value: {randomImpersonationContext.ProjectName}");
-            output.WriteLine($"Setup value: {randomImpersonationContext.ProjectName}");
-
             ImpersonationContext modifiedImpersonationContext =
                 UpdateImpersonationContextWithRandomValues(randomImpersonationContext);
-
-            Console.WriteLine($"Modify value: {modifiedImpersonationContext.ProjectName}");
-            output.WriteLine($"Modify value: {modifiedImpersonationContext.ProjectName}");
 
             // when
             await this.apiBroker.PutImpersonationContextAsync(modifiedImpersonationContext);
