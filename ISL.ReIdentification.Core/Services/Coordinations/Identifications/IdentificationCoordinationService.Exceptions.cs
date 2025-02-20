@@ -144,6 +144,36 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
                 throw await CreateAndLogDependencyValidationExceptionAsync(
                     identificationOrchestrationDependencyValidationException);
             }
+            catch (AccessOrchestrationServiceException accessOrchestrationServiceException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(
+                    accessOrchestrationServiceException);
+            }
+            catch (AccessOrchestrationDependencyException accessOrchestrationDependencyException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(
+                    accessOrchestrationDependencyException);
+            }
+            catch (PersistanceOrchestrationServiceException persistanceOrchestrationServiceException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(
+                    persistanceOrchestrationServiceException);
+            }
+            catch (PersistanceOrchestrationDependencyException persistanceOrchestrationDependencyException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(
+                    persistanceOrchestrationDependencyException);
+            }
+            catch (IdentificationOrchestrationServiceException identificationOrchestrationServiceException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(
+                    identificationOrchestrationServiceException);
+            }
+            catch (IdentificationOrchestrationDependencyException identificationOrchestrationDependencyException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(
+                    identificationOrchestrationDependencyException);
+            }
         }
 
         private async ValueTask<IdentificationCoordinationValidationException>
