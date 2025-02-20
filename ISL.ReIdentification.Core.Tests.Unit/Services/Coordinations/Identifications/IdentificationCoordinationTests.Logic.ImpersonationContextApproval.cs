@@ -32,7 +32,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             AccessRequest updatedAccessRequest = retrievedAccessRequest.DeepClone();
             updatedAccessRequest.ImpersonationContext.IsApproved = isApproved;
             updatedAccessRequest.ImpersonationContext.UpdatedDate = randomDateTimeOffset;
-            AccessRequest tokensAccessRequest = updatedAccessRequest.DeepClone();
+            AccessRequest persistedAccessRequest = updatedAccessRequest.DeepClone();
+            AccessRequest tokensAccessRequest = persistedAccessRequest.DeepClone();
 
             this.securityBrokerMock.Setup(broker =>
                 broker.GetCurrentUserAsync())
@@ -45,6 +46,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             this.dateTimeBrokerMock.Setup(broker =>
                     broker.GetCurrentDateTimeOffsetAsync())
                         .ReturnsAsync(randomDateTimeOffset);
+
+            this.persistanceOrchestrationServiceMock.Setup(service =>
+                service.PersistImpersonationContextAsync(It.Is(SameAccessRequestAs(updatedAccessRequest))))
+                    .ReturnsAsync(persistedAccessRequest);
 
             if (isApproved == false)
             {
@@ -62,6 +67,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             // then
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),
+                    Times.Once);
+
+            this.persistanceOrchestrationServiceMock.Verify(service =>
+                service.RetrieveImpersonationContextByIdAsync(inputImpersonationContextId),
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
