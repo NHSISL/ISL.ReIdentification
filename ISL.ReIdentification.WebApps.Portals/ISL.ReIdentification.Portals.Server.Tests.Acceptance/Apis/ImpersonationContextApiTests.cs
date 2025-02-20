@@ -78,6 +78,8 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             string user = Guid.NewGuid().ToString();
             DateTime now = DateTime.UtcNow;
             var filler = new Filler<ImpersonationContext>();
+            var projectName = $"{GetRandomStringWithLengthOf(210)}-{Guid.NewGuid()}";
+            Console.WriteLine($"Filler value: {projectName}");
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
@@ -92,7 +94,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
                     .Use(() => GetRandomStringWithLengthOf(255))
 
                 .OnProperty(impersonationContext => impersonationContext.ProjectName)
-                    .Use(() => $"{GetRandomStringWithLengthOf(240)}-{Guid.NewGuid()}")
+                    .Use(() => projectName)
 
                 .OnProperty(impersonationContext => impersonationContext.IdentifierColumn)
                     .Use(() => GetRandomStringWithLengthOf(10))
