@@ -16,6 +16,7 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
     public partial class IdentificationCoordinationService : IIdentificationCoordinationService
     {
         private delegate ValueTask<AccessRequest> ReturningAccessRequestFunction();
+        private delegate ValueTask ReturningNothingFunction();
 
         private async ValueTask<AccessRequest> TryCatch(ReturningAccessRequestFunction returningAccessRequestFunction)
         {
@@ -95,6 +96,18 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
             catch (Exception exception)
             {
                 throw await CreateAndLogServiceExceptionAsync(exception);
+            }
+        }
+
+        private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
+        {
+            try
+            {
+                await returningNothingFunction();
+            }
+            catch (InvalidIdentificationCoordinationException invalidIdentificationCoordinationException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(invalidIdentificationCoordinationException);
             }
         }
 

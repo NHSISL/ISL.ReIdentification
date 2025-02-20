@@ -102,6 +102,9 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
         private static void ValidateOnExpireRenewImpersonationContextTokens(Guid impersonationContextId) =>
             Validate((Rule: IsInvalid(impersonationContextId), Parameter: nameof(ImpersonationContext.Id)));
 
+        private static void ValidateOnImpersonationContextApproval(Guid impersonationContextId) =>
+            Validate((Rule: IsInvalid(impersonationContextId), Parameter: nameof(ImpersonationContext.Id)));
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,

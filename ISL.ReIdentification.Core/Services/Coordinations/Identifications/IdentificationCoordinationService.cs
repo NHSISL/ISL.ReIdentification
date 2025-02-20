@@ -234,8 +234,11 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
             return tokensAccessRequest;
         });
 
-        public async ValueTask ImpersonationContextApprovalAsync(Guid impersonationContextId, bool isApproved)
+        public ValueTask ImpersonationContextApprovalAsync(Guid impersonationContextId, bool isApproved) =>
+        TryCatch(async () =>
         {
+            ValidateOnImpersonationContextApproval(impersonationContextId);
+
             AccessRequest retrievedImpersonationContext = await this.persistanceOrchestrationService
                 .RetrieveImpersonationContextByIdAsync(impersonationContextId);
 
@@ -267,7 +270,7 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
 
             await this.persistanceOrchestrationService
                 .SendApprovalNotificationAsync(updatedImpersonationContext);
-        }
+        });
 
         virtual async internal ValueTask<AccessRequest> ConvertCsvIdentificationRequestToIdentificationRequest(
             AccessRequest accessRequest)
