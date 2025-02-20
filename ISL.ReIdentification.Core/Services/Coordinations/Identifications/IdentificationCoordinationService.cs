@@ -243,6 +243,18 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
                 .RetrieveImpersonationContextByIdAsync(impersonationContextId);
 
             EntraUser currentEntraUser = await this.securityBroker.GetCurrentUserAsync();
+
+
+            ValidateUserAccessOnImpersonationContextApproval(
+                retrievedImpersonationContext.ImpersonationContext.ResponsiblePersonEntraUserId,
+                currentEntraUser.EntraUserId);
+
+            //if (retrievedImpersonationContext.ImpersonationContext.ResponsiblePersonEntraUserId != currentEntraUser.EntraUserId
+            //    || !currentEntraUser.Claims.Any(claim => claim.Value == "ISL.Reidentification.Portal.Administrators"))
+            //{
+            //    throw InvalidAccessIdentificationCoordinationException(message: "Invalid access. Please contact support.");
+            //}
+
             bool isPreviouslyApproved = retrievedImpersonationContext.ImpersonationContext.IsApproved;
 
             if (isPreviouslyApproved == isApproved)

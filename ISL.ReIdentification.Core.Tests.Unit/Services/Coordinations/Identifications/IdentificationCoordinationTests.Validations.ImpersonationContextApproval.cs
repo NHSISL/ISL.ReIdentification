@@ -68,20 +68,15 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             AccessRequest someAccessRequest = CreateRandomAccessRequest();
             Guid inputImpersonationContextId = someAccessRequest.ImpersonationContext.Id;
 
-            var invalidIdentificationCoordinationException =
-                new InvalidIdentificationCoordinationException(
-                    message: "Invalid identification coordination exception. " +
-                        "Please correct the errors and try again.");
-
-            invalidIdentificationCoordinationException.AddData(
-                key: nameof(ImpersonationContext.Id),
-                values: "Id is invalid");
+            var invalidAccessIdentificationCoordinationException =
+                new InvalidAccessIdentificationCoordinationException(
+                    message: "Invalid access. Please contact support.");
 
             var expectedIdentificationCoordinationValidationException =
                 new IdentificationCoordinationValidationException(
                     message: "Identification coordination validation error occurred, " +
                         "fix the errors and try again.",
-                    innerException: invalidIdentificationCoordinationException);
+                    innerException: invalidAccessIdentificationCoordinationException);
 
             this.securityBrokerMock.Setup(broker =>
                 broker.GetCurrentUserAsync())
@@ -102,6 +97,14 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             // then
             actualIdentificationCoordinationValidationException.Should()
                 .BeEquivalentTo(expectedIdentificationCoordinationValidationException);
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once);
+
+            this.persistanceOrchestrationServiceMock.Verify(service =>
+                service.RetrieveImpersonationContextByIdAsync(inputImpersonationContextId),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(

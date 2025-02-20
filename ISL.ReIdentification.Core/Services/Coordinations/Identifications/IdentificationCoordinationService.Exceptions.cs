@@ -109,6 +109,10 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
             {
                 throw await CreateAndLogValidationExceptionAsync(invalidIdentificationCoordinationException);
             }
+            catch (InvalidAccessIdentificationCoordinationException invalidAccessIdentificationCoordinationException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(invalidAccessIdentificationCoordinationException);
+            }
         }
 
         private async ValueTask<IdentificationCoordinationValidationException>
