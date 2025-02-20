@@ -13,10 +13,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 {
     public partial class IdentificationCoordinationTests
     {
-        [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public async Task ShouldExpireRenewImpersonationContextTokensAsync(bool isPreviosulyApproved)
+        [Fact]
+        public async Task ShouldExpireRenewImpersonationContextTokensWhenIsApprovedAsync()
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomFutureDateTimeOffset();
@@ -25,15 +23,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             randomAccessRequest.CsvIdentificationRequest = null;
             Guid inputImpersonationContextId = randomAccessRequest.ImpersonationContext.Id;
             AccessRequest retrievedAccessRequest = randomAccessRequest.DeepClone();
-            retrievedAccessRequest.ImpersonationContext.IsApproved = isPreviosulyApproved;
+            retrievedAccessRequest.ImpersonationContext.IsApproved = true;
             AccessRequest approvedAccessRequest = retrievedAccessRequest.DeepClone();
-
-            if (!isPreviosulyApproved)
-            {
-                approvedAccessRequest.ImpersonationContext.IsApproved = true;
-                approvedAccessRequest.ImpersonationContext.UpdatedDate = randomDateTimeOffset;
-            }
-
             AccessRequest inputAccessRequest = approvedAccessRequest.DeepClone();
             AccessRequest outputAccessRequest = inputAccessRequest.DeepClone();
             AccessRequest expectedAccessRequest = outputAccessRequest.DeepClone();
@@ -42,21 +33,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 service.RetrieveImpersonationContextByIdAsync(inputImpersonationContextId))
                     .ReturnsAsync(retrievedAccessRequest);
 
-            if (!isPreviosulyApproved)
-            {
-                this.persistanceOrchestrationServiceMock.Setup(service =>
-                    service.PersistImpersonationContextAsync(It.Is(SameAccessRequestAs(approvedAccessRequest))))
-                        .ReturnsAsync(retrievedAccessRequest);
-
-                this.dateTimeBrokerMock.Setup(broker =>
-                    broker.GetCurrentDateTimeOffsetAsync())
-                        .ReturnsAsync(randomDateTimeOffset);
-            }
-
             this.identificationOrchestrationServiceMock.Setup(service =>
                 service.ExpireRenewImpersonationContextTokensAsync(
-                    It.Is(SameAccessRequestAs(inputAccessRequest)),
-                    isPreviosulyApproved))
+                    It.Is(SameAccessRequestAs(inputAccessRequest))))
                         .ReturnsAsync(outputAccessRequest);
 
             // when
@@ -70,21 +49,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 service.RetrieveImpersonationContextByIdAsync(inputImpersonationContextId),
                     Times.Once);
 
-            if (!isPreviosulyApproved)
-            {
-                this.persistanceOrchestrationServiceMock.Verify(service =>
-                   service.PersistImpersonationContextAsync(It.Is(SameAccessRequestAs(approvedAccessRequest))),
-                        Times.Once);
-
-                this.dateTimeBrokerMock.Verify(broker =>
-                    broker.GetCurrentDateTimeOffsetAsync(),
-                        Times.Once);
-            }
-
             this.identificationOrchestrationServiceMock.Verify(service =>
                 service.ExpireRenewImpersonationContextTokensAsync(
-                    It.Is(SameAccessRequestAs(inputAccessRequest)),
-                    isPreviosulyApproved),
+                    It.Is(SameAccessRequestAs(inputAccessRequest))),
                         Times.Once);
 
             this.persistanceOrchestrationServiceMock.Verify(service =>

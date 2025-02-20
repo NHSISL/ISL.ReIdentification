@@ -30,7 +30,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
 
             // when
             ValueTask<AccessRequest> expireRenewImpersonationContextTokenTask = this.identificationOrchestrationService
-                    .ExpireRenewImpersonationContextTokensAsync(null, inputIsPreviouslyApproved);
+                    .ExpireRenewImpersonationContextTokensAsync(null);
 
             IdentificationOrchestrationValidationException actualImpersonationContextValidationException =
                 await Assert.ThrowsAsync<IdentificationOrchestrationValidationException>(
@@ -77,7 +77,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
 
             // when
             ValueTask<AccessRequest> expireRenewImpersonationContextTokenTask = this.identificationOrchestrationService
-                    .ExpireRenewImpersonationContextTokensAsync(invalidAccessRequest, inputIsPreviouslyApproved);
+                    .ExpireRenewImpersonationContextTokensAsync(invalidAccessRequest);
 
             IdentificationOrchestrationValidationException actualImpersonationContextValidationException =
                 await Assert.ThrowsAsync<IdentificationOrchestrationValidationException>(
