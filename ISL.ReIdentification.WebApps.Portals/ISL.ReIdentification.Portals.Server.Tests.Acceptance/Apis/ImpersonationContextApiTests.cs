@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Brokers;
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.ImpersonationContexts;
 using Tynamix.ObjectFiller;
+using Xunit.Abstractions;
 
 namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
 {
@@ -15,9 +16,13 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
     public partial class ImpersonationContextsApiTests
     {
         private readonly ApiBroker apiBroker;
+        private readonly ITestOutputHelper output;
 
-        public ImpersonationContextsApiTests(ApiBroker apiBroker) =>
+        public ImpersonationContextsApiTests(ApiBroker apiBroker, ITestOutputHelper output)
+        {
             this.apiBroker = apiBroker;
+            this.output = output;
+        }
 
         private static ImpersonationContext CreateRandomImpersonationContext() =>
            CreateRandomImpersonationContextFiller().Create();
@@ -73,6 +78,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             string user = Guid.NewGuid().ToString();
             DateTime now = DateTime.UtcNow;
             var filler = new Filler<ImpersonationContext>();
+            var projectName = $"{Guid.NewGuid()}-{GetRandomStringWithLengthOf(255)}".Substring(0, 255);
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
@@ -87,7 +93,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
                     .Use(() => GetRandomStringWithLengthOf(255))
 
                 .OnProperty(impersonationContext => impersonationContext.ProjectName)
-                    .Use(() => GetRandomStringWithLengthOf(255))
+                    .Use(() => projectName)
 
                 .OnProperty(impersonationContext => impersonationContext.IdentifierColumn)
                     .Use(() => GetRandomStringWithLengthOf(10))
