@@ -78,7 +78,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             string user = Guid.NewGuid().ToString();
             DateTime now = DateTime.UtcNow;
             var filler = new Filler<ImpersonationContext>();
-            var projectName = $"{GetRandomStringWithLengthOf(210)}-{Guid.NewGuid()}";
+            var projectName = $"{Guid.NewGuid()}-{GetRandomStringWithLengthOf(255)}".Substring(0, 255);
             Console.WriteLine($"Filler value: {projectName}");
 
             filler.Setup()
