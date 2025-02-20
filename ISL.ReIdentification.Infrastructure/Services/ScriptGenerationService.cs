@@ -94,19 +94,13 @@ namespace ISL.ReIdentification.Infrastructure.Services
 
                                 new GithubTask
                                 {
-                                    Name = "Drop Database If Exists",
-                                    Run = $"dotnet ef database drop --project {projectName}/{projectName}.csproj --startup-project {projectName}/{projectName}.csproj --force"
-                                },
-
-                                new GithubTask
-                                {
                                     Name = "Deploy Database",
                                     Run = $"dotnet ef database update --project {projectName}/{projectName}.csproj --startup-project {projectName}/{projectName}.csproj"
                                 },
 
                                 new TestTask
                                 {
-                                    Name = "Test"
+                                    Name = "Test",
                                 }
                             }
                         }
