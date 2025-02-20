@@ -101,44 +101,7 @@ namespace ISL.ReIdentification.Infrastructure.Services
                                 new TestTask
                                 {
                                     Name = "Test",
-                                    Run = "dotnet test --no-build --logger \"trx;LogFileName=test-results/test-results.trx\" --logger \"console;verbosity=detailed\""
-                                },
-
-                                new TestTask
-                                {
-                                    Name = "List All Files After Test Run",
-                                    Run = "ls -R"
-                                },
-
-                                new TestTask
-                                {
-                                    If = "always()",
-                                    Name = "Convert TRX to JUnit",
-
-                                    Run =
-                                        """
-                                        dotnet tool install -g trx2junit
-                                        if [ -f test-results/test-results.trx ]; then
-                                          trx2junit test-results/test-results.trx
-                                        else
-                                          echo "No test-results.trx file found!"
-                                          exit 1
-                                        fi
-                                        """
-                                },
-
-                                new GithubTask
-                                {
-                                    If = "always()",
-                                    Name = "Publish Test Results to GitHub",
-                                    Uses = "dorny/test-reporter@v1",
-                                    With = new Dictionary<string, string>
-                                    {
-                                        { "name", "Test Results" },
-                                        { "path", "test-results/test-results.xml" },
-                                        { "reporter", "java-junit" },
-                                    }
-                                },
+                                }
                             }
                         }
                     },

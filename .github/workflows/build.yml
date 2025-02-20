@@ -31,27 +31,7 @@ jobs:
     - name: Deploy Database
       run: dotnet ef database update --project ISL.ReIdentification.Core/ISL.ReIdentification.Core.csproj --startup-project ISL.ReIdentification.Core/ISL.ReIdentification.Core.csproj
     - name: Test
-      run: dotnet test --no-build --logger "trx;LogFileName=test-results/test-results.trx" --logger "console;verbosity=detailed"
-    - name: List All Files After Test Run
-      run: ls -R
-    - name: Convert TRX to JUnit
-      if: always()
-      run: >-
-        dotnet tool install -g trx2junit
-
-        if [ -f test-results/test-results.trx ]; then
-          trx2junit test-results/test-results.trx
-        else
-          echo "No test-results.trx file found!"
-          exit 1
-        fi
-    - name: Publish Test Results to GitHub
-      if: always()
-      uses: dorny/test-reporter@v1
-      with:
-        name: Test Results
-        path: test-results/test-results.xml
-        reporter: java-junit
+      run: dotnet test --no-build --verbosity normal
     env:
       NOTIFICATIONCONFIGURATIONS__APIKEY: ${{ secrets.NOTIFICATIONCONFIGURATIONS__APIKEY }}
       NOTIFICATIONCONFIGURATIONS__CSVAPPROVEDREQUESTTEMPLATEID: ${{ secrets.NOTIFICATIONCONFIGURATIONS__CSVAPPROVEDREQUESTTEMPLATEID }}
