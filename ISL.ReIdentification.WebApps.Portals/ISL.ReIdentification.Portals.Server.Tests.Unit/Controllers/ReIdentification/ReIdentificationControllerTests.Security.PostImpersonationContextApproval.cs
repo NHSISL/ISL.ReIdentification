@@ -22,7 +22,6 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.ReIdentific
             var methodInfo = controllerType.GetMethod("PostImpersonationContextApprovalAsync");
             Type attributeType = typeof(AuthorizeAttribute);
             string attributeProperty = "Roles";
-
             List<string> expectedAttributeValues = new List<string>();
 
             // When
