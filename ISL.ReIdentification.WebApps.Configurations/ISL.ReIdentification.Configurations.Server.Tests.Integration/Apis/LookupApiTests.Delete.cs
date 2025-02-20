@@ -20,8 +20,8 @@ namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis
             await this.apiBroker.DeleteLookupByIdAsync(randomLookup.Id);
 
             // then
-            Func<Task> act = async () => await this.apiBroker.GetLookupByIdAsync(randomLookup.Id);
-            await act.Should().ThrowAsync<HttpResponseNotFoundException>();
+            ValueTask<Lookup> getLookupByIdTask = this.apiBroker.GetLookupByIdAsync(randomLookup.Id);
+            await Assert.ThrowsAsync<HttpResponseNotFoundException>(getLookupByIdTask.AsTask);
         }
     }
 }
