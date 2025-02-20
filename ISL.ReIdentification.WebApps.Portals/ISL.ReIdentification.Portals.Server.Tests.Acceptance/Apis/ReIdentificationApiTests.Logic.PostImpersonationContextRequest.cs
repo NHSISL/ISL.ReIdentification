@@ -25,6 +25,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
                 await this.apiBroker.PostImpersonationContextRequestAsync(inputAccessRequest);
 
             // then
+
             actualAccessRequest.Should().BeEquivalentTo(
                 expectedAccessRequest, 
                 options => options

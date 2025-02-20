@@ -28,6 +28,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
                 await this.apiBroker.GetImpersonationContextByIdAsync(inputImpersonationContext.Id);
 
             // then
+
             actualImpersonationContext.Should().BeEquivalentTo(
                 expectedImpersonationContext, 
                 options => options
@@ -93,6 +94,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
                 .GetImpersonationContextByIdAsync(randomImpersonationContext.Id);
 
             // then
+
             actualImpersonationContext.Should().BeEquivalentTo(
                 modifiedImpersonationContext, 
                 options => options
