@@ -174,6 +174,10 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
                 throw await CreateAndLogDependencyExceptionAsync(
                     identificationOrchestrationDependencyException);
             }
+            catch (Exception exception)
+            {
+                throw await CreateAndLogServiceExceptionAsync(exception);
+            }
         }
 
         private async ValueTask<IdentificationCoordinationValidationException>
