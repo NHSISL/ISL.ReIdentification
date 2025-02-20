@@ -21,11 +21,13 @@ namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis
             Lookup actualLookup = await this.apiBroker.GetLookupByIdAsync(randomLookup.Id);
 
             // then
-            actualLookup.Should().BeEquivalentTo(modifiedLookup, options =>
-                options.Excluding(lookup => lookup.CreatedBy)
-                       .Excluding(lookup => lookup.CreatedDate)
-                       .Excluding(lookup => lookup.UpdatedBy)
-                       .Excluding(lookup => lookup.UpdatedDate));
+            actualLookup.Should().BeEquivalentTo(
+                modifiedLookup, 
+                options =>  options
+                    .Excluding(lookup => lookup.CreatedBy)
+                    .Excluding(lookup => lookup.CreatedDate)
+                    .Excluding(lookup => lookup.UpdatedBy)
+                    .Excluding(lookup => lookup.UpdatedDate));
 
             await this.apiBroker.DeleteLookupByIdAsync(actualLookup.Id);
         }
