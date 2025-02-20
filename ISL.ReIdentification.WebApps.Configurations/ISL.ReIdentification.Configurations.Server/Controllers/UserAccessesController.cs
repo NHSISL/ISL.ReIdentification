@@ -143,10 +143,6 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             {
                 return InternalServerError(userAccessProcessingServiceException);
             }
-            catch (Exception ex)
-            {
-                throw;
-            }
         }
 
         [HttpPut]
