@@ -5,10 +5,10 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Force.DeepCloner;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
+using ISL.ReIdentification.Core.Models.Securities;
 using Moq;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifications
@@ -16,14 +16,15 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
     public partial class IdentificationCoordinationTests
     {
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnExpireRenewTokensIfIdIsInvalidAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnImpersonationContextApprovalIfIdIsInvalidAndLogItAsync()
         {
             // given
             var invalidImpersonationContextId = Guid.Empty;
 
             var invalidIdentificationCoordinationException =
                 new InvalidIdentificationCoordinationException(
-                    message: "Invalid identification coordination exception. Please correct the errors and try again.");
+                    message: "Invalid identification coordination exception. " +
+                        "Please correct the errors and try again.");
 
             invalidIdentificationCoordinationException.AddData(
                 key: nameof(ImpersonationContext.Id),
@@ -36,12 +37,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                     innerException: invalidIdentificationCoordinationException);
 
             // when
-            ValueTask<AccessRequest> expireRenewTokensTask = this.identificationCoordinationService
-                .ExpireRenewImpersonationContextTokensAsync(invalidImpersonationContextId);
+            ValueTask impersonationContextApprovalTask = this.identificationCoordinationService
+                .ImpersonationContextApprovalAsync(invalidImpersonationContextId, It.IsAny<bool>());
 
             IdentificationCoordinationValidationException actualIdentificationCoordinationValidationException =
                 await Assert.ThrowsAsync<IdentificationCoordinationValidationException>(
-                    testCode: expireRenewTokensTask.AsTask);
+                    testCode: impersonationContextApprovalTask.AsTask);
 
             // then
             actualIdentificationCoordinationValidationException.Should()
@@ -60,19 +61,16 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
         }
 
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnExpireRenewTokensIfImpersonationContextNotApprovedLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnImpersonationContextApprovalIfAccessInvalidAndLogItAsync()
         {
             // given
-            AccessRequest randomAccessRequest = CreateRandomAccessRequest();
-            randomAccessRequest.IdentificationRequest = null;
-            randomAccessRequest.CsvIdentificationRequest = null;
-            Guid inputImpersonationContextId = randomAccessRequest.ImpersonationContext.Id;
-            AccessRequest retrievedAccessRequest = randomAccessRequest.DeepClone();
-            retrievedAccessRequest.ImpersonationContext.IsApproved = false;
+            EntraUser someEntraUser = CreateRandomEntraUser();
+            AccessRequest someAccessRequest = CreateRandomAccessRequest();
+            Guid inputImpersonationContextId = someAccessRequest.ImpersonationContext.Id;
 
             var invalidAccessIdentificationCoordinationException =
-                new InvalidAccessIdentificationCoordinationException(message: "Project not approved. " +
-                    "Please contact responsible person to approve this request.");
+                new InvalidAccessIdentificationCoordinationException(
+                    message: "Invalid access. Please contact support.");
 
             var expectedIdentificationCoordinationValidationException =
                 new IdentificationCoordinationValidationException(
@@ -80,21 +78,29 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                         "fix the errors and try again.",
                     innerException: invalidAccessIdentificationCoordinationException);
 
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(someEntraUser);
+
             this.persistanceOrchestrationServiceMock.Setup(service =>
                 service.RetrieveImpersonationContextByIdAsync(inputImpersonationContextId))
-                    .ReturnsAsync(retrievedAccessRequest);
+                    .ReturnsAsync(someAccessRequest);
 
             // when
-            ValueTask<AccessRequest> expireRenewTokensTask = this.identificationCoordinationService
-                .ExpireRenewImpersonationContextTokensAsync(inputImpersonationContextId);
+            ValueTask impersonationContextApprovalTask = this.identificationCoordinationService
+                .ImpersonationContextApprovalAsync(inputImpersonationContextId, It.IsAny<bool>());
 
             IdentificationCoordinationValidationException actualIdentificationCoordinationValidationException =
                 await Assert.ThrowsAsync<IdentificationCoordinationValidationException>(
-                    testCode: expireRenewTokensTask.AsTask);
+                    testCode: impersonationContextApprovalTask.AsTask);
 
             // then
             actualIdentificationCoordinationValidationException.Should()
                 .BeEquivalentTo(expectedIdentificationCoordinationValidationException);
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once);
 
             this.persistanceOrchestrationServiceMock.Verify(service =>
                 service.RetrieveImpersonationContextByIdAsync(inputImpersonationContextId),
