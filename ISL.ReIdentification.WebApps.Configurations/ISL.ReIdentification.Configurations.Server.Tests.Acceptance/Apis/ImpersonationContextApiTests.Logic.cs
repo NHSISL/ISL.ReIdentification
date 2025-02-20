@@ -27,11 +27,14 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
                 await this.apiBroker.GetImpersonationContextByIdAsync(inputImpersonationContext.Id);
 
             // then
-            actualImpersonationContext.Should().BeEquivalentTo(expectedImpersonationContext, options =>
-                options.Excluding(ctx => ctx.CreatedBy)
-                       .Excluding(ctx => ctx.CreatedDate)
-                       .Excluding(ctx => ctx.UpdatedBy)
-                       .Excluding(ctx => ctx.UpdatedDate));
+            actualImpersonationContext.Should().BeEquivalentTo(
+                expectedImpersonationContext, 
+                options => options
+                    .Excluding(ctx => ctx.CreatedBy)
+                    .Excluding(ctx => ctx.CreatedDate)
+                    .Excluding(ctx => ctx.UpdatedBy)
+                    .Excluding(ctx => ctx.UpdatedDate));
+                    
             await this.apiBroker.DeleteImpersonationContextByIdAsync(actualImpersonationContext.Id);
         }
 

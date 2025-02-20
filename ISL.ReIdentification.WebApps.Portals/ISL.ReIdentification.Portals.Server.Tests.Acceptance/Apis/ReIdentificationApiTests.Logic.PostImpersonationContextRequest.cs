@@ -25,11 +25,14 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
                 await this.apiBroker.PostImpersonationContextRequestAsync(inputAccessRequest);
 
             // then
-            actualAccessRequest.Should().BeEquivalentTo(expectedAccessRequest, options => options
-                .Excluding(req => req.ImpersonationContext.CreatedBy)
-                .Excluding(req => req.ImpersonationContext.CreatedDate)
-                .Excluding(req => req.ImpersonationContext.UpdatedBy)
-                .Excluding(req => req.ImpersonationContext.UpdatedDate));
+            actualAccessRequest.Should().BeEquivalentTo(
+                expectedAccessRequest, 
+                options => options
+                    .Excluding(req => req.ImpersonationContext.CreatedBy)
+                    .Excluding(req => req.ImpersonationContext.CreatedDate)
+                    .Excluding(req => req.ImpersonationContext.UpdatedBy)
+                    .Excluding(req => req.ImpersonationContext.UpdatedDate));
+
             await this.apiBroker.DeleteImpersonationContextByIdAsync(actualAccessRequest.ImpersonationContext.Id);
         }
 
@@ -59,11 +62,13 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
                 await this.apiBroker.PostImpersonationContextRequestAsync(inputAccessRequest);
 
             // then
-            actualAccessRequest.Should().BeEquivalentTo(expectedAccessRequest, options => options
-                .Excluding(req => req.ImpersonationContext.CreatedBy)
-                .Excluding(req => req.ImpersonationContext.CreatedDate)
-                .Excluding(req => req.ImpersonationContext.UpdatedBy)
-                .Excluding(req => req.ImpersonationContext.UpdatedDate));
+            actualAccessRequest.Should().BeEquivalentTo(
+                expectedAccessRequest, 
+                options => options
+                    .Excluding(req => req.ImpersonationContext.CreatedBy)
+                    .Excluding(req => req.ImpersonationContext.CreatedDate)
+                    .Excluding(req => req.ImpersonationContext.UpdatedBy)
+                    .Excluding(req => req.ImpersonationContext.UpdatedDate));
 
             await this.apiBroker.DeleteImpersonationContextByIdAsync(actualAccessRequest.ImpersonationContext.Id);
         }
@@ -93,11 +98,13 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
                 await this.apiBroker.PostImpersonationContextRequestAsync(inputAccessRequest);
 
             // then
-            actualAccessRequest.Should().BeEquivalentTo(expectedAccessRequest, options => options
-                .Excluding(req => req.ImpersonationContext.CreatedBy)
-                .Excluding(req => req.ImpersonationContext.CreatedDate)
-                .Excluding(req => req.ImpersonationContext.UpdatedBy)
-                .Excluding(req => req.ImpersonationContext.UpdatedDate));
+            actualAccessRequest.Should().BeEquivalentTo(
+                expectedAccessRequest, 
+                options => options
+                    .Excluding(req => req.ImpersonationContext.CreatedBy)
+                    .Excluding(req => req.ImpersonationContext.CreatedDate)
+                    .Excluding(req => req.ImpersonationContext.UpdatedBy)
+                    .Excluding(req => req.ImpersonationContext.UpdatedDate));
 
             await this.apiBroker.DeleteImpersonationContextByIdAsync(actualAccessRequest.ImpersonationContext.Id);
         }

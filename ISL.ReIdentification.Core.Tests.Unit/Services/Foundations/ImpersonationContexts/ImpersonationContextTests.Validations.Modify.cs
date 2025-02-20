@@ -158,7 +158,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
                     "Date is invalid",
                     $"Date is the same as {nameof(ImpersonationContext.CreatedDate)}",
                     $"Date is not recent. Expected a value between {startDate} and {endDate} but found " +
-                        $"{invalidImpersonationContext.UpdatedDate}"
+                    $"{invalidImpersonationContext.UpdatedDate}"
                 });
 
             var expectedImpersonationContextValidationException =

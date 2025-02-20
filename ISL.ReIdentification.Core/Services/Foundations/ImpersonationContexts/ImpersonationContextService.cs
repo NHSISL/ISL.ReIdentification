@@ -38,12 +38,11 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts
         {
             ImpersonationContext impersonationContextWithAddAuditApplied = 
                 await ApplyAddAuditAsync(impersonationContext);
-                    await ValidateImpersonationContextOnAddAsync(
-                        impersonationContextWithAddAuditApplied);
+                await ValidateImpersonationContextOnAddAsync(impersonationContextWithAddAuditApplied);
 
                 return await this.reIdentificationStorageBroker.InsertImpersonationContextAsync(
                     impersonationContextWithAddAuditApplied);
-            });
+        });
 
         public ValueTask<ImpersonationContext> RetrieveImpersonationContextByIdAsync(Guid impersonationContextId) =>
             TryCatch(async () =>

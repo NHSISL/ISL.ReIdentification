@@ -86,8 +86,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts
                     secondName: nameof(ImpersonationContext.CreatedDate)),
                 Parameter: nameof(ImpersonationContext.UpdatedDate)),
 
-                (Rule: await IsNotRecentAsync(
-                    impersonationContext.CreatedDate), 
+                (Rule: await IsNotRecentAsync(impersonationContext.CreatedDate), 
                 Parameter: nameof(ImpersonationContext.CreatedDate))
             );
         }

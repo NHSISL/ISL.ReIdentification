@@ -132,8 +132,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
                 values:
                 [
                     "Date is invalid",
-                                $"Date is not recent. Expected a value between " +
-                                    $"{startDate} and {endDate} but found {invalidImpersonationContext.CreatedDate}"
+                    $"Date is not recent. Expected a value between " +
+                    $"{startDate} and {endDate} but found {invalidImpersonationContext.CreatedDate}"
                 ]);
 
             invalidImpersonationContextException.AddData(
@@ -141,8 +141,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
                 values:
                 [
                     "Text is invalid",
-                                $"Expected value to be '{randomEntraUser.EntraUserId}' but found " +
-                                    $"'{invalidImpersonationContext.CreatedBy}'."
+                    $"Expected value to be '{randomEntraUser.EntraUserId}' but found " +
+                    $"'{invalidImpersonationContext.CreatedBy}'."
                 ]);
 
             invalidImpersonationContextException.AddData(
