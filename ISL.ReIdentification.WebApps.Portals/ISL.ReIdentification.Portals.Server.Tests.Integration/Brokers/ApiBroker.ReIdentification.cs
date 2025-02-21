@@ -31,5 +31,10 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification
                 $"{reIdentificationRelativeUrl}/generatetokens", 
                 impersonationContextId);
         }
+
+        public async ValueTask PostImpersonationContextApprovalAsync(ApprovalRequest approvalRequest) =>
+            await this.apiFactoryClient.PostContentWithNoResponseAsync(
+                $"{reIdentificationRelativeUrl}/impersonationcontextapproval",
+                approvalRequest);
     }
 }
