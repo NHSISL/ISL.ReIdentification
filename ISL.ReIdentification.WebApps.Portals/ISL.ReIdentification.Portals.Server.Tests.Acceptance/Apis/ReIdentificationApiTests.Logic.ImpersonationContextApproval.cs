@@ -37,7 +37,6 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
                 await this.apiBroker.GetImpersonationContextByIdAsync(existingImpersonationContext.Id);
 
             retrievedImpersonationContext.IsApproved.Should().Be(isApproved);
-
             await this.apiBroker.DeleteImpersonationContextByIdAsync(retrievedImpersonationContext.Id);
         }
     }

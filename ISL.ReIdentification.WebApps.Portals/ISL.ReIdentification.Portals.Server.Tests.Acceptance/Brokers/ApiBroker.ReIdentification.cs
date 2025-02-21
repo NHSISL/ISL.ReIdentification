@@ -25,12 +25,11 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Brokers
                 $"{reIdentificationRelativeUrl}/generatetokens",
                 impersonationContextId);
 
-        public async ValueTask PostImpersonationContextApprovalAsync(ApprovalRequest approvalRequest)
-        {
+        public async ValueTask PostImpersonationContextApprovalAsync(ApprovalRequest approvalRequest) =>
             await this.apiFactoryClient.PostContentWithNoResponseAsync(
                 $"{reIdentificationRelativeUrl}/impersonationcontextapproval",
                 approvalRequest);
-        }
+        
 
         public async ValueTask<byte[]> GetCsvIdentificationRequestByIdAsync(
             Guid csvIdentificationRequestId, string reason)
