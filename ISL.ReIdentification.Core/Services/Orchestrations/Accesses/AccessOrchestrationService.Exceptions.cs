@@ -34,6 +34,10 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Accesses
             {
                 throw await CreateAndLogValidationExceptionAsync(invalidArgumentAccessOrchestrationException);
             }
+            catch (UnauthorizedAccessOrchestrationException unauthorizedAccessOrchestrationException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(unauthorizedAccessOrchestrationException);
+            }
             catch (UserAccessValidationException userAccessValidationException)
             {
                 throw await CreateAndLogDependencyValidationExceptionAsync(

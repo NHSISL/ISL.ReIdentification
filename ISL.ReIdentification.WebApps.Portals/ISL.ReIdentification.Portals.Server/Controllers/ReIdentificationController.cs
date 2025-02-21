@@ -42,6 +42,13 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             }
             catch (IdentificationCoordinationDependencyValidationException
                 identificationCoordinationDependencyValidationException)
+                when (identificationCoordinationDependencyValidationException.InnerException
+                    is UnauthorizedIdentificationCoordinationException)
+            {
+                return Unauthorized(identificationCoordinationDependencyValidationException.InnerException);
+            }
+            catch (IdentificationCoordinationDependencyValidationException
+                identificationCoordinationDependencyValidationException)
             {
                 return BadRequest(identificationCoordinationDependencyValidationException.InnerException);
             }
@@ -197,6 +204,13 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             catch (IdentificationCoordinationValidationException identificationCoordinationValidationException)
             {
                 return BadRequest(identificationCoordinationValidationException.InnerException);
+            }
+            catch (IdentificationCoordinationDependencyValidationException
+                identificationCoordinationDependencyValidationException)
+                when (identificationCoordinationDependencyValidationException.InnerException
+                    is UnauthorizedIdentificationCoordinationException)
+            {
+                return Unauthorized(identificationCoordinationDependencyValidationException.InnerException);
             }
             catch (IdentificationCoordinationDependencyValidationException
                 identificationCoordinationDependencyValidationException)
