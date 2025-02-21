@@ -55,8 +55,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             {
                 this.identificationOrchestrationServiceMock.Setup(service =>
                     service.ExpireRenewImpersonationContextTokensAsync(
-                        It.Is(SameAccessRequestAs(updatedAccessRequest)),
-                        true))
+                        It.Is(SameAccessRequestAs(updatedAccessRequest))))
                             .ReturnsAsync(tokensAccessRequest);
             }
 
@@ -92,8 +91,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             {
                 this.identificationOrchestrationServiceMock.Verify(service =>
                     service.ExpireRenewImpersonationContextTokensAsync(
-                        It.Is(SameAccessRequestAs(updatedAccessRequest)),
-                        true),
+                        It.Is(SameAccessRequestAs(updatedAccessRequest))),
                             Times.Once);
 
                 this.persistanceOrchestrationServiceMock.Verify(service =>
@@ -160,8 +158,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
             this.identificationOrchestrationServiceMock.Verify(service =>
                 service.ExpireRenewImpersonationContextTokensAsync(
-                    It.IsAny<AccessRequest>(),
-                    true),
+                    It.IsAny<AccessRequest>()),
                         Times.Never);
 
             this.persistanceOrchestrationServiceMock.VerifyNoOtherCalls();
