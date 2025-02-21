@@ -2,36 +2,43 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.Accesses;
+using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.ImpersonationContexts;
 
 namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
 {
     public partial class ReIdentificationApiTests
     {
-        [Fact (Skip="Access to Storage keeps failing")]
-        public async Task ShouldExpireRenewImpersonationContextTokensAsync()
+        [Fact]
+        public async Task ShouldUpdateApprovalStatusOnImpersonationContextApprovalAsync()
         {
             // given
             ImpersonationContext randomImpersonationContext = CreateRandomImpersonationContext();
             ImpersonationContext existingImpersonationContext = randomImpersonationContext.DeepClone();
-            existingImpersonationContext.IsApproved = false;
+            bool isApproved = true;
+            existingImpersonationContext.IsApproved = !isApproved;
+            existingImpersonationContext.ResponsiblePersonEntraUserId = TestAuthHandler.SecurityOid;
             await this.apiBroker.PostImpersonationContextAsync(existingImpersonationContext);
-            Guid inputImpersonationContextId = existingImpersonationContext.Id;
+
+            ApprovalRequest inputApprovalRequest = new ApprovalRequest
+            {
+                ImpersonationContextId = existingImpersonationContext.Id,
+                IsApproved = isApproved
+            };
 
             // when
-            AccessRequest actualAccessRequest =
-                await this.apiBroker.PostImpersonationContextGenerateTokensAsync(inputImpersonationContextId);
+            await this.apiBroker.PostImpersonationContextApprovalAsync(inputApprovalRequest);
 
             // then
-            actualAccessRequest.ImpersonationContext.InboxSasToken.Should().NotBeNullOrEmpty();
-            actualAccessRequest.ImpersonationContext.OutboxSasToken.Should().NotBeNullOrEmpty();
-            actualAccessRequest.ImpersonationContext.ErrorsSasToken.Should().NotBeNullOrEmpty();
-            await this.apiBroker.DeleteImpersonationContextByIdAsync(actualAccessRequest.ImpersonationContext.Id);
+            ImpersonationContext retrievedImpersonationContext =
+                await this.apiBroker.GetImpersonationContextByIdAsync(existingImpersonationContext.Id);
+
+            retrievedImpersonationContext.IsApproved.Should().Be(isApproved);
+
+            await this.apiBroker.DeleteImpersonationContextByIdAsync(retrievedImpersonationContext.Id);
         }
     }
 }
