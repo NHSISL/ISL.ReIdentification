@@ -35,7 +35,6 @@ export const reIdentificationService = {
                 }
 
                 setIsLoading(true);
-
                 identificationRequest.identificationRequest.identificationItems = reIdRecords;
 
                 await broker.PostReIdentificationAsync(identificationRequest)
@@ -58,9 +57,6 @@ export const reIdentificationService = {
                                     loading: false,
                                 }
                             }).filter(x => x !== undefined);
-
-                            console.log(responseItems)
-                            console.log(itemsToCache);
 
                             return [...data, ...itemsToCache]
 
