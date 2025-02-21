@@ -2,10 +2,12 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
+using ISL.ReIdentification.Core.Models.Securities;
 using Moq;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ImpersonationContexts
@@ -16,10 +18,25 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
         public async Task ShouldAddImpersonationContextAsync()
         {
             //given
-            ImpersonationContext randomImpersonationContext = CreateRandomImpersonationContext();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            ImpersonationContext randomImpersonationContext = 
+                CreateRandomImpersonationContext(
+                    randomDateTimeOffset, 
+                    impersonationContextId: randomEntraUser.EntraUserId);
+
             ImpersonationContext inputImpersonationContext = randomImpersonationContext;
-            ImpersonationContext storageImpersonationContext = inputImpersonationContext.DeepClone();
+            ImpersonationContext storageImpersonationContext = inputImpersonationContext;
             ImpersonationContext expectedImpersonationContext = inputImpersonationContext.DeepClone();
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             this.reIdentificationStorageBroker.Setup(broker =>
                 broker.InsertImpersonationContextAsync(inputImpersonationContext))
@@ -34,14 +51,19 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Exactly(2));
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Exactly(2));
 
             this.reIdentificationStorageBroker.Verify(broker =>
                 broker.InsertImpersonationContextAsync(inputImpersonationContext),
                     Times.Once);
 
-            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

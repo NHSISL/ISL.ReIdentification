@@ -74,14 +74,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
         public async Task ShouldThrowDependencyExceptionOnModifyIfDatabaseUpdateExceptionOccursAndLogItAsync()
         {
             // given
-            int minutesInPast = GetRandomNegativeNumber();
-            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-
-            ImpersonationContext randomImpersonationContext =
-                CreateRandomImpersonationContext(randomDateTimeOffset);
-
-            randomImpersonationContext.CreatedDate =
-                randomDateTimeOffset.AddMinutes(minutesInPast);
+            ImpersonationContext randomImpersonationContext = CreateRandomImpersonationContext();
+            var databaseUpdateException = new DbUpdateException();
 
             var dbUpdateException = new DbUpdateException();
 
@@ -115,6 +109,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
+            this.reIdentificationStorageBroker.Verify(broker =>
+                broker.UpdateImpersonationContextAsync(randomImpersonationContext),
+                    Times.Never);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedImpersonationContextDependencyException))),
@@ -126,18 +124,16 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
 
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
-        private async Task ShouldThrowDependencyValidationExceptionOnModifyIfDbUpdateConcurrencyOccursAndLogItAsync()
+        public async Task ShouldThrowDependencyValidationExceptionOnModifyIfDbUpdateConcurrencyOccursAndLogItAsync()
         {
             // given
-            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            ImpersonationContext randomImpersonationContext = CreateRandomImpersonationContext(randomDateTimeOffset);
-
-            var dbUpdateConcurrencyException =
-                new DbUpdateConcurrencyException();
+            ImpersonationContext randomImpersonationContext = CreateRandomImpersonationContext();
+            var dbUpdateConcurrencyException = new DbUpdateConcurrencyException();
 
             var lockedImpersonationContextException =
                 new LockedImpersonationContextException(
@@ -169,6 +165,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
+            this.reIdentificationStorageBroker.Verify(broker =>
+                broker.UpdateImpersonationContextAsync(randomImpersonationContext),
+                    Times.Never);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedImpersonationContextDependencyValidationException))),
@@ -179,23 +179,16 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
                     Times.Never());
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
         public async Task ShouldThrowServiceExceptionOnModifyIfServiceErrorOccursAndLogItAsync()
         {
             // given
-            int minutesInPast = GetRandomNegativeNumber();
-            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-
-            ImpersonationContext randomImpersonationContext =
-                CreateRandomImpersonationContext(randomDateTimeOffset);
-
-            randomImpersonationContext.CreatedDate =
-                randomDateTimeOffset.AddMinutes(minutesInPast);
-
+            ImpersonationContext randomImpersonationContext = CreateRandomImpersonationContext();
             var serviceException = new Exception();
 
             var failedServiceImpersonationContextException =
@@ -214,7 +207,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .ReturnsAsync(randomDateTimeOffset);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<ImpersonationContext> modifyImpersonationContextTask =
@@ -230,7 +223,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
 
             this.reIdentificationStorageBroker.Verify(broker =>
                 broker.SelectImpersonationContextByIdAsync(randomImpersonationContext.Id),
-                    Times.Once());
+                    Times.Never());
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
@@ -241,8 +234,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
                     expectedImpersonationContextServiceException))),
                         Times.Once);
 
-            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
+            this.reIdentificationStorageBroker.Verify(broker =>
+                broker.UpdateImpersonationContextAsync(randomImpersonationContext),
+                    Times.Never);
+
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
