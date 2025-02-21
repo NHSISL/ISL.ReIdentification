@@ -2,7 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-namespace ISL.ReIdentification.Configurations.Server.Tests.Integration.Models
+namespace ISL.ReIdentification.Configurations.Server.Tests.Integration.Models.Lookup
 {
     public class Lookup : IKey, IAudit
     {

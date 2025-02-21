@@ -2,7 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using ISL.ReIdentification.Configurations.Server.Tests.Integration.Models;
+using ISL.ReIdentification.Configurations.Server.Tests.Integration.Models.Lookup;
 
 namespace ISL.ReIdentification.Configurations.Server.Tests.Integration.ReIdentification.Brokers
 {
