@@ -84,15 +84,15 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                     message: "Not authorised to perform this action",
                     innerException: accessOrchestrationValidationException.InnerException as Xeption);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ThrowsAsync(accessOrchestrationValidationException);
-
             var expectedIdentificationCoordinationDependencyValidationException =
                 new IdentificationCoordinationDependencyValidationException(
                     message: "Identification coordination dependency validation error occurred, " +
                         "fix the errors and try again.",
                     innerException: accessOrchestrationValidationException.InnerException as Xeption);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ThrowsAsync(accessOrchestrationValidationException);
 
             // when
             ValueTask<AccessRequest> accessRequestTask =
