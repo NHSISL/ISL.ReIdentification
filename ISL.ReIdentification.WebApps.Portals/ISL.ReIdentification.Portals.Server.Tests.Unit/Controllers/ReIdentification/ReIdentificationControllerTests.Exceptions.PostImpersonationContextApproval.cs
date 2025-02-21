@@ -5,6 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using RESTFulSense.Models;
@@ -20,6 +21,8 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.ReIdentific
             Xeption validationException)
         {
             // given
+            ApprovalRequest someApprovalRequest = CreateRandomApprovalRequest();
+
             BadRequestObjectResult expectedBadRequestObjectResult =
                 BadRequest(validationException.InnerException);
 
@@ -31,9 +34,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.ReIdentific
 
             // when
             ActionResult actualActionResult =
-                await this.reIdentificationController.PostImpersonationContextApprovalAsync(
-                    It.IsAny<Guid>(),
-                    It.IsAny<bool>());
+                await this.reIdentificationController.PostImpersonationContextApprovalAsync(someApprovalRequest);
 
             // then
             actualActionResult.Should().BeEquivalentTo(expectedActionResult);
@@ -51,6 +52,8 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.ReIdentific
             Xeption serverException)
         {
             // given
+            ApprovalRequest someApprovalRequest = CreateRandomApprovalRequest();
+
             InternalServerErrorObjectResult expectedInternalServerErrorObjectResult =
                 InternalServerError(serverException);
 
@@ -62,9 +65,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.ReIdentific
 
             // when
             ActionResult actualActionResult =
-                await this.reIdentificationController.PostImpersonationContextApprovalAsync(
-                    It.IsAny<Guid>(),
-                    It.IsAny<bool>());
+                await this.reIdentificationController.PostImpersonationContextApprovalAsync(someApprovalRequest);
 
             // then
             actualActionResult.Should().BeEquivalentTo(expectedActionResult);

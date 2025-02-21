@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Force.DeepCloner;
+using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
@@ -209,6 +210,20 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.ReIdentific
             }
 
             return approvedIdentificationItems;
+        }
+
+        private static ApprovalRequest CreateRandomApprovalRequest()
+        {
+            Guid randomId = Guid.NewGuid();
+            Guid impersonationContextId = randomId;
+
+            ApprovalRequest approvalRequest = new ApprovalRequest
+            {
+                ImpersonationContextId = impersonationContextId,
+                IsApproved = true
+            };
+
+            return approvalRequest;
         }
     }
 }

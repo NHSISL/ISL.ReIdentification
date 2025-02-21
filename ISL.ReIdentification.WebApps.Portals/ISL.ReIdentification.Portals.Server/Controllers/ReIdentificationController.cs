@@ -4,6 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
+using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Services.Coordinations.Identifications;
@@ -157,12 +158,13 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
         [Authorize]
         [HttpPost("impersonationcontextapproval")]
         public async ValueTask<ActionResult> PostImpersonationContextApprovalAsync(
-            [FromBody] Guid impersonationContextId, bool isApproved)
+            [FromBody] ApprovalRequest approvalRequest)
         {
             try
             {
-                await identificationCoordinationService
-                    .ImpersonationContextApprovalAsync(impersonationContextId, isApproved);
+                await identificationCoordinationService.ImpersonationContextApprovalAsync(
+                    approvalRequest.ImpersonationContextId,
+                    approvalRequest.IsApproved);
 
                 return Ok();
             }
