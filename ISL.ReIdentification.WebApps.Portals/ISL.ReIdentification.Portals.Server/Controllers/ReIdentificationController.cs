@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
+using ISL.ReIdentification.Core.Models.Orchestrations.Accesses.Exceptions;
 using ISL.ReIdentification.Core.Services.Coordinations.Identifications;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -44,6 +45,15 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
                 identificationCoordinationDependencyValidationException)
             {
                 return BadRequest(identificationCoordinationDependencyValidationException.InnerException);
+            }
+            catch (IdentificationCoordinationDependencyException identificationCoordinationDependencyException)
+                when (identificationCoordinationDependencyException.InnerException
+                    is UnauthorizedAccessOrchestrationException)
+            {
+                return Unauthorized(
+                    new Exception(
+                        message: "You are not authorised for this action.",
+                        innerException: identificationCoordinationDependencyException.InnerException));
             }
             catch (IdentificationCoordinationDependencyException identificationCoordinationDependencyException)
             {
