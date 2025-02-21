@@ -62,6 +62,12 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             var transactionId = await this.identifierBroker.GetIdentifierAsync();
             List<AccessAudit> permissionAudits = new List<AccessAudit>();
 
+            await this.loggingBroker.LogInformationAsync(
+                $"Start ReId Check {await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync()}, TransactionId {transactionId}");
+
+            await this.loggingBroker.LogInformationAsync(
+                $"Start PDS Check {await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync()}, TransactionId {transactionId}");
+
             foreach (IdentificationItem item in identificationRequest.IdentificationItems)
             {
                 savedPseduoes.Add(
@@ -106,12 +112,18 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
 
             await this.accessAuditService.BulkAddAccessAuditAsync(permissionAudits);
 
+            await this.loggingBroker.LogInformationAsync(
+                $"Completed PDS Request {await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync()}, TransactionId {transactionId}");
+
             var hasAccessIdentificationItems =
                 identificationRequest.IdentificationItems
                     .FindAll(x => x.HasAccess == true).ToList();
 
             if (hasAccessIdentificationItems.Count() == 0)
             {
+                await this.loggingBroker.LogInformationAsync(
+                    $"Completed ReId Check {await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync()}, TransactionId {transactionId}");
+
                 return identificationRequest;
             }
 
@@ -134,6 +146,9 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                     hasAccessIdentificationRequest);
 
             List<AccessAudit> reIdentifyAudits = new List<AccessAudit>();
+
+            await this.loggingBroker.LogInformationAsync(
+                $"Start NECS Check {await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync()}, TransactionId {transactionId}");
 
             foreach (IdentificationItem item in reIdentifiedIdentificationRequest.IdentificationItems)
             {
@@ -168,12 +183,16 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
 
             await this.accessAuditService.BulkAddAccessAuditAsync(reIdentifyAudits);
 
+            await this.loggingBroker.LogInformationAsync(
+                $"Completed NECS Request {await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync()}, TransactionId {transactionId}");
+
+            await this.loggingBroker.LogInformationAsync(
+                $"Completed ReId Check {await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync()}, TransactionId {transactionId}");
+
             return identificationRequest;
         });
 
-        public ValueTask<AccessRequest> ExpireRenewImpersonationContextTokensAsync(
-            AccessRequest accessRequest,
-            bool isPreviouslyApproved) =>
+        public ValueTask<AccessRequest> ExpireRenewImpersonationContextTokensAsync(AccessRequest accessRequest) =>
         TryCatch(async () =>
         {
             ValidateOnExpireRenewImpersonationContextTokensAsync(accessRequest);
@@ -186,7 +205,9 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             DateTimeOffset expiresOn = currentDateTimeOffset
                 .AddMinutes(this.projectStorageConfiguration.TokenLifetimeMinutes);
 
-            if (!isPreviouslyApproved)
+            List<string> retrievedContainers = await this.documentService.RetrieveAllContainersAsync();
+
+            if (!retrievedContainers.Contains(container))
             {
                 await this.documentService.AddContainerAsync(container);
                 await this.documentService.AddFolderAsync(container, this.projectStorageConfiguration.PickupFolder);

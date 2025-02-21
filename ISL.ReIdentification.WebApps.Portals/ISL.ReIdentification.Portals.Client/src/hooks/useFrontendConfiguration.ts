@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import FrontendConfigurationBroker, { FrontendConfiguration } from "../brokers/apiBroker.frontendConfigurationBroker";
 import { useQuery } from "@tanstack/react-query";
 
-export function useFrontendConfiguration() { 
-    const [configuration, setConfiguration] = useState<FrontendConfiguration>();
+export function useFrontendConfiguration() {
+    const [configuration, setConfiguration] = useState<FrontendConfiguration>({} as FrontendConfiguration);
 
     const broker = new FrontendConfigurationBroker();
 
@@ -14,8 +14,10 @@ export function useFrontendConfiguration() {
     });
 
     useEffect(() => {
-        setConfiguration(query.data);
-    },[query.data]);
+        if (query && query.data) {
+            setConfiguration(query.data);
+        }
+    },[query,query.data]);
         
-    return { configuration }
+    return { configuration, ...configuration }
 }

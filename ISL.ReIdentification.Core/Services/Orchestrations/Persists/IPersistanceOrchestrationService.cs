@@ -16,5 +16,6 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Persists
         ValueTask<AccessRequest> RetrieveCsvIdentificationRequestByIdAsync(Guid csvIdentificationRequestId);
         ValueTask PurgeCsvReIdentificationRecordsThatExpired();
         ValueTask SendGeneratedTokensNotificationAsync(AccessRequest accessRequest);
+        ValueTask SendApprovalNotificationAsync(AccessRequest accessRequest);
     }
 }
