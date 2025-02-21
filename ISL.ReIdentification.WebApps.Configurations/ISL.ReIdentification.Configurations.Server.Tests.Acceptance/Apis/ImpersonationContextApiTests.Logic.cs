@@ -91,9 +91,9 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
                 .GetImpersonationContextByIdAsync(randomImpersonationContext.Id);
 
             // then
-            actualImpersonationContext.Should().BeEquivalentTo(modifiedImpersonationContext, options =>
-                options.Excluding(ctx => ctx.UpdatedBy)
-                       .Excluding(ctx => ctx.UpdatedDate));
+            actualImpersonationContext.Should().BeEquivalentTo(modifiedImpersonationContext, options => options
+                .Excluding(ctx => ctx.UpdatedBy)
+                .Excluding(ctx => ctx.UpdatedDate));
 
             await this.apiBroker.DeleteImpersonationContextByIdAsync(actualImpersonationContext.Id);
         }
