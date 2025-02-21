@@ -20,7 +20,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification
         {
             // given
             ImpersonationContext randomImpersonationContext = CreateRandomImpersonationContext();
-            ImpersonationContext existingImpersonationContext = randomImpersonationContext.DeepClone();
+            ImpersonationContext existingImpersonationContext = randomImpersonationContext;
             bool isApproved = true;
             existingImpersonationContext.IsApproved = !isApproved;
             existingImpersonationContext.ResponsiblePersonEntraUserId = TestAuthHandler.SecurityOid;
