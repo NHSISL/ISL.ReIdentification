@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import ReIdentificationBroker from '../../brokers/apiBroker.reidentification';
 import { AccessRequest } from '../../models/accessRequest/accessRequest';
 import { ReIdRecord } from '../../types/ReIdRecord';
@@ -8,87 +8,74 @@ import { toast } from 'react-toastify';
 export const reIdentificationService = {
     useRequestReIdentification: () => {
         const [loading, setIsLoading] = useState(false);
-        const [request, setRequest] = useState<AccessRequest>();
         const [data, setData] = useState<ReIdRecord[]>([]);
+        const [pseudosRequested, setPseudosRequested] = useState<string[]>([]);
 
-        useEffect(() => {
+        const submit = async (identificationRequest: AccessRequest) => {
 
-            async function execute() {
-                const broker = new ReIdentificationBroker();
-
-                if (request && request.identificationRequest && request.identificationRequest?.identificationItems) {
-                    setRequest(undefined);
-                    const reIdRecords: ReIdRecord[] = request.identificationRequest?.identificationItems.map(ii => {
-                        return {
-                            identifier: getPseudo(ii.identifier),
-                            pseudo: ii.identifier,
-                            hasAccess: ii.hasAccess,
-                            nhsnumber: "",
-                            loading: true,
-                            rowNumber: ii.rowNumber,
-                            isHx: isHx(ii.identifier)
-                        }
-                    })
-
-                    request.identificationRequest.identificationItems =
-                        request.identificationRequest.identificationItems.map(i => {
-                            return {
-                                ...i,
-                                identifier: getPseudo(i.identifier)
-                            }
-                        });
-
-                    request.identificationRequest.identificationItems = request.identificationRequest.identificationItems.filter(x => data.findIndex(y => y.identifier === x.identifier) === -1);
-
-                    if (request.identificationRequest.identificationItems.length === 0) {
-                        return;
+            const broker = new ReIdentificationBroker();
+            
+            if (identificationRequest && identificationRequest.identificationRequest && identificationRequest.identificationRequest?.identificationItems) {
+                const reIdRecords: ReIdRecord[] = identificationRequest.identificationRequest?.identificationItems.map(ii => {
+                    return {
+                        identifier: getPseudo(ii.identifier),
+                        pseudo: ii.identifier,
+                        hasAccess: ii.hasAccess,
+                        nhsnumber: "",
+                        loading: true,
+                        rowNumber: ii.rowNumber,
+                        isHx: isHx(ii.identifier)
                     }
+                }).filter(ri => { return pseudosRequested.findIndex(pr => pr == ri.pseudo) === -1 });
 
-                    setIsLoading(true);
-                    await broker.PostReIdentificationAsync(request)
-                        .then((response) => {
-                            setData((data) => {
-                                const responseItems = response.identificationRequest?.identificationItems;
-                                if (!responseItems) {
-                                    return data;
-                                }
+                setPseudosRequested([...pseudosRequested, ...reIdRecords.map(ri => ri.pseudo)])
 
-                                const itemsToCache: ReIdRecord[] = responseItems.map(x => {
-                                    const r = reIdRecords.find(cachedRecord => cachedRecord.rowNumber === x.rowNumber);
-                                    if (!r) {
-                                        return;
-                                    }
-                                    return {
-                                        ...r,
-                                        hasAccess: x.hasAccess,
-                                        nhsnumber: x.identifier,
-                                        loading: false,
-                                    }
-                                }).filter(x => x !== undefined);
-
-                                return [...data, ...itemsToCache]
-
-                            })
-                        }).catch(() => {
-                            toast.error("Something has gone wrong", { position: "top-right", autoClose: 5000, closeOnClick:true });
-                        }).finally(() => {
-                            setIsLoading(false);
-                        })
+                if (identificationRequest.identificationRequest.identificationItems.length === 0) {
+                    return;
                 }
+
+                setIsLoading(true);
+                identificationRequest.identificationRequest.identificationItems = reIdRecords;
+
+                await broker.PostReIdentificationAsync(identificationRequest)
+                    .then((response) => {
+                        setData((data) => {
+                            const responseItems = response.identificationRequest?.identificationItems;
+                            if (!responseItems) {
+                                return data;
+                            }
+
+                            const itemsToCache: ReIdRecord[] = responseItems.map(x => {
+                                const r = reIdRecords.find(cachedRecord => cachedRecord.rowNumber === x.rowNumber);
+                                if (!r) {
+                                    return;
+                                }
+                                return {
+                                    ...r,
+                                    hasAccess: x.hasAccess,
+                                    nhsnumber: x.identifier,
+                                    loading: false,
+                                }
+                            }).filter(x => x !== undefined);
+
+                            return [...data, ...itemsToCache]
+
+                        })
+                    }).catch(() => {
+                        toast.error("Something has gone wrong", { position: "top-right", autoClose: 5000, closeOnClick: true });
+                    }).finally(() => {
+                        setIsLoading(false);
+                    })
             }
-
-            execute();
-
-        }, [data, request]);
+        }
 
         const cleardata = () => {
+            setPseudosRequested([]);
             setData([]);
         }
 
         return {
-            submit: (identificationRequest: AccessRequest) => {
-                setRequest(identificationRequest);
-            },
+            submit,
             loading,
             data,
             cleardata
