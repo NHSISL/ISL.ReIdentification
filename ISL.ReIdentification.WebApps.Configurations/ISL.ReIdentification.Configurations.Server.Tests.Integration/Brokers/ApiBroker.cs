@@ -3,19 +3,20 @@
 // ---------------------------------------------------------
 
 using ISL.ReIdentification.Configurations.Server;
+using Microsoft.AspNetCore.Mvc.Testing;
 using RESTFulSense.Clients;
 
 namespace ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification.Brokers
 {
     public partial class ApiBroker
     {
-        private readonly TestWebApplicationFactory<Program> webApplicationFactory;
+        private readonly WebApplicationFactory<Program> webApplicationFactory;
         private readonly HttpClient httpClient;
         private readonly IRESTFulApiFactoryClient apiFactoryClient;
 
         public ApiBroker()
         {
-            webApplicationFactory = new TestWebApplicationFactory<Program>();
+            webApplicationFactory = new WebApplicationFactory<Program>();
             httpClient = webApplicationFactory.CreateClient();
             apiFactoryClient = new RESTFulApiFactoryClient(httpClient);
         }
