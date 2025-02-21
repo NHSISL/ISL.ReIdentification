@@ -1,10 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import ReIdentificationBroker from '../../brokers/apiBroker.reidentification';
 import { AccessRequest } from '../../models/accessRequest/accessRequest';
 import { ReIdRecord } from '../../types/ReIdRecord';
 import { getPseudo, isHx } from '../../helpers/hxHelpers';
 import { toast } from 'react-toastify';
-import { request } from 'https';
 
 export const reIdentificationService = {
     useRequestReIdentification: () => {
