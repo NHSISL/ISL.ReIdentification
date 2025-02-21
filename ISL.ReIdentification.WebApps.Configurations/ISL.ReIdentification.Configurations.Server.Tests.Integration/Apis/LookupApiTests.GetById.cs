@@ -3,7 +3,7 @@
 // ---------------------------------------------------------
 
 using FluentAssertions;
-using ISL.ReIdentification.Configuration.Server.Tests.Integration.Models;
+using ISL.ReIdentification.Configurations.Server.Tests.Integration.Models;
 
 namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis
 {

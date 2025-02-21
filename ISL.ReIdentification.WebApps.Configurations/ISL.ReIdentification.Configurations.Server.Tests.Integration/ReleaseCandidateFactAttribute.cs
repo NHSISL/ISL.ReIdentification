@@ -4,7 +4,7 @@
 
 using Xunit.Sdk;
 
-namespace ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification
+namespace ISL.ReIdentification.Configurations.Server.Tests.Integration
 {
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     [XunitTestCaseDiscoverer(

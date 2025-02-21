@@ -2,9 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using ISL.ReIdentification.Configuration.Server.Tests.Integration.Models;
+using ISL.ReIdentification.Configurations.Server.Tests.Integration.Models;
 
-namespace ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification.Brokers
+namespace ISL.ReIdentification.Configurations.Server.Tests.Integration.ReIdentification.Brokers
 {
     public partial class ApiBroker
     {

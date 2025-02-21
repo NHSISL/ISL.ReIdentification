@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Xunit.Abstractions;
 using Xunit.Sdk;
 
-namespace ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification
+namespace ISL.ReIdentification.Configurations.Server.Tests.Integration
 {
     public class ReleaseCandidateTestCaseDiscoverer : IXunitTestCaseDiscoverer
     {
