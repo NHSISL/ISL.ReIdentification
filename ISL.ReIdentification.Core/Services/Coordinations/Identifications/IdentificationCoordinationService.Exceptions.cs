@@ -28,6 +28,16 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
                 throw await CreateAndLogValidationExceptionAsync(nullAccessRequestException);
             }
             catch (AccessOrchestrationValidationException accessOrchestrationValidationException)
+                when (accessOrchestrationValidationException.InnerException is UnauthorizedAccessOrchestrationException)
+            {
+                var unauthorizedIdentificationCoordinationException = new UnauthorizedIdentificationCoordinationException(
+                    message: "Not authorised to perform this action",
+                    innerException: accessOrchestrationValidationException.InnerException as Xeption);
+
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    unauthorizedIdentificationCoordinationException);
+            }
+            catch (AccessOrchestrationValidationException accessOrchestrationValidationException)
             {
                 throw await CreateAndLogDependencyValidationExceptionAsync(
                     accessOrchestrationValidationException);
