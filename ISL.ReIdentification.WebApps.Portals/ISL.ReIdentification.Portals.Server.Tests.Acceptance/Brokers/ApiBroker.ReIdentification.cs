@@ -30,7 +30,6 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Brokers
                 $"{reIdentificationRelativeUrl}/impersonationcontextapproval",
                 approvalRequest);
         
-
         public async ValueTask<byte[]> GetCsvIdentificationRequestByIdAsync(
             Guid csvIdentificationRequestId, string reason)
         {
