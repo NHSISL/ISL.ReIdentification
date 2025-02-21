@@ -30,9 +30,10 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
             catch (AccessOrchestrationValidationException accessOrchestrationValidationException)
                 when (accessOrchestrationValidationException.InnerException is UnauthorizedAccessOrchestrationException)
             {
-                var unauthorizedIdentificationCoordinationException = new UnauthorizedIdentificationCoordinationException(
-                    message: "Not authorised to perform this action",
-                    innerException: accessOrchestrationValidationException.InnerException as Xeption);
+                var unauthorizedIdentificationCoordinationException =
+                    new UnauthorizedIdentificationCoordinationException(
+                        message: "Not authorised to perform this action",
+                        innerException: accessOrchestrationValidationException.InnerException as Xeption);
 
                 throw await CreateAndLogDependencyValidationExceptionAsync(
                     unauthorizedIdentificationCoordinationException);
