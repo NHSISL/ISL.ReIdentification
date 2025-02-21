@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests.Exceptions;
+using ISL.ReIdentification.Core.Models.Securities;
 
 namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationRequests
 {
@@ -15,6 +16,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
             CsvIdentificationRequest csvIdentificationRequest)
         {
             ValidateCsvIdentificationRequestIsNotNull(csvIdentificationRequest);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(csvIdentificationRequest.Id),
@@ -60,17 +62,20 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
                 Parameter: nameof(CsvIdentificationRequest.UpdatedBy)),
 
                 (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: csvIdentificationRequest.CreatedBy),
+                Parameter: nameof(CsvIdentificationRequest.CreatedBy)),
+
+                (Rule: IsNotSame(
                     first: csvIdentificationRequest.UpdatedBy,
                     second: csvIdentificationRequest.CreatedBy,
                     secondName: nameof(CsvIdentificationRequest.CreatedBy)),
-
                 Parameter: nameof(CsvIdentificationRequest.UpdatedBy)),
 
                 (Rule: IsNotSame(
-                    first: csvIdentificationRequest.CreatedDate,
-                    second: csvIdentificationRequest.UpdatedDate,
+                    first: csvIdentificationRequest.UpdatedDate,
+                    second: csvIdentificationRequest.CreatedDate,
                     secondName: nameof(CsvIdentificationRequest.CreatedDate)),
-
                 Parameter: nameof(CsvIdentificationRequest.UpdatedDate)),
 
                 (Rule: await IsNotRecentAsync(csvIdentificationRequest.CreatedDate),
@@ -81,6 +86,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
             CsvIdentificationRequest csvIdentificationRequest)
         {
             ValidateCsvIdentificationRequestIsNotNull(csvIdentificationRequest);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(csvIdentificationRequest.Id),
@@ -125,11 +131,15 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
                 (Rule: IsInvalidLength(csvIdentificationRequest.UpdatedBy, 255),
                 Parameter: nameof(CsvIdentificationRequest.UpdatedBy)),
 
-                (Rule: IsSame(
-                    firstDate: csvIdentificationRequest.UpdatedDate,
-                    secondDate: csvIdentificationRequest.CreatedDate,
-                    nameof(CsvIdentificationRequest.CreatedDate)),
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: csvIdentificationRequest.UpdatedBy),
+                Parameter: nameof(CsvIdentificationRequest.UpdatedBy)),
 
+                (Rule: IsSame(
+                    firstDate: csvIdentificationRequest.CreatedDate,
+                    secondDate: csvIdentificationRequest.UpdatedDate,
+                    secondDateName: nameof(CsvIdentificationRequest.CreatedDate)),
                 Parameter: nameof(CsvIdentificationRequest.UpdatedDate)),
 
                 (Rule: await IsNotRecentAsync(csvIdentificationRequest.UpdatedDate),
@@ -205,6 +215,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
             Message = "Date is invalid"
         };
 
+
         private static dynamic IsInvalidLength(string text, int maxLength) => new
         {
             Condition = IsExceedingLength(text, maxLength),
@@ -230,6 +241,14 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
             {
                 Condition = first != second,
                 Message = $"Date is not the same as {secondName}"
+            };
+
+        private static dynamic IsNotSame(
+            string first,
+            string second) => new
+            {
+                Condition = first != second,
+                Message = $"Expected value to be '{first}' but found '{second}'."
             };
 
         private static dynamic IsNotSame(

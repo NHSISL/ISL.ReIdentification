@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
+using ISL.ReIdentification.Core.Models.Orchestrations.Accesses.Exceptions;
 using ISL.ReIdentification.Core.Services.Coordinations.Identifications;
 using Moq;
 using Xeptions;
@@ -44,12 +45,86 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                         "fix the errors and try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
 
-            IdentificationCoordinationService identificationCoordinationService =
-                identificationCoordinationServiceMock.Object;
+            // when
+            ValueTask<AccessRequest> accessRequestTask =
+                identificationCoordinationServiceMock.Object
+                    .ProcessImpersonationContextRequestAsync(someAccessRequest);
+
+            IdentificationCoordinationDependencyValidationException
+                actualIdentificationCoordinationDependencyValidationException =
+                    await Assert.ThrowsAsync<IdentificationCoordinationDependencyValidationException>(
+                        testCode: accessRequestTask.AsTask);
+
+            // then
+            actualIdentificationCoordinationDependencyValidationException
+                .Should().BeEquivalentTo(expectedIdentificationCoordinationDependencyValidationException);
+
+            identificationCoordinationServiceMock.Verify(service =>
+                service.ExtractFromFilepath(It.IsAny<string>()),
+                        Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
+                   expectedIdentificationCoordinationDependencyValidationException))),
+                       Times.Once);
+
+            identificationCoordinationServiceMock.VerifyNoOtherCalls();
+            this.persistanceOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.accessOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.identificationOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task
+            ShouldThrowDependencyValidationExceptionOnProcessImpersonationContextRequestWhenUnauthorizedAndLogItAsync()
+        {
+            // given
+            AccessRequest someAccessRequest = CreateRandomAccessRequest();
+            string someReason = GetRandomString();
+            string someMessage = GetRandomString();
+
+            var unauthorizedAccessOrchestrationException =
+                new UnauthorizedAccessOrchestrationException(message: someMessage);
+
+            var accessOrchestrationValidationException = new AccessOrchestrationValidationException(
+                message: someMessage,
+                innerException: unauthorizedAccessOrchestrationException);
+
+            var unauthorizedIdentificationCoordinationException =
+                new UnauthorizedIdentificationCoordinationException(
+                    message: "Not authorised to perform this action",
+                    innerException: accessOrchestrationValidationException.InnerException as Xeption);
+
+            var expectedIdentificationCoordinationDependencyValidationException =
+                new IdentificationCoordinationDependencyValidationException(
+                    message: "Identification coordination dependency validation error occurred, " +
+                        "fix the errors and try again.",
+                    innerException: accessOrchestrationValidationException.InnerException as Xeption);
+
+            var identificationCoordinationServiceMock = new Mock<IdentificationCoordinationService>
+                (this.accessOrchestrationServiceMock.Object,
+                this.persistanceOrchestrationServiceMock.Object,
+                this.identificationOrchestrationServiceMock.Object,
+                this.csvHelperBrokerMock.Object,
+                this.securityBrokerMock.Object,
+                this.loggingBrokerMock.Object,
+                this.dateTimeBrokerMock.Object,
+                this.projectStorageConfiguration)
+            {
+                CallBase = true
+            };
+
+            identificationCoordinationServiceMock.Setup(service =>
+                service.ExtractFromFilepath(It.IsAny<string>()))
+                    .ThrowsAsync(accessOrchestrationValidationException);
 
             // when
             ValueTask<AccessRequest> accessRequestTask =
-                identificationCoordinationService
+                identificationCoordinationServiceMock.Object
                     .ProcessImpersonationContextRequestAsync(someAccessRequest);
 
             IdentificationCoordinationDependencyValidationException
@@ -109,12 +184,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                         "fix the errors and try again.",
                     innerException: dependencyException.InnerException as Xeption);
 
-            IdentificationCoordinationService identificationCoordinationService =
-                identificationCoordinationServiceMock.Object;
-
             // when
             ValueTask<AccessRequest> accessRequestTask =
-                identificationCoordinationService
+                identificationCoordinationServiceMock.Object
                     .ProcessImpersonationContextRequestAsync(someAccessRequest);
 
             IdentificationCoordinationDependencyException
@@ -173,12 +245,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                         "fix the errors and try again.",
                     innerException: someException);
 
-            IdentificationCoordinationService identificationCoordinationService =
-                identificationCoordinationServiceMock.Object;
-
             // when
             ValueTask<AccessRequest> accessRequestTask =
-                identificationCoordinationService
+                identificationCoordinationServiceMock.Object
                     .ProcessImpersonationContextRequestAsync(someAccessRequest);
 
             IdentificationCoordinationServiceException
