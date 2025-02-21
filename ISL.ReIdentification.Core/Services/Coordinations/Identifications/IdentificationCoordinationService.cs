@@ -260,7 +260,7 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
             if (isApproved == false)
             {
                 AccessRequest tokensAccessRequest = await this.identificationOrchestrationService
-                    .ExpireRenewImpersonationContextTokensAsync(retrievedImpersonationContext, isPreviouslyApproved);
+                    .ExpireRenewImpersonationContextTokensAsync(retrievedImpersonationContext);
 
                 await this.persistanceOrchestrationService.SendApprovalNotificationAsync(tokensAccessRequest);
 
