@@ -109,15 +109,10 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
                                 type="text"
                                 name="PseudoCode"
                                 value={pseudoCode}
-                                maxLength={10}
                                 onChange={handlePseudoCodeChange}
                                 placeholder="Pseudo Number"
                                 required />
                         </Form.Group>
-                        <Form.Text className="text-muted">
-                            <small>Pseudo Numbers need to be a maximum of 10 characters long and only contain numbers.</small>
-                        </Form.Text>
-                        <br />
                         <br />
                         <Form.Group className="text-start">
                             <Form.Label>Re-identification Reason:</Form.Label>
