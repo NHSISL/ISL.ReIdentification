@@ -27,11 +27,11 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
     const { submit, loading, data } = reIdentificationService.useRequestReIdentification();
     const [submittedPseudoCode, setSubmittedPseudoCode] = useState("");
     const account = useMsal();
-
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const { data: userAccessData } = userAccessViewService.useGetAccessForUser(account.accounts[0].idTokenClaims!.oid!);
     const orgCodes = userAccessData?.map(item => item.orgCode);
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const acc = account.accounts[0];
         const identificationRequest: AccessRequest = {
@@ -54,7 +54,21 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
         }
 
         setSubmittedPseudoCode(getPseudo(pseudoCode));
-        submit(identificationRequest);
+        setErrorMessage(null); // Reset error message before submission
+
+        try {
+            await submit(identificationRequest);
+        } catch (error: unknown) {
+            let errorMsg = "Error submitting identification request.";
+            if (error instanceof Error) {
+                errorMsg = error.message;
+            } else if (typeof error === "object" && error !== null && "response" in error) {
+                const responseError = error as { response: { data: { title: string } } };
+                errorMsg =  responseError.response?.data?.title || errorMsg;
+            }
+            console.error(errorMsg);
+            setErrorMessage(errorMsg);
+        }
     };
 
     const handlePseudoCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -164,8 +178,10 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
     return <>
 
         <Alert variant="danger" className="mb-0">
-            Something went wrong. Please contact <a href="mailto:isl.support@nhs.net">isl.support@nhs.net</a> for support.
+            Something went wrong. Please contact <a href="mailto:isl.support@nhs.net">isl.support@nhs.net</a> for support. <br /> <br />
+        {errorMessage}
         </Alert>
+
     </>
 
 }

@@ -61,8 +61,10 @@ export const reIdentificationService = {
                             return [...data, ...itemsToCache]
 
                         })
-                    }).catch(() => {
-                        toast.error("Something has gone wrong", { position: "top-right", autoClose: 5000, closeOnClick: true });
+                    }).catch((err) => {
+                        const errorMessage = err.response?.data?.title || "Something has gone wrong";
+                        toast.error(errorMessage, { position: "top-right", autoClose: 5000, closeOnClick: true });
+                        throw new Error(errorMessage);
                     }).finally(() => {
                         setIsLoading(false);
                     })

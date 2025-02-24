@@ -52,7 +52,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Accesses
                 if (userOrgs == null || !userOrgs.Any())
                 {
                     throw new UnauthorizedAccessOrchestrationException(message:
-                        $"User {accessRequest.IdentificationRequest.EntraUserId} has no access to any organisations.");
+                        $"User {accessRequest.IdentificationRequest.GivenName} {accessRequest.IdentificationRequest.Surname} has no access to any organisations.");
                 }
 
                 AccessRequest validatedAccessRequest = await CheckUserAccessToPatientsAsync(accessRequest, userOrgs);
