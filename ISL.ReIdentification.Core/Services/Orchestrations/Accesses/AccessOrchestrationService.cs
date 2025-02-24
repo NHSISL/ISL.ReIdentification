@@ -10,6 +10,7 @@ using Force.DeepCloner;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
+using ISL.ReIdentification.Core.Models.Orchestrations.Accesses.Exceptions;
 using ISL.ReIdentification.Core.Services.Foundations.PdsDatas;
 using ISL.ReIdentification.Core.Services.Foundations.UserAccesses;
 using Xeptions;
@@ -44,9 +45,15 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Accesses
             {
                 ValidateAccessRequestIsNotNull(accessRequest);
 
-                List<string> userOrgs =
-                    await this.userAccessService
-                        .RetrieveAllActiveOrganisationsUserHasAccessToAsync(accessRequest.IdentificationRequest.EntraUserId);
+                List<string> userOrgs = await this.userAccessService
+                    .RetrieveAllActiveOrganisationsUserHasAccessToAsync(
+                        entraUserId: accessRequest.IdentificationRequest.EntraUserId);
+
+                if (userOrgs == null || !userOrgs.Any())
+                {
+                    throw new UnauthorizedAccessOrchestrationException(message:
+                        $"User {accessRequest.IdentificationRequest.EntraUserId} has no access to any organisations.");
+                }
 
                 AccessRequest validatedAccessRequest = await CheckUserAccessToPatientsAsync(accessRequest, userOrgs);
 

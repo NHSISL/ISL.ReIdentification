@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
+using ISL.ReIdentification.Core.Models.Orchestrations.Accesses.Exceptions;
 using ISL.ReIdentification.Core.Models.Securities;
 using Moq;
 using Xeptions;
@@ -22,15 +23,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
         {
             // given
             AccessRequest someAccessRequest = CreateRandomAccessRequest();
-
             EntraUser outputEntraUser = CreateRandomEntraUser();
 
             this.securityBrokerMock.Setup(broker =>
                 broker.GetCurrentUserAsync())
-                .ReturnsAsync(outputEntraUser);
-
-            this.accessOrchestrationServiceMock.Setup(service =>
-                service.ValidateAccessForIdentificationRequestAsync(someAccessRequest))
                     .ThrowsAsync(dependencyValidationException);
 
             var expectedIdentificationCoordinationDependencyValidationException =
@@ -52,8 +48,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             actualIdentificationCoordinationDependencyValidationException
                 .Should().BeEquivalentTo(expectedIdentificationCoordinationDependencyValidationException);
 
-            this.accessOrchestrationServiceMock.Verify(service =>
-                service.ValidateAccessForIdentificationRequestAsync(someAccessRequest),
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -67,6 +63,67 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             this.persistanceOrchestrationServiceMock.VerifyNoOtherCalls();
         }
 
+        [Fact]
+        public async Task
+            ShouldThrowDependencyValidationExceptionOnProcessIdentificationRequestWhenUnauthorizedAndLogItAsync()
+        {
+            // given
+            AccessRequest someAccessRequest = CreateRandomAccessRequest();
+            string someReason = GetRandomString();
+            string someMessage = GetRandomString();
+
+            var unauthorizedAccessOrchestrationException =
+                new UnauthorizedAccessOrchestrationException(message: someMessage);
+
+            var accessOrchestrationValidationException = new AccessOrchestrationValidationException(
+                message: someMessage,
+                innerException: unauthorizedAccessOrchestrationException);
+
+            var unauthorizedIdentificationCoordinationException =
+                new UnauthorizedIdentificationCoordinationException(
+                    message: "Not authorised to perform this action",
+                    innerException: accessOrchestrationValidationException.InnerException as Xeption);
+
+            var expectedIdentificationCoordinationDependencyValidationException =
+                new IdentificationCoordinationDependencyValidationException(
+                    message: "Identification coordination dependency validation error occurred, " +
+                        "fix the errors and try again.",
+                    innerException: accessOrchestrationValidationException.InnerException as Xeption);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ThrowsAsync(accessOrchestrationValidationException);
+
+            // when
+            ValueTask<AccessRequest> accessRequestTask =
+                this.identificationCoordinationService.ProcessIdentificationRequestsAsync(someAccessRequest);
+
+            IdentificationCoordinationDependencyValidationException
+                actualIdentificationCoordinationDependencyValidationException =
+                    await Assert.ThrowsAsync<IdentificationCoordinationDependencyValidationException>(
+                        testCode: accessRequestTask.AsTask);
+
+            // then
+            actualIdentificationCoordinationDependencyValidationException
+                .Should().BeEquivalentTo(expectedIdentificationCoordinationDependencyValidationException);
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
+                   expectedIdentificationCoordinationDependencyValidationException))),
+                       Times.Once);
+
+            this.persistanceOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.accessOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.identificationOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
         public async Task ShouldThrowDependencyExceptionOnProcessIdentificationRequestAndLogItAsync(
@@ -74,15 +131,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
         {
             // given
             AccessRequest someAccessRequest = CreateRandomAccessRequest();
-
             EntraUser outputEntraUser = CreateRandomEntraUser();
 
             this.securityBrokerMock.Setup(broker =>
                 broker.GetCurrentUserAsync())
-                .ReturnsAsync(outputEntraUser);
-
-            this.accessOrchestrationServiceMock.Setup(service =>
-                service.ValidateAccessForIdentificationRequestAsync(someAccessRequest))
                     .ThrowsAsync(dependencyException);
 
             var expectedIdentificationCoordinationDependencyException =
@@ -104,8 +156,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             actualIdentificationCoordinationDependencyException
                 .Should().BeEquivalentTo(expectedIdentificationCoordinationDependencyException);
 
-            this.accessOrchestrationServiceMock.Verify(service =>
-                service.ValidateAccessForIdentificationRequestAsync(someAccessRequest),
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -130,10 +182,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
             this.securityBrokerMock.Setup(broker =>
                 broker.GetCurrentUserAsync())
-                .ReturnsAsync(outputEntraUser);
-
-            this.accessOrchestrationServiceMock.Setup(service =>
-                service.ValidateAccessForIdentificationRequestAsync(someAccessRequest))
                     .ThrowsAsync(someException);
 
             var expectedIdentificationCoordinationServiceException =
@@ -155,8 +203,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             actualIdentificationCoordinationServiceException
                 .Should().BeEquivalentTo(expectedIdentificationCoordinationServiceException);
 
-            this.accessOrchestrationServiceMock.Verify(service =>
-                service.ValidateAccessForIdentificationRequestAsync(someAccessRequest),
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
