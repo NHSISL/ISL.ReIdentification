@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="ADotNet" Version="4.1.0" />
-    <PackageReference Include="FluentAssertions" Version="7.0.0" />
+    <PackageReference Include="FluentAssertions" Version="8.1.1" />
   </ItemGroup>
 
 </Project>
