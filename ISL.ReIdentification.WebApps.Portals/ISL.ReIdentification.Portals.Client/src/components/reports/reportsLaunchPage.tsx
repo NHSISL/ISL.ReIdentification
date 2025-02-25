@@ -58,8 +58,6 @@ const ReportsLaunchPage: FunctionComponent<ReportLaunchPageProps> = (props) => {
 
         if (event && event.detail.dataPoints[0] && reportBreechThreshold) {
 
-
-
             // pseudo data could be held in either an identity or value field.
             //const identityValues = ...event.detail.dataPoints.flatMap(x => x.identity);
             const dataFields = [...event.detail.dataPoints.flatMap(x => x.identity), ...event.detail.dataPoints.flatMap(x => x.values)]
@@ -85,8 +83,6 @@ const ReportsLaunchPage: FunctionComponent<ReportLaunchPageProps> = (props) => {
             if (!pseudos.length) {
                 return
             }
-
-
 
             setLaunched(true);
             //the psuedo could be contained in one of the following properties - so normalise all as strings
@@ -157,7 +153,6 @@ const ReportsLaunchPage: FunctionComponent<ReportLaunchPageProps> = (props) => {
             }
         })
     }
-
 
     return <>
         <div className="flex-grow-1" style={{ position: "absolute", width: "100%", height: (visualViewport ? visualViewport.height : 500) - 40, inset: "33px 0 0 0" }}>
