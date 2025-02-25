@@ -5,7 +5,6 @@ import { Button, Card, CardBody, Col, Container, Modal, Row, Spinner, Table, Toa
 import { ToastPosition } from "react-bootstrap/esm/ToastContainer";
 import { ReIdRecord } from "../../types/ReIdRecord";
 import CopyIcon from "../core/copyIcon";
-import { useIsAuthenticated } from "@azure/msal-react";
 
 type ReportToastProps = {
     position: ToastPosition;
