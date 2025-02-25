@@ -99,7 +99,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.ReIdentific
             var identificationCoordinationDependencyValidationException =
                 new IdentificationCoordinationDependencyValidationException(
                     message: someMessage,
-                    innerException: unauthorizedAccessOrchestrationException);
+                    innerException: unauthorizedIdentificationCoordinationException);
 
             UnauthorizedObjectResult expectedUnauthorizedObjectResult =
                 Unauthorized(identificationCoordinationDependencyValidationException.InnerException);

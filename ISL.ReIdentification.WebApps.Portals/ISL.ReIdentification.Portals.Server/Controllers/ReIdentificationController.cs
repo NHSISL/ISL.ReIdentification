@@ -44,7 +44,7 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             catch (IdentificationCoordinationDependencyValidationException
                 identificationCoordinationDependencyValidationException)
                 when (identificationCoordinationDependencyValidationException.InnerException
-                    is UnauthorizedAccessOrchestrationException)
+                    is UnauthorizedIdentificationCoordinationException)
             {
                 return Unauthorized(identificationCoordinationDependencyValidationException.InnerException);
             }
