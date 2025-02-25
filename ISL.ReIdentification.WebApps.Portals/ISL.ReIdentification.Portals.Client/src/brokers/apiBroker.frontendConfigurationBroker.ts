@@ -11,7 +11,8 @@ export type FrontendConfigurationResponse = {
     activeAgreement: string,
     reportMaxReId: string,
     reportBreachThreshold: string,
-    csvMaxReId: string
+    csvMaxReId: string,
+    supportContactEmail: string
 }
 
 export type FrontendConfiguration = {
@@ -25,7 +26,8 @@ export type FrontendConfiguration = {
     activeAgreement: string,
     reportMaxReId: number,
     reportBreechThreshold: number,
-    csvMaxReId: number
+    csvMaxReId: number,
+    supportContactEmail: string
 }
 
 class FrontendConfigurationBroker {
@@ -58,7 +60,11 @@ class FrontendConfigurationBroker {
             }
 
             if (!result.csvMaxReId) {
-                throw new Error("App configuration missing for FrontendConfiguration - csvMaxReId.");
+                throw new Error("App configuration missing for FrontendConfiguration - CsvMaxReId.");
+            }
+
+            if (!result.supportContactEmail) {
+                throw new Error("App configuration missing for FrontendConfiguration - SupportContactEmail.");
             }
 
             return result;
