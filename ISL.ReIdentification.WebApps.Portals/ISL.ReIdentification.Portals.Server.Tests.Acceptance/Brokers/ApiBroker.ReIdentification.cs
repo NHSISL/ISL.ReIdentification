@@ -4,6 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
+using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
 using ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.Accesses;
 
 namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Brokers
@@ -24,6 +25,11 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Brokers
                 $"{reIdentificationRelativeUrl}/generatetokens",
                 impersonationContextId);
 
+        public async ValueTask PostImpersonationContextApprovalAsync(ApprovalRequest approvalRequest) =>
+            await this.apiFactoryClient.PostContentWithNoResponseAsync(
+                $"{reIdentificationRelativeUrl}/impersonationcontextapproval",
+                approvalRequest);
+        
         public async ValueTask<byte[]> GetCsvIdentificationRequestByIdAsync(
             Guid csvIdentificationRequestId, string reason)
         {
