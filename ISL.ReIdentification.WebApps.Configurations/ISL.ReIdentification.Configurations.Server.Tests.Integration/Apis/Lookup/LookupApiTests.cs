@@ -3,7 +3,7 @@
 // ---------------------------------------------------------
 
 using ISL.ReIdentification.Configurations.Server.Tests.Integration.Brokers;
-using ISL.ReIdentification.Configurations.Server.Tests.Integration.Models;
+using ISL.ReIdentification.Configurations.Server.Tests.Integration.Models.Lookup;
 using ISL.ReIdentification.Configurations.Server.Tests.Integration.ReIdentification.Brokers;
 using Tynamix.ObjectFiller;
 
