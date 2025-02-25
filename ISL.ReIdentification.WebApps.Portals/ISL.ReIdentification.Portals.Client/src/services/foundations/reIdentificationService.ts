@@ -4,17 +4,20 @@ import { AccessRequest } from '../../models/accessRequest/accessRequest';
 import { ReIdRecord } from '../../types/ReIdRecord';
 import { getPseudo, isHx } from '../../helpers/hxHelpers';
 import { toast } from 'react-toastify';
+import { useFrontendConfiguration } from '../../hooks/useFrontendConfiguration';
 
 export const reIdentificationService = {
     useRequestReIdentification: () => {
         const [loading, setIsLoading] = useState(false);
         const [data, setData] = useState<ReIdRecord[]>([]);
+        const [isAuthorised, setIsAuthorised] = useState(true);
         const [pseudosRequested, setPseudosRequested] = useState<string[]>([]);
+        const { supportContactEmail } = useFrontendConfiguration();
 
         const submit = async (identificationRequest: AccessRequest) => {
 
             const broker = new ReIdentificationBroker();
-            
+
             if (identificationRequest && identificationRequest.identificationRequest && identificationRequest.identificationRequest?.identificationItems) {
                 const reIdRecords: ReIdRecord[] = identificationRequest.identificationRequest?.identificationItems.map(ii => {
                     return {
@@ -61,8 +64,23 @@ export const reIdentificationService = {
                             return [...data, ...itemsToCache]
 
                         })
-                    }).catch(() => {
-                        toast.error("Something has gone wrong", { position: "top-right", autoClose: 5000, closeOnClick: true });
+                    }).catch((error) => {
+                        let errorMessage = "";
+                        if (error.response?.status === 401) {
+                            setIsAuthorised(false);
+                            errorMessage = `You are not authorised to make this request, please contact ${supportContactEmail} to request access.`;
+                        } else {
+                            errorMessage = `Something went wrong. Please contact ${supportContactEmail} for support.`;
+                        }
+                        toast.error(`${errorMessage}`, {
+                            position: "top-right",
+                            autoClose: 5000,
+                            closeOnClick: true,
+                            hideProgressBar: false,
+                            pauseOnHover: true,
+                        });
+
+                        throw error;
                     }).finally(() => {
                         setIsLoading(false);
                     })
@@ -78,7 +96,8 @@ export const reIdentificationService = {
             submit,
             loading,
             data,
-            cleardata
+            cleardata,
+            isAuthorised
         };
     },
 
@@ -139,7 +158,7 @@ export const reIdentificationService = {
             loading,
             data,
             filename,
-            error
+            error,
         };
     }
 }

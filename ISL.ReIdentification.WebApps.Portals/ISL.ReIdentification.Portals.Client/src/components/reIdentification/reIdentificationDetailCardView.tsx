@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { FunctionComponent, useState } from "react";
 import { Form, Button, Card, Spinner, Tooltip, OverlayTrigger, Alert } from "react-bootstrap";
 import { LookupView } from "../../models/views/components/lookups/lookupView";
@@ -10,6 +11,7 @@ import { OverlayInjectedProps } from "react-bootstrap/esm/Overlay";
 import ReidentificationResultView from "./reidentificationResultView";
 import { userAccessViewService } from "../../services/views/userAccess/userAccessViewService";
 import { getPseudo } from "../../helpers/hxHelpers";
+import { useFrontendConfiguration } from "../../hooks/useFrontendConfiguration";
 
 interface Option {
     value: string;
@@ -27,11 +29,12 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
     const { submit, loading, data } = reIdentificationService.useRequestReIdentification();
     const [submittedPseudoCode, setSubmittedPseudoCode] = useState("");
     const account = useMsal();
-
+    const [error, setError] = useState<string | null>(null);
     const { data: userAccessData } = userAccessViewService.useGetAccessForUser(account.accounts[0].idTokenClaims!.oid!);
     const orgCodes = userAccessData?.map(item => item.orgCode);
+    const { supportContactEmail } = useFrontendConfiguration();
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const acc = account.accounts[0];
         const identificationRequest: AccessRequest = {
@@ -54,7 +57,24 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
         }
 
         setSubmittedPseudoCode(getPseudo(pseudoCode));
-        submit(identificationRequest);
+        setError(null);
+
+        try {
+            await submit(identificationRequest);
+        } catch (error) {
+            let errorMessage = "";
+
+            if (error instanceof Error) {
+                if ((error as any).response?.status === 401) {
+                    errorMessage = `You are not authorised to make this request, please contact ${supportContactEmail} to request access.`;
+                } else {
+                    errorMessage = `Something went wrong. Please contact ${supportContactEmail} for support.`; 
+                }
+            }
+
+            console.error(errorMessage);
+            setError(errorMessage);
+        }
     };
 
     const handlePseudoCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -157,10 +177,11 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
     }
 
     return <>
-
-        <Alert variant="danger" className="mb-0">
-            Something went wrong. Please contact <a href="mailto:isl.support@nhs.net">isl.support@nhs.net</a> for support.
-        </Alert>
+        {error && (
+            <Alert variant="danger" className="mt-3 m-2">
+                {error}
+            </Alert>
+        )}
     </>
 
 }
