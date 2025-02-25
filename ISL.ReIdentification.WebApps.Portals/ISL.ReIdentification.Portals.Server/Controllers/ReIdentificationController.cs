@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
+using ISL.ReIdentification.Core.Models.Orchestrations.Accesses.Exceptions;
 using ISL.ReIdentification.Core.Services.Coordinations.Identifications;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -43,7 +44,7 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             catch (IdentificationCoordinationDependencyValidationException
                 identificationCoordinationDependencyValidationException)
                 when (identificationCoordinationDependencyValidationException.InnerException
-                    is UnauthorizedIdentificationCoordinationException)
+                    is UnauthorizedAccessOrchestrationException)
             {
                 return Unauthorized(identificationCoordinationDependencyValidationException.InnerException);
             }

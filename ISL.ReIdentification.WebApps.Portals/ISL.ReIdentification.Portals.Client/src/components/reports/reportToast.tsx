@@ -5,6 +5,7 @@ import { Button, Card, CardBody, Col, Container, Modal, Row, Spinner, Table, Toa
 import { ToastPosition } from "react-bootstrap/esm/ToastContainer";
 import { ReIdRecord } from "../../types/ReIdRecord";
 import CopyIcon from "../core/copyIcon";
+import { useIsAuthenticated } from "@azure/msal-react";
 
 type ReportToastProps = {
     position: ToastPosition;
@@ -17,10 +18,11 @@ type ReportToastProps = {
     recordLoading: boolean;
     lastPseudos: string[];
     launched: boolean;
+    isAuthorised: boolean;
 }
 
 const ReportToast: FunctionComponent<ReportToastProps> = (props) => {
-    const { position, hidden, hide, reidentifications, lastPseudos, launched, clearList } = props;
+    const { position, hidden, hide, reidentifications, lastPseudos, launched, clearList, isAuthorised } = props;
     const [showNoAccessInfo, setShowNoAccessInfo] = useState(false);
     const [pageNumber, setPageNumber] = useState(0);
     const [showHistory, setShowHistory] = useState(false);
@@ -95,7 +97,8 @@ const ReportToast: FunctionComponent<ReportToastProps> = (props) => {
         </>
     }
 
-    return <ToastContainer position={position} hidden={hidden || !launched} className="me-2" >
+
+    return <ToastContainer position={position} hidden={hidden || !launched || !isAuthorised} className="me-2" >
         <Toast onClose={() => hide(true)} bg="light">
             <Toast.Header>
                 <strong className="me-auto">Re-identifications</strong>
