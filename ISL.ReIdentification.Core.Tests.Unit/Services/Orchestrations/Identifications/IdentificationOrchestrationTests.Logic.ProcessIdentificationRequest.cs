@@ -150,7 +150,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             {
                 item.Identifier = string.IsNullOrEmpty(item.Identifier)
                     ? item.Identifier
-                    : $"{item.Identifier.PadLeft(10, '0')}I";
+                    : $"{item.Identifier}I";
 
                 item.IsReidentified = true;
             });
@@ -178,7 +178,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             {
                 item.Identifier = string.IsNullOrEmpty(item.Identifier)
                     ? item.Identifier
-                    : $"{item.Identifier.PadLeft(10, '0')}I";
+                    : $"{item.Identifier}I";
 
                 item.IsReidentified = true;
             });
@@ -286,7 +286,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
 
                     PseudoIdentifier = string.IsNullOrEmpty(pseudoIdentifier)
                         ? pseudoIdentifier
-                        : pseudoIdentifier.PadLeft(10, '0'),
+                        : pseudoIdentifier,
 
                     EntraUserId = randomIdentificationRequest.EntraUserId,
                     GivenName = randomIdentificationRequest.GivenName,
