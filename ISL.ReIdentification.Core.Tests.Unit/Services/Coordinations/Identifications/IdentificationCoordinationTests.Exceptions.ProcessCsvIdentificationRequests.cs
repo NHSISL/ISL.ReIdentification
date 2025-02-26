@@ -32,7 +32,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 new IdentificationCoordinationDependencyValidationException(
                     message: "Identification coordination dependency validation error occurred, " +
                         "fix the errors and try again.",
-                    innerException: dependencyValidationException.InnerException as Xeption);
+                    innerException: dependencyValidationException);
 
             // when
             ValueTask<AccessRequest> accessRequestTask =
@@ -94,7 +94,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 new IdentificationCoordinationDependencyValidationException(
                     message: "Identification coordination dependency validation error occurred, " +
                         "fix the errors and try again.",
-                    innerException: accessOrchestrationValidationException.InnerException as Xeption);
+                    innerException: unauthorizedIdentificationCoordinationException);
 
             // when
             ValueTask<AccessRequest> accessRequestTask =

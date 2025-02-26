@@ -301,7 +301,7 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
 
                     Identifier = string.IsNullOrEmpty(mappedItems[index].Identifier)
                         ? mappedItems[index].Identifier
-                        : mappedItems[index].Identifier.PadLeft(10, '0'),
+                        : mappedItems[index].Identifier,
 
                     IsReidentified = false,
                     Message = string.Empty,
