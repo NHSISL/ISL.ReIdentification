@@ -147,6 +147,7 @@ export const reIdentificationService = {
                 .catch(err => {
                     setError(err);
                     setData(null);
+                    throw err;
                 })
                 .finally(() => {
                     setIsLoading(false);
