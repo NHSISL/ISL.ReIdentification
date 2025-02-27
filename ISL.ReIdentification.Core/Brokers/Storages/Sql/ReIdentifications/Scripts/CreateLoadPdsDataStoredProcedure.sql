@@ -51,11 +51,11 @@ BEGIN
         FROM pds.PDS_PATIENT_CARE_PRACTICE
         where OrgCode is not null and PseudoNhsNumber is not null)
 
+        DECLARE @CompleteMessage NVARCHAR(255) = 'Load Complete - added ' + CAST(@@ROWCOUNT as VARCHAR(15)) + ' PDS Records'
+
         RAISERROR('Temp Table Load Completed',0,1) WITH NOWAIT;
         INSERT INTO Audits (id, CorrelationId, AuditType, AuditDetail, LogLevel, CreatedBy, CreatedDate,  UpdatedBy, UpdatedDate ) 
         VALUES (NEWID(), @CorrelationId, 'PDSLoad', 'Temp Table Load Completed', 'Info', CURRENT_USER, GETUTCDATE(),  CURRENT_USER, GETUTCDATE())
-
-        DECLARE @CompleteMessage NVARCHAR(255) = 'Load Complete - added ' + CAST(@@ROWCOUNT as VARCHAR(15)) + ' PDS Records'
 
         RAISERROR('Adding Test Records',0,1) WITH NOWAIT;
         INSERT INTO Audits (id, CorrelationId, AuditType, AuditDetail, LogLevel, CreatedBy, CreatedDate,  UpdatedBy, UpdatedDate ) 
