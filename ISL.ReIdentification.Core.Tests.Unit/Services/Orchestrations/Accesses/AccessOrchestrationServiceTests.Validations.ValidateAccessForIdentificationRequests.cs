@@ -67,8 +67,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Accesses
 
             var unauthorizedAccessOrchestrationException =
                 new UnauthorizedAccessOrchestrationException(message:
-                    $"User {randomAccessRequest.IdentificationRequest.EntraUserId} " +
-                        $"has no access to any organisations.");
+                    $"User with Entra User Id: " +
+                        $"{randomAccessRequest.IdentificationRequest.EntraUserId} " +
+                            $"({randomAccessRequest.IdentificationRequest.GivenName} " +
+                                $"{randomAccessRequest.IdentificationRequest.Surname}) has no access to any organisations.");
 
             var expectedAccessOrchestrationValidationException =
                 new AccessOrchestrationValidationException(
