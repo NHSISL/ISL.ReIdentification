@@ -3,10 +3,11 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE PROCEDURE [dbo].[GenerateHeirarchy]
+ALTER PROCEDURE [dbo].[GenerateHeirarchy]
 AS
 BEGIN
     DECLARE @CorrelationId UNIQUEIDENTIFIER = NEWID();
+    Set NOCOUNT ON
 	BEGIN TRY
         -- Check if the inbound tables exists
         IF OBJECT_ID('Dictionary.OrganisationDescendent') IS NULL
@@ -151,7 +152,7 @@ BEGIN
         WHERE ParentId IS NULL;
 
 
-        RAISERROR('Add in Test Organisation',0,1) WITH NOWAIT;
+        RAISERROR('Add Test Organisation',0,1) WITH NOWAIT;
         INSERT INTO Audits (id, CorrelationId, AuditType, AuditDetail, LogLevel, CreatedBy, CreatedDate,  UpdatedBy, UpdatedDate ) 
         VALUES (NEWID(), @CorrelationId, 'ODSLoad', 'Add Test Organisation', 'Info', CURRENT_USER, GETUTCDATE(),  CURRENT_USER, GETUTCDATE())
 
@@ -221,6 +222,8 @@ BEGIN
         FROM [dbo].[TempOdsInbound]
         WHERE IsActive = 1;
 
+         DECLARE @CompleteMessage NVARCHAR(255) = 'Load Complete - added ' + CAST(@@ROWCOUNT as VARCHAR(15)) + ' ODS Records'
+
         -- Mark records with children in OdsDatas
         UPDATE dbo.TempOdsDatas
         SET HasChildren = 1
@@ -239,7 +242,6 @@ BEGIN
                             '([Id] ASC)' + 
                             'WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ' +
                             'ON [PRIMARY]'
-        PRINT @SQL
         EXEC sp_executesql @SQL
 
         RAISERROR('Swapping Live and Temp Table',0,1) WITH NOWAIT;
@@ -250,6 +252,11 @@ BEGIN
         exec sp_rename 'dbo.OdsDatas',  @BackupSqlName
         exec sp_rename 'dbo.TempOdsDatas', 'OdsDatas'
 
+       
+        RAISERROR( @CompleteMessage,0,1) WITH NOWAIT;
+        INSERT INTO Audits (id, CorrelationId, AuditType, AuditDetail, LogLevel, CreatedBy, CreatedDate,  UpdatedBy, UpdatedDate ) 
+        VALUES (NEWID(), @CorrelationId, 'ODSLoad', @CompleteMessage, 'Info', CURRENT_USER, GETUTCDATE(),  CURRENT_USER, GETUTCDATE())
+
         IF OBJECT_ID('dbo.TempOdsInbound') IS NOT NULL
         BEGIN
             RAISERROR('Dropping Temp Table',0,1) WITH NOWAIT;
@@ -259,11 +266,6 @@ BEGIN
 
             DROP TABLE [dbo].[TempOdsInbound]
         END;
-
-        RAISERROR('Load Complete',0,1) WITH NOWAIT;
-        INSERT INTO Audits (id, CorrelationId, AuditType, AuditDetail, LogLevel, CreatedBy, CreatedDate,  UpdatedBy, UpdatedDate ) 
-        VALUES (NEWID(), @CorrelationId, 'ODSLoad', 'Load Complete', 'Info', CURRENT_USER, GETUTCDATE(),  CURRENT_USER, GETUTCDATE())
-
     END TRY
     BEGIN CATCH
 

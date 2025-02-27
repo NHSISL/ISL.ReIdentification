@@ -2,11 +2,11 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE PROCEDURE [dbo].[LoadPDSData]
+ALTER PROCEDURE [dbo].[LoadPDSData]
 AS
 BEGIN
     DECLARE @CorrelationId UNIQUEIDENTIFIER = NEWID();
-    
+    SET NOCOUNT ON
     BEGIN TRY 
         -- Check if the temporary table exists
         IF OBJECT_ID('pds.PDS_PATIENT_CARE_PRACTICE') IS NULL
@@ -55,6 +55,13 @@ BEGIN
         INSERT INTO Audits (id, CorrelationId, AuditType, AuditDetail, LogLevel, CreatedBy, CreatedDate,  UpdatedBy, UpdatedDate ) 
         VALUES (NEWID(), @CorrelationId, 'PDSLoad', 'Temp Table Load Completed', 'Info', CURRENT_USER, GETUTCDATE(),  CURRENT_USER, GETUTCDATE())
 
+        DECLARE @CompleteMessage NVARCHAR(255) = 'Load Complete - added ' + CAST(@@ROWCOUNT as VARCHAR(15)) + ' PDS Records'
+
+        RAISERROR('Adding Test Records',0,1) WITH NOWAIT;
+        INSERT INTO Audits (id, CorrelationId, AuditType, AuditDetail, LogLevel, CreatedBy, CreatedDate,  UpdatedBy, UpdatedDate ) 
+        VALUES (NEWID(), @CorrelationId, 'PDSLoad', 'Adding Test Records', 'Info', CURRENT_USER, GETUTCDATE(),  CURRENT_USER, GETUTCDATE())
+        EXEC [dbo].[LoadLiveTestPseudos]
+
         RAISERROR('Creating Primary Keys',0,1) WITH NOWAIT;
         INSERT INTO Audits (id, CorrelationId, AuditType, AuditDetail, LogLevel, CreatedBy, CreatedDate,  UpdatedBy, UpdatedDate ) 
         VALUES (NEWID(), @CorrelationId, 'PDSLoad', 'Creating Primary Keys', 'Info', CURRENT_USER, GETUTCDATE(),  CURRENT_USER, GETUTCDATE())
@@ -62,8 +69,7 @@ BEGIN
         DECLARE @SQL NVARCHAR(MAX) = 'ALTER TABLE [dbo].[TempPdsDatas] ADD  CONSTRAINT [PK_PdsDatas_' + CAST(NEWID() as nvarchar(36)) + '] PRIMARY KEY CLUSTERED' +
                                     '([Id] ASC)' + 
                                     'WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF)' +
-                                    'ON [PRIMARY]'
-        PRINT @SQL
+                                    'ON [PRIMARY]'        
         EXEC sp_executesql @SQL
 
         RAISERROR('Creating Pseudo Id Index',0,1) WITH NOWAIT;
@@ -94,9 +100,7 @@ BEGIN
 
         ALTER TABLE [dbo].[TempPdsDatas] ADD  DEFAULT (N'') FOR [OrgCode]
 
-        RAISERROR('Adding Test Records - TODO',0,1) WITH NOWAIT;
-        INSERT INTO Audits (id, CorrelationId, AuditType, AuditDetail, LogLevel, CreatedBy, CreatedDate,  UpdatedBy, UpdatedDate ) 
-        VALUES (NEWID(), @CorrelationId, 'PDSLoad', 'Adding Test Records', 'Info', CURRENT_USER, GETUTCDATE(),  CURRENT_USER, GETUTCDATE())
+
 
         RAISERROR('Swapping Live and Temp Table',0,1) WITH NOWAIT;
         INSERT INTO Audits (id, CorrelationId, AuditType, AuditDetail, LogLevel, CreatedBy, CreatedDate,  UpdatedBy, UpdatedDate ) 
@@ -106,9 +110,9 @@ BEGIN
         exec sp_rename 'dbo.PDSDatas',  @BackupSqlName
         exec sp_rename 'dbo.TempPdsDatas', 'PDSDatas'
 
-        RAISERROR('Load Completed',0,1) WITH NOWAIT;
+        RAISERROR(@CompleteMessage,0,1) WITH NOWAIT;
         INSERT INTO Audits (id, CorrelationId, AuditType, AuditDetail, LogLevel, CreatedBy, CreatedDate,  UpdatedBy, UpdatedDate ) 
-        VALUES (NEWID(), @CorrelationId, 'PDSLoad', 'Load Completed', 'Info', CURRENT_USER, GETUTCDATE(),  CURRENT_USER, GETUTCDATE())
+        VALUES (NEWID(), @CorrelationId, 'PDSLoad', @CompleteMessage, 'Info', CURRENT_USER, GETUTCDATE(),  CURRENT_USER, GETUTCDATE())
     END TRY
     BEGIN CATCH
 
