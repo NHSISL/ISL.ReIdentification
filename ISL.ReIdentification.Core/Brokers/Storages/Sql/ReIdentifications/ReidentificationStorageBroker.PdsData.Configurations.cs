@@ -17,7 +17,7 @@ namespace ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications
                 .IsRequired();
 
             builder.Property(pdsData => pdsData.PseudoNhsNumber)
-                .HasMaxLength(10)
+                .HasMaxLength(15)
                 .IsRequired();
 
             builder.Property(pdsData => pdsData.OrgCode)
