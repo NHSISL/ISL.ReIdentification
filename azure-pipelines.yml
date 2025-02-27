@@ -23,9 +23,11 @@ steps:
 - bash: |
     echo "Build $(Build.SourceBranch)"
     RELEASE_REGEX="v(.[0-9]+){4}"
+    tagName=${BUILD_SOURCEBRANCH#refs/tags/}
     if [[ "$(Build.SourceBranch)" =~ $RELEASE_REGEX ]] 
     then
-     echo "##vso[build.addbuildtag]$(Build.SourceBranch)"
+     echo "##vso[build.updatebuildnumber]$tagName"
+     echo "##vso[build.addbuildtag]$tagName"
      echo "##vso[build.addbuildtag]Release"
     fi
   displayName: Tag Releases
