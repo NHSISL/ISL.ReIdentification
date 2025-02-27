@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { OverlayInjectedProps } from "react-bootstrap/esm/Overlay";
 import BreadCrumbBase from "../bases/layouts/BreadCrumb/BreadCrumbBase";
 import AccessAuditTable from "../accessAudits/accessAuditTable";
+import { useFrontendConfiguration } from "../../hooks/useFrontendConfiguration";
 
 interface CsvReIdentificationDownloadDetailProps {
     csvIdentificationRequestId: string | undefined;
@@ -33,6 +34,9 @@ const CsvReIdentificationDownloadDetail: FunctionComponent<CsvReIdentificationDo
 
     const { fetch, loading: fetchLoading, data: fetchData, filename, error: fetchError }
         = reIdentificationService.useGetCsvIdentificationRequestById(csvIdentificationRequestId!, selectedLookupId);
+
+    const [errorMsg, setErrorMsg] = useState<string | null>(null);
+    const { supportContactEmail } = useFrontendConfiguration();
 
     useEffect(() => {
         if (fetchData) {
@@ -76,9 +80,20 @@ const CsvReIdentificationDownloadDetail: FunctionComponent<CsvReIdentificationDo
         e.preventDefault();
         try {
             await fetch();
-            setRefreshKey(prevKey => prevKey + 1); // Update the refresh key to trigger re-render
+            setRefreshKey(prevKey => prevKey + 1);
         } catch (error) {
-            console.error("Error downloading the file", error);
+            let errorMessage = "";
+
+            if (error instanceof Error) {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                if ((error as any).response?.status === 401) {
+                    errorMessage = `You are not authorised to make this request, please contact ${supportContactEmail} to request access.`;
+                } else {
+                    errorMessage = `Something went wrong. Please contact ${supportContactEmail} for support.`;
+                }
+            }
+
+            setErrorMsg(errorMessage);
         }
     }
 
@@ -147,9 +162,11 @@ const CsvReIdentificationDownloadDetail: FunctionComponent<CsvReIdentificationDo
                                             Please supply a reason why you are requesting to re-identify this csv of patients.
                                         </Form.Text>
                                     </Form.Group>
+
                                     <br />
+
                                     {fetchError && <Alert variant="danger">
-                                        Error: {fetchError.message}
+                                        Error: {errorMsg || fetchError.message}
                                     </Alert>}
 
                                     <Button type="submit" disabled={!selectedLookupId || fetchLoading}>
