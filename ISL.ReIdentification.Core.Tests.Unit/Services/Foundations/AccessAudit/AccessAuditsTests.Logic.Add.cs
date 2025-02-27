@@ -2,10 +2,12 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
+using ISL.ReIdentification.Core.Models.Securities;
 using Moq;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
@@ -16,10 +18,23 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
         public async Task ShouldAddAccessAuditAsync()
         {
             // given
-            AccessAudit randomAccessAudit = CreateRandomAccessAudit();
+            DateTimeOffset randomDateOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            AccessAudit randomAccessAudit =
+                CreateRandomAccessAudit(randomDateOffset, userId: randomEntraUser.EntraUserId);
+
             AccessAudit inputAccessAudit = randomAccessAudit;
             AccessAudit storageAccessAudit = inputAccessAudit.DeepClone();
             AccessAudit expectedAccessAudit = inputAccessAudit.DeepClone();
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             this.reIdentificationStorageBroker.Setup(broker =>
                 broker.InsertAccessAuditAsync(inputAccessAudit))
@@ -33,14 +48,19 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Exactly(2));
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Exactly(2));
 
             this.reIdentificationStorageBroker.Verify(broker =>
                 broker.InsertAccessAuditAsync(inputAccessAudit),
                     Times.Once);
 
-            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
