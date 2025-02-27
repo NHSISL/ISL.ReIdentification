@@ -70,9 +70,8 @@ const PdsTable: FunctionComponent<PdsTableProps> = () => {
                                 <thead>
                                     <tr>
                                         <th>Pseudo Identifier</th>
+                                        <th>Pseudo Identifier Hex Number</th>
                                         <th>Organisation Code</th>
-                                        <th>Relationship With Organisation Effective FromDate</th>
-                                        <th>Relationship With Organisation Effective ToDate</th>
                                     </tr>
                                 </thead>
                                 <tbody>

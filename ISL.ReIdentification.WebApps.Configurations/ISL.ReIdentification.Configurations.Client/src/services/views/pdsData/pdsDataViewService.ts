@@ -22,7 +22,7 @@ export const pdsDataViewService = {
         let query = ``;
 
         if (searchTerm) {
-            query = query + `?$filter=contains(pseudoNhsNumber,'${searchTerm}')`;
+            query = query + `?$filter=pseudoNhsNumber eq '${searchTerm}'`;
         }
 
         const response = pdsDataService.useRetrieveAllPdsDataPages(query);
