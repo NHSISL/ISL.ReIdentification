@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Card, CardBody, CardFooter, CardHeader, Container, Spinner } from "react-bootstrap"
+import { Button, ButtonGroup, Card, CardBody, CardFooter, CardHeader, Col, Container, Row, Spinner } from "react-bootstrap"
 import BreadCrumbBase from "../bases/layouts/BreadCrumb/BreadCrumbBase"
 import EntraUserSearch from "../EntraUserSearch/entraUserSearch"
 import { useEffect, useState } from "react"
@@ -9,6 +9,10 @@ import { userAccessService } from "../../services/foundations/userAccessService"
 import { UserAccess } from "../../models/userAccess/userAccess"
 import { useNavigate } from "react-router-dom"
 import { toastError } from "../../brokers/toastBroker.error"
+import { odsDataService } from "../../services/foundations/odsDataAccessService"
+import { faTimes } from "@fortawesome/free-solid-svg-icons"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import OdsSearch from "../odsData/odsSearch"
 
 export const UserAccessNew = () => {
 
@@ -36,10 +40,11 @@ export const UserAccessNew = () => {
     }, [odsRoot]);
 
     const saveRecord = async () => {
-        let ua : UserAccess;
+        let ua: UserAccess;
 
-        if(selectedUser){
-            ua = {...new UserAccess(),                 
+        if (selectedUser) {
+            ua = {
+                ...new UserAccess(),
                 ...selectedUser,
                 entraUserId: selectedUser.id,
                 email: selectedUser.mail,
@@ -49,20 +54,20 @@ export const UserAccessNew = () => {
             try {
                 await mutateAsync(ua);
                 navigate("/userAccess");
-            } catch(error) {
-                if(error instanceof Error) {
+            } catch (error) {
+                if (error instanceof Error) {
                     toastError(error.message);
                     console.log(error);
                 }
             }
-            
-        } 
+
+        }
     }
 
     const removeOdsCode = (odsRecord: OdsData) => {
         setSelectedOdsRecords([...selectedOdsRecords.filter(o => o.organisationCode != odsRecord.organisationCode)])
     }
-    
+
     return (
         <Container fluid className="mt-4">
             <section>
@@ -72,13 +77,10 @@ export const UserAccessNew = () => {
                     currentLink="New User">
                 </BreadCrumbBase>
                 <div className="mt-3">
-
-                    <OdsLoadAudit isAlert={true} />
-
                     <h1>New User Access</h1>
-                    {!selectedUser ? 
-                        <EntraUserSearch selectUser={(entraUser) => { setSelectedUser(entraUser)}} />
-                    : 
+                    {!selectedUser ?
+                        <EntraUserSearch selectUser={(entraUser) => { setSelectedUser(entraUser) }} />
+                        :
                         <Card>
                             <CardHeader>
                                 Create Account For:
@@ -130,16 +132,16 @@ export const UserAccessNew = () => {
                                     </Row>
                                 </div>
                             </CardBody>
-                            
+
                             <CardFooter>
                                 <ButtonGroup>
                                     <Button onClick={saveRecord} disabled={isPending}>
-                                        { isPending ? <Spinner /> : "Save"}
+                                        {isPending ? <Spinner /> : "Save"}
                                     </Button>
                                     <Button onClick={() => {
                                         setSelectedUser(undefined)
                                         setSelectedOdsRecords([]);
-                                    } } variant="secondary">Clear</Button>
+                                    }} variant="secondary">Clear</Button>
                                 </ButtonGroup>
                                 {error && <div className="bs-warning">{JSON.stringify(error.message)}</div>}
                             </CardFooter>
