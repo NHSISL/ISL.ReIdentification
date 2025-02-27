@@ -17,6 +17,7 @@ const PdsTable: FunctionComponent<PdsTableProps> = () => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [debouncedTerm, setDebouncedTerm] = useState<string>("");
     const [showSpinner, setShowSpinner] = useState(false);
+    const [getTestPatients, setGetTestPatients] = useState<boolean>(false);
 
     const {
         mappedPdsData: pdsRetrieved,
@@ -26,6 +27,7 @@ const PdsTable: FunctionComponent<PdsTableProps> = () => {
         hasNextPage,
         refetch
     } = pdsDataViewService.useGetAllPdsData(
+        getTestPatients,
         debouncedTerm
     );
 
@@ -52,8 +54,13 @@ const PdsTable: FunctionComponent<PdsTableProps> = () => {
         setShowSpinner(false);
     };
 
+    const toggleTestPatients = () => {
+        setGetTestPatients(prevState => !prevState);
+    };
+
     return (
         <>
+        <Container fluid>
             <InputGroup className="mb-3">
             <SearchBase id="search" label="Search pds" value={searchTerm} placeholder="Search PDS Table By NHS Number"
                 onChange={(e) => { handleSearchChange(e.currentTarget.value) }} />
@@ -62,6 +69,12 @@ const PdsTable: FunctionComponent<PdsTableProps> = () => {
                 </Button>
             </InputGroup>
 
+            <div className="d-flex justify-content-end mb-2">
+                <Button onClick={toggleTestPatients} variant="outline-dark">
+                    {getTestPatients ? "Show All Patients" : "Show Only Test Patients"}
+                </Button>
+            </div>
+            </Container>
             <Container fluid className="infiniteScrollContainer">
                
                         <InfiniteScroll loading={isLoading || showSpinner} hasNextPage={hasNextPage || false} loadMore={fetchNextPage}>
