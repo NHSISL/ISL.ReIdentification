@@ -74,7 +74,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                     item.RowNumber,
                     string.IsNullOrEmpty(item.Identifier)
                         ? item.Identifier
-                        : item.Identifier.PadLeft(10, '0'));
+                        : item.Identifier);
 
                 var accessAuditId = await this.identifierBroker.GetIdentifierAsync();
 

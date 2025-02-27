@@ -37,7 +37,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 var identificationItem = new IdentificationItem
                 {
                     HasAccess = false,
-                    Identifier = randomCsvIdentificationItems[index].Identifier.PadLeft(10, '0'),
+                    Identifier = randomCsvIdentificationItems[index].Identifier,
                     IsReidentified = false,
                     Message = String.Empty,
                     RowNumber = hasHeaderRecord
