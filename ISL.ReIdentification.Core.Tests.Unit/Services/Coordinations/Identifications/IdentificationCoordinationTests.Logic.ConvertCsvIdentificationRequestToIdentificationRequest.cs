@@ -22,7 +22,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
         public async Task ShouldConvertCsvIdentificationRequestToIdentificationRequest()
         {
             // given
-            Guid entraUserId = Guid.NewGuid();
+            string entraUserId = GetRandomStringWithLengthOf(255);
             AccessRequest randomAccessRequest = CreateRandomAccessRequest();
             randomAccessRequest.CsvIdentificationRequest.RecipientEntraUserId = entraUserId;
             randomAccessRequest.ImpersonationContext = null;

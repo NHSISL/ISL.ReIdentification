@@ -9,6 +9,10 @@ export type FrontendConfigurationResponse = {
     version: string,
     bannerColour: string,
     activeAgreement: string,
+    reportMaxReId: string,
+    reportBreachThreshold: string,
+    csvMaxReId: string,
+    supportContactEmail: string
 }
 
 export type FrontendConfiguration = {
@@ -20,6 +24,10 @@ export type FrontendConfiguration = {
     version: string,
     bannerColour: string,
     activeAgreement: string,
+    reportMaxReId: number,
+    reportBreechThreshold: number,
+    csvMaxReId: number,
+    supportContactEmail: string
 }
 
 class FrontendConfigurationBroker {
@@ -33,10 +41,13 @@ class FrontendConfigurationBroker {
 
             const result: FrontendConfiguration = {
                 ...response,
+                reportMaxReId: parseInt(response.reportMaxReId),
+                reportBreechThreshold: parseInt(response.reportBreachThreshold),
+                csvMaxReId: parseInt(response.csvMaxReId),
                 scopes: response.scopes.split(',')
             }
 
-            if (!result.clientId ) {
+            if (!result.clientId) {
                 throw new Error("ClientId not provided");
             }
 
@@ -46,6 +57,14 @@ class FrontendConfigurationBroker {
 
             if (!result.scopes.length) {
                 throw new Error("Scopes not provided");
+            }
+
+            if (!result.csvMaxReId) {
+                throw new Error("App configuration missing for FrontendConfiguration - CsvMaxReId.");
+            }
+
+            if (!result.supportContactEmail) {
+                throw new Error("App configuration missing for FrontendConfiguration - SupportContactEmail.");
             }
 
             return result;

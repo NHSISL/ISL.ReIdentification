@@ -1,6 +1,6 @@
 export const BreachDetails = () => {
     return <>
-        <p>NHS Digital (NDSD) approved version 1.0 the following breach reporting guidance in 2017.</p>
+        <p>NHS England approved version 1.0 the following breach reporting guidance in 2017.</p>
         <p>The guidance defines what constitues a breach of patient confidentiality when performing re-identification.</p>
         <p>
             Our DSCRO re-identification partner (NECS) will monitor all activity and reserve the right to raise a breach

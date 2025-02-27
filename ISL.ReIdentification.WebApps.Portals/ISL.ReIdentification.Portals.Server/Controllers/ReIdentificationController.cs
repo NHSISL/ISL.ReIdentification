@@ -4,8 +4,10 @@
 
 using System;
 using System.Threading.Tasks;
+using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
+using ISL.ReIdentification.Core.Models.Orchestrations.Accesses.Exceptions;
 using ISL.ReIdentification.Core.Services.Coordinations.Identifications;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -39,6 +41,13 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             catch (IdentificationCoordinationValidationException identificationCoordinationValidationException)
             {
                 return BadRequest(identificationCoordinationValidationException.InnerException);
+            }
+            catch (IdentificationCoordinationDependencyValidationException
+                identificationCoordinationDependencyValidationException)
+                when (identificationCoordinationDependencyValidationException.InnerException
+                    is UnauthorizedIdentificationCoordinationException)
+            {
+                return Unauthorized(identificationCoordinationDependencyValidationException.InnerException);
             }
             catch (IdentificationCoordinationDependencyValidationException
                 identificationCoordinationDependencyValidationException)
@@ -147,6 +156,38 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             }
         }
 
+        [Authorize]
+        [HttpPost("impersonationcontextapproval")]
+        public async ValueTask<ActionResult> PostImpersonationContextApprovalAsync(
+            [FromBody] ApprovalRequest approvalRequest)
+        {
+            try
+            {
+                await identificationCoordinationService.ImpersonationContextApprovalAsync(
+                    approvalRequest.ImpersonationContextId,
+                    approvalRequest.IsApproved);
+
+                return Ok();
+            }
+            catch (IdentificationCoordinationValidationException identificationCoordinationValidationException)
+            {
+                return BadRequest(identificationCoordinationValidationException.InnerException);
+            }
+            catch (IdentificationCoordinationDependencyValidationException
+                identificationCoordinationDependencyValidationException)
+            {
+                return BadRequest(identificationCoordinationDependencyValidationException.InnerException);
+            }
+            catch (IdentificationCoordinationDependencyException identificationCoordinationDependencyException)
+            {
+                return InternalServerError(identificationCoordinationDependencyException);
+            }
+            catch (IdentificationCoordinationServiceException identificationCoordinationServiceException)
+            {
+                return InternalServerError(identificationCoordinationServiceException);
+            }
+        }
+
         [HttpGet("csvreidentification/{csvIdentificationRequestId}/{reason}")]
         public async ValueTask<ActionResult> GetCsvIdentificationRequestByIdAsync(
             Guid csvIdentificationRequestId, string reason)
@@ -166,6 +207,13 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             catch (IdentificationCoordinationValidationException identificationCoordinationValidationException)
             {
                 return BadRequest(identificationCoordinationValidationException.InnerException);
+            }
+            catch (IdentificationCoordinationDependencyValidationException
+                identificationCoordinationDependencyValidationException)
+                when (identificationCoordinationDependencyValidationException.InnerException
+                    is UnauthorizedIdentificationCoordinationException)
+            {
+                return Unauthorized(identificationCoordinationDependencyValidationException.InnerException);
             }
             catch (IdentificationCoordinationDependencyValidationException
                 identificationCoordinationDependencyValidationException)

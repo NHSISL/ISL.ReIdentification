@@ -17,7 +17,7 @@ namespace ISL.ReIdentification.Core.Services.Processings.UserAccesses
         ValueTask<UserAccess> RetrieveUserAccessByIdAsync(Guid userAccessId);
         ValueTask<UserAccess> ModifyUserAccessAsync(UserAccess userAccess);
         ValueTask<UserAccess> RemoveUserAccessByIdAsync(Guid userAccessId);
-        ValueTask<List<string>> RetrieveAllActiveOrganisationsUserHasAccessToAsync(Guid entraUserId);
+        ValueTask<List<string>> RetrieveAllActiveOrganisationsUserHasAccessToAsync(string entraUserId);
         ValueTask BulkAddRemoveUserAccessAsync(BulkUserAccess bulkUserAccess);
     }
 }

@@ -57,7 +57,7 @@ const OdsTable: FunctionComponent<OdsTableProps> = () => {
         <>
             <OdsLoadAudit isAlert={true} />
             <InputGroup className="mb-3">
-                <SearchBase id="search" label="Search ods" value={searchTerm} placeholder="Search ODS Table"
+                <SearchBase id="search" label="Search ods" value={searchTerm} placeholder="Search ODS"
                     onChange={(e) => { handleSearchChange(e.currentTarget.value) }} />
                 <Button variant="outline-secondary" onClick={handleRefresh}>
                     <FontAwesomeIcon icon={faRefresh} />

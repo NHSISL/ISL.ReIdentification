@@ -18,6 +18,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
     {
         private delegate ValueTask<AccessAudit> ReturningAccessAuditFunction();
         private delegate ValueTask<IQueryable<AccessAudit>> ReturningAccessAuditsFunction();
+        private delegate ValueTask ReturningNothingFunction();
 
         private async ValueTask<IQueryable<AccessAudit>> TryCatch(
             ReturningAccessAuditsFunction returningAccessAuditsFunction)
@@ -44,6 +45,75 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
                 throw await CreateAndLogServiceExceptionAsync(failedServiceAccessAuditException);
             }
         }
+
+        private async ValueTask TryCatch(
+            ReturningNothingFunction returningNothingFunction)
+        {
+            try
+            {
+                await returningNothingFunction();
+            }
+            catch (NullAccessAuditException nullAccessAuditException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(nullAccessAuditException);
+            }
+            catch (SqlException sqlException)
+            {
+                var failedStorageAccessAuditException = new FailedStorageAccessAuditException(
+                    message: "Failed access audit storage error occurred, contact support.",
+                    innerException: sqlException);
+
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedStorageAccessAuditException);
+            }
+            catch (DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistsAccessAuditException =
+                    new AlreadyExistsAccessAuditException(
+                        message: "Access audit already exists error occurred.",
+                        innerException: duplicateKeyException,
+                        data: duplicateKeyException.Data);
+
+                throw await CreateAndLogDependencyValidationExceptionAsync(alreadyExistsAccessAuditException);
+            }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedAccessAuditException =
+                    new LockedAccessAuditException(
+                        message: "Locked access audit record error occurred, please try again.",
+                        innerException: dbUpdateConcurrencyException);
+
+                throw await CreateAndLogDependencyValidationExceptionAsync(lockedAccessAuditException);
+            }
+            catch (DbUpdateException dbUpdateException)
+            {
+                var failedOperationAccessAuditException =
+                    new FailedOperationAccessAuditException(
+                        message: "Failed operation access audit error occurred, contact support.",
+                        innerException: dbUpdateException);
+
+                throw await CreateAndLogDependencyExceptionAsync(failedOperationAccessAuditException);
+            }
+            catch (AggregateException aggregateException)
+            {
+                var failedServiceIdentificationRequestException =
+                    new FailedServiceAccessAuditException(
+                        message: "Failed service access audit error occurred, contact support.",
+                        innerException: aggregateException);
+
+                throw await CreateAndLogServiceExceptionAsync(failedServiceIdentificationRequestException);
+            }
+
+            catch (Exception exception)
+            {
+                var failedServiceAccessAuditException =
+                    new FailedServiceAccessAuditException(
+                        message: "Failed service access audit error occurred, contact support.",
+                        innerException: exception);
+
+                throw await CreateAndLogServiceExceptionAsync(failedServiceAccessAuditException);
+            }
+        }
+
         private async ValueTask<AccessAudit> TryCatch(ReturningAccessAuditFunction returningAccessAuditFunction)
         {
             try

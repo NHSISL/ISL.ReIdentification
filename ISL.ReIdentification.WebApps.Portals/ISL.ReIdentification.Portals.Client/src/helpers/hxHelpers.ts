@@ -9,5 +9,5 @@ export function convertHx(hxNumber: string) {
 }
 
 export function getPseudo(maybeHxNumber: string) {
-    return `0000000000000 ${isHx(maybeHxNumber) ? convertHx(maybeHxNumber) : maybeHxNumber}`.slice(-10)
+    return isHx(maybeHxNumber) ? convertHx(maybeHxNumber) : maybeHxNumber;
 }

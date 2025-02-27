@@ -14,6 +14,7 @@ using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Securities;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
+using ISL.ReIdentification.Core.Models.Coordinations.Identifications.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
@@ -59,7 +60,7 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
         TryCatch(async () =>
         {
             ValidateOnProcessIdentificationRequests(accessRequest);
-            EntraUser currentUser = await this.securityBroker.GetCurrentUser();
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
             accessRequest.IdentificationRequest.EntraUserId = currentUser.EntraUserId;
             accessRequest.IdentificationRequest.Email = currentUser.Email;
             accessRequest.IdentificationRequest.JobTitle = currentUser.JobTitle;
@@ -101,7 +102,7 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
                 await ConvertCsvIdentificationRequestToIdentificationRequest(
                     maybeAccessRequest);
 
-            EntraUser currentUser = await this.securityBroker.GetCurrentUser();
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             IdentificationRequest currentUserIdentificationRequest =
                 OverrideIdentificationRequestUserDetails(
@@ -213,25 +214,61 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
             AccessRequest retrievedImpersonationContext = await this.persistanceOrchestrationService
                 .RetrieveImpersonationContextByIdAsync(impersonationContextId);
 
-            bool isPreviouslyApproved = retrievedImpersonationContext.ImpersonationContext.IsApproved;
-
-            if (!isPreviouslyApproved)
+            if (retrievedImpersonationContext.ImpersonationContext.IsApproved == false)
             {
-                retrievedImpersonationContext.ImpersonationContext.IsApproved = true;
-
-                retrievedImpersonationContext.ImpersonationContext.UpdatedDate =
-                    await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-
-                await this.persistanceOrchestrationService
-                    .PersistImpersonationContextAsync(retrievedImpersonationContext);
+                throw new InvalidAccessIdentificationCoordinationException(message: "Project not approved. " +
+                    "Please contact responsible person to approve this request.");
             }
 
             AccessRequest tokensAccessRequest = await this.identificationOrchestrationService
-                .ExpireRenewImpersonationContextTokensAsync(retrievedImpersonationContext, isPreviouslyApproved);
+                .ExpireRenewImpersonationContextTokensAsync(retrievedImpersonationContext);
 
             await this.persistanceOrchestrationService.SendGeneratedTokensNotificationAsync(tokensAccessRequest);
 
             return tokensAccessRequest;
+        });
+
+        public ValueTask ImpersonationContextApprovalAsync(Guid impersonationContextId, bool isApproved) =>
+        TryCatch(async () =>
+        {
+            ValidateOnImpersonationContextApproval(impersonationContextId);
+
+            AccessRequest retrievedImpersonationContext = await this.persistanceOrchestrationService
+                .RetrieveImpersonationContextByIdAsync(impersonationContextId);
+
+            EntraUser currentEntraUser = await this.securityBroker.GetCurrentUserAsync();
+
+            ValidateUserAccessOnImpersonationContextApproval(
+                retrievedImpersonationContext.ImpersonationContext.ResponsiblePersonEntraUserId,
+                currentEntraUser.EntraUserId);
+
+            bool isPreviouslyApproved = retrievedImpersonationContext.ImpersonationContext.IsApproved;
+
+            if (isPreviouslyApproved == isApproved)
+            {
+                return;
+            }
+
+            retrievedImpersonationContext.ImpersonationContext.IsApproved = isApproved;
+
+            retrievedImpersonationContext.ImpersonationContext.UpdatedDate =
+                await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+
+            AccessRequest updatedImpersonationContext = await this.persistanceOrchestrationService
+                .PersistImpersonationContextAsync(retrievedImpersonationContext);
+
+            if (isApproved == false)
+            {
+                AccessRequest tokensAccessRequest = await this.identificationOrchestrationService
+                    .ExpireRenewImpersonationContextTokensAsync(retrievedImpersonationContext);
+
+                await this.persistanceOrchestrationService.SendApprovalNotificationAsync(tokensAccessRequest);
+
+                return;
+            }
+
+            await this.persistanceOrchestrationService
+                .SendApprovalNotificationAsync(updatedImpersonationContext);
         });
 
         virtual async internal ValueTask<AccessRequest> ConvertCsvIdentificationRequestToIdentificationRequest(
@@ -261,7 +298,11 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
                 var identificationItem = new IdentificationItem
                 {
                     HasAccess = false,
-                    Identifier = mappedItems[index].Identifier,
+
+                    Identifier = string.IsNullOrEmpty(mappedItems[index].Identifier)
+                        ? mappedItems[index].Identifier
+                        : mappedItems[index].Identifier,
+
                     IsReidentified = false,
                     Message = string.Empty,
                     RowNumber = accessRequest.CsvIdentificationRequest.HasHeaderRecord

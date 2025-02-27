@@ -35,6 +35,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
                 broker.SelectAllLookupsAsync(),
                     Times.Once);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

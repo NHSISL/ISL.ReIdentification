@@ -12,7 +12,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.AccessAudi
         public Guid Id { get; set; }
         public Guid RequestId { get; set; }
         public string PseudoIdentifier { get; set; }
-        public Guid EntraUserId { get; set; }
+        public string EntraUserId { get; set; }
         public string GivenName { get; set; }
         public string Surname { get; set; }
         public string Email { get; set; }
@@ -21,6 +21,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Models.AccessAudi
         public string Organisation { get; set; }
         public bool HasAccess { get; set; }
         public string Message { get; set; }
+        public string AuditType { get; set; }
         public string CreatedBy { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
         public string UpdatedBy { get; set; }

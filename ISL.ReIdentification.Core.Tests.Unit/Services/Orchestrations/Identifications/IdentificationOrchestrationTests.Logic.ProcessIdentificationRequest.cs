@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -24,11 +25,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             Guid randomGuid = Guid.NewGuid();
             int itemCount = GetRandomNumber();
             bool hasAccess = false;
-            var noAccessMessage = "User do not have access to the organisation(s) " +
+            var noAccessMessage = "User does not have access to the organisation(s) " +
                 "associated with patient.  Re-identification blocked.";
 
-            var accessMessage = "User have access to the organisation(s) " +
+            var accessMessage = "User does have access to the organisation(s) " +
                 "associated with patient.  Item will be submitted for re-identification.";
+
+            var auditType = "PDS Access";
 
             IdentificationRequest randomIdentificationRequest =
                CreateRandomIdentificationRequest(hasAccess, itemCount: itemCount);
@@ -44,13 +47,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
 
             IdentificationRequest expectedIdentificationRequest = outputIdentificationRequest.DeepClone();
 
+            this.dateTimeBrokerMock.Setup(broker =>
+               broker.GetCurrentDateTimeOffsetAsync())
+                   .ReturnsAsync(randomDateTimeOffset);
+
             this.identifierBrokerMock.Setup(broker =>
                 broker.GetIdentifierAsync())
                     .ReturnsAsync(randomGuid);
-
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
-                    .ReturnsAsync(randomDateTimeOffset);
 
             // when
             var actualIdentificationRequest =
@@ -65,8 +68,26 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                     Times.Exactly(itemCount + 1));
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(itemCount));
+               broker.GetCurrentDateTimeOffsetAsync(),
+                   Times.Exactly(4));
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogInformationAsync($"Start ReId Check {randomDateTimeOffset}, TransactionId {randomGuid}"),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogInformationAsync($"Start PDS Check {randomDateTimeOffset}, TransactionId {randomGuid}"),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogInformationAsync($"Completed PDS Request {randomDateTimeOffset}, TransactionId {randomGuid}"),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogInformationAsync($"Completed ReId Check {randomDateTimeOffset}, TransactionId {randomGuid}"),
+                    Times.Once);
+
+            List<AccessAudit> pdsAccessAudits = new List<AccessAudit>();
 
             foreach (IdentificationItem item in randomIdentificationRequest.IdentificationItems)
             {
@@ -84,17 +105,16 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                     Organisation = randomIdentificationRequest.Organisation,
                     HasAccess = hasAccess,
                     Message = item.HasAccess ? accessMessage : noAccessMessage,
-                    CreatedBy = "System",
-                    CreatedDate = randomDateTimeOffset,
-                    UpdatedBy = "System",
-                    UpdatedDate = randomDateTimeOffset
+                    AuditType = auditType
                 };
 
-                this.accessAuditServiceMock.Verify(service =>
-                    service.AddAccessAuditAsync(
-                        It.Is(Valid8.SameObjectAs<AccessAudit>(inputAccessAudit, testOutputHelper, ""))),
-                            Times.Once);
+                pdsAccessAudits.Add(inputAccessAudit);
             }
+
+            this.accessAuditServiceMock.Verify(service =>
+                service.BulkAddAccessAuditAsync(
+                    It.Is(Valid8.SameObjectAs<List<AccessAudit>>(pdsAccessAudits, testOutputHelper, ""))),
+                        Times.Once);
 
             this.accessAuditServiceMock.VerifyNoOtherCalls();
             this.reIdentificationServiceMock.VerifyNoOtherCalls();
@@ -114,10 +134,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             string reIdentifiedIdentifier = randomString;
             bool hasAccess = true;
 
-            var noAccessMessage = "User do not have access to the organisation(s) " +
+            var noAccessMessage = "User does not have access to the organisation(s) " +
                 "associated with patient.  Re-identification blocked.";
 
-            var accessMessage = "User have access to the organisation(s) " +
+            var accessMessage = "User does have access to the organisation(s) " +
                 "associated with patient.  Item will be submitted for re-identification.";
 
             IdentificationRequest randomIdentificationRequest =
@@ -128,7 +148,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
 
             outputIdentificationRequest.IdentificationItems.ForEach(item =>
             {
-                item.Identifier = $"{item.Identifier}I";
+                item.Identifier = string.IsNullOrEmpty(item.Identifier)
+                    ? item.Identifier
+                    : $"{item.Identifier}I";
+
                 item.IsReidentified = true;
             });
 
@@ -153,7 +176,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
 
             outputHasAccessIdentificationRequest.IdentificationItems.ForEach(item =>
             {
-                item.Identifier = $"{item.Identifier}I";
+                item.Identifier = string.IsNullOrEmpty(item.Identifier)
+                    ? item.Identifier
+                    : $"{item.Identifier}I";
+
                 item.IsReidentified = true;
             });
 
@@ -184,7 +210,33 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(itemCount * 2));
+                    Times.Exactly(itemCount + 6));
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogInformationAsync($"Start ReId Check {randomDateTimeOffset}, TransactionId {randomGuid}"),
+                   Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogInformationAsync($"Start PDS Check {randomDateTimeOffset}, TransactionId {randomGuid}"),
+                  Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+              broker.LogInformationAsync($"Completed PDS Request {randomDateTimeOffset}, TransactionId {randomGuid}"),
+                 Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+              broker.LogInformationAsync($"Start NECS Check {randomDateTimeOffset}, TransactionId {randomGuid}"),
+                 Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+              broker.LogInformationAsync($"Completed NECS Request {randomDateTimeOffset}, TransactionId {randomGuid}"),
+                 Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+              broker.LogInformationAsync($"Completed ReId Check {randomDateTimeOffset}, TransactionId {randomGuid}"),
+                 Times.Once);
+
+            List<AccessAudit> pdsAccessAudits = new List<AccessAudit>();
 
             foreach (IdentificationItem item in randomIdentificationRequest.IdentificationItems)
             {
@@ -202,34 +254,40 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                     Organisation = randomIdentificationRequest.Organisation,
                     HasAccess = item.HasAccess,
                     Message = item.HasAccess ? accessMessage : noAccessMessage,
-                    CreatedBy = "System",
-                    CreatedDate = randomDateTimeOffset,
-                    UpdatedBy = "System",
-                    UpdatedDate = randomDateTimeOffset
+                    AuditType = "PDS Access",
                 };
 
-                this.accessAuditServiceMock.Verify(service =>
-                    service.AddAccessAuditAsync(
-                        It.Is(Valid8.SameObjectAs<AccessAudit>(inputAccessAudit, testOutputHelper, ""))),
-                            Times.Once);
+                pdsAccessAudits.Add(inputAccessAudit);
             }
+
+            this.accessAuditServiceMock.Verify(service =>
+                service.BulkAddAccessAuditAsync(
+                    It.Is(Valid8.SameObjectAs<List<AccessAudit>>(pdsAccessAudits, testOutputHelper, ""))),
+                        Times.Once);
 
             this.reIdentificationServiceMock.Verify(service =>
                 service.ProcessReIdentificationRequest(It.Is(
                     SameIdentificationRequestAs(inputHasAccessIdentificationRequest))),
                         Times.Once);
 
+            List<AccessAudit> necsAccessAudits = new List<AccessAudit>();
+
             foreach (IdentificationItem item in randomIdentificationRequest.IdentificationItems)
             {
                 var pseudoIdentifier = randomIdentificationRequest.IdentificationItems
-                    .FirstOrDefault(identificationItem => identificationItem.RowNumber == item.RowNumber).Identifier;
+                    .FirstOrDefault(identificationItem => identificationItem.RowNumber == item.RowNumber)
+                        .Identifier;
 
                 AccessAudit successAccessAudit = new AccessAudit
                 {
                     Id = randomGuid,
                     RequestId = randomIdentificationRequest.Id,
                     TransactionId = randomGuid,
-                    PseudoIdentifier = pseudoIdentifier,
+
+                    PseudoIdentifier = string.IsNullOrEmpty(pseudoIdentifier)
+                        ? pseudoIdentifier
+                        : pseudoIdentifier,
+
                     EntraUserId = randomIdentificationRequest.EntraUserId,
                     GivenName = randomIdentificationRequest.GivenName,
                     Surname = randomIdentificationRequest.Surname,
@@ -237,18 +295,17 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                     Reason = randomIdentificationRequest.Reason,
                     Organisation = randomIdentificationRequest.Organisation,
                     HasAccess = item.HasAccess,
-                    Message = $"Re-identification outcome: {item.Message}",
-                    CreatedBy = "System",
-                    CreatedDate = randomDateTimeOffset,
-                    UpdatedBy = "System",
-                    UpdatedDate = randomDateTimeOffset
+                    AuditType = "NECS Access",
+                    Message = $"Re-identification outcome: {item.Message}"
                 };
 
-                this.accessAuditServiceMock.Verify(service =>
-                    service.AddAccessAuditAsync(
-                        It.Is(Valid8.SameObjectAs<AccessAudit>(successAccessAudit, testOutputHelper, ""))),
-                            Times.Once);
+                necsAccessAudits.Add(successAccessAudit);
             }
+
+            this.accessAuditServiceMock.Verify(service =>
+                service.BulkAddAccessAuditAsync(
+                    It.Is(Valid8.SameObjectAs<List<AccessAudit>>(necsAccessAudits, testOutputHelper, ""))),
+                        Times.Once);
 
             this.accessAuditServiceMock.VerifyNoOtherCalls();
             this.reIdentificationServiceMock.VerifyNoOtherCalls();

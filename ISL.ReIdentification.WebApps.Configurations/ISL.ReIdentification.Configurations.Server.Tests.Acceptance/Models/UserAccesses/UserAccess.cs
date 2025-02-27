@@ -9,7 +9,7 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.Use
     public class UserAccess
     {
         public Guid Id { get; set; }
-        public Guid EntraUserId { get; set; }
+        public string EntraUserId { get; set; }
         public string GivenName { get; set; } = string.Empty;
         public string Surname { get; set; } = string.Empty;
         public string DisplayName { get; set; } = string.Empty;

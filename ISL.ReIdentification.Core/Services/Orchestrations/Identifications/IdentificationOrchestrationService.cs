@@ -60,17 +60,28 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                 .FindAll(x => x.HasAccess == false).ToList();
 
             var transactionId = await this.identifierBroker.GetIdentifierAsync();
+            List<AccessAudit> permissionAudits = new List<AccessAudit>();
+
+            await this.loggingBroker.LogInformationAsync(
+                $"Start ReId Check {await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync()}, TransactionId {transactionId}");
+
+            await this.loggingBroker.LogInformationAsync(
+                $"Start PDS Check {await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync()}, TransactionId {transactionId}");
 
             foreach (IdentificationItem item in identificationRequest.IdentificationItems)
             {
-                savedPseduoes.Add(item.RowNumber, item.Identifier);
-                var now = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                savedPseduoes.Add(
+                    item.RowNumber,
+                    string.IsNullOrEmpty(item.Identifier)
+                        ? item.Identifier
+                        : item.Identifier);
+
                 var accessAuditId = await this.identifierBroker.GetIdentifierAsync();
 
-                var noAccessMessage = "User do not have access to the organisation(s) " +
+                var noAccessMessage = "User does not have access to the organisation(s) " +
                     "associated with patient.  Re-identification blocked.";
 
-                var accessMessage = "User have access to the organisation(s) " +
+                var accessMessage = "User does have access to the organisation(s) " +
                     "associated with patient.  Item will be submitted for re-identification.";
 
                 AccessAudit accessAudit = new AccessAudit
@@ -87,13 +98,10 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                     Organisation = identificationRequest.Organisation,
                     HasAccess = item.HasAccess,
                     Message = item.HasAccess ? accessMessage : noAccessMessage,
-                    CreatedBy = "System",
-                    CreatedDate = now,
-                    UpdatedBy = "System",
-                    UpdatedDate = now
+                    AuditType = "PDS Access"
                 };
 
-                await this.accessAuditService.AddAccessAuditAsync(accessAudit);
+                permissionAudits.Add(accessAudit);
 
                 if (item.HasAccess is false)
                 {
@@ -102,12 +110,20 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                 }
             }
 
+            await this.accessAuditService.BulkAddAccessAuditAsync(permissionAudits);
+
+            await this.loggingBroker.LogInformationAsync(
+                $"Completed PDS Request {await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync()}, TransactionId {transactionId}");
+
             var hasAccessIdentificationItems =
                 identificationRequest.IdentificationItems
                     .FindAll(x => x.HasAccess == true).ToList();
 
             if (hasAccessIdentificationItems.Count() == 0)
             {
+                await this.loggingBroker.LogInformationAsync(
+                    $"Completed ReId Check {await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync()}, TransactionId {transactionId}");
+
                 return identificationRequest;
             }
 
@@ -128,6 +144,11 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             var reIdentifiedIdentificationRequest =
                 await this.reIdentificationService.ProcessReIdentificationRequest(
                     hasAccessIdentificationRequest);
+
+            List<AccessAudit> reIdentifyAudits = new List<AccessAudit>();
+
+            await this.loggingBroker.LogInformationAsync(
+                $"Start NECS Check {await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync()}, TransactionId {transactionId}");
 
             foreach (IdentificationItem item in reIdentifiedIdentificationRequest.IdentificationItems)
             {
@@ -151,24 +172,27 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                     Organisation = identificationRequest.Organisation,
                     HasAccess = item.HasAccess,
                     Message = $"Re-identification outcome: {item.Message}",
-                    CreatedBy = "System",
-                    CreatedDate = now,
-                    UpdatedBy = "System",
-                    UpdatedDate = now
+                    AuditType = "NECS Access"
                 };
 
-                await this.accessAuditService.AddAccessAuditAsync(accessAudit);
+                reIdentifyAudits.Add(accessAudit);
                 record.Identifier = item.Identifier;
                 record.Message = item.Message;
                 record.IsReidentified = true;
             }
 
+            await this.accessAuditService.BulkAddAccessAuditAsync(reIdentifyAudits);
+
+            await this.loggingBroker.LogInformationAsync(
+                $"Completed NECS Request {await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync()}, TransactionId {transactionId}");
+
+            await this.loggingBroker.LogInformationAsync(
+                $"Completed ReId Check {await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync()}, TransactionId {transactionId}");
+
             return identificationRequest;
         });
 
-        public ValueTask<AccessRequest> ExpireRenewImpersonationContextTokensAsync(
-            AccessRequest accessRequest,
-            bool isPreviouslyApproved) =>
+        public ValueTask<AccessRequest> ExpireRenewImpersonationContextTokensAsync(AccessRequest accessRequest) =>
         TryCatch(async () =>
         {
             ValidateOnExpireRenewImpersonationContextTokensAsync(accessRequest);
@@ -181,7 +205,9 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
             DateTimeOffset expiresOn = currentDateTimeOffset
                 .AddMinutes(this.projectStorageConfiguration.TokenLifetimeMinutes);
 
-            if (!isPreviouslyApproved)
+            List<string> retrievedContainers = await this.documentService.RetrieveAllContainersAsync();
+
+            if (!retrievedContainers.Contains(container))
             {
                 await this.documentService.AddContainerAsync(container);
                 await this.documentService.AddFolderAsync(container, this.projectStorageConfiguration.PickupFolder);

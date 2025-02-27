@@ -27,7 +27,12 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
                 await this.apiBroker.GetAccessAuditByIdAsync(inputAccessAudit.Id);
 
             // then
-            actualAccessAudit.Should().BeEquivalentTo(expectedAccessAudit);
+            actualAccessAudit.Should().BeEquivalentTo(expectedAccessAudit, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
+
             await this.apiBroker.DeleteAccessAuditByIdAsync(actualAccessAudit.Id);
         }
 
@@ -47,7 +52,12 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
                 AccessAudit actualAccessAudit = actualAccessAudits
                     .Single(actualAccessAudit => actualAccessAudit.Id == expectedAccessAudit.Id);
 
-                actualAccessAudit.Should().BeEquivalentTo(expectedAccessAudit);
+                actualAccessAudit.Should().BeEquivalentTo(expectedAccessAudit, options => options
+                    .Excluding(property => property.CreatedBy)
+                    .Excluding(property => property.CreatedDate)
+                    .Excluding(property => property.UpdatedBy)
+                    .Excluding(property => property.UpdatedDate));
+
                 await this.apiBroker.DeleteAccessAuditByIdAsync(actualAccessAudit.Id);
             }
         }
@@ -63,7 +73,12 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             var actualAccessAudit = await this.apiBroker.GetAccessAuditByIdAsync(randomAccessAudit.Id);
 
             // then
-            actualAccessAudit.Should().BeEquivalentTo(expectedAccessAudit);
+            actualAccessAudit.Should().BeEquivalentTo(expectedAccessAudit, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
+
             await this.apiBroker.DeleteAccessAuditByIdAsync(actualAccessAudit.Id);
         }
 
@@ -79,7 +94,12 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             var actualAccessAudit = await this.apiBroker.GetAccessAuditByIdAsync(randomAccessAudit.Id);
 
             // then
-            actualAccessAudit.Should().BeEquivalentTo(modifiedAccessAudit);
+            actualAccessAudit.Should().BeEquivalentTo(modifiedAccessAudit, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
+
             await this.apiBroker.DeleteAccessAuditByIdAsync(actualAccessAudit.Id);
         }
 

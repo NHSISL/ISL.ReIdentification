@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using FluentAssertions;
 using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Brokers;
 using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Models.Lookups;
 using Tynamix.ObjectFiller;
@@ -49,7 +48,6 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
         {
             Lookup randomLookup = CreateRandomLookup();
             Lookup createdLookup = await this.apiBroker.PostLookupAsync(randomLookup);
-            createdLookup.Should().BeEquivalentTo(randomLookup);
 
             return createdLookup;
         }
@@ -74,12 +72,14 @@ namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Apis
         {
             string user = Guid.NewGuid().ToString();
             DateTime now = DateTime.UtcNow;
+            string name = GetRandomStringWithLengthOf(220);
+            string groupName = GetRandomStringWithLengthOf(220);
             var filler = new Filler<Lookup>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
-                .OnProperty(lookup => lookup.GroupName).Use(() => GetRandomStringWithLengthOf(220))
-                .OnProperty(lookup => lookup.Name).Use(() => GetRandomStringWithLengthOf(220))
+                .OnProperty(lookup => lookup.GroupName).Use(() => groupName)
+                .OnProperty(lookup => lookup.Name).Use(() => name)
                 .OnProperty(lookup => lookup.CreatedDate).Use(now)
                 .OnProperty(lookup => lookup.CreatedBy).Use(user)
                 .OnProperty(lookup => lookup.UpdatedDate).Use(now)

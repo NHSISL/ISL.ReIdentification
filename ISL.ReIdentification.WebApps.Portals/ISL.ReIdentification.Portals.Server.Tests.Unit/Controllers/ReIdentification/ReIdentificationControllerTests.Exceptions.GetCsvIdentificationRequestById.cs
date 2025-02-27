@@ -4,6 +4,8 @@
 
 using System;
 using System.Threading.Tasks;
+using ISL.ReIdentification.Core.Models.Coordinations.Identifications.Exceptions;
+using ISL.ReIdentification.Core.Models.Orchestrations.Accesses.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using RESTFulSense.Clients.Extensions;
@@ -73,6 +75,50 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.ReIdentific
 
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.identificationCoordinationServiceMock.Verify(service =>
+                service.ProcessCsvIdentificationRequestAsync(someCsvIdentificationRequestId, someReason),
+                    Times.Once);
+
+            this.identificationCoordinationServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldReturnUnauthorizedWhenUserDoesNotHavePermissionsAsync()
+        {
+            // given
+            Guid someCsvIdentificationRequestId = Guid.NewGuid();
+            string someReason = GetRandomString();
+            string someMessage = GetRandomString();
+
+            var unauthorizedAccessOrchestrationException =
+                new UnauthorizedAccessOrchestrationException(
+                    message: someMessage);
+
+            var unauthorizedIdentificationCoordinationException =
+                new UnauthorizedIdentificationCoordinationException(
+                    message: someMessage,
+                    innerException: unauthorizedAccessOrchestrationException);
+
+            var identificationCoordinationDependencyValidationException =
+                new IdentificationCoordinationDependencyValidationException(
+                    message: someMessage,
+                    innerException: unauthorizedIdentificationCoordinationException);
+
+            UnauthorizedObjectResult expectedUnauthorizedObjectResult =
+                Unauthorized(identificationCoordinationDependencyValidationException.InnerException);
+
+            this.identificationCoordinationServiceMock.Setup(service =>
+                service.ProcessCsvIdentificationRequestAsync(someCsvIdentificationRequestId, someReason))
+                    .ThrowsAsync(identificationCoordinationDependencyValidationException);
+
+            // when
+            ActionResult<object> actualActionResult =
+                await this.reIdentificationController
+                    .GetCsvIdentificationRequestByIdAsync(someCsvIdentificationRequestId, someReason);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedUnauthorizedObjectResult);
 
             this.identificationCoordinationServiceMock.Verify(service =>
                 service.ProcessCsvIdentificationRequestAsync(someCsvIdentificationRequestId, someReason),

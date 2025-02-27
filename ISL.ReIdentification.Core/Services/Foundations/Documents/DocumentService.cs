@@ -120,7 +120,20 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Documents
         TryCatch(async () =>
         {
             ValidateOnAddContainer(container);
+            var containers = await this.blobStorageBroker.RetrieveAllContainersAsync();
+
+            if (containers.Contains(container))
+            {
+                return;
+            }
+
             await this.blobStorageBroker.CreateContainerAsync(container);
+        });
+
+        public ValueTask<List<string>> RetrieveAllContainersAsync() =>
+        TryCatch(async () =>
+        {
+            return await this.blobStorageBroker.RetrieveAllContainersAsync();
         });
 
         public ValueTask AddFolderAsync(string container, string folder) =>

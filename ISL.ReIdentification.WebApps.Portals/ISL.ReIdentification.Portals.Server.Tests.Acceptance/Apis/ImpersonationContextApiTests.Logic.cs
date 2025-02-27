@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -27,7 +28,14 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
                 await this.apiBroker.GetImpersonationContextByIdAsync(inputImpersonationContext.Id);
 
             // then
-            actualImpersonationContext.Should().BeEquivalentTo(expectedImpersonationContext);
+            actualImpersonationContext.Should().BeEquivalentTo(
+                expectedImpersonationContext, 
+                options => options
+                    .Excluding(ctx => ctx.CreatedBy)
+                    .Excluding(ctx => ctx.CreatedDate)
+                    .Excluding(ctx => ctx.UpdatedBy)
+                    .Excluding(ctx => ctx.UpdatedDate));
+
             await this.apiBroker.DeleteImpersonationContextByIdAsync(actualImpersonationContext.Id);
         }
 
@@ -61,7 +69,8 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             ImpersonationContext expectedImpersonationContext = randomImpersonationContext;
 
             // when
-            var actualImpersonationContext = await this.apiBroker.GetImpersonationContextByIdAsync(randomImpersonationContext.Id);
+            var actualImpersonationContext = await this.apiBroker
+                .GetImpersonationContextByIdAsync(randomImpersonationContext.Id);
 
             // then
             actualImpersonationContext.Should().BeEquivalentTo(expectedImpersonationContext);
@@ -73,14 +82,23 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
         {
             // given
             ImpersonationContext randomImpersonationContext = await PostRandomImpersonationContextAsync();
-            ImpersonationContext modifiedImpersonationContext = UpdateImpersonationContextWithRandomValues(randomImpersonationContext);
+
+            ImpersonationContext modifiedImpersonationContext =
+                UpdateImpersonationContextWithRandomValues(randomImpersonationContext);
 
             // when
             await this.apiBroker.PutImpersonationContextAsync(modifiedImpersonationContext);
-            var actualImpersonationContext = await this.apiBroker.GetImpersonationContextByIdAsync(randomImpersonationContext.Id);
+
+            var actualImpersonationContext = await this.apiBroker
+                .GetImpersonationContextByIdAsync(randomImpersonationContext.Id);
 
             // then
-            actualImpersonationContext.Should().BeEquivalentTo(modifiedImpersonationContext);
+            actualImpersonationContext.Should().BeEquivalentTo(
+                modifiedImpersonationContext, 
+                options => options
+                    .Excluding(ctx => ctx.UpdatedBy)
+                    .Excluding(ctx => ctx.UpdatedDate));
+
             await this.apiBroker.DeleteImpersonationContextByIdAsync(actualImpersonationContext.Id);
         }
 

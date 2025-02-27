@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -93,8 +92,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             // given
             string randomString = GetRandomString();
             string returnedHash = randomString;
-            Guid randomGuid = Guid.NewGuid();
-            Guid randomId = randomGuid;
+            string randomEntraId = GetRandomStringWithLengthOf(255);
+            string inputEntraId = randomEntraId;
             AccessRequest randomAccessRequest = CreateRandomAccessRequest();
             CsvIdentificationRequest randomCsvIdentificationRequest = CreateRandomCsvIdentificationRequest();
             AccessRequest inputAccessRequest = randomAccessRequest.DeepClone();
@@ -103,8 +102,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Persists
             inputAccessRequest.IdentificationRequest = null;
             inputAccessRequest.ImpersonationContext = null;
             inputAccessRequest.CsvIdentificationRequest.Sha256Hash = returnedHash;
-            inputAccessRequest.CsvIdentificationRequest.RecipientEntraUserId = randomId;
-            returnedCsvIdentificationRequest.RecipientEntraUserId = randomId;
+            inputAccessRequest.CsvIdentificationRequest.RecipientEntraUserId = inputEntraId;
+            returnedCsvIdentificationRequest.RecipientEntraUserId = inputEntraId;
             AccessRequest outputAccessRequest = inputAccessRequest.DeepClone();
             outputAccessRequest.CsvIdentificationRequest = returnedCsvIdentificationRequest;
             AccessRequest expectedAccessRequest = outputAccessRequest.DeepClone();

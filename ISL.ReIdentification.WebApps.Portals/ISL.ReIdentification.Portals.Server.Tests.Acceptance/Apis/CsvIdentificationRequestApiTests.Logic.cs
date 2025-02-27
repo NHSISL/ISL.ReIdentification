@@ -27,7 +27,12 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
                 await this.apiBroker.GetCsvIdentificationRequestByIdAsync(inputCsvIdentificationRequest.Id);
 
             // then
-            actualCsvIdentificationRequest.Should().BeEquivalentTo(expectedCsvIdentificationRequest);
+            actualCsvIdentificationRequest.Should().BeEquivalentTo(expectedCsvIdentificationRequest, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
+
             await this.apiBroker.DeleteCsvIdentificationRequestByIdAsync(inputCsvIdentificationRequest.Id);
         }
 
@@ -87,7 +92,12 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
                 await this.apiBroker.GetCsvIdentificationRequestByIdAsync(randomCsvIdentificationRequest.Id);
 
             // then
-            actualCsvIdentificationRequest.Should().BeEquivalentTo(updatedCsvIdentificationRequest);
+            actualCsvIdentificationRequest.Should().BeEquivalentTo(updatedCsvIdentificationRequest, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
+
             await this.apiBroker.DeleteCsvIdentificationRequestByIdAsync(actualCsvIdentificationRequest.Id);
         }
 

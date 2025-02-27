@@ -2,11 +2,10 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-
-
 using System;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification.Models.Accesses;
+using ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification.Models.ReIdentifications;
 
 namespace ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification.Brokers
 {
@@ -26,5 +25,17 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification
 
             return fileContent;
         }
+
+        public async ValueTask<AccessRequest> PostImpersonationContextGenerateTokensAsync(Guid impersonationContextId)
+        {
+            return await this.apiFactoryClient.PostContentAsync<Guid, AccessRequest>(
+                $"{reIdentificationRelativeUrl}/generatetokens", 
+                impersonationContextId);
+        }
+
+        public async ValueTask PostImpersonationContextApprovalAsync(ApprovalRequest approvalRequest) =>
+            await this.apiFactoryClient.PostContentWithNoResponseAsync(
+                $"{reIdentificationRelativeUrl}/impersonationcontextapproval",
+                approvalRequest);
     }
 }

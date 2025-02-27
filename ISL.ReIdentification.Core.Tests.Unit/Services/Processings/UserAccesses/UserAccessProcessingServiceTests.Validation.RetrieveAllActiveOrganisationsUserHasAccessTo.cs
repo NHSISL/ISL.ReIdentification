@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -14,18 +13,22 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Processings.UserAccesses
 {
     public partial class UserAccessProcessingServiceTests
     {
-        [Fact]
-        public async Task ShouldThrowValidationExceptionOnRetrieveAllActiveOrganisationsUserHasAccessToAsync()
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionOnRetrieveAllActiveOrganisationsUserHasAccessToAsync(
+            string invalidText)
         {
             // given
-            Guid invalidUserAccessId = Guid.Empty;
+            string invalidUserAccessId = invalidText;
 
             var invalidUserAccessProcessingException = new InvalidUserAccessProcessingException(
                 message: "Invalid user access. Please correct the errors and try again.");
 
             invalidUserAccessProcessingException.AddData(
-                key: nameof(UserAccess.Id),
-                values: "Id is invalid");
+                key: nameof(UserAccess.EntraUserId),
+                values: "Text is invalid");
 
             var expectedUserAccessProcessingValidationException =
                 new UserAccessProcessingValidationException(
