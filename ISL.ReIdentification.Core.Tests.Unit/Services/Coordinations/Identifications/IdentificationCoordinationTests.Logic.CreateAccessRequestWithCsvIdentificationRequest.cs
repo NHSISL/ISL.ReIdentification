@@ -33,7 +33,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 $"{randomHeaderValue}0,{randomHeaderValue}1,{randomIdentifierHeaderValue}");
 
             retrievedCsv.AppendLine($"{randomValue},{randomValue},{pseudoIdentifier}");
-
             string retrievedCsvString = retrievedCsv.ToString();
             byte[] retrievedCsvData = Encoding.UTF8.GetBytes(retrievedCsvString);
             MemoryStream randomStream = new MemoryStream();
@@ -74,7 +73,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 loggingBroker: this.loggingBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
                 projectStorageConfiguration: this.projectStorageConfiguration);
-
 
             // when
             var actualAccessRequest = await service
