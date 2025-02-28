@@ -41,7 +41,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ISL.ReIdentification.Portal
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ISL.ReIdentification.Portals.Server.Tests.Unit", "ISL.ReIdentification.WebApps.Portals\ISL.ReIdentification.Portals.Server.Tests.Unit\ISL.ReIdentification.Portals.Server.Tests.Unit.csproj", "{53367A89-05FC-426C-92DA-5C8818701FC8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification", "ISL.ReIdentification.WebApps.Portals\ISL.ReIdentification.Portals.Server.Tests.Integration\ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification.csproj", "{16B7608C-B470-477C-8B5D-C4E83CA18764}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ISL.ReIdentification.Portals.Server.Tests.Integration", "ISL.ReIdentification.WebApps.Portals\ISL.ReIdentification.Portals.Server.Tests.Integration\ISL.ReIdentification.Portals.Server.Tests.Integration.csproj", "{16B7608C-B470-477C-8B5D-C4E83CA18764}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ISL.ReIdentification.Configurations.Server.Tests.Integration", "ISL.ReIdentification.WebApps.Configurations\ISL.ReIdentification.Configurations.Server.Tests.Integration\ISL.ReIdentification.Configurations.Server.Tests.Integration.csproj", "{9360B1C7-CB38-4B04-B13B-F8955F0C5E10}"
 EndProject
