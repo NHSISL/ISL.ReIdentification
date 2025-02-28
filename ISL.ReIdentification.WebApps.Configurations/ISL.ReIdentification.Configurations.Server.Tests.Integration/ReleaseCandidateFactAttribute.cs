@@ -2,6 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using Xunit.Sdk;
+
 namespace ISL.ReIdentification.Configurations.Server.Tests.Integration
 {
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]

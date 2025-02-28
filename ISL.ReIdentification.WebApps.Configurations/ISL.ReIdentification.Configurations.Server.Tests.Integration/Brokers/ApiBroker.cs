@@ -2,6 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using Microsoft.AspNetCore.Mvc.Testing;
+using RESTFulSense.Clients;
+
 namespace ISL.ReIdentification.Configurations.Server.Tests.Integration.ReIdentification.Brokers
 {
     public partial class ApiBroker
