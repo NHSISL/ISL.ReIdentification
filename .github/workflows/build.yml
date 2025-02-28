@@ -32,14 +32,21 @@ jobs:
       run: dotnet ef database update --project ISL.ReIdentification.Core/ISL.ReIdentification.Core.csproj --startup-project ISL.ReIdentification.Core/ISL.ReIdentification.Core.csproj
     - name: Run Unit Tests
       run: >-
-        for project in $(find . -name '*Tests.Unit*.csproj'); do
-          dotnet test "$project" --no-build --verbosity normal
-        done
+        $projects = Get-ChildItem -Path . -Filter "*Tests.Unit*.csproj" -Recurse
+
+        foreach ($project in $projects) {
+          Write-Host "Running tests for: $($project.FullName)"
+          dotnet test $project.FullName --no-build --verbosity normal
+        }
+      shell: pwsh
     - name: Run Acceptance Tests
       run: >-
-        for project in $(find . -name '*Tests.Acceptance*.csproj'); do
-          dotnet test "$project" --no-build --verbosity normal
-        done
+        $projects = Get-ChildItem -Path . -Filter "*Tests.Acceptance*.csproj" -Recurse
+
+        foreach ($project in $projects) {
+          Write-Host "Running tests for: $($project.FullName)"
+          dotnet test $project.FullName --no-build --verbosity normal
+        }
     env:
       NOTIFICATIONCONFIGURATIONS__APIKEY: ${{ secrets.NOTIFICATIONCONFIGURATIONS__APIKEY }}
       NOTIFICATIONCONFIGURATIONS__CSVAPPROVEDREQUESTTEMPLATEID: ${{ secrets.NOTIFICATIONCONFIGURATIONS__CSVAPPROVEDREQUESTTEMPLATEID }}

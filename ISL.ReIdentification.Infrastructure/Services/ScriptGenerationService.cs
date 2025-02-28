@@ -101,11 +101,14 @@ namespace ISL.ReIdentification.Infrastructure.Services
                                 new TestTask
                                 {
                                     Name = "Run Unit Tests",
+                                    Shell = "pwsh",
                                     Run =
                                         """
-                                        for project in $(find . -name '*Tests.Unit*.csproj'); do
-                                          dotnet test "$project" --no-build --verbosity normal
-                                        done
+                                        $projects = Get-ChildItem -Path . -Filter "*Tests.Unit*.csproj" -Recurse
+                                        foreach ($project in $projects) {
+                                          Write-Host "Running tests for: $($project.FullName)"
+                                          dotnet test $project.FullName --no-build --verbosity normal
+                                        }
                                         """
                                 },
 
@@ -114,9 +117,11 @@ namespace ISL.ReIdentification.Infrastructure.Services
                                     Name = "Run Acceptance Tests",
                                     Run =
                                         """
-                                        for project in $(find . -name '*Tests.Acceptance*.csproj'); do
-                                          dotnet test "$project" --no-build --verbosity normal
-                                        done
+                                        $projects = Get-ChildItem -Path . -Filter "*Tests.Acceptance*.csproj" -Recurse
+                                        foreach ($project in $projects) {
+                                          Write-Host "Running tests for: $($project.FullName)"
+                                          dotnet test $project.FullName --no-build --verbosity normal
+                                        }
                                         """
                                 }
                             }
