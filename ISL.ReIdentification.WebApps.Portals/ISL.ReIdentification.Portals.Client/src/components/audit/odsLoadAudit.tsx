@@ -9,7 +9,7 @@ interface OdsLoadAuditProps {
 }
 
 export const OdsLoadAudit: FunctionComponent<OdsLoadAuditProps> = ({ isAlert = false, isHover = false }) => {
-    const { data, isLoading } = auditViewService.useGetOdsAuditByAuditType("OdsDataLoad");
+    const { data, isLoading } = auditViewService.useGetOdsAuditByAuditType("ODSLoad");
     const [showTooltip, setShowTooltip] = useState(false);
 
     if (isLoading || !data || !data?.createdDate) {
@@ -17,7 +17,7 @@ export const OdsLoadAudit: FunctionComponent<OdsLoadAuditProps> = ({ isAlert = f
     }
 
     const content = `ODS last uploaded: ${moment(data.createdDate.toString()).format("DD/MM/YY HH:mm")}`;
-    const variant = data.auditDetail === 'failure' ? 'danger' : data.auditDetail;
+    const variant = data.auditDetail === 'failure' ? 'danger' : 'info';
 
     if (isAlert) {
         return <Alert variant={variant} className="m-0 mb-2 p-1">{content}</Alert>;

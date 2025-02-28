@@ -10,7 +10,6 @@ import { OdsDataView } from "../../models/views/components/odsData/odsDataView";
 import InfiniteScrollLoader from "../bases/pagers/InfiniteScroll.Loader";
 import { odsDataViewService } from "../../services/views/odsData/odsDataViewService";
 import { faRefresh } from "@fortawesome/free-solid-svg-icons";
-import { OdsLoadAudit } from "../audit/odsLoadAudit";
 
 type OdsTableProps = object;
 
@@ -55,7 +54,6 @@ const OdsTable: FunctionComponent<OdsTableProps> = () => {
 
     return (
         <>
-            <OdsLoadAudit isAlert={true} />
             <InputGroup className="mb-3">
                 <SearchBase id="search" label="Search ods" value={searchTerm} placeholder="Search ODS"
                     onChange={(e) => { handleSearchChange(e.currentTarget.value) }} />

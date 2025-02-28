@@ -10,7 +10,6 @@ import { SpinnerBase } from "../bases/spinner/SpinnerBase";
 import { PdsDataView } from "../../models/views/components/pdsData/pdsDataView";
 import InfiniteScrollLoader from "../bases/pagers/InfiniteScroll.Loader";
 import { faRefresh } from "@fortawesome/free-solid-svg-icons";
-import { PdsLoadAudit } from "../audit/pdsLoadAudit";
 
 type PdsTableProps = object;
 
@@ -55,7 +54,6 @@ const PdsTable: FunctionComponent<PdsTableProps> = () => {
 
     return (
         <>
-            <PdsLoadAudit isAlert={true} />
             <InputGroup className="mb-3">
             <SearchBase id="search" label="Search pds" value={searchTerm} placeholder="Search PDS Table By NHS Number"
                 onChange={(e) => { handleSearchChange(e.currentTarget.value) }} />
