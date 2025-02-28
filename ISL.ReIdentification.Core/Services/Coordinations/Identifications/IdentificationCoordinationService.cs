@@ -141,26 +141,26 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
             return await this.persistanceOrchestrationService.PersistImpersonationContextAsync(accessRequest);
         });
 
-        public ValueTask<AccessRequest> ProcessImpersonationContextRequestAsync(AccessRequest accessRequest) =>
+        public ValueTask<AccessRequest> ProcessImpersonationContextRequestAsync(string container, string filepath) =>
         TryCatch(async () =>
         {
-            ValidateOnProcessImpersonationContextRequestAsync(accessRequest, this.projectStorageConfiguration);
-            var filepathData = await ExtractFromFilepath(accessRequest.CsvIdentificationRequest.Filepath);
+            ValidateOnProcessImpersonationContextRequestAsync(container, filepath, this.projectStorageConfiguration);
+
+            AccessRequest accessRequestWithCsvIdentificationRequest =
+                await CreateAccessRequestWithCsvIdentificationRequestAsync(container, filepath);
+
+            var filepathData = await ExtractFromFilepath(filepath);
 
             try
             {
                 AccessRequest csvConvertedAccessRequest =
                     await ConvertCsvIdentificationRequestToIdentificationRequest(
-                        accessRequest);
-
-                AccessRequest returnedAccessRequestWithImpersonationContext =
-                    await this.persistanceOrchestrationService
-                        .RetrieveImpersonationContextByIdAsync(filepathData.ImpersonationContextId);
+                        accessRequestWithCsvIdentificationRequest);
 
                 IdentificationRequest currentIdentificationRequest =
                     OverrideIdentificationRequestUserDetails(
                         csvConvertedAccessRequest.IdentificationRequest,
-                        returnedAccessRequestWithImpersonationContext.ImpersonationContext);
+                        csvConvertedAccessRequest.ImpersonationContext);
 
                 csvConvertedAccessRequest.IdentificationRequest = currentIdentificationRequest;
 
@@ -192,7 +192,8 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
             }
             catch (Exception)
             {
-                MemoryStream csvData = new MemoryStream(accessRequest.CsvIdentificationRequest.Data);
+                MemoryStream csvData = new MemoryStream(
+                    accessRequestWithCsvIdentificationRequest.CsvIdentificationRequest.Data);
 
                 await this.identificationOrchestrationService
                     .AddDocumentAsync(
@@ -409,26 +410,105 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
         }
 
         virtual internal async ValueTask<(
-            string LandingFilepath, string PickupFilepath, string ErrorFilepath, Guid ImpersonationContextId)>
+            string LandingFilepath, string PickupFilepath, string ErrorFilepath)>
             ExtractFromFilepath(string filepath)
         {
-            string[] filepathParts = filepath.Split('/', StringSplitOptions.RemoveEmptyEntries);
-            string container = filepathParts[0];
-            Guid impersonationContextId = Guid.Parse(filepathParts[1]);
-            string landingFilepath = string.Join("/", filepathParts, 2, filepathParts.Length - 2);
             DateTimeOffset dateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
             string timestamp = dateTimeOffset.ToString("yyyyMMddHHmms");
-            string nameWithoutExtension = Path.GetFileNameWithoutExtension(landingFilepath);
+            string nameWithoutExtension = Path.GetFileNameWithoutExtension(filepath);
 
-            string pickFilepath = landingFilepath
+            string pickFilepath = filepath
                 .Replace(projectStorageConfiguration.LandingFolder, projectStorageConfiguration.PickupFolder)
                 .Replace(nameWithoutExtension, nameWithoutExtension + "_" + timestamp);
 
-            string errorFilepath = landingFilepath
+            string errorFilepath = filepath
                 .Replace(projectStorageConfiguration.LandingFolder, projectStorageConfiguration.ErrorFolder)
                 .Replace(nameWithoutExtension, nameWithoutExtension + "_" + timestamp);
 
-            return (landingFilepath, pickFilepath, errorFilepath, impersonationContextId);
+            return (filepath, pickFilepath, errorFilepath);
+        }
+
+        virtual internal async ValueTask<AccessRequest> CreateAccessRequestWithCsvIdentificationRequestAsync(
+            string container,
+            string filepath)
+        {
+            Stream retrievedFileStream = new MemoryStream();
+
+            await this.identificationOrchestrationService
+                .RetrieveDocumentByFileNameAsync(retrievedFileStream, filepath, container);
+
+            AccessRequest retrievedAccessRequest =
+                await this.persistanceOrchestrationService
+                    .RetrieveImpersonationContextByIdAsync(Guid.Parse(container));
+
+            byte[] fileData = ReadAllBytesFromStream(retrievedFileStream);
+            AccessRequest accessRequest = retrievedAccessRequest;
+            accessRequest.CsvIdentificationRequest.Data = fileData;
+
+            accessRequest.CsvIdentificationRequest.HasHeaderRecord =
+                accessRequest.ImpersonationContext.HasHeaderRecord;
+
+            accessRequest.CsvIdentificationRequest.IdentifierColumnIndex = GetColumnIndexFromStream(
+                    retrievedFileStream,
+                    retrievedAccessRequest.ImpersonationContext.IdentifierColumn);
+
+            accessRequest.CsvIdentificationRequest.Id = accessRequest.ImpersonationContext.Id;
+
+            accessRequest.CsvIdentificationRequest.RecipientEntraUserId =
+                accessRequest.ImpersonationContext.RequesterEntraUserId;
+
+            accessRequest.CsvIdentificationRequest.RecipientEmail =
+                accessRequest.ImpersonationContext.RequesterEmail;
+
+            accessRequest.CsvIdentificationRequest.RecipientJobTitle =
+                accessRequest.ImpersonationContext.RequesterJobTitle;
+
+            accessRequest.CsvIdentificationRequest.RecipientDisplayName =
+                accessRequest.ImpersonationContext.RequesterDisplayName;
+
+            accessRequest.CsvIdentificationRequest.RecipientFirstName =
+                accessRequest.ImpersonationContext.RequesterFirstName;
+
+            accessRequest.CsvIdentificationRequest.RecipientLastName =
+                accessRequest.ImpersonationContext.RequesterLastName;
+
+            accessRequest.CsvIdentificationRequest.Reason = accessRequest.ImpersonationContext.Reason;
+            accessRequest.CsvIdentificationRequest.Organisation = accessRequest.ImpersonationContext.Organisation;
+
+            return accessRequest;
+        }
+
+        private static byte[] ReadAllBytesFromStream(Stream stream)
+        {
+            if (stream.CanSeek)
+            {
+                stream.Seek(0, SeekOrigin.Begin);
+            }
+
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                stream.CopyTo(memoryStream);
+                return memoryStream.ToArray();
+            }
+        }
+
+        private static int GetColumnIndexFromStream(Stream stream, string columnName)
+        {
+            stream.Position = 0;
+
+            using (StreamReader reader = new StreamReader(stream, Encoding.UTF8, leaveOpen: true))
+            {
+                string headerLine = reader.ReadLine();
+
+                if (headerLine != null)
+                {
+                    string[] headers = headerLine.Split(',');
+
+                    return Array.IndexOf(headers, columnName);
+                }
+            }
+
+            return -1;
         }
     }
 }

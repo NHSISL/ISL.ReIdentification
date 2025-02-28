@@ -38,6 +38,7 @@ namespace ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts
 
         public bool IsApproved { get; set; }
         public string IdentifierColumn { get; set; } = string.Empty;
+        public bool HasHeaderRecord { get; set; } = false;
         public string CreatedBy { get; set; } = string.Empty;
         public DateTimeOffset CreatedDate { get; set; }
         public string UpdatedBy { get; set; } = string.Empty;

@@ -22,7 +22,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             Xeption dependencyValidationException)
         {
             // given
-            AccessRequest someAccessRequest = CreateRandomAccessRequest();
+            string someContainer = GetRandomString();
+            string someFilepath = GetRandomString();
 
             var identificationCoordinationServiceMock = new Mock<IdentificationCoordinationService>
                 (this.accessOrchestrationServiceMock.Object,
@@ -36,7 +37,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             { CallBase = true };
 
             identificationCoordinationServiceMock.Setup(service =>
-                service.ExtractFromFilepath(It.IsAny<string>()))
+                service.CreateAccessRequestWithCsvIdentificationRequestAsync(It.IsAny<string>(), It.IsAny<string>()))
                         .ThrowsAsync(dependencyValidationException);
 
             var expectedIdentificationCoordinationDependencyValidationException =
@@ -48,7 +49,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             // when
             ValueTask<AccessRequest> accessRequestTask =
                 identificationCoordinationServiceMock.Object
-                    .ProcessImpersonationContextRequestAsync(someAccessRequest);
+                    .ProcessImpersonationContextRequestAsync(someContainer, someFilepath);
 
             IdentificationCoordinationDependencyValidationException
                 actualIdentificationCoordinationDependencyValidationException =
@@ -60,7 +61,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 .Should().BeEquivalentTo(expectedIdentificationCoordinationDependencyValidationException);
 
             identificationCoordinationServiceMock.Verify(service =>
-                service.ExtractFromFilepath(It.IsAny<string>()),
+                service.CreateAccessRequestWithCsvIdentificationRequestAsync(It.IsAny<string>(), It.IsAny<string>()),
                         Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -83,7 +84,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             ShouldThrowDependencyValidationExceptionOnProcessImpersonationContextRequestWhenUnauthorizedAndLogItAsync()
         {
             // given
-            AccessRequest someAccessRequest = CreateRandomAccessRequest();
+            string someContainer = GetRandomString();
+            string someFilepath = GetRandomString();
             string someReason = GetRandomString();
             string someMessage = GetRandomString();
 
@@ -119,13 +121,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             };
 
             identificationCoordinationServiceMock.Setup(service =>
-                service.ExtractFromFilepath(It.IsAny<string>()))
+                service.CreateAccessRequestWithCsvIdentificationRequestAsync(It.IsAny<string>(), It.IsAny<string>()))
                     .ThrowsAsync(accessOrchestrationValidationException);
 
             // when
             ValueTask<AccessRequest> accessRequestTask =
                 identificationCoordinationServiceMock.Object
-                    .ProcessImpersonationContextRequestAsync(someAccessRequest);
+                    .ProcessImpersonationContextRequestAsync(someContainer, someFilepath);
 
             IdentificationCoordinationDependencyValidationException
                 actualIdentificationCoordinationDependencyValidationException =
@@ -137,7 +139,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 .Should().BeEquivalentTo(expectedIdentificationCoordinationDependencyValidationException);
 
             identificationCoordinationServiceMock.Verify(service =>
-                service.ExtractFromFilepath(It.IsAny<string>()),
+                service.CreateAccessRequestWithCsvIdentificationRequestAsync(It.IsAny<string>(), It.IsAny<string>()),
                         Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -161,7 +163,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             Xeption dependencyException)
         {
             // given
-            AccessRequest someAccessRequest = CreateRandomAccessRequest();
+            string someContainer = GetRandomString();
+            string someFilepath = GetRandomString();
 
             var identificationCoordinationServiceMock = new Mock<IdentificationCoordinationService>
                 (this.accessOrchestrationServiceMock.Object,
@@ -175,7 +178,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             { CallBase = true };
 
             identificationCoordinationServiceMock.Setup(service =>
-                service.ExtractFromFilepath(It.IsAny<string>()))
+                service.CreateAccessRequestWithCsvIdentificationRequestAsync(It.IsAny<string>(), It.IsAny<string>()))
                         .ThrowsAsync(dependencyException);
 
             var expectedIdentificationCoordinationDependencyException =
@@ -187,7 +190,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             // when
             ValueTask<AccessRequest> accessRequestTask =
                 identificationCoordinationServiceMock.Object
-                    .ProcessImpersonationContextRequestAsync(someAccessRequest);
+                    .ProcessImpersonationContextRequestAsync(someContainer, someFilepath);
 
             IdentificationCoordinationDependencyException
                 actualIdentificationCoordinationDependencyException =
@@ -199,7 +202,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 .Should().BeEquivalentTo(expectedIdentificationCoordinationDependencyException);
 
             identificationCoordinationServiceMock.Verify(service =>
-                service.ExtractFromFilepath(It.IsAny<string>()),
+                service.CreateAccessRequestWithCsvIdentificationRequestAsync(It.IsAny<string>(), (It.IsAny<string>())),
                         Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -221,7 +224,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
         public async Task ShouldThrowServiceExceptionOnProcessImpersonationContextRequestAndLogItAsync()
         {
             // given
-            AccessRequest someAccessRequest = CreateRandomAccessRequest();
+            string someContainer = GetRandomString();
+            string someFilepath = GetRandomString();
             Exception someException = new Exception();
 
             var identificationCoordinationServiceMock = new Mock<IdentificationCoordinationService>
@@ -236,7 +240,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             { CallBase = true };
 
             identificationCoordinationServiceMock.Setup(service =>
-                service.ExtractFromFilepath(It.IsAny<string>()))
+                service.CreateAccessRequestWithCsvIdentificationRequestAsync(It.IsAny<string>(), It.IsAny<string>()))
                         .ThrowsAsync(someException);
 
             var expectedIdentificationCoordinationServiceException =
@@ -248,7 +252,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             // when
             ValueTask<AccessRequest> accessRequestTask =
                 identificationCoordinationServiceMock.Object
-                    .ProcessImpersonationContextRequestAsync(someAccessRequest);
+                    .ProcessImpersonationContextRequestAsync(someContainer, someFilepath);
 
             IdentificationCoordinationServiceException
                 actualIdentificationCoordinationServiceException =
@@ -260,7 +264,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 .Should().BeEquivalentTo(expectedIdentificationCoordinationServiceException);
 
             identificationCoordinationServiceMock.Verify(service =>
-                service.ExtractFromFilepath(It.IsAny<string>()),
+                service.CreateAccessRequestWithCsvIdentificationRequestAsync(It.IsAny<string>(), It.IsAny<string>()),
                         Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
