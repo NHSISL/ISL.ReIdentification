@@ -100,7 +100,24 @@ namespace ISL.ReIdentification.Infrastructure.Services
 
                                 new TestTask
                                 {
-                                    Name = "Test",
+                                    Name = "Run Unit Tests",
+                                    Run =
+                                        """
+                                        for project in $(find . -name '*Tests.Unit*.csproj'); do
+                                          dotnet test "$project" --no-build --verbosity normal
+                                        done
+                                        """
+                                },
+
+                                new TestTask
+                                {
+                                    Name = "Run Acceptance Tests",
+                                    Run =
+                                        """
+                                        for project in $(find . -name '*Tests.Acceptance*.csproj'); do
+                                          dotnet test "$project" --no-build --verbosity normal
+                                        done
+                                        """
                                 }
                             }
                         }

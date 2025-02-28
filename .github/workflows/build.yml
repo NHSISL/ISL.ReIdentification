@@ -30,8 +30,16 @@ jobs:
       run: dotnet tool install --global dotnet-ef
     - name: Deploy Database
       run: dotnet ef database update --project ISL.ReIdentification.Core/ISL.ReIdentification.Core.csproj --startup-project ISL.ReIdentification.Core/ISL.ReIdentification.Core.csproj
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+    - name: Run Unit Tests
+      run: >-
+        for project in $(find . -name '*Tests.Unit*.csproj'); do
+          dotnet test "$project" --no-build --verbosity normal
+        done
+    - name: Run Acceptance Tests
+      run: >-
+        for project in $(find . -name '*Tests.Acceptance*.csproj'); do
+          dotnet test "$project" --no-build --verbosity normal
+        done
     env:
       NOTIFICATIONCONFIGURATIONS__APIKEY: ${{ secrets.NOTIFICATIONCONFIGURATIONS__APIKEY }}
       NOTIFICATIONCONFIGURATIONS__CSVAPPROVEDREQUESTTEMPLATEID: ${{ secrets.NOTIFICATIONCONFIGURATIONS__CSVAPPROVEDREQUESTTEMPLATEID }}
