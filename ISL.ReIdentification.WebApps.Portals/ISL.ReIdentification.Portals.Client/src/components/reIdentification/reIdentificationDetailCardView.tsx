@@ -72,7 +72,6 @@ const ReIdentificationDetailCardView: FunctionComponent<ReIdentificationDetailCa
                 }
             }
 
-            console.error(errorMessage);
             setError(errorMessage);
         }
     };
