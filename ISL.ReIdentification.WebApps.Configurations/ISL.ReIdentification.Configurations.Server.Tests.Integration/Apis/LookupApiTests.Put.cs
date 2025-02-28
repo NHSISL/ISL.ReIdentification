@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using FluentAssertions;
 using ISL.ReIdentification.Configurations.Server.Tests.Integration.Models;
 
 namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis
@@ -22,8 +21,8 @@ namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis
 
             // then
             actualLookup.Should().BeEquivalentTo(
-                modifiedLookup, 
-                options =>  options
+                modifiedLookup,
+                options => options
                     .Excluding(lookup => lookup.CreatedBy)
                     .Excluding(lookup => lookup.CreatedDate)
                     .Excluding(lookup => lookup.UpdatedBy)

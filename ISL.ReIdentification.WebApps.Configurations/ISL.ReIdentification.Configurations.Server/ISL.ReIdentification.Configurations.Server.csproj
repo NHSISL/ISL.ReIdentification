@@ -11,7 +11,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Attrify" Version="0.0.0.2" />
-		<PackageReference Include="FluentAssertions" Version="7.0.0" />
+		<PackageReference Include="FluentAssertions" Version="7.2.0" />
 		<PackageReference Include="ISL.Providers.ReIdentification.Abstractions" Version="0.0.0.5" />
 		<PackageReference Include="ISL.Providers.ReIdentification.DemoData" Version="0.0.0.5" />
 		<PackageReference Include="ISL.Providers.ReIdentification.Necs" Version="0.0.0.5" />
@@ -22,9 +22,9 @@
 		<PackageReference Include="Microsoft.AspNetCore.SpaProxy">
 			<Version>9.0.2</Version>
 		</PackageReference>
-		<PackageReference Include="Microsoft.Identity.Web" Version="3.5.0" />
+		<PackageReference Include="Microsoft.Identity.Web" Version="3.7.1" />
 		<PackageReference Include="NHSISL.CsvHelperClient" Version="1.1.0" />
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="7.3.1" />
 		<PackageReference Include="System.Configuration.ConfigurationManager" Version="9.0.2" />
 	</ItemGroup>
 
