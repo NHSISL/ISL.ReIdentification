@@ -4,9 +4,9 @@
 		<TargetFramework>net9.0</TargetFramework>
 		<Nullable>disable</Nullable>
 		<ImplicitUsings>disable</ImplicitUsings>
-		<SpaRoot>..\ISL.ReIdentification.Portals.Client</SpaRoot>
+		<SpaRoot>..\ISL.ReIdentification.Configurations.Client</SpaRoot>
 		<SpaProxyLaunchCommand>npm run dev</SpaProxyLaunchCommand>
-		<SpaProxyServerUrl>https://localhost:5173</SpaProxyServerUrl>
+		<SpaProxyServerUrl>https://localhost:6073</SpaProxyServerUrl>
 		<Version>1.0.0.1</Version>
 		<AssemblyVersion>1.0.0.1</AssemblyVersion>
 		<FileVersion>1.0.0.1</FileVersion>
@@ -36,19 +36,12 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\ISL.ReIdentification.Core\ISL.ReIdentification.Core.csproj" />
-		<ProjectReference Include="..\ISL.ReIdentification.Portals.Client\ISL.ReIdentification.Portals.Client.esproj" />
+		<ProjectReference Include="..\ISL.ReIdentification.Configurations.Client\ISL.ReIdentification.Configurations.Client.esproj" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<Content Update="appsettings.Development.json">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
+	  <Content Update="appsettings.Development.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
 	</ItemGroup>
-
-	<ItemGroup>
-		<None Update="Resources\IdentificationPairs.csv">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
-	</ItemGroup>
-
 </Project>
