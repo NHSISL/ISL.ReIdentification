@@ -8,10 +8,8 @@ using FluentAssertions;
 using Force.DeepCloner;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts.Exceptions;
-using ISL.ReIdentification.Core.Models.Foundations.Lookups.Exceptions;
 using ISL.ReIdentification.Core.Models.Securities;
 using ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts;
-using ISL.ReIdentification.Core.Services.Foundations.Lookups;
 using Moq;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.ImpersonationContexts
@@ -412,7 +410,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
             EntraUser randomEntraUser = CreateRandomEntraUser();
 
             ImpersonationContext randomImpersonationContext = CreateRandomImpersonationContext(
-                randomDateTimeOffset, 
+                randomDateTimeOffset,
                 impersonationContextId: randomEntraUser.EntraUserId);
 
             ImpersonationContext invalidImpersonationContext = randomImpersonationContext;
@@ -498,9 +496,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
             EntraUser randomEntraUser = CreateRandomEntraUser();
 
             ImpersonationContext randomImpersonationContext = CreateRandomModifyImpersonationContext(
-                randomDateTimeOffset, 
+                randomDateTimeOffset,
                 impersonationContextId: randomEntraUser.EntraUserId);
-            
+
             ImpersonationContext nonExistingImpersonationContext = randomImpersonationContext;
             ImpersonationContext nullImpersonationContext = null;
 
@@ -583,14 +581,14 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
 
             ImpersonationContext randomImpersonationContext =
                 CreateRandomModifyImpersonationContext(
-                    randomDateTimeOffset, 
+                    randomDateTimeOffset,
                     impersonationContextId: randomEntraUser.EntraUserId);
 
             ImpersonationContext invalidImpersonationContext = randomImpersonationContext;
             ImpersonationContext storedImpersonationContext = randomImpersonationContext.DeepClone();
             storedImpersonationContext.CreatedBy = GetRandomString();
 
-            storedImpersonationContext.CreatedDate = 
+            storedImpersonationContext.CreatedDate =
                 storedImpersonationContext.CreatedDate.AddMinutes(GetRandomNegativeNumber());
 
             Guid impersonationContextId = invalidImpersonationContext.Id;

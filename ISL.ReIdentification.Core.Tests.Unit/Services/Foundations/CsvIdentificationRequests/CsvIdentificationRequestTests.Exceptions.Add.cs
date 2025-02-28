@@ -71,7 +71,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
         }
 
         [Fact]
-        public async Task 
+        public async Task
             ShouldThrowDependencyValidationExceptionOnAddIfCsvIdentificationRequestAlreadyExistsAndLogItAsync()
         {
             // given
@@ -101,7 +101,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
             ValueTask<CsvIdentificationRequest> addCsvIdentificationRequestTask =
                 this.csvIdentificationRequestService.AddCsvIdentificationRequestAsync(someCsvIdentificationRequest);
 
-            CsvIdentificationRequestDependencyValidationException 
+            CsvIdentificationRequestDependencyValidationException
                 actualCsvIdentificationRequestDependencyValidationException =
                     await Assert.ThrowsAsync<CsvIdentificationRequestDependencyValidationException>(
                         testCode: addCsvIdentificationRequestTask.AsTask);
@@ -136,7 +136,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             EntraUser randomEntraUser = CreateRandomEntraUser();
 
-            CsvIdentificationRequest someCsvIdentificationRequest = 
+            CsvIdentificationRequest someCsvIdentificationRequest =
                 CreateRandomCsvIdentificationRequest(randomDateTimeOffset, randomEntraUser.EntraUserId);
 
             var dbUpdateException = new DbUpdateException();
@@ -194,7 +194,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             EntraUser randomEntraUser = CreateRandomEntraUser();
 
-            CsvIdentificationRequest someCsvIdentificationRequest 
+            CsvIdentificationRequest someCsvIdentificationRequest
                 = CreateRandomCsvIdentificationRequest(randomDateTimeOffset, randomEntraUser.EntraUserId);
 
             var serviceException = new Exception();

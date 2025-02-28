@@ -21,9 +21,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             EntraUser randomEntraUser = CreateRandomEntraUser();
 
-            ImpersonationContext randomImpersonationContext = 
+            ImpersonationContext randomImpersonationContext =
                 CreateRandomImpersonationContext(
-                    randomDateTimeOffset, 
+                    randomDateTimeOffset,
                     impersonationContextId: randomEntraUser.EntraUserId);
 
             ImpersonationContext inputImpersonationContext = randomImpersonationContext;

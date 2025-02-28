@@ -29,7 +29,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
 
             // then
             actualImpersonationContext.Should().BeEquivalentTo(
-                expectedImpersonationContext, 
+                expectedImpersonationContext,
                 options => options
                     .Excluding(ctx => ctx.CreatedBy)
                     .Excluding(ctx => ctx.CreatedDate)
@@ -94,7 +94,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
 
             // then
             actualImpersonationContext.Should().BeEquivalentTo(
-                modifiedImpersonationContext, 
+                modifiedImpersonationContext,
                 options => options
                     .Excluding(ctx => ctx.UpdatedBy)
                     .Excluding(ctx => ctx.UpdatedDate));

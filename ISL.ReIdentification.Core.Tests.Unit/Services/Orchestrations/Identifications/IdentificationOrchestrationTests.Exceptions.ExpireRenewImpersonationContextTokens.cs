@@ -21,7 +21,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
         {
             // given
             AccessRequest someAccessRequest = CreateRandomAccessRequest();
-            bool someIsPreviouslyApproved = true;
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
@@ -71,7 +70,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
         {
             // given
             AccessRequest someAccessRequest = CreateRandomAccessRequest();
-            bool someIsPreviouslyApproved = true;
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
@@ -119,7 +117,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
         {
             // given
             AccessRequest someAccessRequest = CreateRandomAccessRequest();
-            bool someIsPreviouslyApproved = true;
             var serviceException = new Exception();
 
             var failedServiceIdentificationOrchestrationException =

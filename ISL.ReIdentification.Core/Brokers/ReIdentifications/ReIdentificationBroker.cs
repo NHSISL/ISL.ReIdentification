@@ -2,12 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using ISL.Providers.Notifications.Abstractions;
 using ISL.Providers.ReIdentification.Abstractions;
 using ISL.Providers.ReIdentification.Abstractions.Models;
 

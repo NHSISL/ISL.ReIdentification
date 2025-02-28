@@ -30,8 +30,23 @@ jobs:
       run: dotnet tool install --global dotnet-ef
     - name: Deploy Database
       run: dotnet ef database update --project ISL.ReIdentification.Core/ISL.ReIdentification.Core.csproj --startup-project ISL.ReIdentification.Core/ISL.ReIdentification.Core.csproj
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+    - name: Run Unit Tests
+      run: >-
+        $projects = Get-ChildItem -Path . -Filter "*Tests.Unit*.csproj" -Recurse
+
+        foreach ($project in $projects) {
+          Write-Host "Running tests for: $($project.FullName)"
+          dotnet test $project.FullName --no-build --verbosity normal
+        }
+      shell: pwsh
+    - name: Run Acceptance Tests
+      run: >-
+        $projects = Get-ChildItem -Path . -Filter "*Tests.Acceptance*.csproj" -Recurse
+
+        foreach ($project in $projects) {
+          Write-Host "Running tests for: $($project.FullName)"
+          dotnet test $project.FullName --no-build --verbosity normal
+        }
     env:
       NOTIFICATIONCONFIGURATIONS__APIKEY: ${{ secrets.NOTIFICATIONCONFIGURATIONS__APIKEY }}
       NOTIFICATIONCONFIGURATIONS__CSVAPPROVEDREQUESTTEMPLATEID: ${{ secrets.NOTIFICATIONCONFIGURATIONS__CSVAPPROVEDREQUESTTEMPLATEID }}

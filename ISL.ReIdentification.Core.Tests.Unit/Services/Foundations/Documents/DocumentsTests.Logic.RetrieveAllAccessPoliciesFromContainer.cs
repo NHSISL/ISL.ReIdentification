@@ -3,7 +3,6 @@
 // ---------------------------------------------------------
 
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -26,7 +25,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
                     .ReturnsAsync(outputAccessPolicies);
 
             // when
-            List<string> actualAccessPolicies = 
+            List<string> actualAccessPolicies =
                 await this.documentService.RetrieveListOfAllAccessPoliciesAsync(randomContainer);
 
             // then

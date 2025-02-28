@@ -36,12 +36,12 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts
             ImpersonationContext impersonationContext) =>
         TryCatch(async () =>
         {
-            ImpersonationContext impersonationContextWithAddAuditApplied = 
+            ImpersonationContext impersonationContextWithAddAuditApplied =
                 await ApplyAddAuditAsync(impersonationContext);
-                await ValidateImpersonationContextOnAddAsync(impersonationContextWithAddAuditApplied);
+            await ValidateImpersonationContextOnAddAsync(impersonationContextWithAddAuditApplied);
 
-                return await this.reIdentificationStorageBroker.InsertImpersonationContextAsync(
-                    impersonationContextWithAddAuditApplied);
+            return await this.reIdentificationStorageBroker.InsertImpersonationContextAsync(
+                impersonationContextWithAddAuditApplied);
         });
 
         public ValueTask<ImpersonationContext> RetrieveImpersonationContextByIdAsync(Guid impersonationContextId) =>
@@ -64,17 +64,17 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts
             ImpersonationContext impersonationContext) =>
         TryCatch(async () =>
         {
-            ImpersonationContext impersonationContextWithModifyAuditApplied = 
+            ImpersonationContext impersonationContextWithModifyAuditApplied =
             await ApplyModifyAuditAsync(impersonationContext);
-            
+
             await ValidateImpersonationContextOnModifyAsync(impersonationContextWithModifyAuditApplied);
 
-            ImpersonationContext maybeImpersonationContext = 
+            ImpersonationContext maybeImpersonationContext =
                 await this.reIdentificationStorageBroker.
                     SelectImpersonationContextByIdAsync(impersonationContextWithModifyAuditApplied.Id);
-            
+
             ValidateStorageImpersonationContext(
-                maybeImpersonationContext, 
+                maybeImpersonationContext,
                 impersonationContextWithModifyAuditApplied.Id);
 
             ValidateAgainstStorageImpersonationContextOnModify(

@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
-using ISL.Providers.Storages.Abstractions.Models.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.Documents.Exceptions;
 using Moq;
 using Xeptions;
@@ -106,7 +105,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             var expectedDocumentServiceException = new DocumentServiceException(
                 message: "Document service error occurred, contact support.",
                 innerException: failedServiceDocumentException);
-                    
+
             this.blobStorageBrokerMock.Setup(broker =>
                 broker.RetrieveListOfAllAccessPoliciesAsync(someContainer))
                     .ThrowsAsync(someException);

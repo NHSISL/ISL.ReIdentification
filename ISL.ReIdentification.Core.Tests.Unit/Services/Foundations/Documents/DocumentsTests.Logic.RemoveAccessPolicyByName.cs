@@ -18,13 +18,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
 
             // when
             await this.documentService.RemoveAccessPolicyByNameAsync(
-                randomContainer, 
+                randomContainer,
                 randomPolicyName);
 
             // then
             this.blobStorageBrokerMock.Verify(broker =>
                 broker.RemoveAccessPolicyByNameAsync(
-                    randomContainer, 
+                    randomContainer,
                     randomPolicyName),
                 Times.Once);
 

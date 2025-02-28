@@ -3,7 +3,6 @@
 // ---------------------------------------------------------
 
 using System;
-using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.ReIdentification.Core.Models.Foundations.Documents.Exceptions;
@@ -48,9 +47,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             // when
             ValueTask<string> createDirectorySasTokenTask =
                 this.documentService.CreateSasTokenAsync(
-                    invalidContainer, 
-                    invalidpath, 
-                    invalidAccessPolicyIdentifier, 
+                    invalidContainer,
+                    invalidpath,
+                    invalidAccessPolicyIdentifier,
                     invalidDateTimeOffset);
 
             DocumentValidationException actualDocumentValidationException =
