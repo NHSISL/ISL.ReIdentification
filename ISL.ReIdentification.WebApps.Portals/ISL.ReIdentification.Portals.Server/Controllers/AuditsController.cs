@@ -16,7 +16,6 @@ using RESTFulSense.Controllers;
 
 namespace ISL.ReIdentification.Configurations.Server.Controllers
 {
-    [Authorize(Roles = "ISL.Reidentification.Configuration.Administrators")]
     [ApiController]
     [Route("api/[controller]")]
     public class AuditsController : RESTFulController
@@ -60,13 +59,9 @@ namespace ISL.ReIdentification.Configurations.Server.Controllers
             }
         }
 
+        [InvisibleApi]
         [HttpGet]
-#if !DEBUG
-        [EnableQuery(PageSize = 50)]
-#endif
-#if DEBUG
-        [EnableQuery(PageSize = 5000)]
-#endif
+        [EnableQuery()]
         public async ValueTask<ActionResult<IQueryable<Audit>>> Get()
         {
             try

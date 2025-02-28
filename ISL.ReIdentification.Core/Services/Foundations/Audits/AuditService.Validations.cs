@@ -49,6 +49,9 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Audits
         private async ValueTask ValidateAuditOnRetrieveById(Guid auditId) =>
             Validate((Rule: await IsInvalidAsync(auditId), Parameter: nameof(Audit.Id)));
 
+        private async ValueTask ValidateAuditOnRetrieveByAuditType(string auditType) =>
+           Validate((Rule: await IsInvalidAsync(auditType), Parameter: nameof(Audit.AuditType)));
+
         private async ValueTask ValidateAuditOnModifyAsync(Audit audit)
         {
             ValidateAuditIsNotNull(audit);
@@ -93,6 +96,14 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Audits
             if (maybeAudit is null)
             {
                 throw new NotFoundAuditException($"Audit not found with Id: {maybeId}");
+            }
+        }
+
+        private static async ValueTask ValidateStorageAuditTypeAsync(Audit maybeAudit, string maybeAuditType)
+        {
+            if (maybeAudit is null)
+            {
+                throw new NotFoundAuditException($"Audit not found with audit Type: {maybeAuditType}");
             }
         }
 

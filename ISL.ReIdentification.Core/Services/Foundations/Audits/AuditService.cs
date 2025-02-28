@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications;
+using ISL.ReIdentification.Core.Models;
 using ISL.ReIdentification.Core.Models.Foundations.Audits;
 
 namespace ISL.ReIdentification.Core.Services.Foundations.Audits
@@ -50,6 +51,23 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Audits
                 await ValidateStorageAuditAsync(maybeAudit, auditId);
 
                 return maybeAudit;
+            });
+
+        public ValueTask<Audit> RetrieveAuditByAuditTypeAsync(string auditType) =>
+            TryCatch(async () =>
+            {
+                await ValidateAuditOnRetrieveByAuditType(auditType);
+
+                var audits = await this.reIdentificationStorageBroker
+                    .SelectAuditsByAuditTypeAsync(auditType);
+
+                var mostRecentAudit = audits
+                    .OrderByDescending(audit => audit.CreatedDate)
+                    .FirstOrDefault();
+
+                await ValidateStorageAuditTypeAsync(mostRecentAudit, auditType);
+
+                return mostRecentAudit;
             });
 
         public ValueTask<Audit> ModifyAuditAsync(Audit audit) =>

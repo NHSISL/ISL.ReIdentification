@@ -32,6 +32,7 @@ using ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Brokers.Notifications;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
+using ISL.ReIdentification.Core.Models.Foundations.Audits;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Foundations.Lookups;
@@ -223,6 +224,7 @@ namespace ISL.ReIdentification.Configurations.Server
             builder.EntitySet<OdsData>("OdsData");
             builder.EntitySet<PdsData>("PdsData");
             builder.EntitySet<AccessAudit>("AccessAudits");
+            builder.EntitySet<Audit>("Audits");
             builder.EnableLowerCamelCase();
 
             return builder.GetEdmModel();
@@ -302,6 +304,7 @@ namespace ISL.ReIdentification.Configurations.Server
         {
             services.AddTransient<IAuditService, AuditService>();
             services.AddTransient<IAccessAuditService, AccessAuditService>();
+            services.AddTransient<IAuditService, AuditService>();
             services.AddTransient<IImpersonationContextService, ImpersonationContextService>();
             services.AddTransient<ILookupService, LookupService>();
             services.AddTransient<IOdsDataService, OdsDataService>();

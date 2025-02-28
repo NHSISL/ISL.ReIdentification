@@ -40,10 +40,11 @@ export const UserAccessNew = () => {
     }, [odsRoot]);
 
     const saveRecord = async () => {
-        let ua : UserAccess;
+        let ua: UserAccess;
 
-        if(selectedUser){
-            ua = {...new UserAccess(),                 
+        if (selectedUser) {
+            ua = {
+                ...new UserAccess(),
                 ...selectedUser,
                 entraUserId: selectedUser.id,
                 email: selectedUser.mail,
@@ -53,20 +54,20 @@ export const UserAccessNew = () => {
             try {
                 await mutateAsync(ua);
                 navigate("/userAccess");
-            } catch(error) {
-                if(error instanceof Error) {
+            } catch (error) {
+                if (error instanceof Error) {
                     toastError(error.message);
                     console.log(error);
                 }
             }
-            
-        } 
+
+        }
     }
 
     const removeOdsCode = (odsRecord: OdsData) => {
         setSelectedOdsRecords([...selectedOdsRecords.filter(o => o.organisationCode != odsRecord.organisationCode)])
     }
-    
+
     return (
         <Container fluid className="mt-4">
             <section>
@@ -77,9 +78,9 @@ export const UserAccessNew = () => {
                 </BreadCrumbBase>
                 <div className="mt-3">
                     <h1>New User Access</h1>
-                    {!selectedUser ? 
-                        <EntraUserSearch selectUser={(entraUser) => { setSelectedUser(entraUser)}} />
-                    : 
+                    {!selectedUser ?
+                        <EntraUserSearch selectUser={(entraUser) => { setSelectedUser(entraUser) }} />
+                        :
                         <Card>
                             <CardHeader>
                                 Create Account For:
@@ -131,16 +132,16 @@ export const UserAccessNew = () => {
                                     </Row>
                                 </div>
                             </CardBody>
-                            
+
                             <CardFooter>
                                 <ButtonGroup>
                                     <Button onClick={saveRecord} disabled={isPending}>
-                                        { isPending ? <Spinner /> : "Save"}
+                                        {isPending ? <Spinner /> : "Save"}
                                     </Button>
                                     <Button onClick={() => {
                                         setSelectedUser(undefined)
                                         setSelectedOdsRecords([]);
-                                    } } variant="secondary">Clear</Button>
+                                    }} variant="secondary">Clear</Button>
                                 </ButtonGroup>
                                 {error && <div className="bs-warning">{JSON.stringify(error.message)}</div>}
                             </CardFooter>
