@@ -3,10 +3,8 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
-using ISL.Providers.Storages.Abstractions.Models.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.Documents.Exceptions;
 using Moq;
 using Xeptions;
@@ -54,9 +52,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
 
             this.blobStorageBrokerMock.Verify(broker =>
                 broker.CreateSasTokenAsync(
-                    someContainer, 
-                    somepath, 
-                    someAccessPolicyIdentifier, 
+                    someContainer,
+                    somepath,
+                    someAccessPolicyIdentifier,
                     someDateTimeOffset),
                 Times.Once);
 
@@ -94,9 +92,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             // when
             ValueTask<string> createDirectorySasTokenTask =
                 this.documentService.CreateSasTokenAsync(
-                    someContainer, 
-                    somepath, 
-                    someAccessPolicyIdentifier, 
+                    someContainer,
+                    somepath,
+                    someAccessPolicyIdentifier,
                     someDateTimeOffset);
 
             DocumentDependencyException actualDocumentDependencyException =
@@ -107,9 +105,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
 
             this.blobStorageBrokerMock.Verify(broker =>
                 broker.CreateSasTokenAsync(
-                    someContainer, 
-                    somepath, 
-                    someAccessPolicyIdentifier, 
+                    someContainer,
+                    somepath,
+                    someAccessPolicyIdentifier,
                     someDateTimeOffset),
                 Times.Once);
 
@@ -142,18 +140,18 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
 
             this.blobStorageBrokerMock.Setup(broker =>
                 broker.CreateSasTokenAsync(
-                    someContainer, 
-                    somepath, 
-                    someAccessPolicyIdentifier, 
+                    someContainer,
+                    somepath,
+                    someAccessPolicyIdentifier,
                     someDateTimeOffset))
                 .ThrowsAsync(someException);
 
             // when
             ValueTask<string> createDirectorySasTokenTask =
                 this.documentService.CreateSasTokenAsync(
-                    someContainer, 
-                    somepath, 
-                    someAccessPolicyIdentifier, 
+                    someContainer,
+                    somepath,
+                    someAccessPolicyIdentifier,
                     someDateTimeOffset);
 
             DocumentServiceException actualDocumentServiceException =
@@ -164,9 +162,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
 
             this.blobStorageBrokerMock.Verify(broker =>
                 broker.CreateSasTokenAsync(
-                    someContainer, 
-                    somepath, 
-                    someAccessPolicyIdentifier, 
+                    someContainer,
+                    somepath,
+                    someAccessPolicyIdentifier,
                     someDateTimeOffset),
                 Times.Once);
 
