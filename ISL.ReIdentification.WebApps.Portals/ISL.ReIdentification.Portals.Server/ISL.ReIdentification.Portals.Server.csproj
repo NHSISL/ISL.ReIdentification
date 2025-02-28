@@ -7,6 +7,12 @@
 		<SpaRoot>..\ISL.ReIdentification.Portals.Client</SpaRoot>
 		<SpaProxyLaunchCommand>npm run dev</SpaProxyLaunchCommand>
 		<SpaProxyServerUrl>https://localhost:5173</SpaProxyServerUrl>
+		<Version>1.0.0.1</Version>
+		<AssemblyVersion>1.0.0.1</AssemblyVersion>
+		<FileVersion>1.0.0.1</FileVersion>
+		<PackageReleaseNotes>
+			Initial release of the ReIdentification Service.
+		</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>
