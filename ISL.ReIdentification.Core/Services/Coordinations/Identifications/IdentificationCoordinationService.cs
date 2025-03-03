@@ -145,11 +145,13 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
         TryCatch(async () =>
         {
             ValidateOnProcessImpersonationContextRequestAsync(container, filepath, this.projectStorageConfiguration);
+            var filepathData = await ExtractFromFilepath(filepath);
 
             AccessRequest accessRequestWithCsvIdentificationRequest =
-                await CreateAccessRequestWithCsvIdentificationRequestAsync(container, filepath);
-
-            var filepathData = await ExtractFromFilepath(filepath);
+                await CreateAccessRequestWithCsvIdentificationRequestAsync(
+                    container,
+                    filepath,
+                    filepathData.ErrorFilepath);
 
             try
             {
@@ -180,13 +182,13 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
 
                 MemoryStream csvData = new MemoryStream(reIdentifiedAccessRequest.CsvIdentificationRequest.Data);
 
-                await this.identificationOrchestrationService
-                    .AddDocumentAsync(
-                        csvData, filepathData.PickupFilepath, projectStorageConfiguration.Container);
+                await this.identificationOrchestrationService.AddDocumentAsync(
+                    csvData,
+                    filepathData.PickupFilepath,
+                    container);
 
-                await this.identificationOrchestrationService
-                    .RemoveDocumentByFileNameAsync(
-                        filepathData.LandingFilepath, projectStorageConfiguration.Container);
+                await this.identificationOrchestrationService.RemoveDocumentByFileNameAsync(
+                    filepath, container);
 
                 return reIdentifiedAccessRequest;
             }
@@ -195,13 +197,14 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
                 MemoryStream csvData = new MemoryStream(
                     accessRequestWithCsvIdentificationRequest.CsvIdentificationRequest.Data);
 
-                await this.identificationOrchestrationService
-                    .AddDocumentAsync(
-                        csvData, filepathData.ErrorFilepath, projectStorageConfiguration.Container);
+                await this.identificationOrchestrationService.AddDocumentAsync(
+                    csvData,
+                    filepathData.ErrorFilepath,
+                    container);
 
-                await this.identificationOrchestrationService
-                    .RemoveDocumentByFileNameAsync(
-                        filepathData.LandingFilepath, projectStorageConfiguration.Container);
+                await this.identificationOrchestrationService.RemoveDocumentByFileNameAsync(
+                    filepath,
+                    container);
 
                 throw;
             }
@@ -430,7 +433,8 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
 
         virtual internal async ValueTask<AccessRequest> CreateAccessRequestWithCsvIdentificationRequestAsync(
             string container,
-            string filepath)
+            string filepath,
+            string errorFilepath)
         {
             Stream retrievedFileStream = new MemoryStream();
 
@@ -443,37 +447,56 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
 
             byte[] fileData = ReadAllBytesFromStream(retrievedFileStream);
             AccessRequest accessRequest = retrievedAccessRequest;
-            accessRequest.CsvIdentificationRequest.Data = fileData;
 
-            accessRequest.CsvIdentificationRequest.IdentifierColumnIndex = GetColumnIndexFromStream(
-                    retrievedFileStream,
-                    retrievedAccessRequest.ImpersonationContext.IdentifierColumn);
+            try
+            {
+                accessRequest.CsvIdentificationRequest.Data = fileData;
 
-            accessRequest.CsvIdentificationRequest.HasHeaderRecord = true;
-            accessRequest.CsvIdentificationRequest.Id = accessRequest.ImpersonationContext.Id;
+                accessRequest.CsvIdentificationRequest.IdentifierColumnIndex = GetColumnIndexFromStream(
+                        retrievedFileStream,
+                        retrievedAccessRequest.ImpersonationContext.IdentifierColumn);
 
-            accessRequest.CsvIdentificationRequest.RecipientEntraUserId =
-                accessRequest.ImpersonationContext.RequesterEntraUserId;
+                accessRequest.CsvIdentificationRequest.HasHeaderRecord = true;
+                accessRequest.CsvIdentificationRequest.Id = accessRequest.ImpersonationContext.Id;
 
-            accessRequest.CsvIdentificationRequest.RecipientEmail =
-                accessRequest.ImpersonationContext.RequesterEmail;
+                accessRequest.CsvIdentificationRequest.RecipientEntraUserId =
+                    accessRequest.ImpersonationContext.RequesterEntraUserId;
 
-            accessRequest.CsvIdentificationRequest.RecipientJobTitle =
-                accessRequest.ImpersonationContext.RequesterJobTitle;
+                accessRequest.CsvIdentificationRequest.RecipientEmail =
+                    accessRequest.ImpersonationContext.RequesterEmail;
 
-            accessRequest.CsvIdentificationRequest.RecipientDisplayName =
-                accessRequest.ImpersonationContext.RequesterDisplayName;
+                accessRequest.CsvIdentificationRequest.RecipientJobTitle =
+                    accessRequest.ImpersonationContext.RequesterJobTitle;
 
-            accessRequest.CsvIdentificationRequest.RecipientFirstName =
-                accessRequest.ImpersonationContext.RequesterFirstName;
+                accessRequest.CsvIdentificationRequest.RecipientDisplayName =
+                    accessRequest.ImpersonationContext.RequesterDisplayName;
 
-            accessRequest.CsvIdentificationRequest.RecipientLastName =
-                accessRequest.ImpersonationContext.RequesterLastName;
+                accessRequest.CsvIdentificationRequest.RecipientFirstName =
+                    accessRequest.ImpersonationContext.RequesterFirstName;
 
-            accessRequest.CsvIdentificationRequest.Reason = accessRequest.ImpersonationContext.Reason;
-            accessRequest.CsvIdentificationRequest.Organisation = accessRequest.ImpersonationContext.Organisation;
+                accessRequest.CsvIdentificationRequest.RecipientLastName =
+                    accessRequest.ImpersonationContext.RequesterLastName;
 
-            return accessRequest;
+                accessRequest.CsvIdentificationRequest.Reason = accessRequest.ImpersonationContext.Reason;
+                accessRequest.CsvIdentificationRequest.Organisation = accessRequest.ImpersonationContext.Organisation;
+
+                return accessRequest;
+            }
+            catch (Exception)
+            {
+                MemoryStream csvData = new MemoryStream(fileData);
+
+                await this.identificationOrchestrationService.AddDocumentAsync(
+                    csvData,
+                    errorFilepath,
+                    container);
+
+                await this.identificationOrchestrationService.RemoveDocumentByFileNameAsync(
+                    filepath,
+                    container);
+
+                throw;
+            }
         }
 
         private static byte[] ReadAllBytesFromStream(Stream stream)

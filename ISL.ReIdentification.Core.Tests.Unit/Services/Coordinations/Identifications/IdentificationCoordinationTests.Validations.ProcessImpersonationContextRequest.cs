@@ -169,6 +169,9 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             Guid inputImpersonationContextId = randomImpersonationContextId;
             string inputContainer = randomImpersonationContextId.ToString();
             string inputFilepath = GetRandomString();
+            string outputPickupFilepath = GetRandomString();
+            string outputErrorFilepath = GetRandomString();
+            var outputExtractFromFilepath = (inputFilepath, outputPickupFilepath, outputErrorFilepath);
             string pseudoIdentifier = "0000000001";
             string randomHeaderValue = GetRandomStringWithLengthOf(10);
             string randomIdentifierHeaderValue = GetRandomStringWithLengthOf(10);
@@ -191,6 +194,21 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             AccessRequest retrievedAccessRequest = randomAccessRequest;
             retrievedAccessRequest.ImpersonationContext.IdentifierColumn = impersonationContextIdentifierHeaderValue;
 
+            var identificationCoordinationServiceMock = new Mock<IdentificationCoordinationService>
+                (this.accessOrchestrationServiceMock.Object,
+                this.persistanceOrchestrationServiceMock.Object,
+                this.identificationOrchestrationServiceMock.Object,
+                this.csvHelperBrokerMock.Object,
+                this.securityBrokerMock.Object,
+                this.loggingBrokerMock.Object,
+                this.dateTimeBrokerMock.Object,
+                this.projectStorageConfiguration)
+            { CallBase = true };
+
+            identificationCoordinationServiceMock.Setup(service =>
+                service.ExtractFromFilepath(inputFilepath))
+                    .ReturnsAsync(outputExtractFromFilepath);
+
             this.identificationOrchestrationServiceMock
                 .Setup(service => service
                     .RetrieveDocumentByFileNameAsync(It.Is(SameStreamAs(outputStream)), inputFilepath, inputContainer))
@@ -205,16 +223,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 service.RetrieveImpersonationContextByIdAsync(inputImpersonationContextId))
                     .ReturnsAsync(retrievedAccessRequest);
 
-            var service = new IdentificationCoordinationService(
-                accessOrchestrationService: this.accessOrchestrationServiceMock.Object,
-                persistanceOrchestrationService: this.persistanceOrchestrationServiceMock.Object,
-                identificationOrchestrationService: this.identificationOrchestrationServiceMock.Object,
-                csvHelperBroker: this.csvHelperBrokerMock.Object,
-                securityBroker: this.securityBrokerMock.Object,
-                loggingBroker: this.loggingBrokerMock.Object,
-                dateTimeBroker: this.dateTimeBrokerMock.Object,
-                projectStorageConfiguration: this.projectStorageConfiguration);
-
             var invalidCsvIdentificationCoordinationException =
                 new InvalidCsvIdentificationCoordinationException(
                 message: "Invalid csv file. Please check that the provided file has a column name " +
@@ -225,6 +233,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                     message: "Identification coordination validation error occurred, " +
                         "fix the errors and try again.",
                     innerException: invalidCsvIdentificationCoordinationException);
+
+            IdentificationCoordinationService service = identificationCoordinationServiceMock.Object;
 
             // when
             ValueTask<AccessRequest> createAccessRequestTask = service
@@ -245,6 +255,19 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             this.identificationOrchestrationServiceMock.Verify(service =>
                 service.RetrieveDocumentByFileNameAsync(
                     It.IsAny<Stream>(),
+                    inputFilepath,
+                    inputContainer),
+                        Times.Once);
+
+            this.identificationOrchestrationServiceMock.Verify(service =>
+                service.AddDocumentAsync(
+                    It.IsAny<Stream>(),
+                    outputErrorFilepath,
+                    inputContainer),
+                        Times.Once);
+
+            this.identificationOrchestrationServiceMock.Verify(service =>
+                service.RemoveDocumentByFileNameAsync(
                     inputFilepath,
                     inputContainer),
                         Times.Once);

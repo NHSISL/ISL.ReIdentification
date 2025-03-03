@@ -23,6 +23,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             Guid inputImpersonationContextId = randomImpersonationContextId;
             string inputContainer = randomImpersonationContextId.ToString();
             string inputFilepath = GetRandomString();
+            string errorFilepath = GetRandomString();
             string pseudoIdentifier = "0000000001";
             string randomHeaderValue = GetRandomStringWithLengthOf(10);
             string randomIdentifierHeaderValue = GetRandomStringWithLengthOf(10);
@@ -75,7 +76,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
             // when
             var actualAccessRequest = await service
-                .CreateAccessRequestWithCsvIdentificationRequestAsync(inputContainer, inputFilepath);
+                .CreateAccessRequestWithCsvIdentificationRequestAsync(inputContainer, inputFilepath, errorFilepath);
 
             // then
             actualAccessRequest.Should().BeEquivalentTo(expectedAccessRequest);
