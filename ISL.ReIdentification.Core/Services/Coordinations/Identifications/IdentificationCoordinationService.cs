@@ -188,7 +188,8 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
                     container);
 
                 await this.identificationOrchestrationService.RemoveDocumentByFileNameAsync(
-                    filepath, container);
+                    filepath, 
+                    container);
 
                 return reIdentifiedAccessRequest;
             }
