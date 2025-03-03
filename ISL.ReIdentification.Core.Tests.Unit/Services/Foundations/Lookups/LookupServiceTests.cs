@@ -101,10 +101,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
         private static Filler<Lookup> CreateLookupFiller(DateTimeOffset dateTimeOffset, string userId)
         {
             var filler = new Filler<Lookup>();
+            string name = GetRandomStringWithLengthOf(220);
+            string groupName = GetRandomStringWithLengthOf(220);
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnProperty(lookup => lookup.Name).Use(GetRandomStringWithLengthOf(220))
+                .OnProperty(lookup => lookup.GroupName).Use(() => groupName)
+                .OnProperty(lookup => lookup.Name).Use(() => name)
                 .OnProperty(lookup => lookup.CreatedBy).Use(userId)
                 .OnProperty(lookup => lookup.UpdatedBy).Use(userId);
 
