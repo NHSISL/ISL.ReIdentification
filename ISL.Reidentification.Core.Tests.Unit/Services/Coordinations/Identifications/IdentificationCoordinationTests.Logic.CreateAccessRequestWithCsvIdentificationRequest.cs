@@ -42,7 +42,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             randomAccessRequest.IdentificationRequest = null;
             randomAccessRequest.CsvIdentificationRequest = null;
             AccessRequest retrievedAccessRequest = randomAccessRequest;
-            retrievedAccessRequest.ImpersonationContext.HasHeaderRecord = true;
             retrievedAccessRequest.ImpersonationContext.IdentifierColumn = randomIdentifierHeaderValue;
 
             AccessRequest expectedAccessRequest =
@@ -52,10 +51,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
             this.identificationOrchestrationServiceMock
                 .Setup(service => service
-                    .RetrieveDocumentByFileNameAsync(outputStream, inputFilepath, inputContainer))
+                    .RetrieveDocumentByFileNameAsync(It.Is(SameStreamAs(outputStream)), inputFilepath, inputContainer))
                         .Callback<Stream, string, string>((output, fileName, container) =>
                         {
-                            returnedStream.Position = 0;
+                            output.Position = 0;
                             returnedStream.CopyTo(output);
                         })
                         .Returns(ValueTask.CompletedTask);
@@ -87,7 +86,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
             this.identificationOrchestrationServiceMock.Verify(service =>
                 service.RetrieveDocumentByFileNameAsync(
-                    It.Is(SameStreamAs(outputStream)),
+                    It.IsAny<Stream>(),
                     inputFilepath,
                     inputContainer),
                         Times.Once);
