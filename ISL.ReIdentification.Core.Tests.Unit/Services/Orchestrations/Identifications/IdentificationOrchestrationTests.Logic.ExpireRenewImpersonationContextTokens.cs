@@ -20,7 +20,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public async Task ShouldExpireRenewImpersonationContextTokensAsync(bool isPreviouslyApproved)
+        public async Task ShouldExpireRenewImpersonationContextTokensAsync(bool containerExists)
         {
             // given
             AccessRequest randomAccessRequest = CreateRandomAccessRequest();
@@ -31,6 +31,14 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             string inputContainer = inputAccessRequest.ImpersonationContext.Id.ToString();
             List<string> randomAccessPolicies = GetRandomStringList();
             List<string> outputAccessPolicies = randomAccessPolicies;
+            List<string> randomContainers = GetRandomStringList();
+            List<string> outputContainers = randomContainers;
+
+            if (containerExists)
+            {
+                outputContainers.Add(inputAccessRequest.ImpersonationContext.Id.ToString());
+            }
+            
             string inputInboxPolicyname = inputContainer + "-InboxPolicy";
             string inputOutboxPolicyname = inputContainer + "-OutboxPolicy";
             string inputErrorsPolicyname = inputContainer + "-ErrorsPolicy";
@@ -62,6 +70,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
+
+            this.documentServiceMock.Setup(service =>
+                service.RetrieveAllContainersAsync())
+                    .ReturnsAsync(outputContainers);
 
             this.documentServiceMock.Setup(service =>
                 service.RetrieveListOfAllAccessPoliciesAsync(inputContainer))
@@ -106,7 +118,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
 
             // when
             AccessRequest actualAccessRequest = await service
-                .ExpireRenewImpersonationContextTokensAsync(inputAccessRequest, isPreviouslyApproved);
+                .ExpireRenewImpersonationContextTokensAsync(inputAccessRequest);
 
             // then
             actualAccessRequest.Should().BeEquivalentTo(expectedAccessRequest);
@@ -116,10 +128,14 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                     Times.Once);
 
             this.documentServiceMock.Verify(service =>
+                service.RetrieveAllContainersAsync(),
+                    Times.Once);
+
+            this.documentServiceMock.Verify(service =>
                 service.RetrieveListOfAllAccessPoliciesAsync(inputContainer),
                     Times.Once);
 
-            if (!isPreviouslyApproved)
+            if (!containerExists)
             {
                 this.documentServiceMock.Verify(service =>
                     service.AddContainerAsync(inputContainer),

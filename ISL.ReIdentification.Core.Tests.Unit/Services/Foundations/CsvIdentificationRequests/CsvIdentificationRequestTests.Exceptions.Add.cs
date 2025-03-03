@@ -8,6 +8,7 @@ using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests.Exceptions;
+using ISL.ReIdentification.Core.Models.Securities;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Moq;
@@ -64,12 +65,14 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
         }
 
         [Fact]
-        public async Task ShouldThrowDependencyValidationExceptionOnAddIfCsvIdentificationRequestAlreadyExistsAndLogItAsync()
+        public async Task 
+            ShouldThrowDependencyValidationExceptionOnAddIfCsvIdentificationRequestAlreadyExistsAndLogItAsync()
         {
             // given
             CsvIdentificationRequest someCsvIdentificationRequest = CreateRandomCsvIdentificationRequest();
@@ -86,7 +89,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             var expectedCsvIdentificationRequestDependencyValidationException =
                 new CsvIdentificationRequestDependencyValidationException(
-                    message: "CSV identification request dependency validation error occurred, fix errors and try again.",
+                    message: "CSV identification request dependency validation error occurred, " +
+                        "fix errors and try again.",
                     innerException: alreadyExistsCsvIdentificationRequestException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -97,9 +101,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
             ValueTask<CsvIdentificationRequest> addCsvIdentificationRequestTask =
                 this.csvIdentificationRequestService.AddCsvIdentificationRequestAsync(someCsvIdentificationRequest);
 
-            CsvIdentificationRequestDependencyValidationException actualCsvIdentificationRequestDependencyValidationException =
-                await Assert.ThrowsAsync<CsvIdentificationRequestDependencyValidationException>(
-                    testCode: addCsvIdentificationRequestTask.AsTask);
+            CsvIdentificationRequestDependencyValidationException 
+                actualCsvIdentificationRequestDependencyValidationException =
+                    await Assert.ThrowsAsync<CsvIdentificationRequestDependencyValidationException>(
+                        testCode: addCsvIdentificationRequestTask.AsTask);
 
             // then
             actualCsvIdentificationRequestDependencyValidationException.Should().BeEquivalentTo(
@@ -119,6 +124,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
         }
@@ -127,7 +133,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
         public async Task ShouldThrowDependencyExceptionOnAddIfDependencyErrorOccurredAndLogItAsync()
         {
             // given
-            CsvIdentificationRequest someCsvIdentificationRequest = CreateRandomCsvIdentificationRequest();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            CsvIdentificationRequest someCsvIdentificationRequest = 
+                CreateRandomCsvIdentificationRequest(randomDateTimeOffset, randomEntraUser.EntraUserId);
+
             var dbUpdateException = new DbUpdateException();
 
             var failedOperationCsvIdentificationRequestException =
@@ -171,6 +182,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
         }
@@ -179,7 +191,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
         public async Task ShouldThrowServiceExceptionOnAddIfServiceErrorOccurredAndLogItAsync()
         {
             //given
-            CsvIdentificationRequest someCsvIdentificationRequest = CreateRandomCsvIdentificationRequest();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            CsvIdentificationRequest someCsvIdentificationRequest 
+                = CreateRandomCsvIdentificationRequest(randomDateTimeOffset, randomEntraUser.EntraUserId);
+
             var serviceException = new Exception();
 
             var failedServiceCsvIdentificationRequestException =
@@ -222,6 +239,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
         }

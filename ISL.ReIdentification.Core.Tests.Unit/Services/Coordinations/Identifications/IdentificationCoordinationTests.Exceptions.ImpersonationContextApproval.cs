@@ -1,0 +1,155 @@
+﻿// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
+using System;
+using System.Threading.Tasks;
+using FluentAssertions;
+using ISL.ReIdentification.Core.Models.Coordinations.Identifications.Exceptions;
+using Moq;
+using Xeptions;
+
+namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifications
+{
+    public partial class IdentificationCoordinationTests
+    {
+        [Theory]
+        [MemberData(nameof(DependencyValidationExceptions))]
+        public async Task ShouldThrowDependencyValidationExceptionOnImpersonationContextApprovalAndLogItAsync(
+            Xeption dependencyValidationException)
+        {
+            // given
+            Guid someImpersonationContextId = Guid.NewGuid();
+
+            this.persistanceOrchestrationServiceMock.Setup(service =>
+                service.RetrieveImpersonationContextByIdAsync(someImpersonationContextId))
+                    .ThrowsAsync(dependencyValidationException);
+
+            var expectedIdentificationCoordinationDependencyValidationException =
+                new IdentificationCoordinationDependencyValidationException(
+                    message: "Identification coordination dependency validation error occurred, " +
+                        "fix the errors and try again.",
+                    innerException: dependencyValidationException);
+
+            // when
+            ValueTask impersonationContextApprovalTask = this.identificationCoordinationService
+                .ImpersonationContextApprovalAsync(someImpersonationContextId, It.IsAny<bool>());
+
+            IdentificationCoordinationDependencyValidationException
+                actualIdentificationCoordinationDependencyValidationException =
+                    await Assert.ThrowsAsync<IdentificationCoordinationDependencyValidationException>(
+                        testCode: impersonationContextApprovalTask.AsTask);
+
+            // then
+            actualIdentificationCoordinationDependencyValidationException
+                .Should().BeEquivalentTo(expectedIdentificationCoordinationDependencyValidationException);
+
+            this.persistanceOrchestrationServiceMock.Verify(service =>
+                service.RetrieveImpersonationContextByIdAsync(someImpersonationContextId),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
+                   expectedIdentificationCoordinationDependencyValidationException))),
+                       Times.Once);
+
+            this.accessOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.identificationOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.persistanceOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(DependencyExceptions))]
+        public async Task ShouldThrowDependencyExceptionOnImpersonationContextApprovalAndLogItAsync(
+            Xeption dependencyException)
+        {
+            // given
+            Guid someImpersonationContextId = Guid.NewGuid();
+
+            this.persistanceOrchestrationServiceMock.Setup(service =>
+                service.RetrieveImpersonationContextByIdAsync(someImpersonationContextId))
+                    .ThrowsAsync(dependencyException);
+
+            var expectedIdentificationCoordinationDependencyException =
+                new IdentificationCoordinationDependencyException(
+                    message: "Identification coordination dependency error occurred, " +
+                        "fix the errors and try again.",
+                    innerException: dependencyException.InnerException as Xeption);
+
+            // when
+            ValueTask impersonationContextApprovalTask = this.identificationCoordinationService
+                .ImpersonationContextApprovalAsync(someImpersonationContextId, It.IsAny<bool>());
+
+            IdentificationCoordinationDependencyException
+                actualIdentificationCoordinationDependencyException =
+                    await Assert.ThrowsAsync<IdentificationCoordinationDependencyException>(
+                        testCode: impersonationContextApprovalTask.AsTask);
+
+            // then
+            actualIdentificationCoordinationDependencyException
+                .Should().BeEquivalentTo(expectedIdentificationCoordinationDependencyException);
+
+            this.persistanceOrchestrationServiceMock.Verify(service =>
+                service.RetrieveImpersonationContextByIdAsync(someImpersonationContextId),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
+                   expectedIdentificationCoordinationDependencyException))),
+                       Times.Once);
+
+            this.accessOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.identificationOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.persistanceOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnImpersonationContextApprovalAndLogItAsync()
+        {
+            // given
+            Exception someException = new Exception();
+            Guid someImpersonationContextId = Guid.NewGuid();
+
+            this.persistanceOrchestrationServiceMock.Setup(service =>
+                service.RetrieveImpersonationContextByIdAsync(someImpersonationContextId))
+                    .ThrowsAsync(someException);
+
+            var expectedIdentificationCoordinationServiceException =
+                new IdentificationCoordinationServiceException(
+                    message: "Identification coordination service error occurred, " +
+                        "fix the errors and try again.",
+                    innerException: someException);
+
+            // when
+            ValueTask impersonationContextApprovalTask = this.identificationCoordinationService
+                .ImpersonationContextApprovalAsync(someImpersonationContextId, It.IsAny<bool>());
+
+            IdentificationCoordinationServiceException
+                actualIdentificationCoordinationServiceException =
+                    await Assert.ThrowsAsync<IdentificationCoordinationServiceException>(
+                        testCode: impersonationContextApprovalTask.AsTask);
+
+            // then
+            actualIdentificationCoordinationServiceException
+                .Should().BeEquivalentTo(expectedIdentificationCoordinationServiceException);
+
+            this.persistanceOrchestrationServiceMock.Verify(service =>
+                 service.RetrieveImpersonationContextByIdAsync(someImpersonationContextId),
+                     Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(expectedIdentificationCoordinationServiceException))),
+                    Times.Once);
+
+            this.accessOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.identificationOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.persistanceOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+    }
+}

@@ -5,11 +5,13 @@ export const useFileChange = (
     setFileName: React.Dispatch<React.SetStateAction<string>>,
     setHeaderColumns: React.Dispatch<React.SetStateAction<string[]>>,
     setCsvData: React.Dispatch<React.SetStateAction<string | null>>,
-    hasHeaderRecord: boolean
+    hasHeaderRecord: boolean,
+    csvMaxReId?: number
 ) => {
     const handleFileChange = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
             const file = e.target.files?.[0];
+            setError([]);
 
             if (!file) {
                 setError(["No file selected. Please upload a .csv file."]);
@@ -57,6 +59,15 @@ export const useFileChange = (
             const processCsvData = (data: string) => {
                 setCsvData(btoa(data));
                 const rows = data.split("\n");
+
+                if (csvMaxReId !== undefined) {
+                    const rowCount = hasHeaderRecord ? rows.length - 2 : rows.length - 1;
+                    if (rowCount > csvMaxReId) {
+                        setError(["The CSV file contains more than the set " + csvMaxReId + " row limit for CSV upload."]);
+                        return;
+                    }
+                }
+
                 if (hasHeaderRecord) {
                     const headers = rows.length === 1 ? [rows[0]] : rows[0].split(",");
                     if (headers.length <= 0 || (rows.length > 1 && !/[a-zA-Z]/.test(rows[0]))) {
@@ -72,7 +83,7 @@ export const useFileChange = (
 
             readNextChunk();
         },
-        [setError, setFileName, setHeaderColumns, setCsvData, hasHeaderRecord]
+        [setError, setFileName, setHeaderColumns, setCsvData, hasHeaderRecord, csvMaxReId]
     );
 
     return { handleFileChange };

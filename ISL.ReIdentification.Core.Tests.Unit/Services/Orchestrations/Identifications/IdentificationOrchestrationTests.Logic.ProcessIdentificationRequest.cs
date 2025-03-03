@@ -47,6 +47,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
 
             IdentificationRequest expectedIdentificationRequest = outputIdentificationRequest.DeepClone();
 
+            this.dateTimeBrokerMock.Setup(broker =>
+               broker.GetCurrentDateTimeOffsetAsync())
+                   .ReturnsAsync(randomDateTimeOffset);
+
             this.identifierBrokerMock.Setup(broker =>
                 broker.GetIdentifierAsync())
                     .ReturnsAsync(randomGuid);
@@ -62,6 +66,26 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             this.identifierBrokerMock.Verify(broker =>
                 broker.GetIdentifierAsync(),
                     Times.Exactly(itemCount + 1));
+
+            this.dateTimeBrokerMock.Verify(broker =>
+               broker.GetCurrentDateTimeOffsetAsync(),
+                   Times.Exactly(4));
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogInformationAsync($"Start ReId Check {randomDateTimeOffset}, TransactionId {randomGuid}"),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogInformationAsync($"Start PDS Check {randomDateTimeOffset}, TransactionId {randomGuid}"),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogInformationAsync($"Completed PDS Request {randomDateTimeOffset}, TransactionId {randomGuid}"),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogInformationAsync($"Completed ReId Check {randomDateTimeOffset}, TransactionId {randomGuid}"),
+                    Times.Once);
 
             List<AccessAudit> pdsAccessAudits = new List<AccessAudit>();
 
@@ -126,7 +150,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             {
                 item.Identifier = string.IsNullOrEmpty(item.Identifier)
                     ? item.Identifier
-                    : $"{item.Identifier.PadLeft(10, '0')}I";
+                    : $"{item.Identifier}I";
 
                 item.IsReidentified = true;
             });
@@ -154,7 +178,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             {
                 item.Identifier = string.IsNullOrEmpty(item.Identifier)
                     ? item.Identifier
-                    : $"{item.Identifier.PadLeft(10, '0')}I";
+                    : $"{item.Identifier}I";
 
                 item.IsReidentified = true;
             });
@@ -186,7 +210,31 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(itemCount));
+                    Times.Exactly(itemCount + 6));
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogInformationAsync($"Start ReId Check {randomDateTimeOffset}, TransactionId {randomGuid}"),
+                   Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogInformationAsync($"Start PDS Check {randomDateTimeOffset}, TransactionId {randomGuid}"),
+                  Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+              broker.LogInformationAsync($"Completed PDS Request {randomDateTimeOffset}, TransactionId {randomGuid}"),
+                 Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+              broker.LogInformationAsync($"Start NECS Check {randomDateTimeOffset}, TransactionId {randomGuid}"),
+                 Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+              broker.LogInformationAsync($"Completed NECS Request {randomDateTimeOffset}, TransactionId {randomGuid}"),
+                 Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+              broker.LogInformationAsync($"Completed ReId Check {randomDateTimeOffset}, TransactionId {randomGuid}"),
+                 Times.Once);
 
             List<AccessAudit> pdsAccessAudits = new List<AccessAudit>();
 
@@ -238,7 +286,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
 
                     PseudoIdentifier = string.IsNullOrEmpty(pseudoIdentifier)
                         ? pseudoIdentifier
-                        : pseudoIdentifier.PadLeft(10, '0'),
+                        : pseudoIdentifier,
 
                     EntraUserId = randomIdentificationRequest.EntraUserId,
                     GivenName = randomIdentificationRequest.GivenName,

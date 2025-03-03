@@ -15,18 +15,25 @@ export function useReidentification(reason: string) {
     const [isLoading, setIsLoading] = useState(false);
     const [lastPseudo, setLastPseudo] = useState<ReIdRecord>();
     const { accounts } = useMsal();
-    const { submit, data, cleardata } = reIdentificationService.useRequestReIdentification();
+    const { submit, data, cleardata, isAuthorised } = reIdentificationService.useRequestReIdentification();
 
     const processRequest = async (request: TrackedAccessRequest) => {
         if (request.accessRequest.identificationRequest) {
             setIsLoading(true);
-            await submit(request.accessRequest);
-            setIsLoading(false);
+            try {
+                await submit(request.accessRequest);
+            } catch (e) {
+                console.log(e);
+            } finally {
+                setIsLoading(false);
+            }
+            
         }
     }
 
     const reidentify = async (pseudoNumbers: string[]) => {
         const acc = accounts[0];
+
 
         const identificationItems = pseudoNumbers.map((ps): IdentificationItem => {
             return {
@@ -61,7 +68,7 @@ export function useReidentification(reason: string) {
         cleardata();
     }
 
-    return { reidentify, reidentifications: data, lastPseudo, clearList, isLoading }
+    return { reidentify, reidentifications: data, lastPseudo, clearList, isLoading, isAuthorised }
 }
 
 

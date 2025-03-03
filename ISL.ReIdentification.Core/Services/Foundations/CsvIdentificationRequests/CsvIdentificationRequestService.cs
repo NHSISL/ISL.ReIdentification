@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Loggings;
+using ISL.ReIdentification.Core.Brokers.Securities;
 using ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 
@@ -16,25 +17,31 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
     {
         private readonly IReIdentificationStorageBroker reIdentificationStorageBroker;
         private readonly IDateTimeBroker dateTimeBroker;
+        private readonly ISecurityBroker securityBroker;
         private readonly ILoggingBroker loggingBroker;
 
         public CsvIdentificationRequestService(
             IReIdentificationStorageBroker reIdentificationStorageBroker,
             IDateTimeBroker dateTimeBroker,
+            ISecurityBroker securityBroker,
             ILoggingBroker loggingBroker)
         {
             this.reIdentificationStorageBroker = reIdentificationStorageBroker;
             this.dateTimeBroker = dateTimeBroker;
+            this.securityBroker = securityBroker;
             this.loggingBroker = loggingBroker;
         }
         public ValueTask<CsvIdentificationRequest> AddCsvIdentificationRequestAsync(
             CsvIdentificationRequest csvIdentificationRequest) =>
         TryCatch(async () =>
         {
-            await ValidateCsvIdentificationRequestOnAdd(csvIdentificationRequest);
+            CsvIdentificationRequest csvIdentificationRequestWithAddAuditApplied =
+                await ApplyAddAuditAsync(csvIdentificationRequest);
+
+            await ValidateCsvIdentificationRequestOnAdd(csvIdentificationRequestWithAddAuditApplied);
 
             return await this.reIdentificationStorageBroker
-                .InsertCsvIdentificationRequestAsync(csvIdentificationRequest);
+                .InsertCsvIdentificationRequestAsync(csvIdentificationRequestWithAddAuditApplied);
         });
 
         public ValueTask<CsvIdentificationRequest> RetrieveCsvIdentificationRequestByIdAsync(
@@ -59,11 +66,14 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
             CsvIdentificationRequest csvIdentificationRequest) =>
         TryCatch(async () =>
         {
-            await ValidateCsvIdentificationRequestOnModify(csvIdentificationRequest);
+            CsvIdentificationRequest csvIdentificationRequestWithModifyAuditApplied =
+                await ApplyModifyAuditAsync(csvIdentificationRequest);
+
+            await ValidateCsvIdentificationRequestOnModify(csvIdentificationRequestWithModifyAuditApplied);
 
             CsvIdentificationRequest maybeCsvIdentificationRequest =
                 await this.reIdentificationStorageBroker
-                    .SelectCsvIdentificationRequestByIdAsync(csvIdentificationRequest.Id);
+                    .SelectCsvIdentificationRequestByIdAsync(csvIdentificationRequestWithModifyAuditApplied.Id);
 
             ValidateStorageCsvIdentificationRequest(
                 maybeCsvIdentificationRequest,
@@ -92,5 +102,31 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
             return await this.reIdentificationStorageBroker
                 .DeleteCsvIdentificationRequestAsync(maybeCsvIdentificationRequest);
         });
+
+        virtual internal async ValueTask<CsvIdentificationRequest> ApplyAddAuditAsync(
+            CsvIdentificationRequest csvIdentificationRequest)
+        {
+            ValidateCsvIdentificationRequestIsNotNull(csvIdentificationRequest);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
+            csvIdentificationRequest.CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            csvIdentificationRequest.CreatedDate = auditDateTimeOffset;
+            csvIdentificationRequest.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            csvIdentificationRequest.UpdatedDate = auditDateTimeOffset;
+
+            return csvIdentificationRequest;
+        }
+
+        virtual internal async ValueTask<CsvIdentificationRequest> ApplyModifyAuditAsync(
+            CsvIdentificationRequest csvIdentificationRequest)
+        {
+            ValidateCsvIdentificationRequestIsNotNull(csvIdentificationRequest);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
+            csvIdentificationRequest.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            csvIdentificationRequest.UpdatedDate = auditDateTimeOffset;
+
+            return csvIdentificationRequest;
+        }
     }
 }

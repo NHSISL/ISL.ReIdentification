@@ -18,11 +18,15 @@ export const pdsDataViewService = {
         return pdsDataService.useCreatePdsData();
     },
 
-    useGetAllPdsData: (searchTerm?: string): PdsDataViewServiceResponse => {
+    useGetAllPdsData: (getTestPatients: boolean, searchTerm?: string): PdsDataViewServiceResponse => {
         let query = ``;
 
-        if (searchTerm) {
-            query = query + `?$filter=contains(pseudoNhsNumber,'${searchTerm}')`;
+        if (getTestPatients && searchTerm) {
+            query = `?$filter=OrgCode eq 'ZZZ' and pseudoNhsNumber eq '${searchTerm}'`;
+        } else if (getTestPatients) {
+            query = `?$filter=OrgCode eq 'ZZZ'`;
+        } else if (searchTerm) {
+            query = `?$filter=pseudoNhsNumber eq '${searchTerm}'`;
         }
 
         const response = pdsDataService.useRetrieveAllPdsDataPages(query);

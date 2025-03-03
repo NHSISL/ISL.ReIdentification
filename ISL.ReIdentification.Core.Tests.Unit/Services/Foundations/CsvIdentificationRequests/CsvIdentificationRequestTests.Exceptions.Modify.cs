@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests.Exceptions;
+using ISL.ReIdentification.Core.Models.Securities;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Moq;
@@ -134,9 +135,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
 
             CsvIdentificationRequest randomCsvIdentificationRequest =
-                CreateRandomCsvIdentificationRequest(randomDateTimeOffset);
+                CreateRandomCsvIdentificationRequest(randomDateTimeOffset, randomEntraUser.EntraUserId);
 
             var dbUpdateConcurrencyException =
                 new DbUpdateConcurrencyException();
@@ -148,7 +150,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             var expectedCsvIdentificationRequestDependencyValidationException =
                 new CsvIdentificationRequestDependencyValidationException(
-                    message: "CSV identification request dependency validation error occurred, fix errors and try again.",
+                    message: "CSV identification request dependency validation error occurred, " +
+                        "fix errors and try again.",
                     innerException: lockedCsvIdentificationRequestException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -157,11 +160,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             // when
             ValueTask<CsvIdentificationRequest> modifyCsvIdentificationRequestTask =
-                this.csvIdentificationRequestService.ModifyCsvIdentificationRequestAsync(randomCsvIdentificationRequest);
+                this.csvIdentificationRequestService.ModifyCsvIdentificationRequestAsync(
+                    randomCsvIdentificationRequest);
 
-            CsvIdentificationRequestDependencyValidationException actualCsvIdentificationRequestDependencyValidationException =
-                await Assert.ThrowsAsync<CsvIdentificationRequestDependencyValidationException>(
-                    testCode: modifyCsvIdentificationRequestTask.AsTask);
+            CsvIdentificationRequestDependencyValidationException 
+                actualCsvIdentificationRequestDependencyValidationException =
+                    await Assert.ThrowsAsync<CsvIdentificationRequestDependencyValidationException>(
+                        testCode: modifyCsvIdentificationRequestTask.AsTask);
 
             // then
             actualCsvIdentificationRequestDependencyValidationException.Should().BeEquivalentTo(
@@ -181,6 +186,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
                     Times.Never());
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
         }
@@ -191,9 +197,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
             // given
             int minutesInPast = GetRandomNegativeNumber();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
 
             CsvIdentificationRequest randomCsvIdentificationRequest =
-                CreateRandomCsvIdentificationRequest(randomDateTimeOffset);
+                CreateRandomCsvIdentificationRequest(randomDateTimeOffset, randomEntraUser.EntraUserId);
 
             randomCsvIdentificationRequest.CreatedDate =
                 randomDateTimeOffset.AddMinutes(minutesInPast);
@@ -210,13 +217,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
                     message: "CSV identification request service error occurred, contact support.",
                     innerException: failedServiceCsvIdentificationRequestException);
 
-            this.reIdentificationStorageBroker.Setup(broker =>
-                broker.SelectCsvIdentificationRequestByIdAsync(randomCsvIdentificationRequest.Id))
-                    .ThrowsAsync(serviceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .ReturnsAsync(randomDateTimeOffset);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<CsvIdentificationRequest> modifyCsvIdentificationRequestTask =
@@ -230,10 +234,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
             actualCsvIdentificationRequestServiceException.Should().BeEquivalentTo(
                 expectedCsvIdentificationRequestServiceException);
 
-            this.reIdentificationStorageBroker.Verify(broker =>
-                broker.SelectCsvIdentificationRequestByIdAsync(randomCsvIdentificationRequest.Id),
-                    Times.Once());
-
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
@@ -243,9 +243,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
                     expectedCsvIdentificationRequestServiceException))),
                         Times.Once);
 
-            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
         }
     }
 }

@@ -16,6 +16,7 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
     public partial class IdentificationCoordinationService : IIdentificationCoordinationService
     {
         private delegate ValueTask<AccessRequest> ReturningAccessRequestFunction();
+        private delegate ValueTask ReturningNothingFunction();
 
         private async ValueTask<AccessRequest> TryCatch(ReturningAccessRequestFunction returningAccessRequestFunction)
         {
@@ -26,6 +27,21 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
             catch (NullAccessRequestException nullAccessRequestException)
             {
                 throw await CreateAndLogValidationExceptionAsync(nullAccessRequestException);
+            }
+            catch (InvalidAccessIdentificationCoordinationException invalidAccessIdentificationCoordinationException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(invalidAccessIdentificationCoordinationException);
+            }
+            catch (AccessOrchestrationValidationException accessOrchestrationValidationException)
+                when (accessOrchestrationValidationException.InnerException is UnauthorizedAccessOrchestrationException)
+            {
+                var unauthorizedIdentificationCoordinationException =
+                    new UnauthorizedIdentificationCoordinationException(
+                        message: "Not authorised to perform this action",
+                        innerException: accessOrchestrationValidationException.InnerException as Xeption);
+
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    unauthorizedIdentificationCoordinationException);
             }
             catch (AccessOrchestrationValidationException accessOrchestrationValidationException)
             {
@@ -98,6 +114,87 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
             }
         }
 
+        private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
+        {
+            try
+            {
+                await returningNothingFunction();
+            }
+            catch (InvalidIdentificationCoordinationException invalidIdentificationCoordinationException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(invalidIdentificationCoordinationException);
+            }
+            catch (InvalidAccessIdentificationCoordinationException invalidAccessIdentificationCoordinationException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(invalidAccessIdentificationCoordinationException);
+            }
+            catch (AccessOrchestrationValidationException accessOrchestrationValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    accessOrchestrationValidationException);
+            }
+            catch (AccessOrchestrationDependencyValidationException accessOrchestrationDependencyValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    accessOrchestrationDependencyValidationException);
+            }
+            catch (PersistanceOrchestrationValidationException persistanceOrchestrationValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    persistanceOrchestrationValidationException);
+            }
+            catch (PersistanceOrchestrationDependencyValidationException
+                persistanceOrchestrationDependencyValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    persistanceOrchestrationDependencyValidationException);
+            }
+            catch (IdentificationOrchestrationValidationException identificationOrchestrationValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    identificationOrchestrationValidationException);
+            }
+            catch (IdentificationOrchestrationDependencyValidationException identificationOrchestrationDependencyValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    identificationOrchestrationDependencyValidationException);
+            }
+            catch (AccessOrchestrationServiceException accessOrchestrationServiceException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(
+                    accessOrchestrationServiceException);
+            }
+            catch (AccessOrchestrationDependencyException accessOrchestrationDependencyException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(
+                    accessOrchestrationDependencyException);
+            }
+            catch (PersistanceOrchestrationServiceException persistanceOrchestrationServiceException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(
+                    persistanceOrchestrationServiceException);
+            }
+            catch (PersistanceOrchestrationDependencyException persistanceOrchestrationDependencyException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(
+                    persistanceOrchestrationDependencyException);
+            }
+            catch (IdentificationOrchestrationServiceException identificationOrchestrationServiceException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(
+                    identificationOrchestrationServiceException);
+            }
+            catch (IdentificationOrchestrationDependencyException identificationOrchestrationDependencyException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(
+                    identificationOrchestrationDependencyException);
+            }
+            catch (Exception exception)
+            {
+                throw await CreateAndLogServiceExceptionAsync(exception);
+            }
+        }
+
         private async ValueTask<IdentificationCoordinationValidationException>
             CreateAndLogValidationExceptionAsync(Xeption exception)
         {
@@ -119,7 +216,7 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
                 new IdentificationCoordinationDependencyValidationException(
                     message: "Identification coordination dependency validation error occurred, " +
                         "fix the errors and try again.",
-                    innerException: exception.InnerException as Xeption);
+                    innerException: exception);
 
             await this.loggingBroker.LogErrorAsync(identificationCoordinationDependencyValidationException);
 
