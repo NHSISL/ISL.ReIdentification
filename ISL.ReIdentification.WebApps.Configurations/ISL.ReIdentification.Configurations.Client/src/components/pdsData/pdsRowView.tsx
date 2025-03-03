@@ -1,26 +1,29 @@
 import { FunctionComponent } from "react";
 import { PdsDataView } from "../../models/views/components/pdsData/pdsDataView";
-import moment from "moment";
+import { convertToHx } from "../../helpers/hxHelpers";
+import CopyIcon from "../core/copyIcon";
 
 type PdsRowProps = {
     pds: PdsDataView;
 };
 
 const PdsRow: FunctionComponent<PdsRowProps> = (props) => {
-    const {
-        pds
-    } = props
+    const { pds } = props;
+
+
     return (
         <>
             <tr>
-                <td>{pds.pseudoNhsNumber}</td>
+                <td>
+                    {pds.pseudoNhsNumber}
+                    <CopyIcon content={pds.pseudoNhsNumber || ""} resetTime={2000} />
+                </td>
+                <td>
+                    {convertToHx(pds.pseudoNhsNumber)}
+                    <CopyIcon content={convertToHx(pds.pseudoNhsNumber) || ""} resetTime={2000} />
+                </td>
                 <td>{pds.orgCode}</td>
-                <td>{moment(pds.relationshipWithOrganisationEffectiveFromDate?.toString()).format("Do-MMM-yyyy HH:mm")}</td>
-                <td>{moment(pds.relationshipWithOrganisationEffectiveToDate?.toString()).format("Do-MMM-yyyy HH:mm")}</td>
             </tr>
-
-
-
         </>
     );
 }

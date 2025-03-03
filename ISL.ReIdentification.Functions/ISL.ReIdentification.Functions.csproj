@@ -6,6 +6,12 @@
 		<OutputType>Exe</OutputType>
 		<Nullable>disable</Nullable>
 		<ImplicitUsings>disable</ImplicitUsings>
+		<Version>1.0.0.2</Version>
+		<AssemblyVersion>1.0.0.2</AssemblyVersion>
+		<FileVersion>1.0.0.2</FileVersion>
+		<PackageReleaseNotes>
+			Initial release of the ReIdentification Service.
+		</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>
