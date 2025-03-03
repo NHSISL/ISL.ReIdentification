@@ -26,7 +26,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
 
             // then
             actualAccessRequest.Should().BeEquivalentTo(
-                expectedAccessRequest, 
+                expectedAccessRequest,
                 options => options
                     .Excluding(req => req.ImpersonationContext.CreatedBy)
                     .Excluding(req => req.ImpersonationContext.CreatedDate)
@@ -44,7 +44,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             originalContext.IsApproved = false;
             await this.apiBroker.PostImpersonationContextAsync(originalContext);
 
-            ImpersonationContext postedContext = 
+            ImpersonationContext postedContext =
                 await this.apiBroker.GetImpersonationContextByIdAsync(originalContext.Id);
 
             postedContext.IsApproved = true;
@@ -62,7 +62,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
 
             // then
             actualAccessRequest.Should().BeEquivalentTo(
-                expectedAccessRequest, 
+                expectedAccessRequest,
                 options => options
                     .Excluding(req => req.ImpersonationContext.CreatedBy)
                     .Excluding(req => req.ImpersonationContext.CreatedDate)
@@ -80,7 +80,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
             originalContext.IsApproved = true;
             await this.apiBroker.PostImpersonationContextAsync(originalContext);
 
-            ImpersonationContext postedContext = 
+            ImpersonationContext postedContext =
                 await this.apiBroker.GetImpersonationContextByIdAsync(originalContext.Id);
 
             postedContext.IsApproved = false;
@@ -98,7 +98,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
 
             // then
             actualAccessRequest.Should().BeEquivalentTo(
-                expectedAccessRequest, 
+                expectedAccessRequest,
                 options => options
                     .Excluding(req => req.ImpersonationContext.CreatedBy)
                     .Excluding(req => req.ImpersonationContext.CreatedDate)

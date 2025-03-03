@@ -2,12 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
-using System.IO;
-using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Services.Coordinations.Identifications;
-using Microsoft.Azure.Functions.Worker;
 
 namespace ISL.ReIdentification.Functions
 {

@@ -206,7 +206,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             var invalidCsvIdentificationRequest =
                 CreateRandomCsvIdentificationRequest(
-                    dateTimeOffset: randomDateTimeOffset, 
+                    dateTimeOffset: randomDateTimeOffset,
                     userId: randomEntraUser.EntraUserId);
 
             var inputCreatedByUpdatedByString = randomEntraUser.EntraUserId;
@@ -316,7 +316,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             var invalidCsvIdentificationRequest =
                 CreateRandomCsvIdentificationRequest(
-                    dateTimeOffset: randomDateTimeOffset, 
+                    dateTimeOffset: randomDateTimeOffset,
                     userId: randomEntraUser.EntraUserId);
 
             var csvIdentificationRequestServiceMock = new Mock<CsvIdentificationRequestService>(
@@ -433,7 +433,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
                 broker.GetCurrentUserAsync())
                     .ReturnsAsync(randomEntraUser);
 
-            var invalidCsvIdentificationRequestException = 
+            var invalidCsvIdentificationRequestException =
                 new InvalidCsvIdentificationRequestException(
                     message: "Invalid CSV identification request. " +
                     "Please correct the errors and try again.");
@@ -447,7 +447,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
                     $"found {randomCsvIdentificationRequest.UpdatedDate}"
                 ]);
 
-            var expectedCsvIdentificationRequestValidationException = 
+            var expectedCsvIdentificationRequestValidationException =
                 new CsvIdentificationRequestValidationException(
                     message: "CSV identification request validation error occurred, " +
                         "please fix errors and try again.",

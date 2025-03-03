@@ -23,7 +23,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             CsvIdentificationRequest randomCsvIdentificationRequest =
                 CreateRandomCsvIdentificationRequest(
-                    dateTimeOffset: randomDateOffset, 
+                    dateTimeOffset: randomDateOffset,
                     userId: randomEntraUser.EntraUserId);
 
             CsvIdentificationRequest inputCsvIdentificationRequest = randomCsvIdentificationRequest;
