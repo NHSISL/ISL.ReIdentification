@@ -154,12 +154,17 @@ export const reIdentificationService = {
     useRequestReIdentificationImpersonationApproval: () => {
         const broker = new ReIdentificationBroker();
         const [loading, setIsLoading] = useState(false);
+        const queryClient = useQueryClient();
         return {
             submitApproval: (impersonationContextId: string, isApproved: boolean) => {
                 setIsLoading(true);
-                return broker.PostReIdentificationImpersonationApprovalAsync(impersonationContextId, isApproved).finally(() => {
-                    setIsLoading(false);
-                })
+                return broker.PostReIdentificationImpersonationApprovalAsync(impersonationContextId, isApproved)
+                    .then(() => {
+                        queryClient.invalidateQueries({ queryKey: ["GetAllImpersonationById", { impersonationId: impersonationContextId }] });
+                    })
+                    .finally(() => {
+                        setIsLoading(false);
+                    })
             },
             loading
         };

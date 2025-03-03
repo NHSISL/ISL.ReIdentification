@@ -239,8 +239,8 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
             EntraUser currentEntraUser = await this.securityBroker.GetCurrentUserAsync();
 
             ValidateUserAccessOnImpersonationContextApproval(
-                retrievedImpersonationContext.ImpersonationContext.ResponsiblePersonEntraUserId,
-                currentEntraUser.EntraUserId);
+                retrievedImpersonationContext.ImpersonationContext.ResponsiblePersonEntraUserId.ToUpper(),
+                currentEntraUser.EntraUserId.ToUpper());
 
             bool isPreviouslyApproved = retrievedImpersonationContext.ImpersonationContext.IsApproved;
 

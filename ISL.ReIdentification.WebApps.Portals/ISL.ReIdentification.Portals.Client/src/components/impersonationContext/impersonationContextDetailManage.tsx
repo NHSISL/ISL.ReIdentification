@@ -9,6 +9,7 @@ import { useMsal } from "@azure/msal-react";
 import { impersonationContextViewService } from "../../services/views/impersonationContext/impersonationContextViewService";
 import { ImpersonationContext } from "../../models/impersonationContext/impersonationContext";
 import { reIdentificationService } from "../../services/foundations/reIdentificationService";
+import CopyIcon from "../core/copyIcon";
 
 interface ImpersonationContextDetailManageProps {
     impersonationIdentificationRequestId: string | undefined;
@@ -60,7 +61,7 @@ const ImpersonationContextDetailManage: FunctionComponent<ImpersonationContextDe
             setAccessRequest(null);
             setSuccess("");
         } catch (error) {
-            setErrorStatus(error + "Something went wrong when denying the request, please contact an administrator.");
+            setErrorStatus(error + " .Something went wrong when denying the request, please contact an administrator.");
         } finally {
             setIsDenying(false);
         }
@@ -132,13 +133,12 @@ const ImpersonationContextDetailManage: FunctionComponent<ImpersonationContextDe
                                     <div className="mb-3">
                                         <p>You have been designated as the responsible person for this project. To enable the service to process files dropped into it, please confirm that this request is correct.</p>
                                         <Button variant="success" onClick={() => handleDeny(true)}>
-                                            {!isDenying ? "Accept Token Generation" : <Spinner animation="border" size="sm" />}
+                                            {!isDenying ? "Approve Token Generation" : <Spinner animation="border" size="sm" />}
                                         </Button>
                                     </div>
                                 )}
                             </>
                         )}
-
 
                         {account.accounts[0].idTokenClaims?.oid === data?.requesterEntraUserId && (
                             <>
@@ -156,7 +156,7 @@ const ImpersonationContextDetailManage: FunctionComponent<ImpersonationContextDe
                                         </div>
                                     ) : (
                                         <ButtonGroup className="mb-3">
-                                            <Button type="submit" onClick={handleReGenerateClick}>
+                                            <Button type="submit" onClick={handleReGenerateClick} variant="success">
                                                 {!loading ? "Generate Tokens" : <Spinner animation="border" size="sm" />}
                                             </Button>
                                         </ButtonGroup>
@@ -190,38 +190,49 @@ const ImpersonationContextDetailManage: FunctionComponent<ImpersonationContextDe
                                                 {isRegenerating ? (
                                                     <Spinner animation="border" size="lg" />
                                                 ) : (
-                                                    <Table striped bordered hover>
-                                                        <thead>
-                                                            <tr>
-                                                                <th>Token Type</th>
-                                                                <th>Token</th>
-                                                                <th>Action</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <tr>
-                                                                <td><strong>Errors SAS Token:</strong></td>
-                                                                <td><small>{accessRequest.impersonationContext.errorsSasToken}</small></td>
-                                                                <td>
-                                                                    <Button variant="outline-primary" size="sm" onClick={() => copyToClipboard(accessRequest.impersonationContext.errorsSasToken)}>Copy</Button>
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td><strong>Inbox SAS Token:</strong></td>
-                                                                <td><small>{accessRequest.impersonationContext.inboxSasToken}</small></td>
-                                                                <td>
-                                                                    <Button variant="outline-primary" size="sm" onClick={() => copyToClipboard(accessRequest.impersonationContext.inboxSasToken)}>Copy</Button>
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td><strong>Outbox SAS Token:</strong></td>
-                                                                <td><small>{accessRequest.impersonationContext.outboxSasToken}</small></td>
-                                                                <td>
-                                                                    <Button variant="outline-primary" size="sm" onClick={() => copyToClipboard(accessRequest.impersonationContext.outboxSasToken)}>Copy</Button>
-                                                                </td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </Table>
+                                                    <>
+                                                        <Alert variant="info">
+                                                            NOTE: These tokens will not be available to copy again after refreshing or closing this page.
+                                                        </Alert>
+                                                        <Table striped bordered hover>
+                                                            <thead>
+                                                                <tr>
+                                                                    <th><small>Token Type</small></th>
+                                                                    <th><small>Token</small></th>
+                                                                    <th><small>Copy</small></th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td><small><strong>Errors SAS Token:</strong></small></td>
+                                                                    <td><small>{accessRequest.impersonationContext.errorsSasToken}</small></td>
+                                                                    <td className="text-center">
+                                                                        <CopyIcon
+                                                                            content={accessRequest.impersonationContext.errorsSasToken || ""}
+                                                                            resetTime={2000} />
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td><small><strong>Inbox SAS Token:</strong></small></td>
+                                                                    <td><small>{accessRequest.impersonationContext.inboxSasToken}</small></td>
+                                                                    <td className="text-center">
+                                                                        <CopyIcon
+                                                                            content={accessRequest.impersonationContext.inboxSasToken || ""}
+                                                                            resetTime={2000} />
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td><small><strong>Outbox SAS Token:</strong></small></td>
+                                                                    <td><small>{accessRequest.impersonationContext.outboxSasToken}</small></td>
+                                                                    <td className="text-center"s>
+                                                                        <CopyIcon
+                                                                            content={accessRequest.impersonationContext.outboxSasToken || ""}
+                                                                            resetTime={2000} />
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </Table>
+                                                    </>
                                                 )}
                                             </Card.Body>
                                         </Card>
