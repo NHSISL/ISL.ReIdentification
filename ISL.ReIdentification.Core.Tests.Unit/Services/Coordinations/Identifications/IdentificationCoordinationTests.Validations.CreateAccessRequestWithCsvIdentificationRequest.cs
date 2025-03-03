@@ -7,6 +7,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using ISL.ReIdentification.Core.Models.Coordinations.Identifications.Exceptions;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Services.Coordinations.Identifications;
 using Moq;
@@ -16,7 +17,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
     public partial class IdentificationCoordinationTests
     {
         [Fact]
-        public async Task ShouldCreateAccessRequestWithCsvIdentificationRequestAsync()
+        public async Task
+            ShouldThrowValidationOnCreateAccessRequestWithCsvIdentificationRequestIfIdentifierColumnNotFoundAndLogItAsync()
         {
             // given
             Guid randomImpersonationContextId = Guid.NewGuid();
@@ -26,11 +28,14 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             string pseudoIdentifier = "0000000001";
             string randomHeaderValue = GetRandomStringWithLengthOf(10);
             string randomIdentifierHeaderValue = GetRandomStringWithLengthOf(10);
+            string randomInvalidIdentifierHeaderValue = GetRandomStringWithLengthOf(10);
+            string impersonationContextIdentifierHeaderValue = randomHeaderValue;
+            string invalidIdentifierHeaderValue = randomIdentifierHeaderValue;
             string randomValue = GetRandomStringWithLengthOf(10);
             StringBuilder retrievedCsv = new StringBuilder();
 
             retrievedCsv.AppendLine(
-                $"{randomHeaderValue}0,{randomHeaderValue}1,{randomIdentifierHeaderValue}");
+                $"{randomHeaderValue}0,{randomHeaderValue}1,{invalidIdentifierHeaderValue}");
 
             retrievedCsv.AppendLine($"{randomValue},{randomValue},{pseudoIdentifier}");
             string retrievedCsvString = retrievedCsv.ToString();
@@ -42,7 +47,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             randomAccessRequest.IdentificationRequest = null;
             randomAccessRequest.CsvIdentificationRequest = null;
             AccessRequest retrievedAccessRequest = randomAccessRequest;
-            retrievedAccessRequest.ImpersonationContext.IdentifierColumn = randomIdentifierHeaderValue;
+            retrievedAccessRequest.ImpersonationContext.IdentifierColumn = impersonationContextIdentifierHeaderValue;
 
             AccessRequest expectedAccessRequest =
                 ConvertImpersonationContextToCsvIdentificationRequest(retrievedAccessRequest);
@@ -73,12 +78,36 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
                 projectStorageConfiguration: this.projectStorageConfiguration);
 
+
+
+            var invalidCsvIdentificationCoordinationException =
+                new InvalidCsvIdentificationCoordinationException(
+                message: "Invalid csv file. Please check that the provided file has a column name " +
+                    "that matches the identifier column name given when creating the project.");
+
+            var expectedIdentificationCoordinationValidationException =
+                new IdentificationCoordinationValidationException(
+                    message: "Identification coordination validation error occurred, " +
+                        "fix the errors and try again.",
+                    innerException: invalidCsvIdentificationCoordinationException);
+
             // when
-            var actualAccessRequest = await service
+            ValueTask<AccessRequest> createAccessRequestTask = service
                 .CreateAccessRequestWithCsvIdentificationRequestAsync(inputContainer, inputFilepath);
 
+            IdentificationCoordinationValidationException actualIdentificationCoordinationValidationException =
+                await Assert.ThrowsAsync<IdentificationCoordinationValidationException>(
+                    testCode: createAccessRequestTask.AsTask);
+
+
+            //// when
+            //var actualAccessRequest = await service
+            //    .CreateAccessRequestWithCsvIdentificationRequestAsync(inputContainer, inputFilepath);
+
+
             // then
-            actualAccessRequest.Should().BeEquivalentTo(expectedAccessRequest);
+            actualIdentificationCoordinationValidationException
+                .Should().BeEquivalentTo(expectedIdentificationCoordinationValidationException);
 
             this.persistanceOrchestrationServiceMock.Verify(service =>
                 service.RetrieveImpersonationContextByIdAsync(inputImpersonationContextId),

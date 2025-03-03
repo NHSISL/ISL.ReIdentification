@@ -445,13 +445,11 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
             AccessRequest accessRequest = retrievedAccessRequest;
             accessRequest.CsvIdentificationRequest.Data = fileData;
 
-            accessRequest.CsvIdentificationRequest.HasHeaderRecord =
-                accessRequest.ImpersonationContext.HasHeaderRecord;
-
             accessRequest.CsvIdentificationRequest.IdentifierColumnIndex = GetColumnIndexFromStream(
                     retrievedFileStream,
                     retrievedAccessRequest.ImpersonationContext.IdentifierColumn);
 
+            accessRequest.CsvIdentificationRequest.HasHeaderRecord = true;
             accessRequest.CsvIdentificationRequest.Id = accessRequest.ImpersonationContext.Id;
 
             accessRequest.CsvIdentificationRequest.RecipientEntraUserId =
@@ -496,19 +494,21 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
         {
             stream.Position = 0;
 
-            using (StreamReader reader = new StreamReader(stream, Encoding.UTF8, leaveOpen: true))
+            using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
             {
                 string headerLine = reader.ReadLine();
+                string[] headers = headerLine?.Split(",") ?? Array.Empty<string>();
+                int columnIndex = Array.IndexOf(headers, columnName);
 
-                if (headerLine != null)
+                if (columnIndex != -1)
                 {
-                    string[] headers = headerLine.Split(',');
-
-                    return Array.IndexOf(headers, columnName);
+                    return columnIndex;
                 }
             }
 
-            return -1;
+            throw new InvalidCsvIdentificationCoordinationException(
+                message: "Invalid csv file. Please check that the provided file has a column name " +
+                    "that matches the identifier column name given when creating the project.");
         }
     }
 }

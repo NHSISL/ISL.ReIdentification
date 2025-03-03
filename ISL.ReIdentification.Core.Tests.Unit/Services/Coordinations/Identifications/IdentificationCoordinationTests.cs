@@ -312,12 +312,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
         private AccessRequest ConvertImpersonationContextToCsvIdentificationRequest(AccessRequest accessRequest)
         {
             accessRequest.CsvIdentificationRequest = new CsvIdentificationRequest();
-
-            accessRequest.CsvIdentificationRequest.HasHeaderRecord =
-                accessRequest.ImpersonationContext.HasHeaderRecord;
-
+            accessRequest.CsvIdentificationRequest.HasHeaderRecord = true;
             accessRequest.CsvIdentificationRequest.IdentifierColumnIndex = 2;
-
             accessRequest.CsvIdentificationRequest.Id = accessRequest.ImpersonationContext.Id;
 
             accessRequest.CsvIdentificationRequest.RecipientEntraUserId =
