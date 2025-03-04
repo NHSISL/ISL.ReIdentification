@@ -127,7 +127,6 @@ export const reIdentificationService = {
                 return broker.PostReIdentificationImpersonationAsync(csvIdentificationRequest)
                     .then((data) => {
                         queryClient.invalidateQueries({ queryKey: ["ImpersonationContextGetAll"] });
-                        queryClient.invalidateQueries({ queryKey: ["ImpersonationContextById", { id: data.id }] });
                     })
                     .finally(() => {
                         setIsLoading(false);
