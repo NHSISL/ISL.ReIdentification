@@ -69,7 +69,7 @@ const ImpersonationContextProjectTable: FunctionComponent<ImpersonationContextPr
                         <FontAwesomeIcon icon={faRefresh} />
                     </Button>
                 </InputGroup>
-                <Button variant="primary" className="mb-3" onClick={handleAddProjectClick}>
+                <Button variant="success" className="mb-3" onClick={handleAddProjectClick}>
                     <FontAwesomeIcon icon={faPlus} /> Add Project
                 </Button>
             </Container>
