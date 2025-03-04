@@ -5,6 +5,7 @@ import { ReIdRecord } from '../../types/ReIdRecord';
 import { getPseudo, isHx } from '../../helpers/hxHelpers';
 import { toast } from 'react-toastify';
 import { useFrontendConfiguration } from '../../hooks/useFrontendConfiguration';
+import { useQueryClient } from '@tanstack/react-query';
 
 export const reIdentificationService = {
     useRequestReIdentification: () => {
@@ -118,12 +119,51 @@ export const reIdentificationService = {
     useRequestReIdentificationImpersonation: () => {
         const broker = new ReIdentificationBroker();
         const [loading, setIsLoading] = useState(false);
+        const queryClient = useQueryClient();
+
         return {
             submit: (csvIdentificationRequest: AccessRequest) => {
                 setIsLoading(true);
-                return broker.PostReIdentificationImpersonationAsync(csvIdentificationRequest).finally(() => {
+                return broker.PostReIdentificationImpersonationAsync(csvIdentificationRequest)
+                    .then(() => {
+                        queryClient.invalidateQueries({ queryKey: ["ImpersonationContextGetAll"] });
+                    })
+                    .finally(() => {
+                        setIsLoading(false);
+                    });
+            },
+            loading
+        };
+    },
+
+    useRequestReIdentificationImpersonationGenerateTokens: () => {
+        const broker = new ReIdentificationBroker();
+        const [loading, setIsLoading] = useState(false);
+        return {
+            submit: (impersonationContextId: string) => {
+                setIsLoading(true);
+                return broker.PostImpersonationContextGenerateTokensAsync(impersonationContextId).finally(() => {
                     setIsLoading(false);
                 })
+            },
+            loading
+        };
+    },
+
+    useRequestReIdentificationImpersonationApproval: () => {
+        const broker = new ReIdentificationBroker();
+        const [loading, setIsLoading] = useState(false);
+        const queryClient = useQueryClient();
+        return {
+            submitApproval: (impersonationContextId: string, isApproved: boolean) => {
+                setIsLoading(true);
+                return broker.PostReIdentificationImpersonationApprovalAsync(impersonationContextId, isApproved)
+                    .then(() => {
+                        queryClient.invalidateQueries({ queryKey: ["GetAllImpersonationById", { impersonationId: impersonationContextId }] });
+                    })
+                    .finally(() => {
+                        setIsLoading(false);
+                    })
             },
             loading
         };
