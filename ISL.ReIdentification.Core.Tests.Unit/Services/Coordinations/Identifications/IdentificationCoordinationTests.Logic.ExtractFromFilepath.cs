@@ -30,17 +30,16 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             string pickupFolderName = GetRandomString();
             string errorFolderName = GetRandomString();
 
-            string filepath = $"/{container}/{contextIdString}/{landingFolderName}" +
+            string filepath = $"{landingFolderName}" +
                 $"/subdirectory/{fileName}{fileExtension}";
 
             string inputFilepath = filepath;
             string expectedLandingFilepath = $"{landingFolderName}/subdirectory/{fileName}{fileExtension}";
             string expectedPickupFilepath = $"{pickupFolderName}/subdirectory/{fileName}_{timestamp}{fileExtension}";
             string expectedErrorFilepath = $"{errorFolderName}/subdirectory/{fileName}_{timestamp}{fileExtension}";
-            Guid expectedContextId = contextId;
 
             var expectedResult =
-                (expectedLandingFilepath, expectedPickupFilepath, expectedErrorFilepath, expectedContextId);
+                (expectedLandingFilepath, expectedPickupFilepath, expectedErrorFilepath);
 
             var service = new IdentificationCoordinationService(
                 accessOrchestrationService: this.accessOrchestrationServiceMock.Object,

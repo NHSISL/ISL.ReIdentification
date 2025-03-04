@@ -92,11 +92,14 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.Lookups
             DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
             string user = Guid.NewGuid().ToString();
             var filler = new Filler<Lookup>();
+            string name = GetRandomStringWithLengthOf(220);
+            string groupName = GetRandomStringWithLengthOf(220);
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
-                .OnProperty(lookup => lookup.Name).Use(GetRandomStringWithLengthOf(450))
+                .OnProperty(lookup => lookup.GroupName).Use(() => groupName)
+                .OnProperty(lookup => lookup.Name).Use(() => name)
                 .OnProperty(lookup => lookup.CreatedBy).Use(user)
                 .OnProperty(lookup => lookup.UpdatedBy).Use(user);
 

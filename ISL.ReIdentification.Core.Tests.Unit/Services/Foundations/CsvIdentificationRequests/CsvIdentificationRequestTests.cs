@@ -54,7 +54,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
         }
 
         private static CsvIdentificationRequest CreateRandomCsvIdentificationRequest(
-            DateTimeOffset dateTimeOffset, 
+            DateTimeOffset dateTimeOffset,
             string userId) =>
             CreateCsvIdentificationRequestFiller(dateTimeOffset, userId).Create();
 
@@ -88,7 +88,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
         {
             int randomDaysInThePast = GetRandomNegativeNumber();
 
-            CsvIdentificationRequest randomCsvIdentificationRequest = 
+            CsvIdentificationRequest randomCsvIdentificationRequest =
                 CreateRandomCsvIdentificationRequest(dateTimeOffset);
 
             randomCsvIdentificationRequest.CreatedDate = dateTimeOffset.AddDays(randomDaysInThePast);

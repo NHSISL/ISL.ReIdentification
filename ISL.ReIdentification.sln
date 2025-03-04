@@ -13,21 +13,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Functions", "Functions", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebApps", "WebApps", "{57C650B0-0156-4E70-AE12-113039EF15D3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ISL.ReIdentification.Core", "ISL.Reidentification.Core\ISL.ReIdentification.Core.csproj", "{F943467A-A2A7-492C-94FD-DC763537F31B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ISL.ReIdentification.Core", "ISL.ReIdentification.Core\ISL.ReIdentification.Core.csproj", "{F943467A-A2A7-492C-94FD-DC763537F31B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ISL.ReIdentification.Core.Tests.Unit", "ISL.Reidentification.Core.Tests.Unit\ISL.ReIdentification.Core.Tests.Unit.csproj", "{BAD10164-EB32-4B36-8AF4-FCBDBCFB024B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ISL.ReIdentification.Core.Tests.Unit", "ISL.ReIdentification.Core.Tests.Unit\ISL.ReIdentification.Core.Tests.Unit.csproj", "{BAD10164-EB32-4B36-8AF4-FCBDBCFB024B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ISL.ReIdentification.Functions", "ISL.Reidentification.Functions\ISL.ReIdentification.Functions.csproj", "{4738B57B-7085-46F6-BB08-14A51A26896C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ISL.ReIdentification.Functions", "ISL.ReIdentification.Functions\ISL.ReIdentification.Functions.csproj", "{4738B57B-7085-46F6-BB08-14A51A26896C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configurations", "Configurations", "{6521DC95-959B-4EDA-98C1-8D6E1B14576F}"
 EndProject
-Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "ISL.ReIdentification.Configurations.Client", "ISL.Reidentification.WebApps.Configurations\ISL.Reidentification.Configurations.Client\ISL.ReIdentification.Configurations.Client.esproj", "{0EEBCE83-F94E-4571-B114-FF1426279F60}"
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "ISL.ReIdentification.Configurations.Client", "ISL.ReIdentification.WebApps.Configurations\ISL.ReIdentification.Configurations.Client\ISL.ReIdentification.Configurations.Client.esproj", "{0EEBCE83-F94E-4571-B114-FF1426279F60}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ISL.ReIdentification.Configurations.Server", "ISL.Reidentification.WebApps.Configurations\ISL.Reidentification.Configurations.Server\ISL.ReIdentification.Configurations.Server.csproj", "{60BB73D7-D01C-4E4B-ADFD-BE9F88DC695E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ISL.ReIdentification.Configurations.Server", "ISL.ReIdentification.WebApps.Configurations\ISL.ReIdentification.Configurations.Server\ISL.ReIdentification.Configurations.Server.csproj", "{60BB73D7-D01C-4E4B-ADFD-BE9F88DC695E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ISL.ReIdentification.Configurations.Server.Tests.Acceptance", "ISL.Reidentification.WebApps.Configurations\ISL.Reidentification.Configurations.Server.Tests.Acceptance\ISL.ReIdentification.Configurations.Server.Tests.Acceptance.csproj", "{57D74F54-41AE-44D0-BC16-7E16DB8F3CD4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ISL.ReIdentification.Configurations.Server.Tests.Acceptance", "ISL.ReIdentification.WebApps.Configurations\ISL.ReIdentification.Configurations.Server.Tests.Acceptance\ISL.ReIdentification.Configurations.Server.Tests.Acceptance.csproj", "{57D74F54-41AE-44D0-BC16-7E16DB8F3CD4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ISL.ReIdentification.Infrastructure", "ISL.Reidentification.Infrastructure\ISL.ReIdentification.Infrastructure.csproj", "{51DCBB01-F93A-4C15-AD64-C8D39EBD2D8E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ISL.ReIdentification.Infrastructure", "ISL.ReIdentification.Infrastructure\ISL.ReIdentification.Infrastructure.csproj", "{51DCBB01-F93A-4C15-AD64-C8D39EBD2D8E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ISL.ReIdentification.Configurations.Server.Tests.Unit", "ISL.ReIdentification.WebApps.Configurations\ISL.ReIdentification.Configurations.Server.Tests.Unit\ISL.ReIdentification.Configurations.Server.Tests.Unit.csproj", "{EEF0EF0D-DE8A-45F5-BEAA-70D71AC7C9CC}"
 EndProject
@@ -41,7 +41,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ISL.ReIdentification.Portal
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ISL.ReIdentification.Portals.Server.Tests.Unit", "ISL.ReIdentification.WebApps.Portals\ISL.ReIdentification.Portals.Server.Tests.Unit\ISL.ReIdentification.Portals.Server.Tests.Unit.csproj", "{53367A89-05FC-426C-92DA-5C8818701FC8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification", "ISL.ReIdentification.WebApps.Portals\ISL.ReIdentification.Portals.Server.Tests.Integration\ISL.ReIdentification.Portals.Server.Tests.Integration.ReIdentification.csproj", "{16B7608C-B470-477C-8B5D-C4E83CA18764}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ISL.ReIdentification.Portals.Server.Tests.Integration", "ISL.ReIdentification.WebApps.Portals\ISL.ReIdentification.Portals.Server.Tests.Integration\ISL.ReIdentification.Portals.Server.Tests.Integration.csproj", "{16B7608C-B470-477C-8B5D-C4E83CA18764}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ISL.ReIdentification.Configurations.Server.Tests.Integration", "ISL.ReIdentification.WebApps.Configurations\ISL.ReIdentification.Configurations.Server.Tests.Integration\ISL.ReIdentification.Configurations.Server.Tests.Integration.csproj", "{AA7E4438-3E85-4322-B7B2-DF8079549F35}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -105,6 +107,10 @@ Global
 		{16B7608C-B470-477C-8B5D-C4E83CA18764}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{16B7608C-B470-477C-8B5D-C4E83CA18764}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{16B7608C-B470-477C-8B5D-C4E83CA18764}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA7E4438-3E85-4322-B7B2-DF8079549F35}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA7E4438-3E85-4322-B7B2-DF8079549F35}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA7E4438-3E85-4322-B7B2-DF8079549F35}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA7E4438-3E85-4322-B7B2-DF8079549F35}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -124,6 +130,7 @@ Global
 		{40215CE1-B242-4AFF-9B21-546B20E36375} = {7F24359F-95DB-429E-8CF5-18141726032C}
 		{53367A89-05FC-426C-92DA-5C8818701FC8} = {7F24359F-95DB-429E-8CF5-18141726032C}
 		{16B7608C-B470-477C-8B5D-C4E83CA18764} = {7F24359F-95DB-429E-8CF5-18141726032C}
+		{AA7E4438-3E85-4322-B7B2-DF8079549F35} = {6521DC95-959B-4EDA-98C1-8D6E1B14576F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0D717146-FA34-4806-92FA-B345A87F5D78}

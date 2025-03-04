@@ -70,10 +70,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
             int randomDaysInThePast = GetRandomNegativeNumber();
 
             ImpersonationContext randomImpersonationContext = CreateRandomImpersonationContext(
-                dateTimeOffset, 
+                dateTimeOffset,
                 impersonationContextId);
 
-            randomImpersonationContext.CreatedDate = 
+            randomImpersonationContext.CreatedDate =
                 randomImpersonationContext.CreatedDate.AddDays(randomDaysInThePast);
 
             return randomImpersonationContext;

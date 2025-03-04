@@ -60,9 +60,12 @@ export const useFileChange = (
                 setCsvData(btoa(data));
                 const rows = data.split("\n");
 
-                if (csvMaxReId !== undefined && rows.length > csvMaxReId) {
-                    setError(["The CSV file contains more than the set " + csvMaxReId + " row limit for CSV upload."]);
-                    return;
+                if (csvMaxReId !== undefined) {
+                    const rowCount = hasHeaderRecord ? rows.length - 2 : rows.length - 1;
+                    if (rowCount > csvMaxReId) {
+                        setError(["The CSV file contains more than the set " + csvMaxReId + " row limit for CSV upload."]);
+                        return;
+                    }
                 }
 
                 if (hasHeaderRecord) {

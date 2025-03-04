@@ -163,7 +163,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
                 this.csvIdentificationRequestService.ModifyCsvIdentificationRequestAsync(
                     randomCsvIdentificationRequest);
 
-            CsvIdentificationRequestDependencyValidationException 
+            CsvIdentificationRequestDependencyValidationException
                 actualCsvIdentificationRequestDependencyValidationException =
                     await Assert.ThrowsAsync<CsvIdentificationRequestDependencyValidationException>(
                         testCode: modifyCsvIdentificationRequestTask.AsTask);
