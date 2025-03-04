@@ -2,11 +2,13 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications.Exceptions;
-using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
 using ISL.ReIdentification.Core.Services.Coordinations.Identifications;
 using Moq;
@@ -17,7 +19,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
     {
         [Fact]
         public async Task
-            ShouldThrowValidationExceptionOnProcessImpersonationContextWhenAccessRequestIsNullAndLogItAsync()
+            ShouldThrowValidationExceptionOnProcessImpersonationContextWhenConfigIsNullAndLogItAsync()
         {
             // given
             var service = new IdentificationCoordinationService(
@@ -30,15 +32,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
                 projectStorageConfiguration: null);
 
-            AccessRequest nullAccessRequest = null;
+            string someContainer = GetRandomString();
+            string someFilepath = GetRandomString();
 
             var invalidIdentificationCoordinationException =
                 new InvalidIdentificationCoordinationException(
                     message: "Invalid identification coordination exception. Please correct the errors and try again.");
-
-            invalidIdentificationCoordinationException.AddData(
-                key: nameof(AccessRequest),
-                values: "Object is invalid");
 
             invalidIdentificationCoordinationException.AddData(
                 key: nameof(ProjectStorageConfiguration),
@@ -52,7 +51,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
             // when
             ValueTask<AccessRequest> accessRequestTask = service
-                .ProcessImpersonationContextRequestAsync(nullAccessRequest);
+                .ProcessImpersonationContextRequestAsync(someContainer, someFilepath);
 
             IdentificationCoordinationValidationException actualIdentificationCoordinationValidationException =
                 await Assert.ThrowsAsync<IdentificationCoordinationValidationException>(
@@ -81,7 +80,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
         [InlineData("")]
         [InlineData(" ")]
         public async Task
-            ShouldThrowValidationExceptionOnProcessImpersonationContextWhenArgumentsIsInvalidAndLogItAsync(
+            ShouldThrowValidationExceptionOnProcessImpersonationContextWhenArgumentsAreInvalidAndLogItAsync(
             string invalidString)
         {
             // given
@@ -101,18 +100,17 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                     ErrorFolder = invalidString,
                 });
 
-            AccessRequest nullAccessRequest = new AccessRequest
-            {
-                CsvIdentificationRequest = null
-            };
-
             var invalidIdentificationCoordinationException =
                 new InvalidIdentificationCoordinationException(
                     message: "Invalid identification coordination exception. Please correct the errors and try again.");
 
             invalidIdentificationCoordinationException.AddData(
-                key: $"{nameof(AccessRequest)}.{nameof(AccessRequest.CsvIdentificationRequest)}",
-                values: "Object is invalid");
+                key: "filepath",
+                values: "Text is invalid");
+
+            invalidIdentificationCoordinationException.AddData(
+                key: "container",
+                values: "Text is invalid");
 
             invalidIdentificationCoordinationException.AddData(
                 key: $"{nameof(ProjectStorageConfiguration)}.{nameof(ProjectStorageConfiguration.Container)}",
@@ -138,7 +136,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
             // when
             ValueTask<AccessRequest> accessRequestTask =
-                service.ProcessImpersonationContextRequestAsync(nullAccessRequest);
+                service.ProcessImpersonationContextRequestAsync(invalidString, invalidString);
 
             IdentificationCoordinationValidationException actualIdentificationCoordinationValidationException =
                 await Assert.ThrowsAsync<IdentificationCoordinationValidationException>(
@@ -162,61 +160,120 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData(" ")]
+        [Fact]
         public async Task
-            ShouldThrowValidationExceptionOnProcessImpersonationContextWhenFilepathIsInvalidAndLogItAsync(
-            string invalidString)
+            ShouldThrowValidationOnProcessImpersonationContextIfIdentifierColumnNotFoundInCsvAndLogItAsync()
         {
             // given
-            AccessRequest nullAccessRequest = new AccessRequest
-            {
-                CsvIdentificationRequest = new CsvIdentificationRequest { Filepath = invalidString }
-            };
+            Guid randomImpersonationContextId = Guid.NewGuid();
+            Guid inputImpersonationContextId = randomImpersonationContextId;
+            string inputContainer = randomImpersonationContextId.ToString();
+            string inputFilepath = GetRandomString();
+            string outputPickupFilepath = GetRandomString();
+            string outputErrorFilepath = GetRandomString();
+            var outputExtractFromFilepath = (inputFilepath, outputPickupFilepath, outputErrorFilepath);
+            string pseudoIdentifier = "0000000001";
+            string randomHeaderValue = GetRandomStringWithLengthOf(10);
+            string randomIdentifierHeaderValue = GetRandomStringWithLengthOf(10);
+            string randomInvalidIdentifierHeaderValue = GetRandomStringWithLengthOf(10);
+            string impersonationContextIdentifierHeaderValue = randomHeaderValue;
+            string invalidIdentifierHeaderValue = randomIdentifierHeaderValue;
+            string randomValue = GetRandomStringWithLengthOf(10);
+            StringBuilder retrievedCsv = new StringBuilder();
 
-            var invalidIdentificationCoordinationException =
-                new InvalidIdentificationCoordinationException(
-                    message: "Invalid identification coordination exception. Please correct the errors and try again.");
+            retrievedCsv.AppendLine(
+                $"{randomHeaderValue}0,{randomHeaderValue}1,{invalidIdentifierHeaderValue}");
 
-            invalidIdentificationCoordinationException.AddData(
-                key:
-                    $"{nameof(AccessRequest)}" +
-                    $".{nameof(AccessRequest.CsvIdentificationRequest)}" +
-                    $".{nameof(AccessRequest.CsvIdentificationRequest.Filepath)}",
-                values: "Text is invalid");
+            retrievedCsv.AppendLine($"{randomValue},{randomValue},{pseudoIdentifier}");
+            string retrievedCsvString = retrievedCsv.ToString();
+            byte[] retrievedCsvData = Encoding.UTF8.GetBytes(retrievedCsvString);
+            MemoryStream randomStream = new MemoryStream();
+            MemoryStream returnedStream = new MemoryStream(retrievedCsvData);
+            MemoryStream outputStream = randomStream;
+            AccessRequest randomAccessRequest = CreateRandomAccessRequest();
+            AccessRequest retrievedAccessRequest = randomAccessRequest;
+            retrievedAccessRequest.ImpersonationContext.IdentifierColumn = impersonationContextIdentifierHeaderValue;
+
+            var identificationCoordinationServiceMock = new Mock<IdentificationCoordinationService>
+                (this.accessOrchestrationServiceMock.Object,
+                this.persistanceOrchestrationServiceMock.Object,
+                this.identificationOrchestrationServiceMock.Object,
+                this.csvHelperBrokerMock.Object,
+                this.securityBrokerMock.Object,
+                this.loggingBrokerMock.Object,
+                this.dateTimeBrokerMock.Object,
+                this.projectStorageConfiguration)
+            { CallBase = true };
+
+            identificationCoordinationServiceMock.Setup(service =>
+                service.ExtractFromFilepath(inputFilepath))
+                    .ReturnsAsync(outputExtractFromFilepath);
+
+            this.identificationOrchestrationServiceMock
+                .Setup(service => service
+                    .RetrieveDocumentByFileNameAsync(It.Is(SameStreamAs(outputStream)), inputFilepath, inputContainer))
+                        .Callback<Stream, string, string>((output, fileName, container) =>
+                        {
+                            output.Position = 0;
+                            returnedStream.CopyTo(output);
+                        })
+                        .Returns(ValueTask.CompletedTask);
+
+            this.persistanceOrchestrationServiceMock.Setup(service =>
+                service.RetrieveImpersonationContextByIdAsync(inputImpersonationContextId))
+                    .ReturnsAsync(retrievedAccessRequest);
+
+            var invalidCsvIdentificationCoordinationException =
+                new InvalidCsvIdentificationCoordinationException(
+                message: "Invalid csv file. Please check that the provided file has a column name " +
+                    "that matches the identifier column name given when creating the project.");
 
             var expectedIdentificationCoordinationValidationException =
                 new IdentificationCoordinationValidationException(
                     message: "Identification coordination validation error occurred, " +
                         "fix the errors and try again.",
-                    innerException: invalidIdentificationCoordinationException);
+                    innerException: invalidCsvIdentificationCoordinationException);
+
+            IdentificationCoordinationService service = identificationCoordinationServiceMock.Object;
 
             // when
-            ValueTask<AccessRequest> accessRequestTask = this.identificationCoordinationService
-                .ProcessImpersonationContextRequestAsync(nullAccessRequest);
+            ValueTask<AccessRequest> createAccessRequestTask = service
+                .ProcessImpersonationContextRequestAsync(inputContainer, inputFilepath);
 
             IdentificationCoordinationValidationException actualIdentificationCoordinationValidationException =
                 await Assert.ThrowsAsync<IdentificationCoordinationValidationException>(
-                    testCode: accessRequestTask.AsTask);
+                    testCode: createAccessRequestTask.AsTask);
 
             // then
             actualIdentificationCoordinationValidationException
                 .Should().BeEquivalentTo(expectedIdentificationCoordinationValidationException);
 
-            this.loggingBrokerMock.Verify(broker =>
-               broker.LogErrorAsync(It.Is(SameExceptionAs(
-                   expectedIdentificationCoordinationValidationException))),
-                       Times.Once);
+            this.persistanceOrchestrationServiceMock.Verify(service =>
+                service.RetrieveImpersonationContextByIdAsync(inputImpersonationContextId),
+                    Times.Once);
+
+            this.identificationOrchestrationServiceMock.Verify(service =>
+                service.RetrieveDocumentByFileNameAsync(
+                    It.IsAny<Stream>(),
+                    inputFilepath,
+                    inputContainer),
+                        Times.Once);
+
+            this.identificationOrchestrationServiceMock.Verify(service =>
+                service.AddDocumentAsync(
+                    It.IsAny<Stream>(),
+                    outputErrorFilepath,
+                    inputContainer),
+                        Times.Once);
+
+            this.identificationOrchestrationServiceMock.Verify(service =>
+                service.RemoveDocumentByFileNameAsync(
+                    inputFilepath,
+                    inputContainer),
+                        Times.Once);
 
             this.persistanceOrchestrationServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.accessOrchestrationServiceMock.VerifyNoOtherCalls();
             this.identificationOrchestrationServiceMock.VerifyNoOtherCalls();
-            this.csvHelperBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }
