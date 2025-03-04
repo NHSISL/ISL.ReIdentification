@@ -30,7 +30,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
                     innerException: nullCsvIdentificationRequestException);
 
             // when
-            ValueTask<CsvIdentificationRequest> addCsvIdentificationRequestTask = 
+            ValueTask<CsvIdentificationRequest> addCsvIdentificationRequestTask =
                 this.csvIdentificationRequestService.AddCsvIdentificationRequestAsync(nullCsvIdentificationRequest);
 
             CsvIdentificationRequestValidationException actualCsvIdentificationRequestValidationException =
