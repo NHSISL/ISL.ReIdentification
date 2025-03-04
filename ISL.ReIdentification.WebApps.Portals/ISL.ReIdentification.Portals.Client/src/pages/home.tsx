@@ -31,7 +31,6 @@ export const Home = () => {
                     <p>
                         With a focus on privacy, compliance, and operational efficiency, the One London Re-Identification platform provides healthcare organisations with the tools to manage sensitive patient data responsibly and effectively. Whether re-identifying a single record or managing large datasets, the platform ensures secure, auditable, and scalable data workflows for all users.
                     </p>
-                    
                 </Col>
             </Row>
             <Row>

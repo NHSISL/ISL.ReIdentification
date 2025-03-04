@@ -29,8 +29,8 @@ const Login: React.FC = () => {
                     title={<span style={{ color: 'white' }}>{activeAccount?.username}</span>}
                     id="collasible-nav-dropdown" 
                     className="me-3">
-                    <NavDropdown.Item onClick={handleLogoutRedirect}>Sign out</NavDropdown.Item>
                     <UserProfile />
+                    <NavDropdown.Item onClick={handleLogoutRedirect}>Sign out</NavDropdown.Item>
                 </NavDropdown>
             </AuthenticatedTemplate>
         </>
