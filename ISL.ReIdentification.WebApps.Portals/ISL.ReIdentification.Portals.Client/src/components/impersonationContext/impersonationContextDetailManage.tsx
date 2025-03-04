@@ -1,15 +1,14 @@
 import { FunctionComponent, useState, useEffect } from "react";
 import Container from "react-bootstrap/esm/Container";
 import BreadCrumbBase from "../bases/layouts/BreadCrumb/BreadCrumbBase";
-import { Alert, Button, ButtonGroup, Card, Col, ListGroup, Row, Spinner, Table } from "react-bootstrap";
+import { Alert, Button, ButtonGroup, Card, Col, Row, Spinner, Table } from "react-bootstrap";
 import { impersonationContextService } from "../../services/foundations/impersonationContextService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { useMsal } from "@azure/msal-react";
-import { impersonationContextViewService } from "../../services/views/impersonationContext/impersonationContextViewService";
-import { ImpersonationContext } from "../../models/impersonationContext/impersonationContext";
 import { reIdentificationService } from "../../services/foundations/reIdentificationService";
 import CopyIcon from "../core/copyIcon";
+import { AccessRequest } from "../../models/accessRequest/accessRequest";
 
 interface ImpersonationContextDetailManageProps {
     impersonationIdentificationRequestId: string | undefined;
@@ -19,12 +18,13 @@ const ImpersonationContextDetailManage: FunctionComponent<ImpersonationContextDe
 
     const account = useMsal();
 
-    const { data, error, refetch } = impersonationContextService.useRetrieveAllImpersonationById(impersonationIdentificationRequestId!);
+    const { data, error, refetch } =
+        impersonationContextService.useRetrieveAllImpersonationById(impersonationIdentificationRequestId!);
 
     const { submit, loading } = reIdentificationService.useRequestReIdentificationImpersonationGenerateTokens();
     const [errorStatus, setErrorStatus] = useState("");
     const [success, setSuccess] = useState("");
-    const [accessRequest, setAccessRequest] = useState<any>(null);
+    const [accessRequest, setAccessRequest] = useState<AccessRequest | null>(null);
     const [confirmReGenerate, setConfirmReGenerate] = useState(false);
     const [isRegenerating, setIsRegenerating] = useState(false);
     const [isDenying, setIsDenying] = useState(false);
@@ -78,10 +78,6 @@ const ImpersonationContextDetailManage: FunctionComponent<ImpersonationContextDe
 
     const handleCancelReGenerate = () => {
         setConfirmReGenerate(false);
-    };
-
-    const copyToClipboard = (text: string) => {
-        navigator.clipboard.writeText(text);
     };
 
     return (
