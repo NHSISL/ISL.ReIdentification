@@ -184,7 +184,7 @@ const ImpersonationContextDetailManage: FunctionComponent<ImpersonationContextDe
                                             <Card.Header>Token Generation</Card.Header>
                                             <Card.Body>
                                                 {isRegenerating ? (
-                                                    <Spinner animation="border" size="lg" />
+                                                    <Spinner animation="border" />
                                                 ) : (
                                                     <>
                                                         <Alert variant="info">
@@ -201,28 +201,28 @@ const ImpersonationContextDetailManage: FunctionComponent<ImpersonationContextDe
                                                             <tbody>
                                                                 <tr>
                                                                     <td><small><strong>Errors SAS Token:</strong></small></td>
-                                                                    <td><small>{accessRequest.impersonationContext.errorsSasToken}</small></td>
+                                                                    <td><small>{accessRequest.impersonationContext?.errorToken}</small></td>
                                                                     <td className="text-center">
                                                                         <CopyIcon
-                                                                            content={accessRequest.impersonationContext.errorsSasToken || ""}
+                                                                            content={accessRequest.impersonationContext?.errorToken || ""}
                                                                             resetTime={2000} />
                                                                     </td>
                                                                 </tr>
                                                                 <tr>
                                                                     <td><small><strong>Inbox SAS Token:</strong></small></td>
-                                                                    <td><small>{accessRequest.impersonationContext.inboxSasToken}</small></td>
+                                                                    <td><small>{accessRequest.impersonationContext?.inboxToken}</small></td>
                                                                     <td className="text-center">
                                                                         <CopyIcon
-                                                                            content={accessRequest.impersonationContext.inboxSasToken || ""}
+                                                                            content={accessRequest.impersonationContext?.inboxToken || ""}
                                                                             resetTime={2000} />
                                                                     </td>
                                                                 </tr>
                                                                 <tr>
                                                                     <td><small><strong>Outbox SAS Token:</strong></small></td>
-                                                                    <td><small>{accessRequest.impersonationContext.outboxSasToken}</small></td>
-                                                                    <td className="text-center"s>
+                                                                    <td><small>{accessRequest.impersonationContext?.outboxToken}</small></td>
+                                                                    <td className="text-center">
                                                                         <CopyIcon
-                                                                            content={accessRequest.impersonationContext.outboxSasToken || ""}
+                                                                            content={accessRequest.impersonationContext?.outboxToken || ""}
                                                                             resetTime={2000} />
                                                                     </td>
                                                                 </tr>
