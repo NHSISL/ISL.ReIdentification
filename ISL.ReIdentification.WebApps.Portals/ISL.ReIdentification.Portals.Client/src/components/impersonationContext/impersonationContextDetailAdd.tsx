@@ -248,7 +248,15 @@ const ImpersonationContextDetailAdd: FunctionComponent = () => {
                                             <p>Alternatively, the recipient can launch the projects page in the portal and approve from there.</p>
 
                                             To View your Projects Click&nbsp;
-                                            <span onClick={() => navigate('/project')} style={{ color: 'blue', cursor: 'pointer', textDecoration: 'underline' }}>
+                                            <span
+                                                onClick={() => navigate('/project')}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter') {
+                                                        navigate('/project');
+                                                    }
+                                                }}
+                                                style={{ color: 'blue', cursor: 'pointer', textDecoration: 'underline' }}
+                                                tabIndex={0} >
                                                 Here
                                             </span>
                                     </Alert>
