@@ -14,7 +14,7 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
         ValueTask<AccessRequest> PersistsCsvIdentificationRequestAsync(AccessRequest accessRequest);
         ValueTask<AccessRequest> ProcessCsvIdentificationRequestAsync(Guid csvIdentificationRequestId, string reason);
         ValueTask<AccessRequest> PersistsImpersonationContextAsync(AccessRequest accessRequest);
-        ValueTask<AccessRequest> ProcessImpersonationContextRequestAsync(AccessRequest accessRequest);
+        ValueTask<AccessRequest> ProcessImpersonationContextRequestAsync(string container, string filepath);
         ValueTask<AccessRequest> ExpireRenewImpersonationContextTokensAsync(Guid impersonationContextId);
         ValueTask ImpersonationContextApprovalAsync(Guid impersonationContextId, bool isApproved);
     }

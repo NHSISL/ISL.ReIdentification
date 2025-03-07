@@ -58,11 +58,13 @@ namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis
             string user = Guid.NewGuid().ToString();
             DateTime now = DateTime.UtcNow;
             var filler = new Filler<Lookup>();
+            string groupName = GetRandomStringWithLengthOf(220);
+            string name = GetRandomStringWithLengthOf(220);
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
-                .OnProperty(lookup => lookup.GroupName).Use(() => GetRandomStringWithLengthOf(220))
-                .OnProperty(lookup => lookup.Name).Use(() => GetRandomStringWithLengthOf(220))
+                .OnProperty(lookup => lookup.GroupName).Use(() => groupName)
+                .OnProperty(lookup => lookup.Name).Use(() => name)
                 .OnProperty(lookup => lookup.CreatedDate).Use(now)
                 .OnProperty(lookup => lookup.CreatedBy).Use(user)
                 .OnProperty(lookup => lookup.UpdatedDate).Use(now)
