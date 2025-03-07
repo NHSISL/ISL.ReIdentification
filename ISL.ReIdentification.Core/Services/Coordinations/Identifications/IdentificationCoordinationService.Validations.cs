@@ -38,35 +38,31 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
         }
 
         private static void ValidateOnProcessImpersonationContextRequestAsync(
-            AccessRequest accessRequest,
+            string container,
+            string filepath,
             ProjectStorageConfiguration projectStorageConfiguration)
         {
             Validate(
-                (Rule: IsInvalid(accessRequest), Parameter: nameof(AccessRequest)),
                 (Rule: IsInvalid(projectStorageConfiguration), Parameter: nameof(ProjectStorageConfiguration)));
 
             Validate(
-                (Rule: IsInvalid(accessRequest.CsvIdentificationRequest),
-                Parameter: $"{nameof(AccessRequest)}.{nameof(AccessRequest.CsvIdentificationRequest)}"),
-
+                (Rule: IsInvalid(container), Parameter: nameof(container)),
+                (Rule: IsInvalid(filepath), Parameter: nameof(filepath)),
                 (Rule: IsInvalid(projectStorageConfiguration.Container),
-                Parameter: $"{nameof(ProjectStorageConfiguration)}.{nameof(ProjectStorageConfiguration.Container)}"),
+                Parameter: $"{nameof(ProjectStorageConfiguration)}." +
+                    $"{nameof(ProjectStorageConfiguration.Container)}"),
 
                 (Rule: IsInvalid(projectStorageConfiguration.LandingFolder),
-                Parameter: $"{nameof(ProjectStorageConfiguration)}.{nameof(ProjectStorageConfiguration.LandingFolder)}"),
+                Parameter: $"{nameof(ProjectStorageConfiguration)}." +
+                    $"{nameof(ProjectStorageConfiguration.LandingFolder)}"),
 
                 (Rule: IsInvalid(projectStorageConfiguration.PickupFolder),
-                Parameter: $"{nameof(ProjectStorageConfiguration)}.{nameof(ProjectStorageConfiguration.PickupFolder)}"),
+                Parameter: $"{nameof(ProjectStorageConfiguration)}." +
+                    $"{nameof(ProjectStorageConfiguration.PickupFolder)}"),
 
                 (Rule: IsInvalid(projectStorageConfiguration.ErrorFolder),
-                Parameter: $"{nameof(ProjectStorageConfiguration)}.{nameof(ProjectStorageConfiguration.ErrorFolder)}"));
-
-            Validate(
-                (Rule: IsInvalid(accessRequest.CsvIdentificationRequest.Filepath),
-                Parameter:
-                    $"{nameof(AccessRequest)}" +
-                    $".{nameof(AccessRequest.CsvIdentificationRequest)}" +
-                    $".{nameof(AccessRequest.CsvIdentificationRequest.Filepath)}"));
+                Parameter: $"{nameof(ProjectStorageConfiguration)}." +
+                    $"{nameof(ProjectStorageConfiguration.ErrorFolder)}"));
         }
 
 
