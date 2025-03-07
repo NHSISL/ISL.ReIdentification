@@ -30,47 +30,40 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             string timestamp = randomDateTimeOffset.ToString("yyyyMMddHHmms");
             string contextIdString = contextId.ToString();
             string randomString = GetRandomString();
-            string container = GetRandomString();
+            string inputContainer = GetRandomString();
             string fileName = randomString;
             string fileExtension = ".csv";
-            string inputFilepath = $"/{container}/{contextIdString}/outbox/subdirectory/{fileName}{fileExtension}";
+            string inputFilepath = $"outbox/subdirectory/{fileName}{fileExtension}";
             string outputLandingFilepath = $"outbox/subdirectory/{fileName}{fileExtension}";
             string outputPickupFilepath = $"inbox/subdirectory/{fileName}_{timestamp}{fileExtension}";
             string outputErrorFilepath = $"error/subdirectory/{fileName}_{timestamp}{fileExtension}";
             Guid outputContextId = contextId;
 
             var outputExtractFromFilepath =
-                (outputLandingFilepath, outputPickupFilepath, outputErrorFilepath, outputContextId);
+                (outputLandingFilepath, outputPickupFilepath, outputErrorFilepath);
 
-            AccessRequest inputAccessRequest = CreateRandomAccessRequest();
-            inputAccessRequest.CsvIdentificationRequest.Filepath = inputFilepath;
-            inputAccessRequest.IdentificationRequest = null;
-
-            AccessRequest outputConversionAccessRequest = inputAccessRequest.DeepClone();
+            AccessRequest outputAccessRequestWithCsvIdentificationRequest = CreateRandomAccessRequest();
+            outputAccessRequestWithCsvIdentificationRequest.CsvIdentificationRequest.Filepath = inputFilepath;
+            outputAccessRequestWithCsvIdentificationRequest.IdentificationRequest = null;
+            AccessRequest outputConversionAccessRequest = outputAccessRequestWithCsvIdentificationRequest.DeepClone();
             outputConversionAccessRequest.IdentificationRequest = CreateRandomIdentificationRequest();
-
             AccessRequest outputPersistanceOrchestrationAccessRequest = CreateRandomAccessRequest();
             outputPersistanceOrchestrationAccessRequest.IdentificationRequest = null;
             outputPersistanceOrchestrationAccessRequest.CsvIdentificationRequest = null;
-
             AccessRequest inputAccessOrchestrationAccessRequest = outputConversionAccessRequest;
             AccessRequest outputOrchestrationAccessRequest = inputAccessOrchestrationAccessRequest.DeepClone();
-
             AccessRequest inputIdentificationOrchestrationAccessRequest = outputOrchestrationAccessRequest.DeepClone();
             IdentificationRequest outputOrchestrationIdentificationRequest = CreateRandomIdentificationRequest();
-
             AccessRequest inputConversionAccessRequest = outputOrchestrationAccessRequest.DeepClone();
             inputConversionAccessRequest.IdentificationRequest = outputOrchestrationIdentificationRequest;
-
             AccessRequest resultingAccessRequest = inputConversionAccessRequest.DeepClone();
             resultingAccessRequest.CsvIdentificationRequest = CreateRandomCsvIdentificationRequest();
-
             MemoryStream resultingCsvData = new MemoryStream(resultingAccessRequest.CsvIdentificationRequest.Data);
             AccessRequest expectedAccessRequest = resultingAccessRequest.DeepClone();
 
             var projectStorageConfiguration = new ProjectStorageConfiguration
             {
-                Container = container,
+                Container = inputContainer,
                 LandingFolder = GetRandomString(),
                 PickupFolder = GetRandomString(),
                 ErrorFolder = GetRandomString(),
@@ -92,13 +85,16 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                     .ReturnsAsync(outputExtractFromFilepath);
 
             identificationCoordinationServiceMock.Setup(service =>
-                service.ConvertCsvIdentificationRequestToIdentificationRequest(
-                    It.Is(SameAccessRequestAs(inputAccessRequest))))
-                        .ReturnsAsync(outputConversionAccessRequest);
+                service.CreateAccessRequestWithCsvIdentificationRequestAsync(
+                    inputContainer,
+                    inputFilepath,
+                    outputErrorFilepath))
+                        .ReturnsAsync(outputAccessRequestWithCsvIdentificationRequest);
 
-            this.persistanceOrchestrationServiceMock.Setup(service =>
-                service.RetrieveImpersonationContextByIdAsync(contextId))
-                    .ReturnsAsync(outputPersistanceOrchestrationAccessRequest);
+            identificationCoordinationServiceMock.Setup(service =>
+                service.ConvertCsvIdentificationRequestToIdentificationRequest(
+                    It.Is(SameAccessRequestAs(outputAccessRequestWithCsvIdentificationRequest))))
+                        .ReturnsAsync(outputConversionAccessRequest);
 
             this.accessOrchestrationServiceMock.Setup(service =>
                 service.ValidateAccessForIdentificationRequestAsync(
@@ -122,7 +118,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             // when
             AccessRequest actualAccessRequest =
                 await identificationCoordinationService
-                    .ProcessImpersonationContextRequestAsync(inputAccessRequest);
+                    .ProcessImpersonationContextRequestAsync(inputContainer, inputFilepath);
 
             // then
             actualAccessRequest.Should().BeEquivalentTo(expectedAccessRequest);
@@ -132,13 +128,16 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                     Times.Once);
 
             identificationCoordinationServiceMock.Verify(service =>
-                service.ConvertCsvIdentificationRequestToIdentificationRequest(
-                    It.Is(SameAccessRequestAs(inputAccessRequest))),
+                service.CreateAccessRequestWithCsvIdentificationRequestAsync(
+                    inputContainer,
+                    inputFilepath,
+                    outputErrorFilepath),
                         Times.Once);
 
-            this.persistanceOrchestrationServiceMock.Verify(service =>
-                service.RetrieveImpersonationContextByIdAsync(contextId),
-                    Times.Once);
+            identificationCoordinationServiceMock.Verify(service =>
+                service.ConvertCsvIdentificationRequestToIdentificationRequest(
+                    It.Is(SameAccessRequestAs(outputAccessRequestWithCsvIdentificationRequest))),
+                        Times.Once);
 
             this.accessOrchestrationServiceMock.Verify(service =>
                 service.ValidateAccessForIdentificationRequestAsync(
@@ -156,11 +155,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                         Times.Once);
 
             this.identificationOrchestrationServiceMock.Verify(service =>
-                service.AddDocumentAsync(It.Is(SameStreamAs(resultingCsvData)), outputPickupFilepath, container),
+                service.AddDocumentAsync(It.Is(SameStreamAs(resultingCsvData)), outputPickupFilepath, inputContainer),
                     Times.Once);
 
             this.identificationOrchestrationServiceMock.Verify(service =>
-                service.RemoveDocumentByFileNameAsync(outputLandingFilepath, container),
+                service.RemoveDocumentByFileNameAsync(outputLandingFilepath, inputContainer),
                     Times.Once);
 
             identificationCoordinationServiceMock.VerifyNoOtherCalls();
@@ -186,14 +185,14 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             string container = GetRandomString();
             string fileName = randomString;
             string fileExtension = ".csv";
-            string inputFilepath = $"/{container}/{contextIdString}/outbox/subdirectory/{fileName}{fileExtension}";
+            string inputFilepath = $"outbox/subdirectory/{fileName}{fileExtension}";
             string outputLandingFilepath = $"outbox/subdirectory/{fileName}{fileExtension}";
             string outputPickupFilepath = $"inbox/subdirectory/{fileName}_{timestamp}{fileExtension}";
             string outputErrorFilepath = $"error/subdirectory/{fileName}_{timestamp}{fileExtension}";
             Guid outputContextId = contextId;
 
             var outputExtractFromFilepath =
-                (outputLandingFilepath, outputPickupFilepath, outputErrorFilepath, outputContextId);
+                (outputLandingFilepath, outputPickupFilepath, outputErrorFilepath);
 
             AccessRequest inputAccessRequest = CreateRandomAccessRequest();
             inputAccessRequest.CsvIdentificationRequest.Filepath = inputFilepath;
@@ -241,8 +240,15 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                     .ReturnsAsync(outputExtractFromFilepath);
 
             identificationCoordinationServiceMock.Setup(service =>
+                service.CreateAccessRequestWithCsvIdentificationRequestAsync(
+                    container,
+                    inputFilepath,
+                    outputErrorFilepath))
+                        .ReturnsAsync(inputAccessRequest);
+
+            identificationCoordinationServiceMock.Setup(service =>
                 service.ConvertCsvIdentificationRequestToIdentificationRequest(
-                    inputAccessRequest))
+                    It.Is(SameAccessRequestAs(inputAccessRequest))))
                         .ThrowsAsync(someException);
 
             IdentificationCoordinationService identificationCoordinationService =
@@ -250,7 +256,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
             // when
             ValueTask<AccessRequest> accessRequestTask = identificationCoordinationService
-                .ProcessImpersonationContextRequestAsync(inputAccessRequest);
+                .ProcessImpersonationContextRequestAsync(container, inputFilepath);
 
             IdentificationCoordinationServiceException actualIdentificationCoordinationValidationException =
                 await Assert.ThrowsAsync<IdentificationCoordinationServiceException>(
@@ -260,6 +266,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             identificationCoordinationServiceMock.Verify(service =>
                 service.ExtractFromFilepath(inputFilepath),
                     Times.Once);
+
+            identificationCoordinationServiceMock.Verify(service =>
+                service.CreateAccessRequestWithCsvIdentificationRequestAsync(
+                    container,
+                    inputFilepath,
+                    outputErrorFilepath),
+                        Times.Once);
 
             identificationCoordinationServiceMock.Verify(service =>
                 service.ConvertCsvIdentificationRequestToIdentificationRequest(

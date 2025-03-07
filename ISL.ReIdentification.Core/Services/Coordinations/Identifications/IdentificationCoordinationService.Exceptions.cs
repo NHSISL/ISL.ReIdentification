@@ -32,6 +32,10 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
             {
                 throw await CreateAndLogValidationExceptionAsync(invalidAccessIdentificationCoordinationException);
             }
+            catch (InvalidCsvIdentificationCoordinationException invalidCsvIdentificationCoordinationException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(invalidCsvIdentificationCoordinationException);
+            }
             catch (AccessOrchestrationValidationException accessOrchestrationValidationException)
                 when (accessOrchestrationValidationException.InnerException is UnauthorizedAccessOrchestrationException)
             {

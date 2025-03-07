@@ -8,15 +8,17 @@ using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Services.Coordinations.Identifications;
 using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.Functions.Worker.Http;
+using Newtonsoft.Json.Linq;
 
 namespace ISL.ReIdentification.Functions
 {
-    public class ResolvedAddressLoaderFunction
+    public class ProjectOutboxEventFunction
     {
         private readonly IIdentificationCoordinationService identificationCoordinationService;
         private readonly ILoggingBroker loggingBroker;
 
-        public ResolvedAddressLoaderFunction(
+        public ProjectOutboxEventFunction(
             IIdentificationCoordinationService identificationCoordinationService,
             ILoggingBroker loggingBroker)
         {
@@ -24,25 +26,31 @@ namespace ISL.ReIdentification.Functions
             this.loggingBroker = loggingBroker;
         }
 
-        //[Function("ProjectOutboxEventFunction")]
-        //public async Task Run(
-        //    [BlobTrigger("addresses/resolve/in/{name}", Connection = "BlobStorage")] Stream myBlob, string name)
-        //{
-        //    await loggingBroker
-        //        .LogInformationAsync(
-        //            $"C# Blob trigger function Processing blob\n " +
-        //            $"Name: address/in/{{name}}");
+        [Function("ProjectOutboxEventFunction")]
+        public async Task Run(
+            [HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequestData req)
+        {
+            await loggingBroker
+                .LogInformationAsync(
+                    $"C# Blob trigger function Processing blob\n " +
+                    $"Name: address/in/{{name}}");
 
-        //    try
-        //    {
-        //        // TODO:  Refactor the identification service to take in the stream and name
-        //        // await this.identificationCoordinationService.ProcessImpersonationContextRequestAsync(name, myBlob);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        await loggingBroker.LogErrorAsync(ex);
-        //        throw;
-        //    }
-        //}
+            try
+            {
+                string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+                var eventGridEvent = JArray.Parse(requestBody)[0];
+                string subject = eventGridEvent["subject"]?.ToString();
+                string container = subject?.Split('/')[4];
+                string filename = subject?.Split(new[] { "/blobs/" }, StringSplitOptions.None)[1];
+
+                await this.identificationCoordinationService
+                    .ProcessImpersonationContextRequestAsync(container, filename);
+            }
+            catch (Exception ex)
+            {
+                await loggingBroker.LogErrorAsync(ex);
+                throw;
+            }
+        }
     }
 }

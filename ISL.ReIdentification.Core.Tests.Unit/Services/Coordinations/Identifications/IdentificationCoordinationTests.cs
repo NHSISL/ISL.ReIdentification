@@ -309,6 +309,37 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             return dynamicObjects;
         }
 
+        private AccessRequest ConvertImpersonationContextToCsvIdentificationRequest(AccessRequest accessRequest)
+        {
+            accessRequest.CsvIdentificationRequest = new CsvIdentificationRequest();
+            accessRequest.CsvIdentificationRequest.HasHeaderRecord = true;
+            accessRequest.CsvIdentificationRequest.IdentifierColumnIndex = 2;
+            accessRequest.CsvIdentificationRequest.Id = accessRequest.ImpersonationContext.Id;
+
+            accessRequest.CsvIdentificationRequest.RecipientEntraUserId =
+                accessRequest.ImpersonationContext.RequesterEntraUserId;
+
+            accessRequest.CsvIdentificationRequest.RecipientEmail =
+                accessRequest.ImpersonationContext.RequesterEmail;
+
+            accessRequest.CsvIdentificationRequest.RecipientJobTitle =
+                accessRequest.ImpersonationContext.RequesterJobTitle;
+
+            accessRequest.CsvIdentificationRequest.RecipientDisplayName =
+                accessRequest.ImpersonationContext.RequesterDisplayName;
+
+            accessRequest.CsvIdentificationRequest.RecipientFirstName =
+                accessRequest.ImpersonationContext.RequesterFirstName;
+
+            accessRequest.CsvIdentificationRequest.RecipientLastName =
+                accessRequest.ImpersonationContext.RequesterLastName;
+
+            accessRequest.CsvIdentificationRequest.Reason = accessRequest.ImpersonationContext.Reason;
+            accessRequest.CsvIdentificationRequest.Organisation = accessRequest.ImpersonationContext.Organisation;
+
+            return accessRequest;
+        }
+
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);
 
