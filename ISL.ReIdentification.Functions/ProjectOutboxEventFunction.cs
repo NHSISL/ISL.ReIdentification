@@ -42,10 +42,6 @@ namespace ISL.ReIdentification.Functions
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
                 EventGridEvent[] egEvents = EventGridEvent.ParseMany(BinaryData.FromString(requestBody));
 
-                //var eventGridEvent = JArray.Parse(requestBody)[0];
-                //string subject = eventGridEvent["subject"]?.ToString();
-                //string container = subject?.Split('/')[4];
-                //string filename = subject?.Split(new[] { "/blobs/" }, StringSplitOptions.None)[1];
                 foreach (EventGridEvent egEvent in egEvents)
                 {
                     if (egEvent.EventType == "Microsoft.EventGrid.SubscriptionValidationEvent")
@@ -59,6 +55,13 @@ namespace ISL.ReIdentification.Functions
 
                         return new OkObjectResult(response);
                     }
+
+                    string subject = egEvent.Subject;
+                    string container = subject?.Split('/')[4];
+                    string filename = subject?.Split(new[] { "/blobs/" }, StringSplitOptions.None)[1];
+
+                    await this.identificationCoordinationService
+                        .ProcessImpersonationContextRequestAsync(container, filename);
                 }
 
                 return new OkObjectResult(string.Empty);
