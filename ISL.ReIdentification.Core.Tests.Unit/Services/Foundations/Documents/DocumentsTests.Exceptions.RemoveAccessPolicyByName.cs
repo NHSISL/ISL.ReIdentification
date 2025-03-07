@@ -3,10 +3,8 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
-using ISL.Providers.Storages.Abstractions.Models.Exceptions;
 using ISL.ReIdentification.Core.Models.Foundations.Documents.Exceptions;
 using Moq;
 using Xeptions;
@@ -23,14 +21,14 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             // given
             string someContainer = GetRandomString();
             string somePolicyName = GetRandomString();
-                
+
             var expectedDocumentServiceException = new DocumentDependencyValidationException(
                 message: "Document dependency validation error occurred, please fix errors and try again.",
                 innerException: dependencyValidationException);
 
             this.blobStorageBrokerMock.Setup(broker =>
                 broker.RemoveAccessPolicyByNameAsync(
-                    someContainer, 
+                    someContainer,
                     somePolicyName))
                 .ThrowsAsync(dependencyValidationException);
 
@@ -67,14 +65,14 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             // given
             string someContainer = GetRandomString();
             string somePolicyName = GetRandomString();
-            
+
             var expectedDocumentDependencyException = new DocumentDependencyException(
                 message: "Document dependency error occurred, please fix errors and try again.",
                 innerException: dependencyException);
 
             this.blobStorageBrokerMock.Setup(broker =>
                 broker.RemoveAccessPolicyByNameAsync(
-                    someContainer, 
+                    someContainer,
                     somePolicyName))
                 .ThrowsAsync(dependencyException);
 
@@ -92,7 +90,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
 
             this.blobStorageBrokerMock.Verify(broker =>
                 broker.RemoveAccessPolicyByNameAsync(
-                    someContainer, 
+                    someContainer,
                     somePolicyName),
                 Times.Once);
 
@@ -123,14 +121,14 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
 
             this.blobStorageBrokerMock.Setup(broker =>
                 broker.RemoveAccessPolicyByNameAsync(
-                    someContainer, 
+                    someContainer,
                     somePolicyName))
                 .ThrowsAsync(someException);
 
             // when
             ValueTask removeAccessPolicyByNameTask =
                 this.documentService.RemoveAccessPolicyByNameAsync(
-                    someContainer, 
+                    someContainer,
                     somePolicyName
                 );
 
@@ -142,7 +140,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
 
             this.blobStorageBrokerMock.Verify(broker =>
                 broker.RemoveAccessPolicyByNameAsync(
-                    someContainer, 
+                    someContainer,
                     somePolicyName),
                 Times.Once);
 

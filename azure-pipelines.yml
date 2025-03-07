@@ -4,7 +4,12 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
 trigger:
-- main
+  tags:
+    include:
+    - 'v*'
+  branches:
+    include:
+    - main
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -15,6 +20,17 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
+- bash: |
+    echo "Build $(Build.SourceBranch)"
+    RELEASE_REGEX="v[0-9](.[0-9]+){3}"
+    tagName=${BUILD_SOURCEBRANCH#refs/tags/}
+    if [[ "$(Build.SourceBranch)" =~ $RELEASE_REGEX ]] 
+    then
+     echo "##vso[build.updatebuildnumber]$tagName"
+     echo "##vso[build.addbuildtag]$tagName"
+     echo "##vso[build.addbuildtag]Release"
+    fi
+  displayName: Tag Releases
 - task: qetza.replacetokens.replacetokens-task.replacetokens@6
   displayName: 'Replace tokens in **/appsettings.json'
   inputs:

@@ -24,7 +24,7 @@ namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis
 
             // then
             actualLookup.Should().BeEquivalentTo(
-                expectedLookup, 
+                expectedLookup,
                 options => options
                     .Excluding(lookup => lookup.CreatedBy)
                     .Excluding(lookup => lookup.CreatedDate)

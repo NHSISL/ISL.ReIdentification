@@ -426,7 +426,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Impersonatio
             ImpersonationContext randomImpersonationContext = CreateRandomImpersonationContext(
                 dateTimeOffset: randomDateTimeOffset,
                 impersonationContextId: randomEntraUser.EntraUserId);
-                
+
             ImpersonationContext invalidImpersonationContext = randomImpersonationContext;
 
             DateTimeOffset invalidDate =
