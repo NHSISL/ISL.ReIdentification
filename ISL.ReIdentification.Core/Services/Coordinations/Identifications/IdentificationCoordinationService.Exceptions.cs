@@ -32,6 +32,10 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
             {
                 throw await CreateAndLogValidationExceptionAsync(invalidAccessIdentificationCoordinationException);
             }
+            catch (InvalidCsvIdentificationCoordinationException invalidCsvIdentificationCoordinationException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(invalidCsvIdentificationCoordinationException);
+            }
             catch (AccessOrchestrationValidationException accessOrchestrationValidationException)
                 when (accessOrchestrationValidationException.InnerException is UnauthorizedAccessOrchestrationException)
             {
@@ -216,7 +220,7 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
                 new IdentificationCoordinationDependencyValidationException(
                     message: "Identification coordination dependency validation error occurred, " +
                         "fix the errors and try again.",
-                    innerException: exception.InnerException as Xeption);
+                    innerException: exception);
 
             await this.loggingBroker.LogErrorAsync(identificationCoordinationDependencyValidationException);
 

@@ -34,7 +34,7 @@ const ReportsLaunchPage: FunctionComponent<ReportLaunchPageProps> = (props) => {
     const [lastSetOfPseudos, setLastSetOfPseudos] = useState<string[]>([]);
     const [launched, setLaunched] = useState(false);
     const [promptForReid, setPromptForReid] = useState(false);
-    const { reidentify, reidentifications, lastPseudo, clearList, isLoading } = useReidentification(reidReason);
+    const { reidentify, reidentifications, lastPseudo, clearList, isLoading, isAuthorised } = useReidentification(reidReason);
     const { reportBreechThreshold, reportMaxReId } = useFrontendConfiguration();
     const [savedEmbedObject, setSavedEmbedObject] = useState<ReportObject>();
     const [largeNumberConfirmed, setLargeNumberConfirmed] = useState(false);
@@ -197,7 +197,9 @@ const ReportsLaunchPage: FunctionComponent<ReportLaunchPageProps> = (props) => {
                 position={toastPostion}
                 reidentificationLoading={true}
                 reidentifications={reidentifications}
-                launched={launched} />
+                launched={launched}
+                isAuthorised={isAuthorised}
+            />
             <ToastContainer />
         </div>
     </>

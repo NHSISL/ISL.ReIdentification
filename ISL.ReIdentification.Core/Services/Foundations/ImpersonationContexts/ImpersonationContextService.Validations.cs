@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts.Exceptions;
+using ISL.ReIdentification.Core.Models.Securities;
 
 namespace ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts
 {
@@ -14,6 +15,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts
         private async ValueTask ValidateImpersonationContextOnAddAsync(ImpersonationContext impersonationContext)
         {
             ValidateImpersonationContextIsNotNull(impersonationContext);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(impersonationContext.Id),
@@ -68,29 +70,35 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts
                 Parameter: nameof(ImpersonationContext.UpdatedBy)),
 
                 (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: impersonationContext.CreatedBy),
+                Parameter: nameof(impersonationContext.CreatedBy)),
+
+                (Rule: IsNotSame(
                     first: impersonationContext.UpdatedBy,
                     second: impersonationContext.CreatedBy,
                     secondName: nameof(ImpersonationContext.CreatedBy)),
-
                 Parameter: nameof(ImpersonationContext.UpdatedBy)),
 
                 (Rule: IsNotSame(
-                    first: impersonationContext.CreatedDate,
-                    second: impersonationContext.UpdatedDate,
+                    first: impersonationContext.UpdatedDate,
+                    second: impersonationContext.CreatedDate,
                     secondName: nameof(ImpersonationContext.CreatedDate)),
-
                 Parameter: nameof(ImpersonationContext.UpdatedDate)),
 
                 (Rule: await IsNotRecentAsync(impersonationContext.CreatedDate),
-                Parameter: nameof(ImpersonationContext.CreatedDate)));
+                Parameter: nameof(ImpersonationContext.CreatedDate))
+            );
         }
 
         private async ValueTask ValidateImpersonationContextOnModifyAsync(ImpersonationContext impersonationContext)
         {
             ValidateImpersonationContextIsNotNull(impersonationContext);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
-                (Rule: IsInvalid(impersonationContext.Id), Parameter: nameof(ImpersonationContext.Id)),
+                (Rule: IsInvalid(impersonationContext.Id),
+                Parameter: nameof(ImpersonationContext.Id)),
 
                 (Rule: IsInvalid(impersonationContext.RequesterEntraUserId),
                 Parameter: nameof(ImpersonationContext.RequesterEntraUserId)),
@@ -140,15 +148,20 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts
                 (Rule: IsInvalidLength(impersonationContext.UpdatedBy, 255),
                 Parameter: nameof(ImpersonationContext.UpdatedBy)),
 
-                (Rule: IsSame(
-                    firstDate: impersonationContext.UpdatedDate,
-                    secondDate: impersonationContext.CreatedDate,
-                    nameof(ImpersonationContext.CreatedDate)),
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: impersonationContext.UpdatedBy),
+                Parameter: nameof(ImpersonationContext.UpdatedBy)),
 
+                (Rule: IsSameAs(
+                    firstDate: impersonationContext.CreatedDate,
+                    secondDate: impersonationContext.UpdatedDate,
+                    secondDateName: nameof(ImpersonationContext.CreatedDate)),
                 Parameter: nameof(ImpersonationContext.UpdatedDate)),
 
-                (Rule: await IsNotRecentAsync(impersonationContext.UpdatedDate),
-                    Parameter: nameof(ImpersonationContext.UpdatedDate)));
+                (Rule: await IsNotRecentAsync(
+                    impersonationContext.UpdatedDate), Parameter: nameof(ImpersonationContext.UpdatedDate))
+            );
         }
 
         private static void ValidateImpersonationContextId(Guid impersonationContextId) =>
@@ -180,21 +193,16 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts
                     first: inputImpersonationContext.CreatedBy,
                     second: storageImpersonationContext.CreatedBy,
                     secondName: nameof(ImpersonationContext.CreatedBy)),
-
                 Parameter: nameof(ImpersonationContext.CreatedBy)),
-
                 (Rule: IsNotSame(
                     first: inputImpersonationContext.CreatedDate,
                     second: storageImpersonationContext.CreatedDate,
                     secondName: nameof(ImpersonationContext.CreatedDate)),
-
                 Parameter: nameof(ImpersonationContext.CreatedDate)),
-
-                (Rule: IsSame(
+                (Rule: IsSameAs(
                     firstDate: inputImpersonationContext.UpdatedDate,
                     secondDate: storageImpersonationContext.UpdatedDate,
                     secondDateName: nameof(ImpersonationContext.UpdatedDate)),
-
                 Parameter: nameof(ImpersonationContext.UpdatedDate)));
         }
 
@@ -225,13 +233,21 @@ namespace ISL.ReIdentification.Core.Services.Foundations.ImpersonationContexts
         private static bool IsExceedingLength(string text, int maxLength) =>
             (text ?? string.Empty).Length > maxLength;
 
-        private static dynamic IsSame(
+        private static dynamic IsSameAs(
             DateTimeOffset firstDate,
             DateTimeOffset secondDate,
             string secondDateName) => new
             {
                 Condition = firstDate == secondDate,
                 Message = $"Date is the same as {secondDateName}"
+            };
+
+        private static dynamic IsNotSame(
+            string first,
+            string second) => new
+            {
+                Condition = first != second,
+                Message = $"Expected value to be '{first}' but found '{second}'."
             };
 
         private static dynamic IsNotSame(

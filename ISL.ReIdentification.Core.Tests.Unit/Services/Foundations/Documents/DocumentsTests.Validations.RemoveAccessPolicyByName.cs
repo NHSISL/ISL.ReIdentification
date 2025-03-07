@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.ReIdentification.Core.Models.Foundations.Documents.Exceptions;
@@ -41,7 +40,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             // when
             ValueTask removedPoliciesTask =
                 this.documentService.RemoveAccessPolicyByNameAsync(
-                    invalidContainer, 
+                    invalidContainer,
                     invalidPolicyName);
 
             DocumentValidationException actualDocumentValidationException =

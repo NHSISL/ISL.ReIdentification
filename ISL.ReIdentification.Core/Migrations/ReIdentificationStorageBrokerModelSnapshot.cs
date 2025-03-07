@@ -18,7 +18,7 @@ namespace ISL.ReIdentification.Core.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.11")
+                .HasAnnotation("ProductVersion", "9.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -447,8 +447,8 @@ namespace ISL.ReIdentification.Core.Migrations
 
                     b.Property<string>("PseudoNhsNumber")
                         .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
 
                     b.Property<DateTimeOffset?>("RelationshipWithOrganisationEffectiveFromDate")
                         .HasColumnType("datetimeoffset");

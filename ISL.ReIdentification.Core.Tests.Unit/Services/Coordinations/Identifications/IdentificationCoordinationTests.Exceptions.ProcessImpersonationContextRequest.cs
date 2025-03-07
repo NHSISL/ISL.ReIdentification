@@ -22,7 +22,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             Xeption dependencyValidationException)
         {
             // given
-            AccessRequest someAccessRequest = CreateRandomAccessRequest();
+            string someContainer = GetRandomString();
+            string someFilepath = GetRandomString();
 
             var identificationCoordinationServiceMock = new Mock<IdentificationCoordinationService>
                 (this.accessOrchestrationServiceMock.Object,
@@ -37,18 +38,18 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
             identificationCoordinationServiceMock.Setup(service =>
                 service.ExtractFromFilepath(It.IsAny<string>()))
-                        .ThrowsAsync(dependencyValidationException);
+                    .ThrowsAsync(dependencyValidationException);
 
             var expectedIdentificationCoordinationDependencyValidationException =
                 new IdentificationCoordinationDependencyValidationException(
                     message: "Identification coordination dependency validation error occurred, " +
                         "fix the errors and try again.",
-                    innerException: dependencyValidationException.InnerException as Xeption);
+                    innerException: dependencyValidationException);
 
             // when
             ValueTask<AccessRequest> accessRequestTask =
                 identificationCoordinationServiceMock.Object
-                    .ProcessImpersonationContextRequestAsync(someAccessRequest);
+                    .ProcessImpersonationContextRequestAsync(someContainer, someFilepath);
 
             IdentificationCoordinationDependencyValidationException
                 actualIdentificationCoordinationDependencyValidationException =
@@ -61,7 +62,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
             identificationCoordinationServiceMock.Verify(service =>
                 service.ExtractFromFilepath(It.IsAny<string>()),
-                        Times.Once);
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -83,7 +84,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             ShouldThrowDependencyValidationExceptionOnProcessImpersonationContextRequestWhenUnauthorizedAndLogItAsync()
         {
             // given
-            AccessRequest someAccessRequest = CreateRandomAccessRequest();
+            string someContainer = GetRandomString();
+            string someFilepath = GetRandomString();
             string someReason = GetRandomString();
             string someMessage = GetRandomString();
 
@@ -103,7 +105,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
                 new IdentificationCoordinationDependencyValidationException(
                     message: "Identification coordination dependency validation error occurred, " +
                         "fix the errors and try again.",
-                    innerException: accessOrchestrationValidationException.InnerException as Xeption);
+                    innerException: unauthorizedIdentificationCoordinationException);
 
             var identificationCoordinationServiceMock = new Mock<IdentificationCoordinationService>
                 (this.accessOrchestrationServiceMock.Object,
@@ -125,7 +127,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             // when
             ValueTask<AccessRequest> accessRequestTask =
                 identificationCoordinationServiceMock.Object
-                    .ProcessImpersonationContextRequestAsync(someAccessRequest);
+                    .ProcessImpersonationContextRequestAsync(someContainer, someFilepath);
 
             IdentificationCoordinationDependencyValidationException
                 actualIdentificationCoordinationDependencyValidationException =
@@ -138,7 +140,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
             identificationCoordinationServiceMock.Verify(service =>
                 service.ExtractFromFilepath(It.IsAny<string>()),
-                        Times.Once);
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -161,7 +163,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             Xeption dependencyException)
         {
             // given
-            AccessRequest someAccessRequest = CreateRandomAccessRequest();
+            string someContainer = GetRandomString();
+            string someFilepath = GetRandomString();
 
             var identificationCoordinationServiceMock = new Mock<IdentificationCoordinationService>
                 (this.accessOrchestrationServiceMock.Object,
@@ -176,7 +179,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
             identificationCoordinationServiceMock.Setup(service =>
                 service.ExtractFromFilepath(It.IsAny<string>()))
-                        .ThrowsAsync(dependencyException);
+                    .ThrowsAsync(dependencyException);
 
             var expectedIdentificationCoordinationDependencyException =
                 new IdentificationCoordinationDependencyException(
@@ -187,7 +190,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             // when
             ValueTask<AccessRequest> accessRequestTask =
                 identificationCoordinationServiceMock.Object
-                    .ProcessImpersonationContextRequestAsync(someAccessRequest);
+                    .ProcessImpersonationContextRequestAsync(someContainer, someFilepath);
 
             IdentificationCoordinationDependencyException
                 actualIdentificationCoordinationDependencyException =
@@ -200,7 +203,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
             identificationCoordinationServiceMock.Verify(service =>
                 service.ExtractFromFilepath(It.IsAny<string>()),
-                        Times.Once);
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -221,7 +224,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
         public async Task ShouldThrowServiceExceptionOnProcessImpersonationContextRequestAndLogItAsync()
         {
             // given
-            AccessRequest someAccessRequest = CreateRandomAccessRequest();
+            string someContainer = GetRandomString();
+            string someFilepath = GetRandomString();
             Exception someException = new Exception();
 
             var identificationCoordinationServiceMock = new Mock<IdentificationCoordinationService>
@@ -237,7 +241,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
             identificationCoordinationServiceMock.Setup(service =>
                 service.ExtractFromFilepath(It.IsAny<string>()))
-                        .ThrowsAsync(someException);
+                    .ThrowsAsync(someException);
 
             var expectedIdentificationCoordinationServiceException =
                 new IdentificationCoordinationServiceException(
@@ -248,7 +252,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
             // when
             ValueTask<AccessRequest> accessRequestTask =
                 identificationCoordinationServiceMock.Object
-                    .ProcessImpersonationContextRequestAsync(someAccessRequest);
+                    .ProcessImpersonationContextRequestAsync(someContainer, someFilepath);
 
             IdentificationCoordinationServiceException
                 actualIdentificationCoordinationServiceException =
@@ -261,7 +265,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Coordinations.Identifica
 
             identificationCoordinationServiceMock.Verify(service =>
                 service.ExtractFromFilepath(It.IsAny<string>()),
-                        Times.Once);
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(expectedIdentificationCoordinationServiceException))),

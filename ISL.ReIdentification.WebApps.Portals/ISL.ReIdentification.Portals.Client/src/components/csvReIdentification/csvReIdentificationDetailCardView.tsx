@@ -100,9 +100,9 @@ const CsvReIdentificationDetailCardView: FunctionComponent = () => {
                 const nextRow = rows[1].split(",");
                 const value = nextRow[index];
 
-                if (/^\d{1,10}$/.test(value)) {
+                if (/^\d+$/.test(value)) {
                     setError([]);
-                    setSuccess(`The value "${value}" in the next row at the selected column index is a valid Pseudo Identifier with up to 10 digits.`);
+                    setSuccess(`The value "${value}" in the next row at the selected column index is a valid Pseudo Identifier consisting of only digits.`);
                 } else {
                     setSuccess("");
                     setError([`The value "${value}" in the next row for the selected column index is not a valid Pseudo Identifier, please follow the guidance in the help section.`]);
