@@ -13,6 +13,8 @@ using ISL.Providers.Notifications.GovukNotify.Providers.Notifications;
 using ISL.Providers.ReIdentification.Abstractions;
 using ISL.Providers.ReIdentification.Necs.Models.Brokers.NECS;
 using ISL.Providers.ReIdentification.Necs.Providers.NecsReIdentifications;
+using ISL.Providers.ReIdentification.OfflineFileSources.Models;
+using ISL.Providers.ReIdentification.OfflineFileSources.Providers.OfflineFileSources;
 using ISL.Providers.Storages.Abstractions;
 using ISL.Providers.Storages.AzureBlobStorage.Models;
 using ISL.Providers.Storages.AzureBlobStorage.Providers.AzureBlobStorage;
@@ -121,12 +123,28 @@ internal class Program
         services.AddTransient<INotificationProvider, GovukNotifyProvider>();
         services.AddTransient<IStorageProvider, AzureBlobStorageProvider>();
 
-        NecsReIdentificationConfigurations necsReIdentificationConfigurations = configuration
-            .GetSection("NecsReIdentificationConfigurations")
-                .Get<NecsReIdentificationConfigurations>();
+        bool reIdentificationProviderOfflineMode = configuration
+            .GetSection("ReIdentificationProviderOfflineMode").Get<bool>();
 
-        services.AddSingleton(necsReIdentificationConfigurations);
-        services.AddTransient<IReIdentificationProvider, NecsReIdentificationProvider>();
+        if (reIdentificationProviderOfflineMode == true)
+        {
+            OfflineSourceReIdentificationConfigurations offlineSourceReIdentificationConfigurations = configuration
+                .GetSection("OfflineSourceReIdentificationConfigurations")
+                    .Get<OfflineSourceReIdentificationConfigurations>();
+
+            services.AddSingleton(offlineSourceReIdentificationConfigurations);
+            services.AddTransient<IReIdentificationProvider, OfflineFileSourceReIdentificationProvider>();
+        }
+        else
+        {
+            NecsReIdentificationConfigurations necsReIdentificationConfigurations = configuration
+                .GetSection("NecsReIdentificationConfigurations")
+                    .Get<NecsReIdentificationConfigurations>();
+
+            services.AddSingleton(necsReIdentificationConfigurations);
+            services.AddTransient<IReIdentificationProvider, NecsReIdentificationProvider>();
+        }
+
         services.AddTransient<IReIdentificationAbstractionProvider, ReIdentificationAbstractionProvider>();
     }
 
@@ -136,7 +154,6 @@ internal class Program
         var tokenRequestContext = new TokenRequestContext(new[] { "https://graph.microsoft.com/.default" });
         AccessToken accessToken = credential.GetTokenAsync(tokenRequestContext).Result;
         SecurityBroker securityBroker = new SecurityBroker(accessToken.Token);
-
         services.AddTransient<ISecurityBroker>(broker => securityBroker);
         services.AddTransient<ILoggingBroker, LoggingBroker>();
         services.AddTransient<IDateTimeBroker, DateTimeBroker>();
