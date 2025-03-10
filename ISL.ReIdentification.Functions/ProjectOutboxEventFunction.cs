@@ -30,7 +30,7 @@ namespace ISL.ReIdentification.Functions
 
         [Function("ProjectOutboxEventFunction")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequestData req)
+            [HttpTrigger(AuthorizationLevel.Function, "get", "post")] HttpRequestData req)
         {
             await loggingBroker
                 .LogInformationAsync(
