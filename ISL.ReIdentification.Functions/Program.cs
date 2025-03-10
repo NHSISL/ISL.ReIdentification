@@ -11,10 +11,10 @@ using ISL.Providers.Notifications.Abstractions;
 using ISL.Providers.Notifications.GovukNotify.Models;
 using ISL.Providers.Notifications.GovukNotify.Providers.Notifications;
 using ISL.Providers.ReIdentification.Abstractions;
+using ISL.Providers.ReIdentification.DemoData.Models;
+using ISL.Providers.ReIdentification.DemoData.Providers.DemoData;
 using ISL.Providers.ReIdentification.Necs.Models.Brokers.NECS;
 using ISL.Providers.ReIdentification.Necs.Providers.NecsReIdentifications;
-using ISL.Providers.ReIdentification.OfflineFileSources.Models;
-using ISL.Providers.ReIdentification.OfflineFileSources.Providers.OfflineFileSources;
 using ISL.Providers.Storages.Abstractions;
 using ISL.Providers.Storages.AzureBlobStorage.Models;
 using ISL.Providers.Storages.AzureBlobStorage.Providers.AzureBlobStorage;
@@ -140,12 +140,12 @@ internal class Program
 
         if (reIdentificationProviderOfflineMode == true)
         {
-            OfflineSourceReIdentificationConfigurations offlineSourceReIdentificationConfigurations = configuration
-                .GetSection("OfflineSourceReIdentificationConfigurations")
-                    .Get<OfflineSourceReIdentificationConfigurations>();
+            DemoDataReIdentificationConfigurations demoDataReIdentificationConfigurations = configuration
+                .GetSection("DemoDataReIdentificationConfigurations")
+                    .Get<DemoDataReIdentificationConfigurations>();
 
-            services.AddSingleton(offlineSourceReIdentificationConfigurations);
-            services.AddTransient<IReIdentificationProvider, OfflineFileSourceReIdentificationProvider>();
+            services.AddSingleton(demoDataReIdentificationConfigurations);
+            services.AddTransient<IReIdentificationProvider, DemoDataReIdentificationProvider>();
         }
         else
         {
