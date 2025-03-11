@@ -21,6 +21,12 @@ namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis
 
             // then
             actualChildren.Should().BeEquivalentTo(expectedChildren);
+
+            foreach (var child in expectedChildren)
+            {
+                await this.apiBroker.DeleteOdsDataByIdAsync(child.Id);
+            }
+            await this.apiBroker.DeleteOdsDataByIdAsync(parentOdsData.Id);
         }
     }
 }

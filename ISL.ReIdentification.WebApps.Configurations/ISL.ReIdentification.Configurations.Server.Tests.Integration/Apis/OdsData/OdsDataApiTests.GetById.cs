@@ -21,6 +21,8 @@ namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis
 
             // then
             actualOdsData.Should().BeEquivalentTo(expectedOdsData);
+
+            await this.apiBroker.DeleteOdsDataByIdAsync(randomOdsData.Id);
         }
     }
 }

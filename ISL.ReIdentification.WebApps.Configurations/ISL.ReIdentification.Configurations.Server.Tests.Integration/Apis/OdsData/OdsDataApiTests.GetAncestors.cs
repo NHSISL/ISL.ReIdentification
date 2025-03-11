@@ -20,6 +20,8 @@ namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis
 
             // then
             actualAncestors.Should().NotBeNull();
+
+            await this.apiBroker.DeleteOdsDataByIdAsync(randomOdsData.Id);
         }
     }
 }

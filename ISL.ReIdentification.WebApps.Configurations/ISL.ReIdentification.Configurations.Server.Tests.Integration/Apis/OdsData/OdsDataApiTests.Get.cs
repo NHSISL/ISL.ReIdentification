@@ -20,6 +20,11 @@ namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis
 
             // then
             actualOdsDatas.Should().Contain(expectedOdsDatas);
+
+            foreach (var odsData in expectedOdsDatas)
+            {
+                await this.apiBroker.DeleteOdsDataByIdAsync(odsData.Id);
+            }
         }
     }
 }
