@@ -48,7 +48,7 @@ namespace ISL.ReIdentification.Functions
                     {
                         var data = egEvent.Data.ToObjectFromJson<SubscriptionValidationEventData>();
 
-                        SubscriptionValidationResponse response = new SubscriptionValidationResponse()
+                        var response = new
                         {
                             ValidationResponse = data.ValidationCode
                         };
