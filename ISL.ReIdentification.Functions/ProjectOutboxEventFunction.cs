@@ -4,12 +4,12 @@
 
 using System;
 using System.IO;
+using System.Net;
 using System.Threading.Tasks;
 using Azure.Messaging.EventGrid;
 using Azure.Messaging.EventGrid.SystemEvents;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Services.Coordinations.Identifications;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 
@@ -29,7 +29,7 @@ namespace ISL.ReIdentification.Functions
         }
 
         [Function("ProjectOutboxEventFunction")]
-        public async Task<IActionResult> Run(
+        public async Task<HttpResponseData> Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", "post")] HttpRequestData req)
         {
             await loggingBroker
@@ -47,13 +47,14 @@ namespace ISL.ReIdentification.Functions
                     if (egEvent.EventType == "Microsoft.EventGrid.SubscriptionValidationEvent")
                     {
                         var data = egEvent.Data.ToObjectFromJson<SubscriptionValidationEventData>();
+                        var response = req.CreateResponse(HttpStatusCode.OK);
 
-                        var response = new
+                        await response.WriteAsJsonAsync(new
                         {
                             ValidationResponse = data.ValidationCode
-                        };
+                        });
 
-                        return new OkObjectResult(response);
+                        return response;
                     }
 
                     string subject = egEvent.Subject;
@@ -64,7 +65,7 @@ namespace ISL.ReIdentification.Functions
                         .ProcessImpersonationContextRequestAsync(container, filename);
                 }
 
-                return new OkObjectResult(string.Empty);
+                return req.CreateResponse(HttpStatusCode.OK);
             }
             catch (Exception ex)
             {
