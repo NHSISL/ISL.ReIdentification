@@ -51,7 +51,7 @@ namespace ISL.ReIdentification.Functions
 
                         await response.WriteAsJsonAsync(new
                         {
-                            ValidationResponse = data.ValidationCode
+                            validationResponse = data.ValidationCode
                         });
 
                         return response;
