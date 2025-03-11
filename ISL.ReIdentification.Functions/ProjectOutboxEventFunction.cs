@@ -48,7 +48,6 @@ namespace ISL.ReIdentification.Functions
                     {
                         var data = egEvent.Data.ToObjectFromJson<SubscriptionValidationEventData>();
                         var response = req.CreateResponse(HttpStatusCode.OK);
-                        response.Headers.Add("Content-Type", "text/json; charset=utf-8");
 
                         await response.WriteAsJsonAsync(new
                         {
