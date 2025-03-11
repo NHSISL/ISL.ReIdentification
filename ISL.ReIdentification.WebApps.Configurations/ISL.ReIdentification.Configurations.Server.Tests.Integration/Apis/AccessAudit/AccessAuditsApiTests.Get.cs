@@ -34,6 +34,11 @@ namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis
                         .Excluding(audit => audit.UpdatedBy)
                         .Excluding(audit => audit.UpdatedDate));
             }
+
+            foreach (var accessAudit in expectedAccessAudits)
+            {
+                await this.apiBroker.DeleteAccessAuditByIdAsync(accessAudit.Id);
+            }
         }
     }
 }
