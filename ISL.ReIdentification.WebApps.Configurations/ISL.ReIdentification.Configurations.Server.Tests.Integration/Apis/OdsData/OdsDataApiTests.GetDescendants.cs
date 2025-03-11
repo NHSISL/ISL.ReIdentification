@@ -26,6 +26,7 @@ namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis
             {
                 await this.apiBroker.DeleteOdsDataByIdAsync(descendant.Id);
             }
+
             await this.apiBroker.DeleteOdsDataByIdAsync(parentOdsData.Id);
         }
     }
