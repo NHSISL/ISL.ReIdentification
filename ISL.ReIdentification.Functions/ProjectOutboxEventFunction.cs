@@ -33,9 +33,7 @@ namespace ISL.ReIdentification.Functions
             [HttpTrigger(AuthorizationLevel.Function, "get", "post")] HttpRequestData req)
         {
             await loggingBroker
-                .LogInformationAsync(
-                    $"C# Blob trigger function Processing blob\n " +
-                    $"Name: address/in/{{name}}");
+                .LogInformationAsync($"C# Http trigger function");
 
             try
             {
@@ -55,7 +53,7 @@ namespace ISL.ReIdentification.Functions
 
                         await response.WriteAsJsonAsync(new
                         {
-                            ValidationResponse = data.ValidationCode
+                            validationResponse = data.ValidationCode
                         });
 
                         return response;
@@ -64,6 +62,13 @@ namespace ISL.ReIdentification.Functions
                     string subject = egEvent.Subject;
                     string container = subject?.Split('/')[4];
                     string filename = subject?.Split(new[] { "/blobs/" }, StringSplitOptions.None)[1];
+
+                    await loggingBroker
+                        .LogInformationAsync(
+                            $"Processing request.\n " +
+                            $"Container: {container}\n " +
+                            $"Filename: {filename}\n " +
+                            $"Subject: {subject}");
 
                     await this.identificationCoordinationService
                         .ProcessImpersonationContextRequestAsync(container, filename);
