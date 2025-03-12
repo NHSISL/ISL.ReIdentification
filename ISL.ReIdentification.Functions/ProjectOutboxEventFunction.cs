@@ -40,6 +40,10 @@ namespace ISL.ReIdentification.Functions
             try
             {
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+
+                await loggingBroker
+                    .LogInformationAsync($"{requestBody}");
+
                 EventGridEvent[] egEvents = EventGridEvent.ParseMany(BinaryData.FromString(requestBody));
 
                 foreach (EventGridEvent egEvent in egEvents)
