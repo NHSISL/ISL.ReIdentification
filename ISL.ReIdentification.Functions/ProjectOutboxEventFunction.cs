@@ -61,9 +61,9 @@ namespace ISL.ReIdentification.Functions
 
                     await loggingBroker
                         .LogInformationAsync(
-                            $"Processing request.\n" +
-                            $"Container: {container}\n" +
-                            $"Filename: {filename}\n" +
+                            $"Processing request.\n " +
+                            $"Container: {container}\n " +
+                            $"Filename: {filename}\n " +
                             $"Subject: {subject}");
 
                     await this.identificationCoordinationService
