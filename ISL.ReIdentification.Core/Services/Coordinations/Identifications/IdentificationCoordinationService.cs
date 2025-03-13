@@ -15,6 +15,7 @@ using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Brokers.Securities;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications;
 using ISL.ReIdentification.Core.Models.Coordinations.Identifications.Exceptions;
+using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.ImpersonationContexts;
 using ISL.ReIdentification.Core.Models.Foundations.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Orchestrations.Accesses;
@@ -188,7 +189,7 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
                     container);
 
                 await this.identificationOrchestrationService.RemoveDocumentByFileNameAsync(
-                    filepath, 
+                    filepath,
                     container);
 
                 return reIdentifiedAccessRequest;
@@ -448,6 +449,7 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
 
             byte[] fileData = ReadAllBytesFromStream(retrievedFileStream);
             AccessRequest accessRequest = retrievedAccessRequest;
+            accessRequest.CsvIdentificationRequest = new CsvIdentificationRequest();
 
             try
             {
