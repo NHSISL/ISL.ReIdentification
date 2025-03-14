@@ -6,6 +6,8 @@ class SimpleReIdentificationBroker {
     relativeReIdentificationCsvUrl = '/api/reIdentification/submitcsv';
     relativeCsvReIdentificationUrl = '/api/reIdentification/csvreidentification';
     relativeImpersonationReIdentificationUrl = '/api/reIdentification/impersonation';
+    relativeImpersonationReIdentificationGenerateUrl = '/api/reIdentification/generatetokens';
+    relativeImpersonationContextApprovalUrl = '/api/reIdentification/impersonationcontextapproval';
 
     private apiBroker: ApiBroker = new ApiBroker();
 
@@ -21,6 +23,19 @@ class SimpleReIdentificationBroker {
 
     async PostReIdentificationImpersonationAsync(accessRequestView: AccessRequest) {
         return await this.apiBroker.PostAsync(this.relativeImpersonationReIdentificationUrl, accessRequestView)
+            .then(result => result.data as AccessRequest);
+    }
+
+    async PostReIdentificationImpersonationApprovalAsync(impersonationContextId: string, isApproved: boolean) {
+        const payload = { impersonationContextId, isApproved };
+        return await this.apiBroker.PostAsync(this.relativeImpersonationContextApprovalUrl, payload)
+            .then(result => result.data);
+    }
+
+    async PostImpersonationContextGenerateTokensAsync(impersonationContextId: string) {
+        return await this.apiBroker.GetAsync(
+            this.relativeImpersonationReIdentificationGenerateUrl + '/' + impersonationContextId,
+        )
             .then(result => result.data as AccessRequest);
     }
 

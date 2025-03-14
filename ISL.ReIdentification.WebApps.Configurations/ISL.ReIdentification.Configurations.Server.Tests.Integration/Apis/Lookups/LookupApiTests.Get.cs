@@ -3,9 +3,9 @@
 // ---------------------------------------------------------
 
 using FluentAssertions;
-using ISL.ReIdentification.Configurations.Server.Tests.Integration.Models;
+using ISL.ReIdentification.Configurations.Server.Tests.Integration.Models.Lookup;
 
-namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis
+namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis.Lookups
 {
     public partial class LookupApiTests
     {

@@ -3,11 +3,11 @@
 // ---------------------------------------------------------
 
 using ISL.ReIdentification.Configurations.Server.Tests.Integration.Brokers;
-using ISL.ReIdentification.Configurations.Server.Tests.Integration.Models;
+using ISL.ReIdentification.Configurations.Server.Tests.Integration.Models.Lookup;
 using ISL.ReIdentification.Configurations.Server.Tests.Integration.ReIdentification.Brokers;
 using Tynamix.ObjectFiller;
 
-namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis
+namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis.Lookups
 {
     [Collection(nameof(ApiTestCollection))]
     public partial class LookupApiTests
