@@ -24,7 +24,8 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Acceptance.Apis
                 "ReportReidentify",
                 "SinglePatientReidentify",
                 "CsvReidentify",
-                "CsvWorklist"
+                "CsvWorklist",
+                "Projects"
             };
 
             // When
