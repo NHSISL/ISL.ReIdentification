@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using ISL.ReIdentification.Configurations.Server.Tests.Integration.Models.Lookup;
+using RESTFulSense.Exceptions;
 
 namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis.Lookups
 {

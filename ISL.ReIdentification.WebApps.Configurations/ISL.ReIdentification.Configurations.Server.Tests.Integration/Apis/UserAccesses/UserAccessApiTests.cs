@@ -5,6 +5,7 @@
 using ISL.ReIdentification.Configurations.Server.Tests.Integration.Brokers;
 using ISL.ReIdentification.Configurations.Server.Tests.Integration.Models.UserAccess;
 using ISL.ReIdentification.Configurations.Server.Tests.Integration.ReIdentification.Brokers;
+using Tynamix.ObjectFiller;
 
 namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis.UserAccesses
 {

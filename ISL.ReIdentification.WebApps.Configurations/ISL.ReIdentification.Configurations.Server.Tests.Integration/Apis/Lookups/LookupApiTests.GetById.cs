@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using FluentAssertions;
 using ISL.ReIdentification.Configurations.Server.Tests.Integration.Models.Lookup;
 
 namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis.Lookups

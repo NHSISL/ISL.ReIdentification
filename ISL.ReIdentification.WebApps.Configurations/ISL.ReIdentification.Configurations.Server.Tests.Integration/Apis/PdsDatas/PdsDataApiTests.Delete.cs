@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using ISL.ReIdentification.Configurations.Server.Tests.Integration.Models.PdsData;
+using RESTFulSense.Exceptions;
 
 namespace ISL.ReIdentification.Configurations.Server.Tests.Integration.Apis.PdsDatas
 {
