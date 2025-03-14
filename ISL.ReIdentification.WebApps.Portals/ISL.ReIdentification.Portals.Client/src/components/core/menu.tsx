@@ -9,6 +9,8 @@ import { faTable } from '@fortawesome/free-solid-svg-icons/faTable';
 import { FeatureSwitch } from '../accessControls/featureSwitch';
 import { FeatureDefinitions } from '../../featureDefinitions';
 import { faLineChart } from '@fortawesome/free-solid-svg-icons/faLineChart';
+import securityPoints from '../../securityMatrix';
+import { SecuredComponent } from '../securitys/securedComponents';
 
 
 const MenuComponent: React.FC = () => {
@@ -67,12 +69,14 @@ const MenuComponent: React.FC = () => {
             </FeatureSwitch>
 
             <FeatureSwitch feature={FeatureDefinitions.Projects}>
-            <ListGroup.Item
-                className={`bg-dark text-white ${activePath === '/project' ? 'active' : ''}`}
-                onClick={() => handleItemClick('/project')}>
-                <FontAwesomeIcon icon={faProjectDiagram} className="me-2 fa-icon" />
-                <SecuredLink to="/project">Projects</SecuredLink>
-                </ListGroup.Item>
+                <SecuredComponent allowedRoles={securityPoints.impersonation.view}>
+                    <ListGroup.Item
+                        className={`bg-dark text-white ${activePath === '/project' ? 'active' : ''}`}
+                        onClick={() => handleItemClick('/project')}>
+                        <FontAwesomeIcon icon={faProjectDiagram} className="me-2 fa-icon" />
+                        <SecuredLink to="/project">Projects</SecuredLink>
+                    </ListGroup.Item>
+                </SecuredComponent>
             </FeatureSwitch>
 
         </ListGroup>
