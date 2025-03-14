@@ -125,9 +125,9 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
         }
 
         [Authorize(Roles = "ISL.Reidentification.Portal.Administrators,ISL.Reidentification.Portal.DataEngineers")]
-        [HttpPost("generatetokens")]
+        [HttpGet("generatetokens/{impersonationContextId}")]
         public async ValueTask<ActionResult<AccessRequest>> PostImpersonationContextGenerateTokensAsync(
-            [FromBody] Guid impersonationContextId)
+             Guid impersonationContextId)
         {
             try
             {

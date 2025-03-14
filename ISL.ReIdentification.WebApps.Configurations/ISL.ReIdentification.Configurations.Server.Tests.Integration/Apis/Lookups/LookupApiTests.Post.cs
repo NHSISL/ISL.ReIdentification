@@ -3,26 +3,28 @@
 // ---------------------------------------------------------
 
 using FluentAssertions;
-using ISL.ReIdentification.Configurations.Server.Tests.Integration.Models;
+using ISL.ReIdentification.Configurations.Server.Tests.Integration.Models.Lookup;
 
-namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis
+namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis.Lookups
 {
     public partial class LookupApiTests
     {
         [Fact]
-        public async Task ShouldPutLookupAsync()
+        public async Task ShouldPostLookupAsync()
         {
             // given
-            Lookup randomLookup = await PostRandomLookupAsync();
-            Lookup modifiedLookup = UpdateLookupWithRandomValues(randomLookup);
+            Lookup randomLookup = CreateRandomLookup();
+            Lookup expectedLookup = randomLookup;
 
-            // when
-            await this.apiBroker.PutLookupAsync(modifiedLookup);
-            Lookup actualLookup = await this.apiBroker.GetLookupByIdAsync(randomLookup.Id);
+            // when 
+            await this.apiBroker.PostLookupAsync(randomLookup);
+
+            Lookup actualLookup =
+                await this.apiBroker.GetLookupByIdAsync(randomLookup.Id);
 
             // then
             actualLookup.Should().BeEquivalentTo(
-                modifiedLookup,
+                expectedLookup,
                 options => options
                     .Excluding(lookup => lookup.CreatedBy)
                     .Excluding(lookup => lookup.CreatedDate)
@@ -33,4 +35,3 @@ namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis
         }
     }
 }
-
