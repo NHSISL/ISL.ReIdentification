@@ -4,12 +4,12 @@
 
 using System;
 using System.IO;
+using System.Net;
 using System.Threading.Tasks;
 using Azure.Messaging.EventGrid;
 using Azure.Messaging.EventGrid.SystemEvents;
 using ISL.ReIdentification.Core.Brokers.Loggings;
 using ISL.ReIdentification.Core.Services.Coordinations.Identifications;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 
@@ -29,17 +29,19 @@ namespace ISL.ReIdentification.Functions
         }
 
         [Function("ProjectOutboxEventFunction")]
-        public async Task<IActionResult> Run(
+        public async Task<HttpResponseData> Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", "post")] HttpRequestData req)
         {
             await loggingBroker
-                .LogInformationAsync(
-                    $"C# Blob trigger function Processing blob\n " +
-                    $"Name: address/in/{{name}}");
+                .LogInformationAsync($"C# Http trigger function");
 
             try
             {
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+
+                await loggingBroker
+                    .LogInformationAsync($"{requestBody}");
+
                 EventGridEvent[] egEvents = EventGridEvent.ParseMany(BinaryData.FromString(requestBody));
 
                 foreach (EventGridEvent egEvent in egEvents)
@@ -47,24 +49,32 @@ namespace ISL.ReIdentification.Functions
                     if (egEvent.EventType == "Microsoft.EventGrid.SubscriptionValidationEvent")
                     {
                         var data = egEvent.Data.ToObjectFromJson<SubscriptionValidationEventData>();
+                        var response = req.CreateResponse(HttpStatusCode.OK);
 
-                        var response = new
+                        await response.WriteAsJsonAsync(new
                         {
-                            ValidationResponse = data.ValidationCode
-                        };
+                            validationResponse = data.ValidationCode
+                        });
 
-                        return new OkObjectResult(response);
+                        return response;
                     }
 
                     string subject = egEvent.Subject;
                     string container = subject?.Split('/')[4];
                     string filename = subject?.Split(new[] { "/blobs/" }, StringSplitOptions.None)[1];
 
+                    await loggingBroker
+                        .LogInformationAsync(
+                            $"Processing request.\n " +
+                            $"Container: {container}\n " +
+                            $"Filename: {filename}\n " +
+                            $"Subject: {subject}");
+
                     await this.identificationCoordinationService
                         .ProcessImpersonationContextRequestAsync(container, filename);
                 }
 
-                return new OkObjectResult(string.Empty);
+                return req.CreateResponse(HttpStatusCode.OK);
             }
             catch (Exception ex)
             {
