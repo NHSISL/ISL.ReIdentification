@@ -16,9 +16,9 @@ export class ImpersonationContext {
     public purpose?: string = "";
     public organisation: string = "";
     public projectName: string = "";
-    public inboxToken?: string = "";
-    public outboxToken?: string = "";
-    public errorToken?: string = "";
+    public inboxSasToken?: string = "";
+    public outboxSasToken?: string = "";
+    public errorsSasToken?: string = "";
     public isApproved: boolean = false;
     public identifierColumn: string = "";
     public createdBy?: string;

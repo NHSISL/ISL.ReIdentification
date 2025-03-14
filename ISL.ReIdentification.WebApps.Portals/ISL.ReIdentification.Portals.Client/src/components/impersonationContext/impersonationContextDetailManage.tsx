@@ -201,28 +201,28 @@ const ImpersonationContextDetailManage: FunctionComponent<ImpersonationContextDe
                                                             <tbody>
                                                                 <tr>
                                                                     <td><small><strong>Errors SAS Token:</strong></small></td>
-                                                                    <td><small>{accessRequest.impersonationContext?.errorToken}</small></td>
+                                                                    <td><small>{accessRequest.impersonationContext?.errorsSasToken}</small></td>
                                                                     <td className="text-center">
                                                                         <CopyIcon
-                                                                            content={accessRequest.impersonationContext?.errorToken || ""}
+                                                                            content={accessRequest.impersonationContext?.errorsSasToken || ""}
                                                                             resetTime={2000} />
                                                                     </td>
                                                                 </tr>
                                                                 <tr>
                                                                     <td><small><strong>Inbox SAS Token:</strong></small></td>
-                                                                    <td><small>{accessRequest.impersonationContext?.inboxToken}</small></td>
+                                                                    <td><small>{accessRequest.impersonationContext?.inboxSasToken}</small></td>
                                                                     <td className="text-center">
                                                                         <CopyIcon
-                                                                            content={accessRequest.impersonationContext?.inboxToken || ""}
+                                                                            content={accessRequest.impersonationContext?.inboxSasToken || ""}
                                                                             resetTime={2000} />
                                                                     </td>
                                                                 </tr>
                                                                 <tr>
                                                                     <td><small><strong>Outbox SAS Token:</strong></small></td>
-                                                                    <td><small>{accessRequest.impersonationContext?.outboxToken}</small></td>
+                                                                    <td><small>{accessRequest.impersonationContext?.outboxSasToken}</small></td>
                                                                     <td className="text-center">
                                                                         <CopyIcon
-                                                                            content={accessRequest.impersonationContext?.outboxToken || ""}
+                                                                            content={accessRequest.impersonationContext?.outboxSasToken || ""}
                                                                             resetTime={2000} />
                                                                     </td>
                                                                 </tr>
