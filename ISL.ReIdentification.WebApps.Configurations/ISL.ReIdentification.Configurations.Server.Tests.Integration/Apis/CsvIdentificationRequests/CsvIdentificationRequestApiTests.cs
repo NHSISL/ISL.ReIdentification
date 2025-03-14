@@ -5,7 +5,7 @@
 using ISL.ReIdentification.Configurations.Server.Tests.Integration.Brokers;
 using ISL.ReIdentification.Configurations.Server.Tests.Integration.ReIdentification.Brokers;
 
-namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis
+namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis.CsvIdentificationRequests
 {
     [Collection(nameof(ApiTestCollection))]
     public partial class CsvIdentificationRequestApiTests

@@ -5,9 +5,8 @@
 using ISL.ReIdentification.Configurations.Server.Tests.Integration.Brokers;
 using ISL.ReIdentification.Configurations.Server.Tests.Integration.Models.AccessAudit;
 using ISL.ReIdentification.Configurations.Server.Tests.Integration.ReIdentification.Brokers;
-using Tynamix.ObjectFiller;
 
-namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis
+namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis.AccessAudits
 {
     [Collection(nameof(ApiTestCollection))]
     public partial class AccessAuditsApiTests

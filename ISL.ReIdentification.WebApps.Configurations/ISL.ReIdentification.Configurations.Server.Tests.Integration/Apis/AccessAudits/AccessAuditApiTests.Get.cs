@@ -2,28 +2,27 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using FluentAssertions;
-using ISL.ReIdentification.Configurations.Server.Tests.Integration.Models.Audit;
+using ISL.ReIdentification.Configurations.Server.Tests.Integration.Models.AccessAudit;
 
-namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis
+namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis.AccessAudits
 {
-    public partial class AuditsApiTests
+    public partial class AccessAuditsApiTests
     {
         [Fact]
-        public async Task ShouldGetAllAuditsAsync()
+        public async Task ShouldGetAllAccessAuditsAsync()
         {
             // Given
-            List<Audit> expectedAudits = await PostRandomAuditsAsync();
+            List<AccessAudit> expectedAccessAudits = await PostRandomAccessAuditsAsync();
 
             // When
-            List<Audit> actualAudits = await this.apiBroker.GetAllAuditsAsync();
+            List<AccessAudit> actualAccessAudits = await this.apiBroker.GetAllAccessAuditsAsync();
 
             // Then
-            actualAudits.Should().NotBeNull();
+            actualAccessAudits.Should().NotBeNull();
 
-            foreach (Audit expectedAudit in expectedAudits)
+            foreach (AccessAudit expectedAudit in expectedAccessAudits)
             {
-                Audit actualAudit = actualAudits
+                AccessAudit actualAudit = actualAccessAudits
                     .Single(audit => audit.Id == expectedAudit.Id);
 
                 actualAudit.Should().BeEquivalentTo(
@@ -35,9 +34,9 @@ namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis
                         .Excluding(audit => audit.UpdatedDate));
             }
 
-            foreach (var audit in expectedAudits)
+            foreach (var accessAudit in expectedAccessAudits)
             {
-                await this.apiBroker.DeleteAuditByIdAsync(audit.Id);
+                await this.apiBroker.DeleteAccessAuditByIdAsync(accessAudit.Id);
             }
         }
     }

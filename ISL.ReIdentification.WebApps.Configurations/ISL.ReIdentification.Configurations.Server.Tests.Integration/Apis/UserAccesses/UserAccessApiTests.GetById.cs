@@ -3,24 +3,24 @@
 // ---------------------------------------------------------
 
 using ISL.ReIdentification.Configurations.Server.Tests.Integration.Models.UserAccess;
-using RESTFulSense.Exceptions;
 
-namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis
+namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis.UserAccesses
 {
     public partial class UserAccessApiTests
     {
         [Fact]
-        public async Task ShouldDeleteUserAccessAsync()
+        public async Task ShouldGetUserAccessAsync()
         {
             // given
             UserAccess randomUserAccess = await PostRandomUserAccess();
+            UserAccess expectedUserAccess = randomUserAccess;
 
             // when
-            await this.apiBroker.DeleteUserAccessByIdAsync(randomUserAccess.Id);
+            UserAccess actualUserAccess = await this.apiBroker.GetUserAccessByIdAsync(randomUserAccess.Id);
 
             // then
-            ValueTask<UserAccess> getUserAccessByIdTask = this.apiBroker.GetUserAccessByIdAsync(randomUserAccess.Id);
-            await Assert.ThrowsAsync<HttpResponseNotFoundException>(getUserAccessByIdTask.AsTask);
+            actualUserAccess.Should().BeEquivalentTo(expectedUserAccess);
+            await this.apiBroker.DeleteUserAccessByIdAsync(actualUserAccess.Id);
         }
     }
 }

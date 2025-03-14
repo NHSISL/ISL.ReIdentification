@@ -2,28 +2,24 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using FluentAssertions;
-using RESTFulSense.Exceptions;
 using ISL.ReIdentification.Configurations.Server.Tests.Integration.Models.PdsData;
 
-namespace ISL.ReIdentification.Configurations.Server.Tests.Integration.Apis
+namespace ISL.ReIdentification.Configurations.Server.Tests.Integration.Apis.PdsDatas
 {
     public partial class PdsDataApiTests
     {
         [Fact]
-        public async Task ShouldDeletePdsDataAsync()
+        public async Task ShouldGetPdsDataByIdAsync()
         {
             // given
             PdsData randomPdsData = await PostRandomPdsDataAsync();
 
             // when
-            await this.apiBroker.DeletePdsDataByIdAsync(randomPdsData.Id);
+            PdsData retrievedPdsData = await this.apiBroker.GetPdsDataByIdAsync(randomPdsData.Id);
 
             // then
-            ValueTask<PdsData> getPdsDataByIdTask =
-                this.apiBroker.GetPdsDataByIdAsync(randomPdsData.Id);
-
-            await Assert.ThrowsAsync<HttpResponseNotFoundException>(getPdsDataByIdTask.AsTask);
+            retrievedPdsData.Should().BeEquivalentTo(randomPdsData);
+            await this.apiBroker.DeletePdsDataByIdAsync(randomPdsData.Id);
         }
     }
 }

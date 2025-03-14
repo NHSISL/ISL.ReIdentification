@@ -2,26 +2,24 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using FluentAssertions;
 using ISL.ReIdentification.Configurations.Server.Tests.Integration.Models.Lookup;
 
-namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis
+namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis.Lookups
 {
     public partial class LookupApiTests
     {
         [Fact]
-        public async Task ShouldGetLookupAsync()
+        public async Task ShouldDeleteLookupAsync()
         {
             // given
             Lookup randomLookup = await PostRandomLookupAsync();
-            Lookup expectedLookup = randomLookup;
 
             // when
-            Lookup actualLookup = await this.apiBroker.GetLookupByIdAsync(randomLookup.Id);
+            await this.apiBroker.DeleteLookupByIdAsync(randomLookup.Id);
 
             // then
-            actualLookup.Should().BeEquivalentTo(expectedLookup);
-            await this.apiBroker.DeleteLookupByIdAsync(actualLookup.Id);
+            ValueTask<Lookup> getLookupByIdTask = this.apiBroker.GetLookupByIdAsync(randomLookup.Id);
+            await Assert.ThrowsAsync<HttpResponseNotFoundException>(getLookupByIdTask.AsTask);
         }
     }
 }

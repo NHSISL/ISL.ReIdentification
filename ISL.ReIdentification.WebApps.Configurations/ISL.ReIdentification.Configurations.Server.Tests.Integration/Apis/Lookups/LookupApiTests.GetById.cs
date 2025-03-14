@@ -3,24 +3,24 @@
 // ---------------------------------------------------------
 
 using ISL.ReIdentification.Configurations.Server.Tests.Integration.Models.Lookup;
-using RESTFulSense.Exceptions;
 
-namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis
+namespace ISL.ReIdentification.Configuration.Server.Tests.Integration.Apis.Lookups
 {
     public partial class LookupApiTests
     {
         [Fact]
-        public async Task ShouldDeleteLookupAsync()
+        public async Task ShouldGetLookupAsync()
         {
             // given
             Lookup randomLookup = await PostRandomLookupAsync();
+            Lookup expectedLookup = randomLookup;
 
             // when
-            await this.apiBroker.DeleteLookupByIdAsync(randomLookup.Id);
+            Lookup actualLookup = await this.apiBroker.GetLookupByIdAsync(randomLookup.Id);
 
             // then
-            ValueTask<Lookup> getLookupByIdTask = this.apiBroker.GetLookupByIdAsync(randomLookup.Id);
-            await Assert.ThrowsAsync<HttpResponseNotFoundException>(getLookupByIdTask.AsTask);
+            actualLookup.Should().BeEquivalentTo(expectedLookup);
+            await this.apiBroker.DeleteLookupByIdAsync(actualLookup.Id);
         }
     }
 }
