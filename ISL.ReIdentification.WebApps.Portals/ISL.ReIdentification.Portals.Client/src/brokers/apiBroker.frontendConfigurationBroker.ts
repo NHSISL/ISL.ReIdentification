@@ -12,7 +12,8 @@ export type FrontendConfigurationResponse = {
     reportMaxReId: string,
     reportBreachThreshold: string,
     csvMaxReId: string,
-    supportContactEmail: string
+    supportContactEmail: string,
+    blobStoreBaseUrl: string
 }
 
 export type FrontendConfiguration = {
@@ -27,7 +28,8 @@ export type FrontendConfiguration = {
     reportMaxReId: number,
     reportBreechThreshold: number,
     csvMaxReId: number,
-    supportContactEmail: string
+    supportContactEmail: string,
+    blobStoreBaseUrl: string
 }
 
 class FrontendConfigurationBroker {
@@ -65,6 +67,10 @@ class FrontendConfigurationBroker {
 
             if (!result.supportContactEmail) {
                 throw new Error("App configuration missing for FrontendConfiguration - SupportContactEmail.");
+            }
+
+            if (!result.blobStoreBaseUrl) {
+                throw new Error("Blob Store Base Url not provided");
             }
 
             return result;
