@@ -197,10 +197,11 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
         {
             ValidateOnExpireRenewImpersonationContextTokensAsync(accessRequest);
             string container = accessRequest.ImpersonationContext.Id.ToString();
-            string inboxPolicyname = container + "-InboxPolicy";
-            string outboxPolicyname = container + "-OutboxPolicy";
-            string errorsPolicyname = container + "-ErrorsPolicy";
             DateTimeOffset currentDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            string timestamp = currentDateTimeOffset.ToString("yyyyMMddHHmmss");
+            string inboxPolicyname = container + "-InboxPolicy-" + timestamp;
+            string outboxPolicyname = container + "-OutboxPolicy-" + timestamp;
+            string errorsPolicyname = container + "-ErrorsPolicy-" + timestamp;
 
             DateTimeOffset expiresOn = currentDateTimeOffset
                 .AddMinutes(this.projectStorageConfiguration.TokenLifetimeMinutes);
@@ -233,7 +234,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
                 new AccessPolicy
                 {
                     PolicyName = outboxPolicyname,
-                    Permissions = new List<string>{ "write", "add", "create"}
+                    Permissions = new List<string>{ "write", "add", "create", "read", "list" }
                 },
                 new AccessPolicy
                 {
