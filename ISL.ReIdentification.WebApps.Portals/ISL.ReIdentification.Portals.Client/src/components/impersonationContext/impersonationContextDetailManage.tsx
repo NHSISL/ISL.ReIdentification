@@ -203,8 +203,8 @@ const ImpersonationContextDetailManage: FunctionComponent<ImpersonationContextDe
                                                             <tbody>
 
                                                                 <tr>
-                                                                        <td><small><strong>Inbox Token:</strong></small></td>
-                                                                        <td style={{ maxWidth: "550px" }}><small>{accessRequest.impersonationContext?.inboxSasToken}</small></td>
+                                                                    <td><small><strong>Inbox Token:</strong></small></td>
+                                                                    <td style={{ maxWidth: "550px" }}><small>{accessRequest.impersonationContext?.inboxSasToken}</small></td>
                                                                     <td className="text-center">
                                                                         <CopyIcon
                                                                             content={accessRequest.impersonationContext?.inboxSasToken || ""}
@@ -224,7 +224,7 @@ const ImpersonationContextDetailManage: FunctionComponent<ImpersonationContextDe
                                                                 </tr>
                                                                 <tr>
                                                                     <td><small><strong>Outbox Token:</strong></small></td>
-                                                                        <td style={{ maxWidth: "550px" }}><small>{accessRequest.impersonationContext?.outboxSasToken}</small></td>
+                                                                    <td style={{ maxWidth: "550px" }}><small>{accessRequest.impersonationContext?.outboxSasToken}</small></td>
                                                                     <td className="text-center">
                                                                         <CopyIcon
                                                                             content={accessRequest.impersonationContext?.outboxSasToken || ""}
@@ -245,7 +245,7 @@ const ImpersonationContextDetailManage: FunctionComponent<ImpersonationContextDe
 
                                                                 <tr>
                                                                     <td><small><strong>Errors Token:</strong></small></td>
-                                                                        <td style={{ maxWidth: "550px" }}><small>{accessRequest.impersonationContext?.errorsSasToken}</small></td>
+                                                                    <td style={{ maxWidth: "550px" }}><small>{accessRequest.impersonationContext?.errorsSasToken}</small></td>
                                                                     <td className="text-center">
                                                                         <CopyIcon
                                                                             content={accessRequest.impersonationContext?.errorsSasToken || ""}
