@@ -204,7 +204,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                 new AccessPolicy
                 {
                     PolicyName = outboxPolicyname,
-                    Permissions = new List<string>{ "write", "add", "create"}
+                    Permissions = new List<string>{ "write", "add", "create", "read", "list" }
                 },
                 new AccessPolicy
                 {

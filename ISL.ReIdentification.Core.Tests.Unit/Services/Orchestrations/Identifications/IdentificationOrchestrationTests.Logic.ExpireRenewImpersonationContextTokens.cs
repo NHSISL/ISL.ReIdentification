@@ -39,9 +39,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                 outputContainers.Add(inputAccessRequest.ImpersonationContext.Id.ToString());
             }
 
-            string inputInboxPolicyname = inputContainer + "-InboxPolicy";
-            string inputOutboxPolicyname = inputContainer + "-OutboxPolicy";
-            string inputErrorsPolicyname = inputContainer + "-ErrorsPolicy";
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            string timestamp = randomDateTimeOffset.ToString("yyyyMMddHHmmss");
+            string inputInboxPolicyname = inputContainer + "-InboxPolicy-" + timestamp;
+            string inputOutboxPolicyname = inputContainer + "-OutboxPolicy-" + timestamp;
+            string inputErrorsPolicyname = inputContainer + "-ErrorsPolicy-" + timestamp;
 
             List<AccessPolicy> inputAccessPolicies = GetAccessPolicies(
                 inputInboxPolicyname,
@@ -51,7 +53,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
             ProjectStorageConfiguration randomProjectStorageConfiguration =
                 CreateRandomProjectStorageConfiguration();
 
-            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
 
             DateTimeOffset inputExpiresOn = randomDateTimeOffset
                 .AddMinutes(randomProjectStorageConfiguration.TokenLifetimeMinutes);
