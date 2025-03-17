@@ -51,7 +51,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
                 inputErrorsPolicyname);
 
             ProjectStorageConfiguration randomProjectStorageConfiguration =
-                CreateRandomProjectStorageConfiguration()
+                CreateRandomProjectStorageConfiguration();
 
             DateTimeOffset inputExpiresOn = randomDateTimeOffset
                 .AddMinutes(randomProjectStorageConfiguration.TokenLifetimeMinutes);
