@@ -15,7 +15,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.Impersonati
     public partial class ImpersonationContextsControllerTests
     {
         [Fact]
-        public void GetShouldHaveRoleAttributeWithRoles()
+        public void GetShouldHaveWithNoRoleAttributeWithRoles()
         {
             // Given
 
@@ -23,12 +23,7 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.Impersonati
             var methodInfo = controllerType.GetMethod("GetImpersonationContextByIdAsync");
             Type attributeType = typeof(AuthorizeAttribute);
             string attributeProperty = "Roles";
-
-            List<string> expectedAttributeValues = new List<string>
-            {
-                "ISL.Reidentification.Portal.Administrators",
-                "ISL.Reidentification.Portal.DataEngineers"
-            };
+            List<string> expectedAttributeValues = new List<string>();
 
             // When
             var methodAttribute = methodInfo?

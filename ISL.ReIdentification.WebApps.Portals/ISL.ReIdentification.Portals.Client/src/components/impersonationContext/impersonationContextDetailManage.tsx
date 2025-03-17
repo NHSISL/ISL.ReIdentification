@@ -9,6 +9,7 @@ import { useMsal } from "@azure/msal-react";
 import { reIdentificationService } from "../../services/foundations/reIdentificationService";
 import CopyIcon from "../core/copyIcon";
 import { AccessRequest } from "../../models/accessRequest/accessRequest";
+import { useFrontendConfiguration } from "../../hooks/useFrontendConfiguration";
 
 interface ImpersonationContextDetailManageProps {
     impersonationIdentificationRequestId: string | undefined;
@@ -28,7 +29,7 @@ const ImpersonationContextDetailManage: FunctionComponent<ImpersonationContextDe
     const [confirmReGenerate, setConfirmReGenerate] = useState(false);
     const [isRegenerating, setIsRegenerating] = useState(false);
     const [isDenying, setIsDenying] = useState(false);
-
+    const { configuration } = useFrontendConfiguration();
     const updateImpersonation = reIdentificationService.useRequestReIdentificationImpersonationApproval();
 
     useEffect(() => {
@@ -195,35 +196,72 @@ const ImpersonationContextDetailManage: FunctionComponent<ImpersonationContextDe
                                                                 <tr>
                                                                     <th><small>Token Type</small></th>
                                                                     <th><small>Token</small></th>
-                                                                    <th><small>Copy</small></th>
+                                                                    <th><small>Token Url</small></th>
+                                                                    <th><small>Blob SAS URL</small></th>
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
+
                                                                 <tr>
-                                                                    <td><small><strong>Errors SAS Token:</strong></small></td>
-                                                                    <td><small>{accessRequest.impersonationContext?.errorsSasToken}</small></td>
-                                                                    <td className="text-center">
-                                                                        <CopyIcon
-                                                                            content={accessRequest.impersonationContext?.errorsSasToken || ""}
-                                                                            resetTime={2000} />
-                                                                    </td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td><small><strong>Inbox SAS Token:</strong></small></td>
-                                                                    <td><small>{accessRequest.impersonationContext?.inboxSasToken}</small></td>
+                                                                    <td><small><strong>Inbox Token:</strong></small></td>
+                                                                    <td style={{ maxWidth: "550px" }}><small>{accessRequest.impersonationContext?.inboxSasToken}</small></td>
                                                                     <td className="text-center">
                                                                         <CopyIcon
                                                                             content={accessRequest.impersonationContext?.inboxSasToken || ""}
                                                                             resetTime={2000} />
                                                                     </td>
+                                                                    <td className="text-center">
+                                                                        <CopyIcon
+                                                                            content={
+                                                                                configuration.blobStoreBaseUrl +
+                                                                                accessRequest.impersonationContext?.id +
+                                                                                "/inbox?" +
+                                                                                accessRequest.impersonationContext?.inboxSasToken || ""
+                                                                            }
+                                                                            resetTime={2000}
+                                                                        />
+                                                                    </td>
                                                                 </tr>
                                                                 <tr>
-                                                                    <td><small><strong>Outbox SAS Token:</strong></small></td>
-                                                                    <td><small>{accessRequest.impersonationContext?.outboxSasToken}</small></td>
+                                                                    <td><small><strong>Outbox Token:</strong></small></td>
+                                                                    <td style={{ maxWidth: "550px" }}><small>{accessRequest.impersonationContext?.outboxSasToken}</small></td>
                                                                     <td className="text-center">
                                                                         <CopyIcon
                                                                             content={accessRequest.impersonationContext?.outboxSasToken || ""}
                                                                             resetTime={2000} />
+                                                                    </td>
+                                                                    <td className="text-center">
+                                                                        <CopyIcon
+                                                                            content={
+                                                                                configuration.blobStoreBaseUrl +
+                                                                                accessRequest.impersonationContext?.id +
+                                                                                "/outbox?" +
+                                                                                accessRequest.impersonationContext?.outboxSasToken || ""
+                                                                            }
+                                                                            resetTime={2000}
+                                                                        />
+                                                                    </td>
+                                                                </tr>
+
+                                                                <tr>
+                                                                    <td><small><strong>Errors Token:</strong></small></td>
+                                                                    <td style={{ maxWidth: "550px" }}><small>{accessRequest.impersonationContext?.errorsSasToken}</small></td>
+                                                                    <td className="text-center">
+                                                                        <CopyIcon
+                                                                            content={accessRequest.impersonationContext?.errorsSasToken || ""}
+                                                                            resetTime={2000} />
+                                                                    </td>
+
+                                                                    <td className="text-center">
+                                                                        <CopyIcon
+                                                                            content={
+                                                                                configuration.blobStoreBaseUrl +
+                                                                                accessRequest.impersonationContext?.id +
+                                                                                "/error?" +
+                                                                                accessRequest.impersonationContext?.errorsSasToken || ""
+                                                                            }
+                                                                            resetTime={2000}
+                                                                        />
                                                                     </td>
                                                                 </tr>
                                                             </tbody>

@@ -15,7 +15,7 @@ using RESTFulSense.Controllers;
 
 namespace ISL.ReIdentification.Portals.Server.Controllers
 {
-    [Authorize(Roles = "ISL.Reidentification.Portal.Administrators,ISL.Reidentification.Portal.DataEngineers")]
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class ImpersonationContextsController : RESTFulController
@@ -25,6 +25,7 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
         public ImpersonationContextsController(IImpersonationContextService impersonationContextService) =>
             this.impersonationContextService = impersonationContextService;
 
+        [Authorize(Roles = "ISL.Reidentification.Portal.Administrators,ISL.Reidentification.Portal.DataEngineers")]
         [HttpPost]
         public async ValueTask<ActionResult<ImpersonationContext>> PostImpersonationContextAsync(
             [FromBody] ImpersonationContext impersonationContext)
@@ -59,6 +60,7 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.Reidentification.Portal.Administrators,ISL.Reidentification.Portal.DataEngineers")]
         [HttpGet]
 #if !DEBUG
         [EnableQuery(PageSize = 50)]
@@ -118,6 +120,7 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.Reidentification.Portal.Administrators,ISL.Reidentification.Portal.DataEngineers")]
         [HttpPut]
         public async ValueTask<ActionResult<ImpersonationContext>> PutImpersonationContextAsync(
             [FromBody] ImpersonationContext impersonationContext)
@@ -159,6 +162,7 @@ namespace ISL.ReIdentification.Portals.Server.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.Reidentification.Portal.Administrators,ISL.Reidentification.Portal.DataEngineers")]
         [HttpDelete("{impersonationContextId}")]
         public async ValueTask<ActionResult<ImpersonationContext>> DeleteImpersonationContextByIdAsync(Guid impersonationContextId)
         {
