@@ -38,41 +38,33 @@ namespace ISL.ReIdentification.Functions
             try
             {
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+                EventGridEvent egEvent = EventGridEvent.Parse(BinaryData.FromString(requestBody));
+
+                if (egEvent.EventType == "Microsoft.EventGrid.SubscriptionValidationEvent")
+                {
+                    var data = egEvent.Data.ToObjectFromJson<SubscriptionValidationEventData>();
+                    var response = req.CreateResponse(HttpStatusCode.OK);
+
+                    await response.WriteAsJsonAsync(new
+                    {
+                        validationResponse = data.ValidationCode
+                    });
+
+                    return response;
+                }
+
+                string subject = egEvent.Subject;
+                string container = subject?.Split('/')[4];
+                string filename = subject?.Split(new[] { "/blobs/" }, StringSplitOptions.None)[1];
 
                 await loggingBroker
-                    .LogInformationAsync($"{requestBody}");
+                    .LogInformationAsync(
+                        $"Processing request.\n " +
+                        $"Container: {container}\n " +
+                        $"Filename: {filename}");
 
-                EventGridEvent[] egEvents = EventGridEvent.ParseMany(BinaryData.FromString(requestBody));
-
-                foreach (EventGridEvent egEvent in egEvents)
-                {
-                    if (egEvent.EventType == "Microsoft.EventGrid.SubscriptionValidationEvent")
-                    {
-                        var data = egEvent.Data.ToObjectFromJson<SubscriptionValidationEventData>();
-                        var response = req.CreateResponse(HttpStatusCode.OK);
-
-                        await response.WriteAsJsonAsync(new
-                        {
-                            validationResponse = data.ValidationCode
-                        });
-
-                        return response;
-                    }
-
-                    string subject = egEvent.Subject;
-                    string container = subject?.Split('/')[4];
-                    string filename = subject?.Split(new[] { "/blobs/" }, StringSplitOptions.None)[1];
-
-                    await loggingBroker
-                        .LogInformationAsync(
-                            $"Processing request.\n " +
-                            $"Container: {container}\n " +
-                            $"Filename: {filename}\n " +
-                            $"Subject: {subject}");
-
-                    await this.identificationCoordinationService
-                        .ProcessImpersonationContextRequestAsync(container, filename);
-                }
+                await this.identificationCoordinationService
+                    .ProcessImpersonationContextRequestAsync(container, filename);
 
                 return req.CreateResponse(HttpStatusCode.OK);
             }
