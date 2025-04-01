@@ -194,6 +194,9 @@ const ImpersonationContextDetailAdd: FunctionComponent = () => {
                                                             value={selectedHeaderColumn}
                                                             onChange={handleHeaderColumnChange}
                                                             required>
+                                                            <option key="" value="" disabled>
+                                                                Select Reason...
+                                                            </option>
                                                             {headerColumns.map((column, index) => (
                                                                 <option key={index} value={column}>
                                                                     {`Col-${index + 1} - ${column}`}
