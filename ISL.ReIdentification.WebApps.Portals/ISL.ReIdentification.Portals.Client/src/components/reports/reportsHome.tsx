@@ -26,6 +26,7 @@ const ReportsHome: FunctionComponent = () => {
     const [noAccess, setNoAccess] = useState(false);
     const [toastHidden, setToastHidden] = useState(false);
     const { configuration } = useFrontendConfiguration();
+    const [launchError, setlaunchError] = useState("");
 
     const aquireAccessToken = async () => {
         await instance.initialize();
@@ -94,12 +95,24 @@ const ReportsHome: FunctionComponent = () => {
                 }
             } catch (err) {
                 const error = err as Error | AxiosError;
+
                 if (axios.isAxiosError(error)) {
                     if (error.response && error.response.status === 401) {
                         setNoAccess(true);
                         return;
                     }
+                    if (error.response && error.response.status === 404) {
+                        setlaunchError(
+                            `Please check the settings you have provided:\n
+    - Tenant ID: ${tenantId}\n
+    - Group ID: ${reportGroupId}\n
+    - Report ID: ${reportId}\n
+An error has occurred (${error.response.data.error.code})`
+                        );
+                        return;
+                    }
                 }
+
                 throw err;
             }
         }
@@ -164,7 +177,9 @@ const ReportsHome: FunctionComponent = () => {
                         <LoginUnAuthorisedComponent />
                     </UnauthenticatedTemplate>
                     <AuthenticatedTemplate>
-                        {!noAccess && !isLaunched && <ReportsReasonPage launchReport={launch} reidReason={reidReason} setReidReason={setReidReason} />}
+                        {!noAccess && !isLaunched && <ReportsReasonPage launchReport={launch} reidReason={reidReason} setReidReason={setReidReason} launchError={launchError} />}
+
+
                         {noAccess && accounts.length && <Card>
                             <Card.Header>No Access </Card.Header>
                             <Card.Body>
@@ -193,7 +208,7 @@ const ReportsHome: FunctionComponent = () => {
             <ReportDeveloperTools
                 developerToolsLocation={showDeveloperTools}
                 setDeveloperToolsLocation={setShowDeveloperTools}
-                eventsList={developerEvents} />            
+                eventsList={developerEvents} />
         </Container>
     )
 }
