@@ -68,6 +68,7 @@ export const impersonationContextService = {
                 queryClient.invalidateQueries({ queryKey: ["ImpersonationContextGetAll"] });
                 queryClient.invalidateQueries({ queryKey: ["ImpersonationContext", { id: data.id }] });
                 queryClient.invalidateQueries({ queryKey: ["GetAllImpersonationById", { impersonationId: data.id }] });
+                queryClient.invalidateQueries({ queryKey: ["ImpersonationContextGetById", { id: data.id }] });
             }
         });
     },

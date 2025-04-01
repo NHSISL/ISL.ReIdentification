@@ -163,10 +163,10 @@ const ImpersonationContextDetailManage: FunctionComponent<ImpersonationContextDe
                                 {!data?.isApproved && !error && (
                                     <Alert variant="warning" className="mt-3">
                                         <p>
-                                            This project has not been approved by the responsible person, <strong>{data?.responsiblePersonDisplayName}</strong>.
+                                            This project is currently waiting approval by the responsible person, <strong>{data?.responsiblePersonDisplayName}</strong>.
                                         </p>
                                         <p>
-                                            As a result, you will not be able to generate tokens or proceed with any actions that require approval.
+                                            As a result, you will not be able to generate tokens until approval has been granted.
                                             Please contact the responsible person to discuss the approval status of this project.
                                         </p>
                                         <p>
