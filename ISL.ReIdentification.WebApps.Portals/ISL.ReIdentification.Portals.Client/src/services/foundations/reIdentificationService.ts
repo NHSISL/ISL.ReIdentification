@@ -160,6 +160,7 @@ export const reIdentificationService = {
                 return broker.PostReIdentificationImpersonationApprovalAsync(impersonationContextId, isApproved)
                     .then(() => {
                         queryClient.invalidateQueries({ queryKey: ["GetAllImpersonationById", { impersonationId: impersonationContextId }] });
+                        queryClient.invalidateQueries({ queryKey: ["ImpersonationContextGetAll"] });
                     })
                     .finally(() => {
                         setIsLoading(false);

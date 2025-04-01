@@ -4,6 +4,7 @@ import { Button } from "react-bootstrap";
 import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ImpersonationContext } from "../../models/impersonationContext/impersonationContext";
+import { useMsal } from "@azure/msal-react";
 
 type ImpersonationContextProjectRowProps = {
     impersonationContext: ImpersonationContext;
@@ -14,6 +15,15 @@ const ImpersonationContextProjectRow: FunctionComponent<ImpersonationContextProj
         impersonationContext
     } = props;
 
+    const { accounts } = useMsal();
+    const account = accounts[0];
+
+    if (
+        account.idTokenClaims?.oid?.toLowerCase() !== impersonationContext?.responsiblePersonEntraUserId.toLowerCase() &&
+        account.idTokenClaims?.oid?.toLowerCase() !== impersonationContext?.requesterEntraUserId.toLowerCase()
+    ) {
+        return null;
+    }
 
     return (
         <tr>
