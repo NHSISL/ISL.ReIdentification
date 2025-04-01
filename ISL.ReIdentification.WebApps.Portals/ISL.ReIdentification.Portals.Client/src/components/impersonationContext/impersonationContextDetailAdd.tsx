@@ -1,8 +1,6 @@
 import React, { FunctionComponent, useState } from "react";
 import { useMsal } from "@azure/msal-react";
-import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Alert, Button, Card, Container, Form, Modal, Row, Spinner } from "react-bootstrap";
+import { Alert, Button, Card, Container, Form, Row, Spinner } from "react-bootstrap";
 import { reIdentificationService } from "../../services/foundations/reIdentificationService";
 import { UserAccessView } from "../../models/views/components/userAccess/userAccessView";
 import { lookupViewService } from "../../services/views/lookups/lookupViewService";
@@ -24,7 +22,6 @@ const ImpersonationContextDetailAdd: FunctionComponent = () => {
     const [success, setSuccess] = useState("");
     const [savedSuccessfull, setSavedSuccessfull] = useState(false);
     //const [fileName, setFileName] = useState<string>("");
-    const [showHelpModal, setShowHelpModal] = useState<boolean>(false);
     const [projectName, setProjectName] = useState<string>("");
 
     const { mappedLookups, isLoading } = lookupViewService.useGetAllLookups("", "Reasons");
@@ -166,9 +163,7 @@ const ImpersonationContextDetailAdd: FunctionComponent = () => {
 
                                             <Form.Group className="text-start">
                                                 <Form.Label><strong>Upload Sample CSV:</strong></Form.Label>
-                                                <Button variant="link" onClick={() => setShowHelpModal(true)}>
-                                                    <FontAwesomeIcon icon={faCircleInfo} className="text-primary" />
-                                                </Button>
+                                                
 
                                                 <div className="d-flex align-items-center">
                                                     <Form.Control
@@ -194,7 +189,7 @@ const ImpersonationContextDetailAdd: FunctionComponent = () => {
                                                             value={selectedHeaderColumn}
                                                             onChange={handleHeaderColumnChange}
                                                             required>
-                                                            <option key="" value="" disabled>
+                                                            <option key="" value="">
                                                                 Select Reason...
                                                             </option>
                                                             {headerColumns.map((column, index) => (
@@ -224,7 +219,7 @@ const ImpersonationContextDetailAdd: FunctionComponent = () => {
                                                     ))}
                                                 </Form.Select>
                                                 <Form.Text className="text-muted">
-                                                    Please supply a reason why you are requesting.
+                                                    Please supply a reason why you are requesting to re-identify, this will be used for the reason for for all csv's for this project. 
                                                 </Form.Text>
                                             </Form.Group>
                                             <br />
@@ -235,7 +230,7 @@ const ImpersonationContextDetailAdd: FunctionComponent = () => {
                                             {success && <Alert variant="success">
                                                 {success}
                                             </Alert>}
-                                            <Button type="submit" disabled={!selectedHeaderColumn || !selectedUser || !selectedHeaderColumn || !projectName || !!error}>
+                                            <Button type="submit" disabled={!selectedHeaderColumn || !selectedUser || !selectedLookupId || !projectName || !!error}>
                                                 {!loading ? <>Create New Project</> : <Spinner />}
                                             </Button>
                                         </>
@@ -246,9 +241,8 @@ const ImpersonationContextDetailAdd: FunctionComponent = () => {
                                 <>
                                     <Alert variant="success" className="mb-0">
                                         <h4>Project Approval Sent</h4>
-                                        <p>The recipient should receive an email with a link for to approve this request.</p>
+                                        <p>The responsible person selected should receive an email with a link to approve this request.</p>
                                         <p>Please ensure the recipient checks their inbox and follows the instructions provided in the email to approve the file.</p>
-                                            <p>Alternatively, the recipient can launch the projects page in the portal and approve from there.</p>
 
                                             To View your Projects Click&nbsp;
                                             <span
@@ -265,36 +259,6 @@ const ImpersonationContextDetailAdd: FunctionComponent = () => {
                                     </Alert>
                                 </>
                             )}
-
-                            <Modal show={showHelpModal} onHide={() => setShowHelpModal(false)}>
-                                <Modal.Header closeButton>
-                                    <Modal.Title><FontAwesomeIcon icon={faCircleInfo} className="text-primary" /> CSV Help</Modal.Title>
-                                </Modal.Header>
-                                <Modal.Body>
-                                    <p>
-                                        The identifier column needs to be <i>10</i> digits.
-                                        You can easily get your data in this format by applying a format in EXCEL and then saving the CSV file again if its not.
-                                    </p>
-                                    <p>
-                                        <strong>Method 1: Using a Custom Number Format</strong>
-                                        <ol>
-                                            <li>Select the column that contains the numbers.</li>
-                                            <li>Right-click on the selected column and choose Format Cells.</li>
-                                            <li>In the Format Cells dialog box, go to the Number tab and choose Custom from the list on the left.</li>
-                                            <li>
-                                                In the Type field, enter the following format code:This will ensure that all numbers in the column
-                                                are displayed with 10 digits, padding with leading zeroes if necessary. Click OK.
-                                            </li>
-                                        </ol>
-                                    </p>
-                                    This method works well if the numbers are stored as numerical values but will display as <i>10</i> digits.
-                                </Modal.Body>
-                                <Modal.Footer>
-                                    <Button variant="secondary" onClick={() => setShowHelpModal(false)}>
-                                        Close
-                                    </Button>
-                                </Modal.Footer>
-                            </Modal>
                         </>
                     </Card.Body>
                 </Card>
