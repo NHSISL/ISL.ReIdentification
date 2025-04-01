@@ -404,12 +404,12 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
             IdentificationRequest identificationRequest,
             ImpersonationContext impersonationContext)
         {
-            identificationRequest.EntraUserId = impersonationContext.RequesterEntraUserId;
-            identificationRequest.Email = impersonationContext.RequesterEmail;
-            identificationRequest.JobTitle = impersonationContext.RequesterJobTitle;
-            identificationRequest.DisplayName = impersonationContext.RequesterDisplayName;
-            identificationRequest.GivenName = impersonationContext.RequesterFirstName;
-            identificationRequest.Surname = impersonationContext.RequesterLastName;
+            identificationRequest.EntraUserId = impersonationContext.ResponsiblePersonEntraUserId;
+            identificationRequest.Email = impersonationContext.ResponsiblePersonEmail;
+            identificationRequest.JobTitle = impersonationContext.ResponsiblePersonJobTitle;
+            identificationRequest.DisplayName = impersonationContext.ResponsiblePersonDisplayName;
+            identificationRequest.GivenName = impersonationContext.ResponsiblePersonFirstName;
+            identificationRequest.Surname = impersonationContext.ResponsiblePersonLastName;
 
             return identificationRequest;
         }
