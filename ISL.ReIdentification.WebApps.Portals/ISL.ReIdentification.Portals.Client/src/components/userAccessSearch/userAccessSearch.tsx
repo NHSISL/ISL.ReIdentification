@@ -8,7 +8,7 @@ import { userAccessService } from "../../services/foundations/userAccessService"
 import { UserAccess } from "../../models/userAccess/userAccess";
 
 type UserAccessSearchProps = {
-    selectUser: (value: UserAccessView) => void;
+    selectUser: (value: UserAccessView | undefined) => void;
     labelText: string;
 };
 
@@ -43,6 +43,7 @@ const UserAccessSearch: FunctionComponent<UserAccessSearchProps> = ({ selectUser
 
     const clearSelectedUser = () => {
         setSelectedUserName(null);
+        selectUser(undefined);
     }
 
     return (

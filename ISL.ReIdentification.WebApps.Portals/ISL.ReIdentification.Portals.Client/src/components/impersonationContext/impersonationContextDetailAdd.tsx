@@ -162,7 +162,7 @@ const ImpersonationContextDetailAdd: FunctionComponent = () => {
                                             <UserAccessSearch selectUser={(userAccess) => { setSelectedUser(userAccess) }} labelText="Responsible Person Email Address" />
 
                                             <Form.Group className="text-start">
-                                                <Form.Label><strong>Upload Sample CSV:</strong></Form.Label>
+                                                <Form.Label><strong>Upload Sample CSV Template:</strong></Form.Label>
                                                 
 
                                                 <div className="d-flex align-items-center">
