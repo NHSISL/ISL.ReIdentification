@@ -83,7 +83,7 @@ const ImpersonationContextProjectTable: FunctionComponent<ImpersonationContextPr
                                 <thead>
                                     <tr>
                                         <th>Project</th>
-                                        <th>Approval Status</th>
+                                        <th>Status</th>
                                         <th>Action(s)</th>
                                     </tr>
                                 </thead>

@@ -43,6 +43,7 @@ const UserAccessSearch: FunctionComponent<UserAccessSearchProps> = ({ selectUser
 
     const clearSelectedUser = () => {
         setSelectedUserName(null);
+        selectUser(null);
     }
 
     return (
