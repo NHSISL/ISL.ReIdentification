@@ -282,12 +282,6 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
         {
             string data = Encoding.UTF8.GetString(accessRequest.CsvIdentificationRequest.Data);
 
-            if (data == string.Empty)
-            {
-                throw new InvalidCsvIdentificationCoordinationException(
-                    message: "The uploaded file is empty.");
-            }
-
             Dictionary<string, int> fieldMappings =
                 new Dictionary<string, int>
                 {
@@ -459,6 +453,12 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
 
             try
             {
+                if (fileData.Length == 0)
+                {
+                    throw new InvalidCsvIdentificationCoordinationException(
+                        message: "The uploaded file is empty. Please fix the error and try again.");
+                }
+
                 accessRequest.CsvIdentificationRequest.Data = fileData;
 
                 accessRequest.CsvIdentificationRequest.IdentifierColumnIndex = GetColumnIndexFromStream(
