@@ -282,6 +282,12 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
         {
             string data = Encoding.UTF8.GetString(accessRequest.CsvIdentificationRequest.Data);
 
+            if (data == string.Empty)
+            {
+                throw new InvalidCsvIdentificationCoordinationException(
+                    message: "The uploaded file is empty.");
+            }
+
             Dictionary<string, int> fieldMappings =
                 new Dictionary<string, int>
                 {
