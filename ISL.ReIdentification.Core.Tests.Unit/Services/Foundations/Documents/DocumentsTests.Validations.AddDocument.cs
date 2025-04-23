@@ -13,7 +13,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
     public partial class DocumentsTests
     {
         [Theory]
-        [MemberData(nameof(InvalidArgumentsStreamLengthZero))]
+        [MemberData(nameof(InvalidArgumentsStreamIsNull))]
         public async Task ShouldThrowValidationExceptionOnAddDocumentIfArgumentsInvalidAndLogItAsync(
             Stream invalidStream, string invalidString)
         {

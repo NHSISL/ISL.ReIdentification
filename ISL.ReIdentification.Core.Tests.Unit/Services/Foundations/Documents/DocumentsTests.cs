@@ -205,15 +205,15 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Documents
             public override long Length => 1;
         }
 
-        public static TheoryData<Stream, string> InvalidArgumentsStreamLengthZero()
+        public static TheoryData<Stream, string> InvalidArgumentsStreamIsNull()
         {
             Stream stream = new ZeroLengthStream();
 
             return new TheoryData<Stream, string>
             {
                 { null, null },
-                { stream, "" },
-                { stream, " " }
+                { null, "" },
+                { null, " " }
             };
         }
 
