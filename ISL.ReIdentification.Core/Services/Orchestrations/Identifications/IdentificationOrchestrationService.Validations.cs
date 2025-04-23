@@ -81,7 +81,7 @@ namespace ISL.ReIdentification.Core.Services.Orchestrations.Identifications
 
         private static dynamic IsInvalidInputStream(Stream inputStream) => new
         {
-            Condition = inputStream is null || inputStream.Length == 0,
+            Condition = inputStream is null,
             Message = "Stream is invalid"
         };
 

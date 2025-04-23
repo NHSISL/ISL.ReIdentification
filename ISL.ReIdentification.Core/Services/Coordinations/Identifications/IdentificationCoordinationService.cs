@@ -199,13 +199,6 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
                 MemoryStream csvData = new MemoryStream(
                     accessRequestWithCsvIdentificationRequest.CsvIdentificationRequest.Data);
 
-                if (csvData.Length == 0)
-                {
-                    string errorMessage = "The uploaded file is empty. Please fix the error and try again.";
-                    byte[] errorByteArray = Encoding.UTF8.GetBytes(errorMessage);
-                    csvData = new MemoryStream(errorByteArray);
-                }
-
                 await this.identificationOrchestrationService.AddDocumentAsync(
                     csvData,
                     filepathData.ErrorFilepath,
@@ -495,13 +488,6 @@ namespace ISL.ReIdentification.Core.Services.Coordinations.Identifications
             catch (Exception)
             {
                 MemoryStream csvData = new MemoryStream(fileData);
-
-                if (csvData.Length == 0)
-                {
-                    string errorMessage = "The uploaded file is empty. Please fix the error and try again.";
-                    byte[] errorByteArray = Encoding.UTF8.GetBytes(errorMessage);
-                    csvData = new MemoryStream(errorByteArray);
-                }
 
                 await this.identificationOrchestrationService.AddDocumentAsync(
                     csvData,

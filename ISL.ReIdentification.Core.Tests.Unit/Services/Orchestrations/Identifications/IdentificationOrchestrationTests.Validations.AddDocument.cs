@@ -13,7 +13,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Orchestrations.Identific
     public partial class IdentificationOrchestrationTests
     {
         [Theory]
-        [MemberData(nameof(InvalidArgumentsStreamLengthZero))]
+        [MemberData(nameof(InvalidArgumentsStreamIsNull))]
         public async Task ShouldThrowValidationExceptionOnAddDocumentWhenArgumentsInvalidAndLogItAsync(
             Stream invalidStream, string invalidString)
         {
