@@ -28,7 +28,7 @@
 		<PackageReference Include="Microsoft.AspNetCore.SpaProxy">
 			<Version>9.0.3</Version>
 		</PackageReference>
-		<PackageReference Include="Microsoft.Identity.Web" Version="3.8.0" />
+		<PackageReference Include="Microsoft.Identity.Web" Version="3.8.1" />
 		<PackageReference Include="NHSISL.CsvHelperClient" Version="1.1.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.1" />
 		<PackageReference Include="System.Configuration.ConfigurationManager" Version="9.0.3" />
