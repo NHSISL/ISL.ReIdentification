@@ -43,7 +43,7 @@
 		<PackageReference Include="Azure.Storage.Blobs" Version="12.24.0" />
 		<PackageReference Include="Azure.Storage.Files.Shares" Version="12.22.0" />
 		<PackageReference Include="Azure.Storage.Queues" Version="12.22.0" />
-		<PackageReference Include="Microsoft.Extensions.Azure" Version="1.10.0" />
+		<PackageReference Include="Microsoft.Extensions.Azure" Version="1.11.0" />
 		<PackageReference Include="NHSISL.CsvHelperClient" Version="1.1.0" />
 		<PackageReference Include="RESTFulSense" Version="3.1.0" />
 		<PackageReference Include="STX.EFCore.Client" Version="2.0.0" />
