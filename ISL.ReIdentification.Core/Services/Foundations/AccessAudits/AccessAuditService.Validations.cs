@@ -196,7 +196,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
                     nameof(maybeAccessAudit.CreatedDate)),
                  Parameter: nameof(AccessAudit.CreatedDate)),
 
-                (Rule: IsNotSameAsync(
+                (Rule: await IsNotSameAsync(
                     accessAudit.CreatedBy,
                     maybeAccessAudit.CreatedBy,
                     nameof(maybeAccessAudit.CreatedBy)),
@@ -208,7 +208,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
                     nameof(AccessAudit.UpdatedDate)),
                  Parameter: nameof(AccessAudit.UpdatedDate)),
 
-                (Rule: IsNotSameAsync(
+                (Rule: await IsNotSameAsync(
                     auditUser.EntraUserId.ToString(),
                     accessAudit.UpdatedBy,
                     nameof(AccessAudit.UpdatedBy)),

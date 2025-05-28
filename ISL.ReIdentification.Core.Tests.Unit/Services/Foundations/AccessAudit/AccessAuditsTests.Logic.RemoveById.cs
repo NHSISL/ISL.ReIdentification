@@ -18,6 +18,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
         [Fact]
         public async Task ShouldRemoveAccessAuditByIdAsync()
         {
+            //Given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             EntraUser randomEntraUser = CreateRandomEntraUser();
             AccessAudit randomAccessAudit = CreateRandomAccessAudit(randomDateTimeOffset, randomEntraUser.EntraUserId);
@@ -50,9 +51,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
                 broker.DeleteAccessAuditAsync(updatedAccessAudit))
                     .ReturnsAsync(deletedAccessAudit);
 
+            //When
             AccessAudit actualAccessAudit = 
                 await this.accessAuditService.RemoveAccessAuditByIdAsync(inputAccessAuditId);
 
+            //Then
             actualAccessAudit.Should().BeEquivalentTo(expectedAccessAudit);
 
             this.reIdentificationStorageBrokerMock.Verify(broker =>
