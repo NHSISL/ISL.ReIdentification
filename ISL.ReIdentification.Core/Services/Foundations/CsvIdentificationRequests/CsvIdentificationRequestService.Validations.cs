@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Data;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests.Exceptions;
@@ -195,6 +196,37 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
                     secondDateName: nameof(CsvIdentificationRequest.UpdatedDate)),
 
                 Parameter: nameof(CsvIdentificationRequest.UpdatedDate)));
+        }
+
+        private async ValueTask ValidateAgainstStorageCsvIdentificationRequestOnDeleteAsync(CsvIdentificationRequest csvIdentificationRequest, CsvIdentificationRequest maybeCsvIdentificationRequest)
+        {
+            EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
+
+            Validate(
+                (Rule: IsNotSame(
+                    csvIdentificationRequest.CreatedDate,
+                    maybeCsvIdentificationRequest.CreatedDate,
+                    nameof(maybeCsvIdentificationRequest.CreatedDate)),
+                 Parameter: nameof(CsvIdentificationRequest.CreatedDate)),
+
+                (Rule: IsNotSame(
+                    csvIdentificationRequest.CreatedBy,
+                    maybeCsvIdentificationRequest.CreatedBy,
+                    nameof(maybeCsvIdentificationRequest.CreatedBy)),
+                 Parameter: nameof(CsvIdentificationRequest.CreatedBy)),
+
+                (Rule: IsNotSame(
+                    maybeCsvIdentificationRequest.UpdatedDate,
+                    csvIdentificationRequest.UpdatedDate,
+                    nameof(CsvIdentificationRequest.UpdatedDate)),
+                 Parameter: nameof(CsvIdentificationRequest.UpdatedDate)),
+
+                (Rule: IsNotSame(
+                    auditUser.EntraUserId.ToString(),
+                    csvIdentificationRequest.UpdatedBy,
+                    nameof(CsvIdentificationRequest.UpdatedBy)),
+                 Parameter: nameof(CsvIdentificationRequest.UpdatedBy))
+            );
         }
 
         private static dynamic IsInvalid(Guid id) => new
