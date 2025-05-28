@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
@@ -184,6 +185,37 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
                 Parameter: nameof(AccessAudit.UpdatedDate)));
         }
 
+        private async ValueTask ValidateAgainstStorageAccessAuditOnDeleteAsync(AccessAudit accessAudit, AccessAudit maybeAccessAudit)
+        {
+            EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
+
+            Validate(
+                (Rule: IsNotSame(
+                    accessAudit.CreatedDate,
+                    maybeAccessAudit.CreatedDate,
+                    nameof(maybeAccessAudit.CreatedDate)),
+                 Parameter: nameof(AccessAudit.CreatedDate)),
+
+                (Rule: IsNotSameAsync(
+                    accessAudit.CreatedBy,
+                    maybeAccessAudit.CreatedBy,
+                    nameof(maybeAccessAudit.CreatedBy)),
+                 Parameter: nameof(AccessAudit.CreatedBy)),
+
+                (Rule: IsNotSame(
+                    maybeAccessAudit.UpdatedDate,
+                    accessAudit.UpdatedDate,
+                    nameof(AccessAudit.UpdatedDate)),
+                 Parameter: nameof(AccessAudit.UpdatedDate)),
+
+                (Rule: IsNotSameAsync(
+                    auditUser.EntraUserId.ToString(),
+                    accessAudit.UpdatedBy,
+                    nameof(AccessAudit.UpdatedBy)),
+                 Parameter: nameof(AccessAudit.UpdatedBy))
+            );
+        }
+
         private static async ValueTask<dynamic> IsInvalidAsync(Guid id) => new
         {
             Condition = id == Guid.Empty,
@@ -226,6 +258,15 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
             {
                 Condition = first != second,
                 Message = $"Expected value to be '{first}' but found '{second}'."
+            };
+
+        private static dynamic IsNotSame(
+            DateTimeOffset firstDate,
+            DateTimeOffset secondDate,
+            string secondDateName) => new
+            {
+                Condition = firstDate != secondDate,
+                Message = $"Date is not the same as {secondDateName}"
             };
 
         private static async ValueTask<dynamic> IsNotSameAsync(
