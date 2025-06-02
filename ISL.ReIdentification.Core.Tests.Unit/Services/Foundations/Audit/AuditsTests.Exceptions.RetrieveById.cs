@@ -37,7 +37,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Audits
 
             // when
             ValueTask<Audit> retrieveByIdAuditTask =
-                this.accessAuditService.RetrieveAuditByIdAsync(randomAuditId);
+                this.auditService.RetrieveAuditByIdAsync(randomAuditId);
 
             AuditDependencyException actualAuditDependencyException =
                 await Assert.ThrowsAsync<AuditDependencyException>(
@@ -86,7 +86,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Audits
 
             // when
             ValueTask<Audit> retrieveByIdAuditTask =
-                this.accessAuditService.RetrieveAuditByIdAsync(randomAuditId);
+                this.auditService.RetrieveAuditByIdAsync(randomAuditId);
 
             AuditServiceException actualAuditServiceExcpetion =
                 await Assert.ThrowsAsync<AuditServiceException>(

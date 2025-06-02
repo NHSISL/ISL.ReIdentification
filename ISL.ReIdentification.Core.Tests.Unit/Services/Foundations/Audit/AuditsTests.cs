@@ -3,13 +3,16 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
 using ISL.ReIdentification.Core.Brokers.Loggings;
+using ISL.ReIdentification.Core.Brokers.Securities;
 using ISL.ReIdentification.Core.Brokers.Storages.Sql.ReIdentifications;
 using ISL.ReIdentification.Core.Models.Foundations.Audits;
+using ISL.ReIdentification.Core.Models.Securities;
 using ISL.ReIdentification.Core.Services.Foundations.Audits;
 using Microsoft.Data.SqlClient;
 using Moq;
@@ -22,18 +25,21 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Audits
     {
         private readonly Mock<IReIdentificationStorageBroker> reIdentificationStorageBroker;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
+        private readonly Mock<ISecurityBroker> securityBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
-        private readonly AuditService accessAuditService;
+        private readonly AuditService auditService;
 
         public AuditTests()
         {
             this.reIdentificationStorageBroker = new Mock<IReIdentificationStorageBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
+            this.securityBrokerMock = new Mock<ISecurityBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
-            this.accessAuditService = new AuditService(
+            this.auditService = new AuditService(
                 reIdentificationStorageBroker.Object,
                 dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
                 loggingBrokerMock.Object);
         }
 
@@ -98,11 +104,49 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Audits
             return filler;
         }
 
+        private static Audit CreateRandomAudit(
+            DateTimeOffset dateTimeOffset,
+            string userId) =>
+            CreateAuditFiller(dateTimeOffset, userId).Create();
+
+        private static Filler<Audit> CreateAuditFiller(
+            DateTimeOffset dateTimeOffset,
+            string userId)
+        {
+            var filler = new Filler<Audit>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnProperty(audit => audit.CreatedBy).Use(userId)
+                .OnProperty(audit => audit.UpdatedBy).Use(userId);
+
+            return filler;
+        }
+
         private static Expression<Func<Xeption, bool>> SameExceptionAs(
             Xeption expectedException)
         {
             return actualException =>
                 actualException.SameExceptionAs(expectedException);
+        }
+
+        private EntraUser CreateRandomEntraUser(string entraUserId = "")
+        {
+            var userId = string.IsNullOrWhiteSpace(entraUserId) ? GetRandomStringWithLengthOf(255) : entraUserId;
+
+            return new EntraUser(
+                entraUserId: userId,
+                givenName: GetRandomString(),
+                surname: GetRandomString(),
+                displayName: GetRandomString(),
+                email: GetRandomString(),
+                jobTitle: GetRandomString(),
+                roles: new List<string> { GetRandomString() },
+
+                claims: new List<System.Security.Claims.Claim>
+                {
+                    new System.Security.Claims.Claim(type: GetRandomString(), value: GetRandomString())
+                });
         }
     }
 }

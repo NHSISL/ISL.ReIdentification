@@ -34,7 +34,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Audits
 
             // when
             Audit actualAudit =
-                await this.accessAuditService.RemoveAuditByIdAsync(inputAuditId);
+                await this.auditService.RemoveAuditByIdAsync(inputAuditId);
 
             // then
             actualAudit.Should().BeEquivalentTo(expectedAudit);

@@ -28,7 +28,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Audits
 
             // when
             ValueTask<Audit> modifyAuditTask =
-                this.accessAuditService.ModifyAuditAsync(nullAudit);
+                this.auditService.ModifyAuditAsync(nullAudit);
 
             AuditValidationException actualAuditValidationException =
                 await Assert.ThrowsAsync<AuditValidationException>(
@@ -110,7 +110,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Audits
 
             // when
             ValueTask<Audit> modifyAuditTask =
-                this.accessAuditService.ModifyAuditAsync(invalidAudit);
+                this.auditService.ModifyAuditAsync(invalidAudit);
 
             AuditValidationException actualAuditValidationException =
                 await Assert.ThrowsAsync<AuditValidationException>(
@@ -176,7 +176,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Audits
 
             // when
             ValueTask<Audit> modifyAuditTask =
-                this.accessAuditService.ModifyAuditAsync(invalidAudit);
+                this.auditService.ModifyAuditAsync(invalidAudit);
 
             AuditValidationException actualAuditValidationException =
                 await Assert.ThrowsAsync<AuditValidationException>(
@@ -224,7 +224,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Audits
 
             // when
             ValueTask<Audit> modifyAuditTask =
-                this.accessAuditService.ModifyAuditAsync(invalidAudit);
+                this.auditService.ModifyAuditAsync(invalidAudit);
 
             AuditValidationException actualAuditVaildationException =
                 await Assert.ThrowsAsync<AuditValidationException>(
@@ -283,7 +283,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Audits
 
             // when
             ValueTask<Audit> modifyAuditTask =
-                this.accessAuditService.ModifyAuditAsync(invalidAudit);
+                this.auditService.ModifyAuditAsync(invalidAudit);
 
             AuditValidationException actualAuditVaildationException =
                 await Assert.ThrowsAsync<AuditValidationException>(
@@ -334,7 +334,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Audits
 
             // when
             ValueTask<Audit> modifyAuditTask =
-                this.accessAuditService.ModifyAuditAsync(nonExistingAudit);
+                this.auditService.ModifyAuditAsync(nonExistingAudit);
 
             AuditValidationException actualAuditVaildationException =
                 await Assert.ThrowsAsync<AuditValidationException>(
@@ -395,7 +395,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Audits
 
             // when
             ValueTask<Audit> modifyAuditTask =
-                this.accessAuditService.ModifyAuditAsync(invalidAudit);
+                this.auditService.ModifyAuditAsync(invalidAudit);
 
             AuditValidationException actualAuditValidationException =
                 await Assert.ThrowsAsync<AuditValidationException>(
@@ -452,7 +452,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Audits
 
             // when
             ValueTask<Audit> modifyAuditTask =
-                this.accessAuditService.ModifyAuditAsync(invalidAudit);
+                this.auditService.ModifyAuditAsync(invalidAudit);
 
             AuditValidationException actualAuditValidationException =
                 await Assert.ThrowsAsync<AuditValidationException>(

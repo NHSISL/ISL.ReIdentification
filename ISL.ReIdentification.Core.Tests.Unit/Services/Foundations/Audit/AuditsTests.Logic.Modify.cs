@@ -42,7 +42,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Audits
 
             // when
             Audit actualAudit =
-                await this.accessAuditService.ModifyAuditAsync(inputAudit);
+                await this.auditService.ModifyAuditAsync(inputAudit);
 
             // then
             actualAudit.Should().BeEquivalentTo(expectedAudit);
