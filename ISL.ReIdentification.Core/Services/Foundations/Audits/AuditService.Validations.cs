@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Foundations.Audits;
 using ISL.ReIdentification.Core.Models.Foundations.Audits.Exceptions;
+using ISL.ReIdentification.Core.Models.Securities;
 
 namespace ISL.ReIdentification.Core.Services.Foundations.Audits
 {
@@ -77,7 +78,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Audits
                 (Rule: await IsNotRecentAsync(audit.UpdatedDate), Parameter: nameof(Audit.UpdatedDate)));
         }
 
-        private async ValueTask ValidateAuditOnRemoveById(Guid auditId) =>
+        private async ValueTask ValidateAuditOnRemoveByIdAsync(Guid auditId) =>
             Validate((Rule: await IsInvalidAsync(auditId), Parameter: nameof(Audit.Id)));
 
         private static void ValidateAuditIsNotNull(Audit audit)
@@ -114,6 +115,39 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Audits
                     nameof(maybeAudit.UpdatedDate)),
 
                 Parameter: nameof(Audit.UpdatedDate)));
+        }
+
+        private async ValueTask ValidateAgainstStorageAuditOnDeleteAsync(
+            Audit audit,
+            Audit maybeAudit)
+        {
+            EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
+
+            Validate(
+                (Rule: IsNotSameAsync(
+                    audit.CreatedDate,
+                    maybeAudit.CreatedDate,
+                    nameof(maybeAudit.CreatedDate)),
+                 Parameter: nameof(Audit.CreatedDate)),
+
+                (Rule: IsNotSameAsync(
+                    audit.CreatedBy,
+                    maybeAudit.CreatedBy,
+                    nameof(maybeAudit.CreatedBy)),
+                 Parameter: nameof(Audit.CreatedBy)),
+
+                (Rule: IsNotSameAsync(
+                    maybeAudit.UpdatedDate,
+                    audit.UpdatedDate,
+                    nameof(Audit.UpdatedDate)),
+                 Parameter: nameof(Audit.UpdatedDate)),
+
+                (Rule: IsNotSameAsync(
+                    auditUser.EntraUserId.ToString(),
+                    audit.UpdatedBy,
+                    nameof(Audit.UpdatedBy)),
+                 Parameter: nameof(Audit.UpdatedBy))
+            );
         }
 
         private static async ValueTask<dynamic> IsInvalidAsync(Guid id) => new
