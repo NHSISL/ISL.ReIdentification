@@ -124,25 +124,25 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Audits
             EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
-                (Rule: IsNotSameAsync(
+                (Rule: await IsNotSameAsync(
                     audit.CreatedDate,
                     maybeAudit.CreatedDate,
                     nameof(maybeAudit.CreatedDate)),
                  Parameter: nameof(Audit.CreatedDate)),
 
-                (Rule: IsNotSameAsync(
+                (Rule: await IsNotSameAsync(
                     audit.CreatedBy,
                     maybeAudit.CreatedBy,
                     nameof(maybeAudit.CreatedBy)),
                  Parameter: nameof(Audit.CreatedBy)),
 
-                (Rule: IsNotSameAsync(
+                (Rule: await IsNotSameAsync(
                     maybeAudit.UpdatedDate,
                     audit.UpdatedDate,
                     nameof(Audit.UpdatedDate)),
                  Parameter: nameof(Audit.UpdatedDate)),
 
-                (Rule: IsNotSameAsync(
+                (Rule: await IsNotSameAsync(
                     auditUser.EntraUserId.ToString(),
                     audit.UpdatedBy,
                     nameof(Audit.UpdatedBy)),
