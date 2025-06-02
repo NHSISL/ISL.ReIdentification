@@ -14,7 +14,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Audits
     {
         private async ValueTask ValidateAuditOnAddAsync(Audit audit)
         {
-            ValidateAuditIsNotNull(audit);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: await IsInvalidAsync(audit.Id), Parameter: nameof(Audit.Id)),
@@ -52,7 +52,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Audits
 
         private async ValueTask ValidateAuditOnModifyAsync(Audit audit)
         {
-            ValidateAuditIsNotNull(audit);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: await IsInvalidAsync(audit.Id), Parameter: nameof(Audit.Id)),
@@ -68,11 +68,15 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Audits
                 (Rule: await IsInvalidLengthAsync(audit.CreatedBy, 255), Parameter: nameof(Audit.CreatedBy)),
                 (Rule: await IsInvalidLengthAsync(audit.UpdatedBy, 255), Parameter: nameof(Audit.UpdatedBy)),
 
+                (Rule: await IsNotSameAsync(
+                    first: currentUser.EntraUserId,
+                    second: audit.UpdatedBy),
+                Parameter: nameof(Audit.UpdatedBy)),
+
                 (Rule: await IsSameAsAsync(
                     createdDate: audit.CreatedDate,
                     updatedDate: audit.UpdatedDate,
                     createdDateName: nameof(Audit.CreatedDate)),
-
                 Parameter: nameof(Audit.UpdatedDate)),
 
                 (Rule: await IsNotRecentAsync(audit.UpdatedDate), Parameter: nameof(Audit.UpdatedDate)));
@@ -188,6 +192,14 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Audits
 
         private static async ValueTask<dynamic> IsNotSameAsync(
             string first,
+            string second) => new
+            {
+                Condition = first != second,
+                Message = $"Expected value to be '{first}' but found '{second}'."
+            };
+
+        private static async ValueTask<dynamic> IsNotSameAsync(
+            string first,
             string second,
             string secondName) => new
             {
@@ -211,7 +223,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Audits
             return new
             {
                 Condition = isNotRecent,
-                Message = $"Date is not recent. Expected a value between {startDate} and {endDate} but found {date}"
+                Message = $"Date is not recent"
             };
         }
 

@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using ISL.ReIdentification.Core.Models.Foundations.Audits;
 using ISL.ReIdentification.Core.Models.Foundations.Audits.Exceptions;
+using ISL.ReIdentification.Core.Models.Securities;
+using ISL.ReIdentification.Core.Services.Foundations.Audits;
 using Moq;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Audits
@@ -53,12 +55,36 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Audits
         public async Task ShouldThrowValidationExceptionOnAddIfAuditIsInvalidAndLogItAsync(string invalidText)
         {
             // given
+            DateTimeOffset randomDataTimeOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
             var invalidAudit = new Audit
             {
                 AuditType = invalidText,
                 AuditDetail = invalidText,
                 LogLevel = invalidText,
             };
+
+            var auditServiceMock = new Mock<AuditService>(
+                reIdentificationStorageBroker.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            auditServiceMock.Setup(service =>
+                service.ApplyAddAuditAsync(invalidAudit))
+                    .ReturnsAsync(invalidAudit);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDataTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             var invalidAuditException =
                 new InvalidAuditException(
@@ -82,11 +108,19 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Audits
 
             invalidAuditException.AddData(
                 key: nameof(Audit.CreatedDate),
-                values: "Date is invalid");
+                values:
+                 [
+                    "Date is invalid",
+                    $"Date is not recent"
+                 ]);
 
             invalidAuditException.AddData(
                 key: nameof(Audit.CreatedBy),
-                values: "Text is invalid");
+                values:
+                [
+                    "Text is invalid",
+                    $"Expected value to be '{randomEntraUser.EntraUserId}' but found '{invalidAudit.CreatedBy}'."
+                ]);
 
             invalidAuditException.AddData(
                 key: nameof(Audit.UpdatedDate),
@@ -103,7 +137,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Audits
 
             // when
             ValueTask<Audit> addAuditTask =
-                this.auditService.AddAuditAsync(invalidAudit);
+                auditServiceMock.Object.AddAuditAsync(invalidAudit);
 
             AuditValidationException actualAuditValidationException =
                 await Assert.ThrowsAsync<AuditValidationException>(testCode: addAuditTask.AsTask);
@@ -114,7 +148,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Audits
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Once());
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -125,9 +163,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Audits
                 broker.InsertAuditAsync(It.IsAny<Audit>()),
                     Times.Never);
 
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -135,7 +174,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Audits
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            Audit invalidAudit = CreateRandomAudit(dateTimeOffset: randomDateTimeOffset);
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            Audit invalidAudit = 
+                CreateRandomAudit(dateTimeOffset: randomDateTimeOffset, userId: randomEntraUser.EntraUserId);
+
             var inputCreatedByUpdatedByString = GetRandomStringWithLengthOf(256);
             invalidAudit.AuditType = GetRandomStringWithLengthOf(256);
             invalidAudit.LogLevel = GetRandomStringWithLengthOf(256);
@@ -155,7 +198,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Audits
 
             invalidAuditException.AddData(
                 key: nameof(Audit.CreatedBy),
-                values: $"Text exceed max length of {invalidAudit.CreatedBy.Length - 1} characters");
+                [
+                    $"Text exceed max length of {invalidAudit.CreatedBy.Length - 1} characters",
+                    $"Expected value to be '{randomEntraUser.EntraUserId}' but found '{invalidAudit.CreatedBy}'."
+                ]);
 
             invalidAuditException.AddData(
                 key: nameof(Audit.UpdatedBy),
@@ -166,13 +212,30 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Audits
                     message: "Audit validation error occurred, please fix errors and try again.",
                     innerException: invalidAuditException);
 
+            var auditServiceMock = new Mock<AuditService>(
+                reIdentificationStorageBroker.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            auditServiceMock.Setup(service =>
+                service.ApplyAddAuditAsync(invalidAudit))
+                    .ReturnsAsync(invalidAudit);
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
             // when
             ValueTask<Audit> addAuditTask =
-                this.auditService.AddAuditAsync(invalidAudit);
+                auditServiceMock.Object.AddAuditAsync(invalidAudit);
 
             AuditValidationException actualAuditValidationException =
                 await Assert.ThrowsAsync<AuditValidationException>(
@@ -186,6 +249,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Audits
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once());
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedAuditValidationException))),
@@ -195,9 +262,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Audits
                 broker.InsertAuditAsync(It.IsAny<Audit>()),
                     Times.Never);
 
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -205,6 +273,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Audits
         {
             // given
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
             DateTimeOffset now = randomDateTime;
             Audit randomAudit = CreateRandomAudit(now);
             Audit invalidAudit = randomAudit;
@@ -229,13 +298,30 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Audits
                     message: "Audit validation error occurred, please fix errors and try again.",
                     innerException: invalidAuditException);
 
+            var auditServiceMock = new Mock<AuditService>(
+                reIdentificationStorageBroker.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            auditServiceMock.Setup(service =>
+                service.ApplyAddAuditAsync(invalidAudit))
+                    .ReturnsAsync(invalidAudit);
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(now);
 
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
             // when
             ValueTask<Audit> addAuditTask =
-                this.auditService.AddAuditAsync(invalidAudit);
+                auditServiceMock.Object.AddAuditAsync(invalidAudit);
 
             AuditValidationException actualAuditValidationException =
                 await Assert.ThrowsAsync<AuditValidationException>(
@@ -249,6 +335,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Audits
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once());
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(
                     SameExceptionAs(expectedAuditValidationException))),
@@ -259,6 +349,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Audits
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
         }
@@ -270,9 +361,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Audits
             int invalidSeconds)
         {
             // given
-            DateTimeOffset randomDateTime =
-                GetRandomDateTimeOffset();
-
+            DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
             DateTimeOffset now = randomDateTime;
             DateTimeOffset startDate = now.AddSeconds(-90);
             DateTimeOffset endDate = now.AddSeconds(0);
@@ -290,22 +380,37 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Audits
 
             invalidAuditException.AddData(
             key: nameof(Audit.CreatedDate),
-                values:
-                    $"Date is not recent. Expected a value between " +
-                    $"{startDate} and {endDate} but found {invalidDate}");
+            values: $"Date is not recent");
 
             var expectedAuditValidationException =
                 new AuditValidationException(
                     message: "Audit validation error occurred, please fix errors and try again.",
                     innerException: invalidAuditException);
 
+            var auditServiceMock = new Mock<AuditService>(
+                reIdentificationStorageBroker.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            auditServiceMock.Setup(service =>
+                service.ApplyAddAuditAsync(invalidAudit))
+                    .ReturnsAsync(invalidAudit);
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(now);
 
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
             // when
             ValueTask<Audit> addAuditTask =
-                this.auditService.AddAuditAsync(invalidAudit);
+                auditServiceMock.Object.AddAuditAsync(invalidAudit);
 
             AuditValidationException actualAuditValidationException =
                 await Assert.ThrowsAsync<AuditValidationException>(
@@ -318,6 +423,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Audits
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(

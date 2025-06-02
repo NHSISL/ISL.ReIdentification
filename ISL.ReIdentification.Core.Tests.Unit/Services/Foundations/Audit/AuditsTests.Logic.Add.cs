@@ -52,7 +52,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Audits
 
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),
-                    Times.Once);
+                    Times.Exactly(2));
 
             this.reIdentificationStorageBroker.Verify(broker =>
                 broker.InsertAuditAsync(inputAudit),
