@@ -71,6 +71,19 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Audits
             return randomAudit;
         }
 
+        private static Audit CreateRandomModifyAudit(
+            DateTimeOffset dateTimeOffset,
+            string userId)
+        {
+            int randomDaysInPast = GetRandomNegativeNumber();
+            Audit randomAudit = CreateRandomAudit(dateTimeOffset, userId);
+
+            randomAudit.CreatedDate =
+                randomAudit.CreatedDate.AddDays(randomDaysInPast);
+
+            return randomAudit;
+        }
+
         private static string GetRandomStringWithLengthOf(int length)
         {
             string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
