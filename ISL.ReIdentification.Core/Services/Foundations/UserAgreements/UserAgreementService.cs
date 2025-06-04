@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
@@ -80,12 +81,20 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
             {
                 ValidateUserAgreementId(userAgreementId);
 
-                UserAgreement maybeUserAgreement = await this.reIdentificationStorageBroker
-                    .SelectUserAgreementByIdAsync(userAgreementId);
+                UserAgreement maybeUserAgreement = await this.reIdentificationStorageBroker.SelectUserAgreementByIdAsync(userAgreementId);
 
                 ValidateStorageUserAgreement(maybeUserAgreement, userAgreementId);
 
-                return await this.reIdentificationStorageBroker.DeleteUserAgreementAsync(maybeUserAgreement);
+                UserAgreement userAgreementWithDeleteAuditApplied = await ApplyDeleteAuditAsync(maybeUserAgreement);
+
+                UserAgreement updatedUserAgreement =
+                    await this.reIdentificationStorageBroker.UpdateUserAgreementAsync(userAgreementWithDeleteAuditApplied);
+
+                await ValidateAgainstStorageUserAgreementOnDeleteAsync(
+                    updatedUserAgreement,
+                    userAgreementWithDeleteAuditApplied);
+
+                return await this.reIdentificationStorageBroker.DeleteUserAgreementAsync(updatedUserAgreement);
             });
 
         virtual internal async ValueTask<UserAgreement> ApplyAddAuditAsync(UserAgreement userAgreement)
@@ -109,6 +118,16 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
             userAgreement.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
             userAgreement.UpdatedDate = auditDateTimeOffset;
 
+            return userAgreement;
+        }
+
+        virtual internal async ValueTask<UserAgreement> ApplyDeleteAuditAsync(UserAgreement userAgreement)
+        {
+            ValidateUserAgreementIsNotNull(userAgreement);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
+            userAgreement.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            userAgreement.UpdatedDate = auditDateTimeOffset;
             return userAgreement;
         }
     }
