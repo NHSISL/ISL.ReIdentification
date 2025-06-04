@@ -4,8 +4,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Foundations.PdsDatas;
 using ISL.ReIdentification.Core.Models.Foundations.PdsDatas.Exceptions;
+using ISL.ReIdentification.Core.Models.Securities;
 
 namespace ISL.ReIdentification.Core.Services.Foundations.PdsDatas
 {
@@ -58,7 +60,58 @@ namespace ISL.ReIdentification.Core.Services.Foundations.PdsDatas
         }
 
         private static void ValidateAgainstStoragePdsDataOnModify(PdsData inputPdsData, PdsData storagePdsData)
-        { }
+        {
+            Validate(
+                (Rule: IsNotSame(
+                    firstDate: inputPdsData.CreatedDate,
+                    secondDate: storagePdsData.CreatedDate,
+                    secondDateName: nameof(PdsData.CreatedDate)),
+                Parameter: nameof(PdsData.CreatedDate)),
+
+                (Rule: IsNotSame(
+                    first: inputPdsData.CreatedBy,
+                    second: storagePdsData.CreatedBy,
+                    secondName: nameof(PdsData.CreatedBy)),
+                Parameter: nameof(PdsData.CreatedBy)),
+
+                (Rule: IsSameAs(
+                    firstDate: inputPdsData.UpdatedDate,
+                    secondDate: storagePdsData.UpdatedDate,
+                    secondDateName: nameof(PdsData.UpdatedDate)),
+                Parameter: nameof(PdsData.UpdatedDate)));
+        }
+
+        private async ValueTask ValidateAgainstStoragePdsDataOnDeleteAsync(
+            PdsData pdsData,
+            PdsData maybePdsData)
+        {
+            EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
+
+            Validate(
+                (Rule: IsNotSame(
+                    pdsData.CreatedDate,
+                    maybePdsData.CreatedDate,
+                    nameof(maybePdsData.CreatedDate)),
+                 Parameter: nameof(PdsData.CreatedDate)),
+
+                (Rule: IsNotSame(
+            pdsData.CreatedBy,
+                    maybePdsData.CreatedBy,
+                    nameof(maybePdsData.CreatedBy)),
+                 Parameter: nameof(PdsData.CreatedBy)),
+            (Rule: IsNotSame(
+                    maybePdsData.UpdatedDate,
+                    pdsData.UpdatedDate,
+                    nameof(PdsData.UpdatedDate)),
+                 Parameter: nameof(PdsData.UpdatedDate)),
+
+                (Rule: IsNotSame(
+                    auditUser.EntraUserId.ToString(),
+                    pdsData.UpdatedBy,
+                    nameof(PdsData.UpdatedBy)),
+                 Parameter: nameof(PdsData.UpdatedBy))
+            );
+        }
 
         private static dynamic IsInvalid(Guid id) => new
         {
