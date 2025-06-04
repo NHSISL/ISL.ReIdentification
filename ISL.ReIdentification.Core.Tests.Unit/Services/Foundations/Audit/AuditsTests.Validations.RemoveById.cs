@@ -32,7 +32,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Audits
                     innerException: invalidAuditException);
 
             // when
-            ValueTask<Audit> removeByIdAuditTask = this.accessAuditService
+            ValueTask<Audit> removeByIdAuditTask = this.auditService
                 .RemoveAuditByIdAsync(invalidAuditId);
 
             AuditValidationException actualAuditValidationException =
@@ -75,7 +75,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Audits
 
             // when
             ValueTask<Audit> removeByIdAuditTask =
-                this.accessAuditService.RemoveAuditByIdAsync(nonExistingAudit.Id);
+                this.auditService.RemoveAuditByIdAsync(nonExistingAudit.Id);
 
             AuditValidationException actualAuditVaildationException =
                 await Assert.ThrowsAsync<AuditValidationException>(
