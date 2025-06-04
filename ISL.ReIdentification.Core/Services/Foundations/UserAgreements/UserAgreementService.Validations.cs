@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Data;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Foundations.UserAccesses;
 using ISL.ReIdentification.Core.Models.Foundations.UserAgreements;
@@ -128,6 +129,37 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAgreements
                     secondDate: storageUserAgreement.UpdatedDate,
                     secondDateName: nameof(UserAgreement.UpdatedDate)),
                 Parameter: nameof(UserAgreement.UpdatedDate)));
+        }
+
+        private async ValueTask ValidateAgainstStorageUserAgreementOnDeleteAsync(UserAgreement userAgreement, UserAgreement maybeUserAgreement)
+        {
+            EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
+
+            Validate(
+                (Rule: IsNotSame(
+                    userAgreement.CreatedDate,
+                    maybeUserAgreement.CreatedDate,
+                    nameof(maybeUserAgreement.CreatedDate)),
+                 Parameter: nameof(UserAgreement.CreatedDate)),
+
+                (Rule: IsNotSame(
+                    userAgreement.CreatedBy,
+                    maybeUserAgreement.CreatedBy,
+                    nameof(maybeUserAgreement.CreatedBy)),
+                 Parameter: nameof(UserAgreement.CreatedBy)),
+
+                (Rule: IsNotSame(
+                    maybeUserAgreement.UpdatedDate,
+                    userAgreement.UpdatedDate,
+                    nameof(UserAgreement.UpdatedDate)),
+                 Parameter: nameof(UserAgreement.UpdatedDate)),
+
+                (Rule: IsNotSame(
+                    auditUser.EntraUserId.ToString(),
+                    userAgreement.UpdatedBy,
+                    nameof(UserAgreement.UpdatedBy)),
+                 Parameter: nameof(UserAgreement.UpdatedBy))
+            );
         }
 
         private static dynamic IsInvalid(Guid id) => new
