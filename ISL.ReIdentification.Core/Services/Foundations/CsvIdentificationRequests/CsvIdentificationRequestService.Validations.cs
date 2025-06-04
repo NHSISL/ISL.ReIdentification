@@ -162,7 +162,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
             }
         }
 
-        private static void ValidateStorageCsvIdentificationRequest(CsvIdentificationRequest maybeCsvIdentificationRequest,
+        private static void ValidateStorageCsvIdentificationRequest(
+            CsvIdentificationRequest maybeCsvIdentificationRequest,
             Guid id)
         {
             if (maybeCsvIdentificationRequest is null)
@@ -173,7 +174,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
         }
 
         private static void ValidateAgainstStorageCsvIdentificationRequestOnModify(
-            CsvIdentificationRequest inputCsvIdentificationRequest, CsvIdentificationRequest storageCsvIdentificationRequest)
+            CsvIdentificationRequest inputCsvIdentificationRequest, 
+            CsvIdentificationRequest storageCsvIdentificationRequest)
         {
             Validate(
                 (Rule: IsNotSame(
@@ -198,7 +200,9 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
                 Parameter: nameof(CsvIdentificationRequest.UpdatedDate)));
         }
 
-        private async ValueTask ValidateAgainstStorageCsvIdentificationRequestOnDeleteAsync(CsvIdentificationRequest csvIdentificationRequest, CsvIdentificationRequest maybeCsvIdentificationRequest)
+        private async ValueTask ValidateAgainstStorageCsvIdentificationRequestOnDeleteAsync(
+            CsvIdentificationRequest csvIdentificationRequest,
+            CsvIdentificationRequest maybeCsvIdentificationRequest)
         {
             EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
 

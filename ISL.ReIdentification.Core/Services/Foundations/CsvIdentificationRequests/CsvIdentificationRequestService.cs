@@ -88,13 +88,15 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
                 .UpdateCsvIdentificationRequestAsync(csvIdentificationRequest);
         });
 
-        public ValueTask<CsvIdentificationRequest> RemoveCsvIdentificationRequestByIdAsync(Guid csvIdentificationRequestId) =>
+        public ValueTask<CsvIdentificationRequest> RemoveCsvIdentificationRequestByIdAsync(
+            Guid csvIdentificationRequestId) =>
             TryCatch(async () =>
             {
                 ValidateCsvIdentificationRequestId(csvIdentificationRequestId);
 
                 CsvIdentificationRequest maybeCsvIdentificationRequest = 
-                await this.reIdentificationStorageBroker.SelectCsvIdentificationRequestByIdAsync(csvIdentificationRequestId);
+                    await this.reIdentificationStorageBroker.SelectCsvIdentificationRequestByIdAsync(
+                        csvIdentificationRequestId);
 
                 ValidateStorageCsvIdentificationRequest(maybeCsvIdentificationRequest, csvIdentificationRequestId);
 
@@ -109,7 +111,8 @@ namespace ISL.ReIdentification.Core.Services.Foundations.CsvIdentificationReques
                     updatedCsvIdentificationRequest,
                     csvIdentificationRequestWithDeleteAuditApplied);
 
-                return await this.reIdentificationStorageBroker.DeleteCsvIdentificationRequestAsync(updatedCsvIdentificationRequest);
+                return await this.reIdentificationStorageBroker.DeleteCsvIdentificationRequestAsync(
+                    updatedCsvIdentificationRequest);
             });
 
         virtual internal async ValueTask<CsvIdentificationRequest> ApplyAddAuditAsync(
