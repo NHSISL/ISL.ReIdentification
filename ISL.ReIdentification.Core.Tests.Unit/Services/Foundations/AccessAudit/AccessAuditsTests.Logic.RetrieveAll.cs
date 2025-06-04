@@ -20,7 +20,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
             IQueryable<AccessAudit> storageAccessAudits = randomAccessAudits;
             IQueryable<AccessAudit> expectedAccessAudits = storageAccessAudits;
 
-            this.reIdentificationStorageBroker.Setup(broker =>
+            this.reIdentificationStorageBrokerMock.Setup(broker =>
                 broker.SelectAllAccessAuditsAsync())
                     .ReturnsAsync(storageAccessAudits);
 
@@ -30,13 +30,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
             // then
             actualAccessAudits.Should().BeEquivalentTo(expectedAccessAudits);
 
-            this.reIdentificationStorageBroker.Verify(broker =>
+            this.reIdentificationStorageBrokerMock.Verify(broker =>
                 broker.SelectAllAccessAuditsAsync(),
                     Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
-            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
+            this.reIdentificationStorageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

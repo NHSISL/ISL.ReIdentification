@@ -3,10 +3,12 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Data;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
 using ISL.ReIdentification.Core.Models.Foundations.AccessAudits;
+using ISL.ReIdentification.Core.Models.Securities;
 using Moq;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
@@ -16,41 +18,70 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
         [Fact]
         public async Task ShouldRemoveAccessAuditByIdAsync()
         {
-            // given
-            AccessAudit randomAccessAudit = CreateRandomAccessAudit();
-            AccessAudit inputAccessAudit = randomAccessAudit;
-            Guid inputAccessAuditId = inputAccessAudit.Id;
-            AccessAudit storageAccessAudit = inputAccessAudit;
-            AccessAudit deletedAccessAudit = inputAccessAudit;
+            //Given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+            AccessAudit randomAccessAudit = CreateRandomAccessAudit(randomDateTimeOffset, randomEntraUser.EntraUserId);
+            Guid inputAccessAuditId = randomAccessAudit.Id;
+            AccessAudit storageAccessAudit = randomAccessAudit;
+            AccessAudit accessAuditWithDeleteAuditApplied = storageAccessAudit.DeepClone();
+            accessAuditWithDeleteAuditApplied.UpdatedBy = randomEntraUser.EntraUserId.ToString();
+            accessAuditWithDeleteAuditApplied.UpdatedDate = randomDateTimeOffset;
+            AccessAudit updatedAccessAudit = accessAuditWithDeleteAuditApplied;
+            AccessAudit deletedAccessAudit = updatedAccessAudit;
             AccessAudit expectedAccessAudit = deletedAccessAudit.DeepClone();
 
-            this.reIdentificationStorageBroker.Setup(broker =>
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
+            this.reIdentificationStorageBrokerMock.Setup(broker =>
                 broker.SelectAccessAuditByIdAsync(inputAccessAuditId))
                     .ReturnsAsync(storageAccessAudit);
 
-            this.reIdentificationStorageBroker.Setup(broker =>
-                broker.DeleteAccessAuditAsync(storageAccessAudit))
+            this.reIdentificationStorageBrokerMock.Setup(broker =>
+                broker.UpdateAccessAuditAsync(randomAccessAudit))
+                    .ReturnsAsync(updatedAccessAudit);
+
+            this.reIdentificationStorageBrokerMock.Setup(broker =>
+                broker.DeleteAccessAuditAsync(updatedAccessAudit))
                     .ReturnsAsync(deletedAccessAudit);
 
-            // when
-            AccessAudit actualAccessAudit =
+            //When
+            AccessAudit actualAccessAudit = 
                 await this.accessAuditService.RemoveAccessAuditByIdAsync(inputAccessAuditId);
 
-            // then
+            //Then
             actualAccessAudit.Should().BeEquivalentTo(expectedAccessAudit);
 
-            this.reIdentificationStorageBroker.Verify(broker =>
+            this.reIdentificationStorageBrokerMock.Verify(broker =>
                 broker.SelectAccessAuditByIdAsync(inputAccessAuditId),
-                    Times.Once());
-
-            this.reIdentificationStorageBroker.Verify(broker =>
-                broker.DeleteAccessAuditAsync(inputAccessAudit),
                     Times.Once);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Exactly(2));
+
+            this.reIdentificationStorageBrokerMock.Verify(broker =>
+                broker.UpdateAccessAuditAsync(randomAccessAudit),
+                    Times.Once);
+
+            this.reIdentificationStorageBrokerMock.Verify(broker =>
+                broker.DeleteAccessAuditAsync(updatedAccessAudit),
+                    Times.Once);
+
+            this.reIdentificationStorageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
-            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

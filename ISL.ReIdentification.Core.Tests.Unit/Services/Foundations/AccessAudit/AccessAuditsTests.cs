@@ -23,7 +23,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
 {
     public partial class AccessAuditTests
     {
-        private readonly Mock<IReIdentificationStorageBroker> reIdentificationStorageBroker;
+        private readonly Mock<IReIdentificationStorageBroker> reIdentificationStorageBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<ISecurityBroker> securityBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
@@ -31,13 +31,13 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
 
         public AccessAuditTests()
         {
-            this.reIdentificationStorageBroker = new Mock<IReIdentificationStorageBroker>();
+            this.reIdentificationStorageBrokerMock = new Mock<IReIdentificationStorageBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.securityBrokerMock = new Mock<ISecurityBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
             this.accessAuditService = new AccessAuditService(
-                reIdentificationStorageBroker: reIdentificationStorageBroker.Object,
+                reIdentificationStorageBroker: reIdentificationStorageBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object,
                 securityBroker: securityBrokerMock.Object,
                 loggingBroker: loggingBrokerMock.Object);

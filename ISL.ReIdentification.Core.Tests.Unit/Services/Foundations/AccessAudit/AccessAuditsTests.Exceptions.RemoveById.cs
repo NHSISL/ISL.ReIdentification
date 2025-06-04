@@ -32,7 +32,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
                     message: "Access audit dependency error occurred, contact support.",
                         innerException: failedAccessAuditStorageException);
 
-            this.reIdentificationStorageBroker.Setup(broker =>
+            this.reIdentificationStorageBrokerMock.Setup(broker =>
                 broker.SelectAccessAuditByIdAsync(randomAccessAuditId))
                     .ThrowsAsync(sqlException);
 
@@ -48,7 +48,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
             actualAccessAuditDependencyException.Should().BeEquivalentTo(
                 expectedAccessAuditDependencyException);
 
-            this.reIdentificationStorageBroker.Verify(broker =>
+            this.reIdentificationStorageBrokerMock.Verify(broker =>
                 broker.SelectAccessAuditByIdAsync(randomAccessAuditId),
                     Times.Once);
 
@@ -57,7 +57,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
                     expectedAccessAuditDependencyException))),
                         Times.Once);
 
-            this.reIdentificationStorageBroker.Verify(broker =>
+            this.reIdentificationStorageBrokerMock.Verify(broker =>
                 broker.DeleteAccessAuditAsync(It.IsAny<AccessAudit>()),
                     Times.Never);
 
@@ -67,7 +67,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
-            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
+            this.reIdentificationStorageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -91,7 +91,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
                     message: "Access audit dependency validation error occurred, fix errors and try again.",
                     innerException: lockedAccessAuditException);
 
-            this.reIdentificationStorageBroker.Setup(broker =>
+            this.reIdentificationStorageBrokerMock.Setup(broker =>
                 broker.SelectAccessAuditByIdAsync(It.IsAny<Guid>()))
                     .ThrowsAsync(databaseUpdateConcurrencyException);
 
@@ -107,7 +107,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
             actualAccessAuditDependencyValidationException.Should()
                 .BeEquivalentTo(expectedAccessAuditDependencyValidationException);
 
-            this.reIdentificationStorageBroker.Verify(broker =>
+            this.reIdentificationStorageBrokerMock.Verify(broker =>
                 broker.SelectAccessAuditByIdAsync(It.IsAny<Guid>()),
                     Times.Once);
 
@@ -116,7 +116,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
                     expectedAccessAuditDependencyValidationException))),
                         Times.Once);
 
-            this.reIdentificationStorageBroker.Verify(broker =>
+            this.reIdentificationStorageBrokerMock.Verify(broker =>
                 broker.DeleteAccessAuditAsync(It.IsAny<AccessAudit>()),
                     Times.Never);
 
@@ -126,7 +126,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
-            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
+            this.reIdentificationStorageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -145,7 +145,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
                 message: "Service error occurred, contact support.",
                 innerException: failedServiceAccessAuditException);
 
-            this.reIdentificationStorageBroker.Setup(broker =>
+            this.reIdentificationStorageBrokerMock.Setup(broker =>
                 broker.SelectAccessAuditByIdAsync(randomAccessAuditId))
                     .ThrowsAsync(serviceError);
 
@@ -160,7 +160,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
             // then
             actualAccessAuditServiceExcpetion.Should().BeEquivalentTo(expectedAccessAuditServiceException);
 
-            this.reIdentificationStorageBroker.Verify(broker =>
+            this.reIdentificationStorageBrokerMock.Verify(broker =>
                 broker.SelectAccessAuditByIdAsync(randomAccessAuditId),
                     Times.Once);
 
@@ -169,7 +169,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
                     expectedAccessAuditServiceException))),
                         Times.Once);
 
-            this.reIdentificationStorageBroker.Verify(broker =>
+            this.reIdentificationStorageBrokerMock.Verify(broker =>
                 broker.DeleteAccessAuditAsync(It.IsAny<AccessAudit>()),
                     Times.Never);
 
@@ -179,7 +179,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.AccessAudits
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
-            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
+            this.reIdentificationStorageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
