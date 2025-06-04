@@ -87,15 +87,15 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
                     .UpdateAccessAuditAsync(accessAuditWithModifyAuditApplied);
             });
 
-        public ValueTask<AccessAudit> RemoveAccessAuditByIdAsync(Guid dataSetId) =>
+        public ValueTask<AccessAudit> RemoveAccessAuditByIdAsync(Guid accessAuditId) =>
             TryCatch(async () =>
             {
-                await ValidateAccessAuditOnRemoveById(dataSetId);
+                await ValidateAccessAuditOnRemoveById(accessAuditId);
 
                 AccessAudit maybeAccessAudit = 
-                    await this.reIdentificationStorageBroker.SelectAccessAuditByIdAsync(dataSetId);
+                    await this.reIdentificationStorageBroker.SelectAccessAuditByIdAsync(accessAuditId);
 
-                await ValidateStorageAccessAuditAsync(maybeAccessAudit, dataSetId);
+                await ValidateStorageAccessAuditAsync(maybeAccessAudit, accessAuditId);
                 AccessAudit accessAuditWithDeleteAuditApplied = await ApplyDeleteAuditAsync(maybeAccessAudit);
 
                 AccessAudit updatedAccessAudit =
