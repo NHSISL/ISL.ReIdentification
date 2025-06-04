@@ -3,10 +3,12 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Data;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
 using ISL.ReIdentification.Core.Models.Foundations.UserAgreements;
+using ISL.ReIdentification.Core.Models.Securities;
 using Moq;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreements
@@ -16,42 +18,72 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAgreemen
         [Fact]
         public async Task ShouldRemoveUserAgreementByIdAsync()
         {
-            // given
-            Guid randomId = Guid.NewGuid();
-            Guid inputUserAgreementId = randomId;
-            UserAgreement randomUserAgreement = CreateRandomUserAgreement();
+            //given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            UserAgreement randomUserAgreement = 
+                CreateRandomUserAgreement(randomDateTimeOffset, randomEntraUser.EntraUserId);
+
+            Guid inputUserAgreementId = randomUserAgreement.Id;
             UserAgreement storageUserAgreement = randomUserAgreement;
-            UserAgreement expectedInputUserAgreement = storageUserAgreement;
-            UserAgreement deletedUserAgreement = expectedInputUserAgreement;
+            UserAgreement userAgreementWithDeleteAuditApplied = storageUserAgreement.DeepClone();
+            userAgreementWithDeleteAuditApplied.UpdatedBy = randomEntraUser.EntraUserId.ToString();
+            userAgreementWithDeleteAuditApplied.UpdatedDate = randomDateTimeOffset;
+            UserAgreement updatedUserAgreement = userAgreementWithDeleteAuditApplied;
+            UserAgreement deletedUserAgreement = updatedUserAgreement;
             UserAgreement expectedUserAgreement = deletedUserAgreement.DeepClone();
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             this.reIdentificationStorageBrokerMock.Setup(broker =>
                 broker.SelectUserAgreementByIdAsync(inputUserAgreementId))
                     .ReturnsAsync(storageUserAgreement);
 
             this.reIdentificationStorageBrokerMock.Setup(broker =>
-                broker.DeleteUserAgreementAsync(expectedInputUserAgreement))
+                broker.UpdateUserAgreementAsync(randomUserAgreement))
+                    .ReturnsAsync(updatedUserAgreement);
+
+            this.reIdentificationStorageBrokerMock.Setup(broker =>
+                broker.DeleteUserAgreementAsync(updatedUserAgreement))
                     .ReturnsAsync(deletedUserAgreement);
 
-            // when
-            UserAgreement actualUserAgreement = await this.userAgreementService
-                .RemoveUserAgreementByIdAsync(inputUserAgreementId);
+            //when
+            UserAgreement actualUserAgreement = await this.userAgreementService.RemoveUserAgreementByIdAsync(inputUserAgreementId);
 
-            // then
+            //then
             actualUserAgreement.Should().BeEquivalentTo(expectedUserAgreement);
 
             this.reIdentificationStorageBrokerMock.Verify(broker =>
                 broker.SelectUserAgreementByIdAsync(inputUserAgreementId),
                     Times.Once);
 
-            this.reIdentificationStorageBrokerMock.Verify(broker =>
-                broker.DeleteUserAgreementAsync(expectedInputUserAgreement),
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Exactly(2));
+
+            this.reIdentificationStorageBrokerMock.Verify(broker =>
+                broker.UpdateUserAgreementAsync(randomUserAgreement),
+                    Times.Once);
+
+            this.reIdentificationStorageBrokerMock.Verify(broker =>
+                broker.DeleteUserAgreementAsync(updatedUserAgreement),
+                    Times.Once);
+
             this.reIdentificationStorageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
         }
     }
 }
