@@ -96,14 +96,14 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
                     await this.reIdentificationStorageBroker.SelectAccessAuditByIdAsync(dataSetId);
 
                 await ValidateStorageAccessAuditAsync(maybeAccessAudit, dataSetId);
-                AccessAudit dataSetWithDeleteAuditApplied = await ApplyDeleteAuditAsync(maybeAccessAudit);
+                AccessAudit accessAuditWithDeleteAuditApplied = await ApplyDeleteAuditAsync(maybeAccessAudit);
 
                 AccessAudit updatedAccessAudit =
-                    await this.reIdentificationStorageBroker.UpdateAccessAuditAsync(dataSetWithDeleteAuditApplied);
+                    await this.reIdentificationStorageBroker.UpdateAccessAuditAsync(accessAuditWithDeleteAuditApplied);
 
                 await ValidateAgainstStorageAccessAuditOnDeleteAsync(
                     updatedAccessAudit,
-                    dataSetWithDeleteAuditApplied);
+                    accessAuditWithDeleteAuditApplied);
 
                 return await this.reIdentificationStorageBroker.DeleteAccessAuditAsync(updatedAccessAudit);
             });
@@ -149,14 +149,14 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
             return accessAudit;
         }
 
-        virtual internal async ValueTask<AccessAudit> ApplyDeleteAuditAsync(AccessAudit dataSet)
+        virtual internal async ValueTask<AccessAudit> ApplyDeleteAuditAsync(AccessAudit accessAudit)
         {
-            ValidateAccessAuditIsNotNull(dataSet);
+            ValidateAccessAuditIsNotNull(accessAudit);
             var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
             var auditUser = await this.securityBroker.GetCurrentUserAsync();
-            dataSet.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
-            dataSet.UpdatedDate = auditDateTimeOffset;
-            return dataSet;
+            accessAudit.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            accessAudit.UpdatedDate = auditDateTimeOffset;
+            return accessAudit;
         }
     }
 }
