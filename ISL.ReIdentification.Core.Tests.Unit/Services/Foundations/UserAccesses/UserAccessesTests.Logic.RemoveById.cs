@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Data;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
@@ -17,22 +18,21 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
         [Fact]
         public async Task ShouldRemoveUserAccessByIdAsync()
         {
-            // given
-            DateTimeOffset randomDateOffset = GetRandomDateTimeOffset();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             EntraUser randomEntraUser = CreateRandomEntraUser();
-            UserAccess randomUserAccess = CreateRandomUserAccess();
-            UserAccess inputUserAccess = randomUserAccess;
-            Guid inputUserAccessId = inputUserAccess.Id;
-            UserAccess storageUserAccess = inputUserAccess.DeepClone();
-            UserAccess updatedUserAccess = storageUserAccess.DeepClone();
-            updatedUserAccess.UpdatedBy = randomEntraUser.EntraUserId.ToString();
-            updatedUserAccess.UpdatedDate = randomDateOffset;
-            UserAccess deletedUserAccess = updatedUserAccess.DeepClone();
+            UserAccess randomUserAccess = CreateRandomUserAccess(randomDateTimeOffset, randomEntraUser.EntraUserId);
+            Guid inputUserAccessId = randomUserAccess.Id;
+            UserAccess storageUserAccess = randomUserAccess;
+            UserAccess userAccessWithDeleteAuditApplied = storageUserAccess.DeepClone();
+            userAccessWithDeleteAuditApplied.UpdatedBy = randomEntraUser.EntraUserId.ToString();
+            userAccessWithDeleteAuditApplied.UpdatedDate = randomDateTimeOffset;
+            UserAccess updatedUserAccess = userAccessWithDeleteAuditApplied;
+            UserAccess deletedUserAccess = updatedUserAccess;
             UserAccess expectedUserAccess = deletedUserAccess.DeepClone();
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .ReturnsAsync(randomDateOffset);
+                    .ReturnsAsync(randomDateTimeOffset);
 
             this.securityBrokerMock.Setup(broker =>
                 broker.GetCurrentUserAsync())
@@ -43,23 +43,20 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
                     .ReturnsAsync(storageUserAccess);
 
             this.reIdentificationStorageBroker.Setup(broker =>
-                broker.UpdateUserAccessAsync(It.Is(SameUserAccessAs(updatedUserAccess))))
+                broker.UpdateUserAccessAsync(randomUserAccess))
                     .ReturnsAsync(updatedUserAccess);
 
             this.reIdentificationStorageBroker.Setup(broker =>
-                broker.DeleteUserAccessAsync(It.Is(SameUserAccessAs(updatedUserAccess))))
+                broker.DeleteUserAccessAsync(updatedUserAccess))
                     .ReturnsAsync(deletedUserAccess);
 
-            // when
-            UserAccess actualUserAccess =
-                await this.userAccessService.RemoveUserAccessByIdAsync(inputUserAccessId);
+            UserAccess actualUserAccess = await this.userAccessService.RemoveUserAccessByIdAsync(inputUserAccessId);
 
-            // then
             actualUserAccess.Should().BeEquivalentTo(expectedUserAccess);
 
             this.reIdentificationStorageBroker.Verify(broker =>
                 broker.SelectUserAccessByIdAsync(inputUserAccessId),
-                    Times.Once());
+                    Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
@@ -67,19 +64,19 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.UserAccesses
 
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),
-                    Times.Once());
-
-            this.reIdentificationStorageBroker.Verify(broker =>
-                broker.UpdateUserAccessAsync(It.Is(SameUserAccessAs(updatedUserAccess))),
-                    Times.Once());
-
-            this.reIdentificationStorageBroker.Verify(broker =>
-                broker.DeleteUserAccessAsync(It.Is(SameUserAccessAs(updatedUserAccess))),
                     Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.reIdentificationStorageBroker.Verify(broker =>
+                broker.UpdateUserAccessAsync(randomUserAccess),
+                    Times.Once);
+
+            this.reIdentificationStorageBroker.Verify(broker =>
+                broker.DeleteUserAccessAsync(updatedUserAccess),
+                    Times.Once);
+
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
         }
     }
