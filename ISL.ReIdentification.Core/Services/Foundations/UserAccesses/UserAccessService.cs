@@ -84,7 +84,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
                 .SelectUserAccessByIdAsync(userAccessId);
 
             ValidateStorageUserAccess(maybeUserAccess, userAccessId);
-            UserAccess userAccessWithModifyAuditApplied = await ApplyDeleteAuditAsync(maybeUserAccess);
+            UserAccess userAccessWithDeleteAuditApplied = await ApplyDeleteAuditAsync(maybeUserAccess);
 
             var updatedUserAccess = await this.reIdentificationStorageBroker
                 .UpdateUserAccessAsync(userAccessWithModifyAuditApplied);
