@@ -59,7 +59,8 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
 
             //When
             CsvIdentificationRequest actualCsvIdentificationRequest = 
-                await this.csvIdentificationRequestService.RemoveCsvIdentificationRequestByIdAsync(inputCsvIdentificationRequestId);
+                await this.csvIdentificationRequestService.RemoveCsvIdentificationRequestByIdAsync(
+                    inputCsvIdentificationRequestId);
 
             //Then
             actualCsvIdentificationRequest.Should().BeEquivalentTo(expectedCsvIdentificationRequest);
