@@ -121,10 +121,10 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Audits
                     innerException: invalidAuditException);
 
             var auditServiceMock = new Mock<AuditService>(
-                            reIdentificationStorageBroker.Object,
-                            dateTimeBrokerMock.Object,
-                            securityBrokerMock.Object,
-                            loggingBrokerMock.Object)
+                reIdentificationStorageBroker.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
             {
                 CallBase = true
             };
