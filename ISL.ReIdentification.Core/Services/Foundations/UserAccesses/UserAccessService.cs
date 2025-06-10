@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
@@ -83,12 +84,12 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
                 .SelectUserAccessByIdAsync(userAccessId);
 
             ValidateStorageUserAccess(maybeUserAccess, userAccessId);
-            UserAccess userAccessWithModifyAuditApplied = await ApplyModifyAuditAsync(maybeUserAccess);
+            UserAccess userAccessWithDeleteAuditApplied = await ApplyDeleteAuditAsync(maybeUserAccess);
 
             var updatedUserAccess = await this.reIdentificationStorageBroker
-                .UpdateUserAccessAsync(userAccessWithModifyAuditApplied);
+                .UpdateUserAccessAsync(userAccessWithDeleteAuditApplied);
 
-            await ValidateAgainstStorageUserAccessOnDeleteAsync(updatedUserAccess, userAccessWithModifyAuditApplied);
+            await ValidateAgainstStorageUserAccessOnDeleteAsync(updatedUserAccess, userAccessWithDeleteAuditApplied);
 
             return await this.reIdentificationStorageBroker.DeleteUserAccessAsync(updatedUserAccess);
         });
@@ -158,6 +159,16 @@ namespace ISL.ReIdentification.Core.Services.Foundations.UserAccesses
             userAccess.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
             userAccess.UpdatedDate = auditDateTimeOffset;
 
+            return userAccess;
+        }
+
+        virtual internal async ValueTask<UserAccess> ApplyDeleteAuditAsync(UserAccess userAccess)
+        {
+            ValidateUserAccessIsNotNull(userAccess);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
+            userAccess.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            userAccess.UpdatedDate = auditDateTimeOffset;
             return userAccess;
         }
     }
