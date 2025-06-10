@@ -87,10 +87,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Lookups
                 Lookup updatedLookup =
                     await this.reIdentificationStorageBroker.UpdateLookupAsync(lookupWithDeleteAuditApplied);
 
-                await ValidateAgainstStorageLookupOnDeleteAsync(
-                    updatedLookup,
-                    lookupWithDeleteAuditApplied);
-
                 return await this.reIdentificationStorageBroker.DeleteLookupAsync(updatedLookup);
             });
 

@@ -7,8 +7,10 @@ using System.Data;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
+using ISL.ReIdentification.Core.Brokers.Securities;
 using ISL.ReIdentification.Core.Models.Foundations.Lookups;
 using ISL.ReIdentification.Core.Models.Securities;
+using ISL.ReIdentification.Core.Services.Foundations.Lookups;
 using Moq;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
@@ -85,6 +87,50 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task DeleteLookupAsync_ShouldSetAuditFieldsCorrectly()
+        {
+            // Given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            DateTimeOffset randomLookupDate = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+            Lookup randomLookup = CreateRandomLookup(randomLookupDate, GetRandomString());
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
+            var lookupService = new LookupService(
+                this.reIdentificationStorageBroker.Object,
+                this.dateTimeBrokerMock.Object, 
+                this.securityBrokerMock.Object,
+                this.loggingBrokerMock.Object);
+
+            // When
+            Lookup actualLookup = await lookupService.ApplyDeleteAuditAsync(randomLookup);
+
+            // Then
+            actualLookup.UpdatedBy.Should().BeEquivalentTo(randomEntraUser.EntraUserId.ToString());
+            actualLookup.UpdatedDate.Should().Be(randomDateTimeOffset);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
         }
     }
 }
