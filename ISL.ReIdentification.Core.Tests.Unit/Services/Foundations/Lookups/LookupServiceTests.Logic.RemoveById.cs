@@ -90,7 +90,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
         }
 
         [Fact]
-        public async Task DeleteLookupAsync_ShouldSetAuditFieldsCorrectly()
+        public async Task DeleteLookupAsyncShouldSetAuditFieldsCorrectly()
         {
             // Given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
