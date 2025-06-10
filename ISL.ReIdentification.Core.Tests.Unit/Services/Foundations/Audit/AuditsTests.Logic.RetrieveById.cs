@@ -26,7 +26,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Audits
 
             // when
             Audit actualAudit =
-                await this.accessAuditService.RetrieveAuditByIdAsync(inputAudit.Id);
+                await this.auditService.RetrieveAuditByIdAsync(inputAudit.Id);
 
             // then
             actualAudit.Should().BeEquivalentTo(storageAudit);

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
 using ISL.ReIdentification.Core.Models.Foundations.Audits;
+using ISL.ReIdentification.Core.Models.Securities;
 using Moq;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Audits
@@ -17,23 +18,29 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Audits
         public async Task ShouldModifyAuditAsync()
         {
             // given
-            DateTimeOffset randomDateOffset = GetRandomDateTimeOffset();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
 
-            Audit randomModifyAudit =
-                CreateRandomModifyAudit(randomDateOffset);
+            Audit randomAudit =
+                CreateRandomModifyAudit(randomDateTimeOffset, randomEntraUser.EntraUserId);
 
-            Audit inputAudit = randomModifyAudit.DeepClone();
-            Audit storageAudit = randomModifyAudit.DeepClone();
-            storageAudit.UpdatedDate = storageAudit.CreatedDate;
-            Audit updatedAudit = inputAudit.DeepClone();
+            Audit inputAudit = randomAudit;
+            Audit storageAudit = inputAudit.DeepClone();
+            storageAudit.UpdatedDate = randomAudit.CreatedDate;
+            Audit updatedAudit = inputAudit;
             Audit expectedAudit = updatedAudit.DeepClone();
+            Guid auditId = inputAudit.Id;
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .ReturnsAsync(randomDateOffset);
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             this.reIdentificationStorageBroker.Setup(broker =>
-                broker.SelectAuditByIdAsync(inputAudit.Id))
+                broker.SelectAuditByIdAsync(auditId))
                     .ReturnsAsync(storageAudit);
 
             this.reIdentificationStorageBroker.Setup(broker =>
@@ -42,14 +49,18 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Audits
 
             // when
             Audit actualAudit =
-                await this.accessAuditService.ModifyAuditAsync(inputAudit);
+                await this.auditService.ModifyAuditAsync(inputAudit);
 
             // then
             actualAudit.Should().BeEquivalentTo(expectedAudit);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Exactly(2));
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Exactly(2));
 
             this.reIdentificationStorageBroker.Verify(broker =>
                 broker.SelectAuditByIdAsync(inputAudit.Id),
@@ -60,6 +71,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Audits
                     Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
