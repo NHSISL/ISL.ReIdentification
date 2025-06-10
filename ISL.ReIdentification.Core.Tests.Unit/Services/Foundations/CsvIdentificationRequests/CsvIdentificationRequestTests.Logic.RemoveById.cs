@@ -3,10 +3,12 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Data;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
 using ISL.ReIdentification.Core.Models.Foundations.CsvIdentificationRequests;
+using ISL.ReIdentification.Core.Models.Securities;
 using Moq;
 
 namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentificationRequests
@@ -16,41 +18,77 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.CsvIdentific
         [Fact]
         public async Task ShouldRemoveCsvIdentificationRequestByIdAsync()
         {
-            // given
-            Guid someCsvIdentificationRequestId = Guid.NewGuid();
-            CsvIdentificationRequest randomCsvIdentificationRequest = CreateRandomCsvIdentificationRequest();
+            //Given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            CsvIdentificationRequest randomCsvIdentificationRequest = 
+                CreateRandomCsvIdentificationRequest(randomDateTimeOffset, randomEntraUser.EntraUserId);
+
+            Guid inputCsvIdentificationRequestId = randomCsvIdentificationRequest.Id;
             CsvIdentificationRequest storageCsvIdentificationRequest = randomCsvIdentificationRequest;
-            CsvIdentificationRequest inputCsvIdentificationRequest = storageCsvIdentificationRequest;
-            CsvIdentificationRequest removedCsvIdentificationRequest = inputCsvIdentificationRequest;
-            CsvIdentificationRequest expectedCsvIdentificationRequest = removedCsvIdentificationRequest.DeepClone();
+
+            CsvIdentificationRequest csvIdentificationRequestWithDeleteAuditApplied = 
+                storageCsvIdentificationRequest.DeepClone();
+
+            csvIdentificationRequestWithDeleteAuditApplied.UpdatedBy = randomEntraUser.EntraUserId.ToString();
+            csvIdentificationRequestWithDeleteAuditApplied.UpdatedDate = randomDateTimeOffset;
+            CsvIdentificationRequest updatedCsvIdentificationRequest = csvIdentificationRequestWithDeleteAuditApplied;
+            CsvIdentificationRequest deletedCsvIdentificationRequest = updatedCsvIdentificationRequest;
+            CsvIdentificationRequest expectedCsvIdentificationRequest = deletedCsvIdentificationRequest.DeepClone();
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             this.reIdentificationStorageBroker.Setup(broker =>
-                broker.SelectCsvIdentificationRequestByIdAsync(someCsvIdentificationRequestId))
+                broker.SelectCsvIdentificationRequestByIdAsync(inputCsvIdentificationRequestId))
                     .ReturnsAsync(storageCsvIdentificationRequest);
 
             this.reIdentificationStorageBroker.Setup(broker =>
-                broker.DeleteCsvIdentificationRequestAsync(inputCsvIdentificationRequest))
-                    .ReturnsAsync(removedCsvIdentificationRequest);
+                broker.UpdateCsvIdentificationRequestAsync(randomCsvIdentificationRequest))
+                    .ReturnsAsync(updatedCsvIdentificationRequest);
 
-            // when
-            CsvIdentificationRequest actualCsvIdentificationRequest =
-                await this.csvIdentificationRequestService.RemoveCsvIdentificationRequestByIdAsync(someCsvIdentificationRequestId);
+            this.reIdentificationStorageBroker.Setup(broker =>
+                broker.DeleteCsvIdentificationRequestAsync(updatedCsvIdentificationRequest))
+                    .ReturnsAsync(deletedCsvIdentificationRequest);
 
-            // then
+            //When
+            CsvIdentificationRequest actualCsvIdentificationRequest = 
+                await this.csvIdentificationRequestService.RemoveCsvIdentificationRequestByIdAsync(
+                    inputCsvIdentificationRequestId);
+
+            //Then
             actualCsvIdentificationRequest.Should().BeEquivalentTo(expectedCsvIdentificationRequest);
 
             this.reIdentificationStorageBroker.Verify(broker =>
-                broker.SelectCsvIdentificationRequestByIdAsync(someCsvIdentificationRequestId),
+                broker.SelectCsvIdentificationRequestByIdAsync(inputCsvIdentificationRequestId),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Exactly(2));
+
+            this.reIdentificationStorageBroker.Verify(broker =>
+                broker.UpdateCsvIdentificationRequestAsync(randomCsvIdentificationRequest),
                     Times.Once);
 
             this.reIdentificationStorageBroker.Verify(broker =>
-                broker.DeleteCsvIdentificationRequestAsync(storageCsvIdentificationRequest),
+                broker.DeleteCsvIdentificationRequestAsync(updatedCsvIdentificationRequest),
                     Times.Once);
 
             this.reIdentificationStorageBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

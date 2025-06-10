@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
@@ -87,17 +88,25 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
             });
 
         public ValueTask<AccessAudit> RemoveAccessAuditByIdAsync(Guid accessAuditId) =>
-        TryCatch(async () =>
-        {
-            await ValidateAccessAuditOnRemoveById(accessAuditId);
+            TryCatch(async () =>
+            {
+                await ValidateAccessAuditOnRemoveById(accessAuditId);
 
-            var maybeAccessAudit = await this.reIdentificationStorageBroker
-                .SelectAccessAuditByIdAsync(accessAuditId);
+                AccessAudit maybeAccessAudit = 
+                    await this.reIdentificationStorageBroker.SelectAccessAuditByIdAsync(accessAuditId);
 
-            await ValidateStorageAccessAuditAsync(maybeAccessAudit, accessAuditId);
+                await ValidateStorageAccessAuditAsync(maybeAccessAudit, accessAuditId);
+                AccessAudit accessAuditWithDeleteAuditApplied = await ApplyDeleteAuditAsync(maybeAccessAudit);
 
-            return await this.reIdentificationStorageBroker.DeleteAccessAuditAsync(maybeAccessAudit);
-        });
+                AccessAudit updatedAccessAudit =
+                    await this.reIdentificationStorageBroker.UpdateAccessAuditAsync(accessAuditWithDeleteAuditApplied);
+
+                await ValidateAgainstStorageAccessAuditOnDeleteAsync(
+                    updatedAccessAudit,
+                    accessAuditWithDeleteAuditApplied);
+
+                return await this.reIdentificationStorageBroker.DeleteAccessAuditAsync(updatedAccessAudit);
+            });
 
         virtual internal async ValueTask<AccessAudit> ApplyAddAuditAsync(AccessAudit accessAudit)
         {
@@ -137,6 +146,16 @@ namespace ISL.ReIdentification.Core.Services.Foundations.AccessAudits
             accessAudit.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
             accessAudit.UpdatedDate = auditDateTimeOffset;
 
+            return accessAudit;
+        }
+
+        virtual internal async ValueTask<AccessAudit> ApplyDeleteAuditAsync(AccessAudit accessAudit)
+        {
+            ValidateAccessAuditIsNotNull(accessAudit);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
+            accessAudit.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            accessAudit.UpdatedDate = auditDateTimeOffset;
             return accessAudit;
         }
     }
