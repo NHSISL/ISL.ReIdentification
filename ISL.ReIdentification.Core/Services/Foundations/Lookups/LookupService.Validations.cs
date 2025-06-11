@@ -124,37 +124,6 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Lookups
                 Parameter: nameof(Lookup.UpdatedDate)));
         }
 
-        private async ValueTask ValidateAgainstStorageLookupOnDeleteAsync(Lookup lookup, Lookup maybeLookup)
-        {
-            EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
-
-            Validate(
-                (Rule: IsNotSame(
-                    lookup.CreatedDate,
-                    maybeLookup.CreatedDate,
-                    nameof(maybeLookup.CreatedDate)),
-                 Parameter: nameof(Lookup.CreatedDate)),
-
-                (Rule: IsNotSame(
-                    lookup.CreatedBy,
-                    maybeLookup.CreatedBy,
-                    nameof(maybeLookup.CreatedBy)),
-                 Parameter: nameof(Lookup.CreatedBy)),
-
-                (Rule: IsNotSame(
-                    maybeLookup.UpdatedDate,
-                    lookup.UpdatedDate,
-                    nameof(Lookup.UpdatedDate)),
-                 Parameter: nameof(Lookup.UpdatedDate)),
-
-                (Rule: IsNotSame(
-                    auditUser.EntraUserId.ToString(),
-                    lookup.UpdatedBy,
-                    nameof(Lookup.UpdatedBy)),
-                 Parameter: nameof(Lookup.UpdatedBy))
-            );
-        }
-
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,

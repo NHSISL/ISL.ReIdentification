@@ -3,11 +3,9 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Data;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using ISL.ReIdentification.Core.Brokers.Securities;
 using ISL.ReIdentification.Core.Models.Foundations.Lookups;
 using ISL.ReIdentification.Core.Models.Securities;
 using ISL.ReIdentification.Core.Services.Foundations.Lookups;
@@ -73,7 +71,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
 
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),
-                    Times.Exactly(2));
+                    Times.Once);
 
             this.reIdentificationStorageBroker.Verify(broker =>
                 broker.UpdateLookupAsync(randomLookup),
@@ -108,7 +106,7 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
 
             var lookupService = new LookupService(
                 this.reIdentificationStorageBroker.Object,
-                this.dateTimeBrokerMock.Object, 
+                this.dateTimeBrokerMock.Object,
                 this.securityBrokerMock.Object,
                 this.loggingBrokerMock.Object);
 
