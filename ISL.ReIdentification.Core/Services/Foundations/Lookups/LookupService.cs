@@ -82,7 +82,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Lookups
                 ValidateLookupId(lookupId);
                 Lookup maybeLookup = await this.reIdentificationStorageBroker.SelectLookupByIdAsync(lookupId);
                 ValidateStorageLookup(maybeLookup, lookupId);
-                Lookup lookupWithDeleteAuditApplied = await ApplyDeleteAuditAsync(maybeLookup);
+                Lookup lookupWithDeleteAuditApplied = await ApplyModifyAuditAsync(maybeLookup);
                 
                 Lookup updatedLookup =
                     await this.reIdentificationStorageBroker.UpdateLookupAsync(lookupWithDeleteAuditApplied);
