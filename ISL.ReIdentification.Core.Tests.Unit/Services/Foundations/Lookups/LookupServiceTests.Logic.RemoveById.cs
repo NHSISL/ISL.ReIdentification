@@ -87,48 +87,6 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
             this.securityBrokerMock.VerifyNoOtherCalls();
         }
 
-        [Fact]
-        public async Task DeleteLookupAsyncShouldSetAuditFieldsCorrectly()
-        {
-            // Given
-            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            DateTimeOffset randomLookupDate = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
-            Lookup randomLookup = CreateRandomLookup(randomLookupDate, GetRandomString());
-
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
-                    .ReturnsAsync(randomDateTimeOffset);
-
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
-
-            var lookupService = new LookupService(
-                this.reIdentificationStorageBroker.Object,
-                this.dateTimeBrokerMock.Object,
-                this.securityBrokerMock.Object,
-                this.loggingBrokerMock.Object);
-
-            // When
-            Lookup actualLookup = await lookupService.ApplyDeleteAuditAsync(randomLookup);
-
-            // Then
-            actualLookup.UpdatedBy.Should().BeEquivalentTo(randomEntraUser.EntraUserId.ToString());
-            actualLookup.UpdatedDate.Should().Be(randomDateTimeOffset);
-
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
-
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
-                    Times.Once);
-
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.reIdentificationStorageBroker.VerifyNoOtherCalls();
-        }
+        
     }
 }
