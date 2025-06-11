@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
@@ -79,13 +80,14 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Lookups
             TryCatch(async () =>
             {
                 ValidateLookupId(lookupId);
-
-                Lookup maybeLookup = await this.reIdentificationStorageBroker
-                    .SelectLookupByIdAsync(lookupId);
-
+                Lookup maybeLookup = await this.reIdentificationStorageBroker.SelectLookupByIdAsync(lookupId);
                 ValidateStorageLookup(maybeLookup, lookupId);
+                Lookup lookupWithDeleteAuditApplied = await ApplyModifyAuditAsync(maybeLookup);
+                
+                Lookup updatedLookup =
+                    await this.reIdentificationStorageBroker.UpdateLookupAsync(lookupWithDeleteAuditApplied);
 
-                return await this.reIdentificationStorageBroker.DeleteLookupAsync(maybeLookup);
+                return await this.reIdentificationStorageBroker.DeleteLookupAsync(updatedLookup);
             });
 
         virtual internal async ValueTask<Lookup> ApplyAddAuditAsync(Lookup lookup)
@@ -109,6 +111,16 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Lookups
             lookup.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
             lookup.UpdatedDate = auditDateTimeOffset;
 
+            return lookup;
+        }
+
+        virtual internal async ValueTask<Lookup> ApplyDeleteAuditAsync(Lookup lookup)
+        {
+            ValidateLookupIsNotNull(lookup);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
+            lookup.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            lookup.UpdatedDate = auditDateTimeOffset;
             return lookup;
         }
     }
