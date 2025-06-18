@@ -21,16 +21,12 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
             //given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             EntraUser randomEntraUser = CreateRandomEntraUser();
-
             Lookup randomLookup = CreateRandomLookup(randomDateTimeOffset, randomEntraUser.EntraUserId);
-
             Guid inputLookupId = randomLookup.Id;
             Lookup storageLookup = randomLookup;
-
             Lookup lookupWithDeleteAuditApplied = storageLookup.DeepClone();
             lookupWithDeleteAuditApplied.UpdatedBy = randomEntraUser.EntraUserId.ToString();
             lookupWithDeleteAuditApplied.UpdatedDate = randomDateTimeOffset;
-
             Lookup updatedLookup = lookupWithDeleteAuditApplied;
             Lookup deletedLookup = updatedLookup;
             Lookup expectedLookup = deletedLookup.DeepClone();
@@ -86,7 +82,5 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
         }
-
-        
     }
 }
