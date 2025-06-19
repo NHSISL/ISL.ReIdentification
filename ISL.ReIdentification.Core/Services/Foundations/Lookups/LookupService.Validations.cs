@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Data;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Models.Foundations.Lookups;
 using ISL.ReIdentification.Core.Models.Foundations.Lookups.Exceptions;
