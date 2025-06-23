@@ -563,6 +563,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
                 broker.SelectLookupByIdAsync(invalidLookup.Id))
                 .ReturnsAsync(storageLookup);
 
+            lookupServiceMock.Setup(service =>
+                service.EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                    invalidLookup, storageLookup))
+                        .ReturnsAsync(invalidLookup);
+
             // when
             ValueTask<Lookup> modifyLookupTask =
                 lookupServiceMock.Object.ModifyLookupAsync(invalidLookup);
@@ -586,6 +591,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),
                     Times.Once);
+
+            lookupServiceMock.Verify(service =>
+                service.EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                    invalidLookup, storageLookup),
+                        Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -648,6 +658,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
                 broker.SelectLookupByIdAsync(invalidLookup.Id))
                 .ReturnsAsync(storageLookup);
 
+            lookupServiceMock.Setup(service =>
+                service.EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                    invalidLookup, storageLookup))
+                        .ReturnsAsync(invalidLookup);
+
             // when
             ValueTask<Lookup> modifyLookupTask =
                 lookupServiceMock.Object.ModifyLookupAsync(invalidLookup);
@@ -670,6 +685,11 @@ namespace ISL.ReIdentification.Core.Tests.Unit.Services.Foundations.Lookups
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),
                     Times.Once);
+
+            lookupServiceMock.Verify(service =>
+                service.EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                    invalidLookup, storageLookup),
+                        Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogErrorAsync(It.Is(SameExceptionAs(
