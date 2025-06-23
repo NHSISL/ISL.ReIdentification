@@ -3,7 +3,6 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using ISL.ReIdentification.Core.Brokers.DateTimes;
@@ -69,6 +68,11 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Lookups
 
                 ValidateStorageLookup(maybeLookup, lookupWithModifiedAuditApplied.Id);
 
+                Lookup lookupWithModifyAuditAppliedEnsured =
+                    await EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                        lookupWithModifiedAuditApplied,
+                        maybeLookup);
+
                 ValidateAgainstStorageLookupOnModify(
                     inputLookup: lookupWithModifiedAuditApplied,
                     storageLookup: maybeLookup);
@@ -83,7 +87,7 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Lookups
                 Lookup maybeLookup = await this.reIdentificationStorageBroker.SelectLookupByIdAsync(lookupId);
                 ValidateStorageLookup(maybeLookup, lookupId);
                 Lookup lookupWithDeleteAuditApplied = await ApplyModifyAuditAsync(maybeLookup);
-                
+
                 Lookup updatedLookup =
                     await this.reIdentificationStorageBroker.UpdateLookupAsync(lookupWithDeleteAuditApplied);
 
@@ -121,6 +125,16 @@ namespace ISL.ReIdentification.Core.Services.Foundations.Lookups
             var auditUser = await this.securityBroker.GetCurrentUserAsync();
             lookup.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
             lookup.UpdatedDate = auditDateTimeOffset;
+            return lookup;
+        }
+
+        virtual internal async ValueTask<Lookup> EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+            Lookup lookup,
+            Lookup maybeLookup)
+        {
+            lookup.CreatedDate = maybeLookup.CreatedDate;
+            lookup.CreatedBy = maybeLookup.CreatedBy;
+
             return lookup;
         }
     }
